@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" lang="English-US">
+<style >
+#main-menu{	margin:auto; width:80%;	background-color:#E1DFD9;	}
+
+#menu-pane{	margin:auto; width:85%;}
+
+ul{list-style-type:none;margin:0;padding:0;	overflow:hidden;}
+
+.pane{float:left;}
+
+span{display:block;	width:170px;font-weight:bold;color:#FFFFFF;
+background-color:#4D79A3;text-align:center;	padding:8px;
+text-decoration:none;text-transform:uppercase;}
+
+h1{text-alight: right}
+
+#marksheet{	margin:auto;width:86%;border: 2;}
+
+#marksheetTable tr td{text-align:center;width: 170px;padding:8px;}
+
+tr:nth-child(even) {background: #CCC}
+
+tr:nth-child(odd) {background: #FFF}
+
+#submit{padding:4px;margin:4px;background-color:#4D79A3; width: 170px;
+ height: 50px;font-weight:bold;color:#FFFFFF;text-align:center;	padding:8px;
+text-decoration:none;text-transform:uppercase;}
+
+#filter{margin:auto;	width:85%;}	
+
+select{padding:4px;margin:8px;}
+
+#right{top:1;float:right;width:20%;height:500px;	background-color:red;}
+</style>
+
+<title>Home</title>
+
+</head>
+
+<body>
+
+	<div id="main-menu">
+	
+		<h1 align="center">Marks Management</h1>
+		<div id="menu-pane">
+			<div id="filter">
+				Course:<select>
+				  <option value="Lecture">COS 301</option>
+				  <option value="Marker">COS 332</option>
+				  <option value="Student">COS 330</option>
+				  <option value="Lecture">COS 314</option>
+				  <option value="Marker">COS 333</option>
+				  <option value="Student">COS 344</option>
+				</select>
+				Assesment:<select>
+				  <option value="Lecture">Semester test</option>
+				  <option value="Marker">Practicals</option>
+				  <option value="Student">Assignments</option>
+				</select>
+				Assesment #:<select>
+				  <option value="Lecture">Practical 1</option>
+				  <option value="Marker">Practical 2</option>
+				  <option value="Student">Practical 3</option>
+				</select>
+				
+				<button type="button" id="go"> GO!</button>
+			</div>
+			<br>
+			<ul id="menu-pane">
+			<li class="pane"><span>Surname, Initials</span></li>
+			<li class="pane"><span>Student #</span></li>
+			<li class="pane"><span>Weight</span></li>
+			<li class="pane"><span>Mark</span></li>
+			</ul>
+			
+			<form id="marksheet" name="marksheet">
+				<table id="marksheetTable" >
+					<tr><td >Mphabantshi, C</td><td>10404687</td><td>100</td><td contenteditable="true">99</td></tr>
+					<tr><td>Banchi, OKK</td><td>10405587</td><td>100</td><td contenteditable="true">68</td></tr>
+					<tr><td>Mickey, UU</td><td>10498562</td><td>100</td><td contenteditable="true">86</td></tr>
+					<tr><td>Bele, UY</td><td>1042548</td><td>100</td><td contenteditable="true">78</td></tr>
+					<tr><td>Siki, RT</td><td>12414687</td><td>100</td><td contenteditable="true">56</td></tr>
+					<tr><td>Muller, PK</td><td>1336587</td><td>100</td><td contenteditable="true">66</td></tr>
+					<tr><td>Jolle, ILK</td><td>29887687</td><td>100</td><td contenteditable="true">89</td></tr>
+					<tr><td>Peters, FD</td><td>28556987</td><td>100</td><td contenteditable="true">69</td></tr>
+					<tr><td>Jones, PP</td><td>12336687</td><td>100</td><td contenteditable="true">88</td></tr>
+					<tr><td>Roling, TJ</td><td>13856687</td><td>100</td><td contenteditable="true">56</td></tr>
+				</table>
+				<br>
+				<button type="button" id="submit"> Submit Changes</button>
+				<br>
+			</form>
+		</div>
+	
+	</div>
+	
+	
+</body>
+
+</html>

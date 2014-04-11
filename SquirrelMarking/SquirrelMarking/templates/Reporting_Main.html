@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="{{ STATIC_URL }}/static/js/jquery.js"></script>
+		<script>
+			$(document).ready(function(){
+			
+				$('#containerDisplay').load('Statistics.html');
+				
+				$('#assessReport').click(function(){
+					$('#containerDisplay').load('Statistics.html');
+				});
+				
+				$('#studentReport').click(function(){
+					$('#containerDisplay').load('studentReport.html');
+				});
+				
+				$('#auditReport').click(function(){
+					$('#containerDisplay').load('auditReport.html');
+				});
+				
+				$('#searchBtn').click(function(){
+					$('#list').load('studentChosen.html');
+				});
+			});
+		</script>
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">
+	</head>
+	<body>
+		<div class="reports" id="reportingContainer">
+			<div id="reportingMenu">
+				<h2> Reporting Types </h2>
+				<div id="options">
+					<input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"> <br><br>
+					<input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"> <br><br>
+					<input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"> <br>
+				</div>
+			</div>
+		</div>
+		<div id='containerDisplay'>
+			
+		</div>
+	</body>
+</html>

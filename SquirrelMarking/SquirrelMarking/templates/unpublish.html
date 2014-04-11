@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>unpublish</title>
+<script type="text/javascript">
+
+function handleClick(evt) {
+  var marks = evt.target || evt.srcElement;
+  if (marks.name == 'Un-Publish') {
+    marks.value = "Publish";
+  }
+}
+
+</script>
+<style>
+table,th,td
+{
+border:2px solid black;
+border-collapse:collapse;
+}
+
+</style>
+</head>
+<body align="center">
+<h2>Marks </h2>
+<br/>
+<br/>
+Search Assessment <input type="text" name="search" value=""/>
+<br/>
+<input type="submit" name="Search" value="Search"/> 
+<br/>
+<br/>
+<br/>
+<table cellpadding="10" bgcolor="#E7EAEB" align="center" id="table1" border="1" style="width:300px" onclick="handleClick(event);">
+    <thead bgcolor="#39B7DD">
+		  <th >Module</th>
+		  <th>Assessment</th> 
+		  <th>AssNumber</th> 
+          <th>Date of assessmentment</th>
+		  <th>Un-Publish</th>
+    </thead>
+    <tbody>
+           <tr>
+			<td>COS 301</td>
+			<td>Practical</td>
+			<td>2</td>
+			<td>12 April 2014</td> 
+			<td>
+               <form name="f1" action="#" >
+               <input id="edit1" type="submit" name="Un-Publish" value="Un-Publish">
+               </form>
+			<td>
+			</tr>
+			
+			<tr>
+			<td>COS 332</td>
+			<td>Practical</td>
+			<td>5</td>
+			<td>8 May 2014</td> 
+			<td>
+               <form name="f1" action="#" >
+               <input id="edit1" type="submit" name="Un-Publish" value="Un-Publish">
+               </form>
+			<td>
+			</tr>
+   </tbody>
+</table>
+</body>
+</html>

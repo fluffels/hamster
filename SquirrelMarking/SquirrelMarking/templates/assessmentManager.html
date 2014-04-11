@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Squirrel Marking - Assessment View{% endblock %}
+
+{% block menu_shortcuts %}{% endblock %}
+{% block content_title %}<h1 id="content_title">Assessment Manager</h1>{% endblock %}
+{% block content %}
+Select existing assessment:
+</br>
+Assessment:
+<select id="assessments">
+
+</select>
+&nbsp;
+search:<input type="text" id="search">
+</br>
+<form id="assessmentFrom">
+</br>
+Create or edit assessment:
+</br>
+Course:<input type="text" id="course">
+</br>
+Assessment type:<input type="text" id="assessmentType">
+</br>
+Assessment details:<input type="text" id="assessmentDetails">
+</br>
+Total mark:<input type="text" id="totalMark">
+</br>
+Mark weight:<input type="text" id="markWeight">
+</br>
+<input type="submit" Value="Save">
+</form>
+{% endblock %}

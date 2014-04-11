@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Squirrel Marking - Assessment View{% endblock %}
+
+{% block menu_shortcuts %}{% endblock %}
+{% block content_title %}<h1 id="content_title">Session Manager</h1>{% endblock %}
+{% block content %}
+Assessment:
+<select id="assessments">
+
+</select>
+</br>
+Open date:<input type="date" id="date">
+</br>
+Close date:<input type="date" id="date">
+</br>
+Add marker:<input type="text" id="marker"><input type="button" value="add" id="add">
+</br>
+<a href="">Add student list</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Squirrel Marking{% endblock %}
+
+{% block menu_shortcuts %}<h1>Squirrel Marking System</h1>{% endblock %}
+{% block content_title %}<h1 id="content_title">Login</h1>{% endblock %}
+{% block content %}
+	<form action="/checkLogin/" method="post">
+		<label for="username">username:</label><input type="text" placeholder="username" autofocus id="username" name="username" required><br>
+		<label for="password">password:</label><input type="password" placeholder="password" id="password" name="password" required><br>
+		<input type="submit">
+	</form>
+{% endblock %}

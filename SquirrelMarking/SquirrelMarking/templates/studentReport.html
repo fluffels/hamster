@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="{{ STATIC_URL }}/static/js/jquery.js"></script>
+</head>
+	<body>
+		<div class="displayContainerClass" id="stuRepSearch" >
+			<div id="searchContainer" style="width:700px">
+				<form autocomplete = "on">
+					<div> Search Student: <div> <input type="text" name ="StudentSearch" id="searchStudent" placeholder="Search student">
+					<img id='searchBtn' src="{{ STATIC_URL }}/static/img/search_icon.jpg" width='20px' height='20px'/>
+				</form>
+				<div id="list">
+					
+				</div>
+				<script>
+					$('#searchBtn').click(function(){
+						var searchedItem = $('#searchStudent').val();
+						$('#list').load('studentChosen.html');
+					});
+				</script>
+			</div>
+		</div>
+	</body>
+</html>

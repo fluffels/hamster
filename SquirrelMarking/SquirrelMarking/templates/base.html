@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link href="{{ STATIC_URL }}/static/css/style.css" rel="stylesheet" type="text/css" />
+		<title>{% block title %}{% endblock %}</title>
+	</head>
+
+	<body>
+		
+		<header>
+			<div id="logo">
+				<img id="logo_img" src="{{ STATIC_URL }}/static/img/logo.jpg" height="50%" width="50%" alt="Squirrel Marking Logo">
+			</div>
+			<div id="menu_shortcuts">
+				{% block menu_shortcuts %}{% endblock %}
+			</div>
+		</header>
+		
+		<nav>
+			<div id="content_title">
+				{% block content_title %}{% endblock %}
+			</div>
+		</nav>
+		<section>
+			<div id="content">
+				{% block content %}{% endblock %}
+			</div>
+		</section>
+	</body>
+</html>
