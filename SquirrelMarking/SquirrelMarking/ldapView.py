@@ -2,7 +2,6 @@ from django.shortcuts import render
 import ldap
 import re
 from django.http import HttpResponse
-from models import Person
 
 global ldapURI
 ldapURI = "ldap://reaper.up.ac.za"
