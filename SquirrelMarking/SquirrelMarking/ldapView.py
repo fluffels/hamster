@@ -4,7 +4,7 @@ import re
 from django.http import HttpResponse
 
 global ldapURI
-ldapURI = "ldap://reaper.up.ac.za"
+ldapURI = "ldap://localhost"
 global basedn
 basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
 # Create your views here.
@@ -22,7 +22,7 @@ def initialize_ldap():
     else:
         return ldapConnection
 
-def authenticateldapUser(username, password):
+def authenticateUser(request, username, password):
     try:
         ldapConnectionLocal = initialize_ldap()
         results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"uid="+username)
@@ -36,8 +36,8 @@ def authenticateldapUser(username, password):
             newUsername = dn
             ldapConnectionTemp = ldap.initialize(ldapURI)
             ldapConnectionTemp.simple_bind_s(newUsername,password)
-
-            return constructPersonDetails(username)
+            request.session['user'] = constructPersonDetails(username)
+            return request.session['user']
 
     except ldap.INVALID_CREDENTIALS, e:
         raise e
