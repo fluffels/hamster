@@ -2,6 +2,76 @@ from django.db import models
 import time                     # [jacques] For audit logging
 import datetime
 #from ldapView import *
+class Person:
+    firstName = ""
+    upId = ""
+    surname = ""
+    studentOf  = [] #module
+    tutorOf  = [] #module
+    teachingAssistantOf  = [] #module
+    lectureOf = [] #module
+    def _init_(self,fn, sn, uid):
+        self.firstName = fn
+        self.upId = uid
+        self.surname = sn
+    def getfirstName(self):
+        return self.firstName
+    def getupId(self):
+        return self.upId
+    def getsurname(self):
+        return self.surname
+    def setfirstName(self,value):
+        self.firstName=value
+        self.save()
+    def setupId(self,value):
+        self.upId=value
+        self.save()
+    def setsurname(self,value):
+        self.surname=value
+        self.save()
+    def lectureOfInsert(self,value):
+        self.lectureOf.append(value)
+    def lectureOfDelete(self,value):
+        self.lectureOf.remove(value)
+    def studentOfInsert(self,value):
+        self.studentOf.append(value)
+    def studentOfDelete(self,value):
+        self.studentOf.remove(value)
+    def tutorOfInsert(self,value):
+        self.tutorOf.append(value)
+    def tutorOfDelete(self,value):
+        self.tutorOf.remove(value)
+    def teachingAssistantOfInsert(self,value):
+        self.teachingAssistantOf.append(value)
+    def teachingAssistantOfDelete(self,value):
+        self.teachingAssistantOf.remove(value)
+    def __unicode__(self):
+        return self.getfirstName()+" "+self.getsurname()+" "+self.getupId()
+
+def login(request, username, password):
+  personInfo = authenticateUser(username, password)
+
+def getSessionPerson(request):
+  information = request.session["user"]
+  return getPersonFromArr(information)
+
+def getPersonFromArr(data):
+
+  objPerson = Person(data["cn"],data["sn"],data["uid"])
+
+  for x in data["studentOf"]:
+    objPerson.studentOfInsert(x)
+
+  for x in data["tutorFor"]:
+    objPerson.tutorOfInsert(x)
+
+  for x in data["teachingAssistantOf"]:
+    objPerson.teachingAssistantOfInsert(x)
+
+  for x in data["lecturerOf"]:
+    objPerson.lectureOfInsert(x)
+  
+  return objPerson
 
 class Module(models.Model):
     moduleCode = models.CharField(max_length=6)

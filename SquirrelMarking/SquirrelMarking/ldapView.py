@@ -2,9 +2,10 @@ from django.shortcuts import render
 import ldap
 import re
 from django.http import HttpResponse
+from models import Person
 
 global ldapURI
-ldapURI = "ldap://localhost"
+ldapURI = "ldap://reaper.up.ac.za"
 global basedn
 basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
 # Create your views here.
@@ -75,23 +76,50 @@ def sourceDemographics(username):
         return attributes
 
 def constructPersonDetails(username):
-    Person = {}
+    mPerson = {}
     attributes = sourceDemographics(username)
     for key,value in attributes.items():
-        Person[key] = value
-    Person["lecturerOf"] = sourceLecturerDesignations(username)
-    Person["studentOf"] = sourceEnrollments(username)
-    Person["teachingAssistantOf"] = sourceTeachingAssistantDesignations(username)
-    Person["tutorFor"] = sourceTutorDesignations(username)
-    return Person
+        mPerson[key] = value
+    mPerson["lecturerOf"] = sourceLecturerDesignations(username)
+    mPerson["studentOf"] = sourceEnrollments(username)
+    mPerson["teachingAssistantOf"] = sourceTeachingAssistantDesignations(username)
+    mPerson["tutorFor"] = sourceTutorDesignations(username)
+    return mPerson
+
+def getAllModuleCodes():
+    ldapConnectionLocal = initialize_ldap()
+    results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"cn=stud_*",["cn"])
+    resultArray = []
+    for dn,cn in results:
+        tmp = str(cn['cn'])[2:-2]
+        try:
+            pos = tmp.index('_')
+        except:
+            resultArray.append(tmp)
+        else:
+            resultArray.append(tmp[pos+1:])
+    return resultArray
 
 def getMembers(groupName):
     ldapConnectionLocal = initialize_ldap()
     results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"cn=" + groupName,["memberUid"])
     resultArray = []
     for dn,memberUid in results:
-        resultArray += memberUid['memberUid']
+        if "memberUid" in memberUid:
+            resultArray += memberUid['memberUid']
     return resultArray
+
+def getStudentsOf(module):
+    return getMembers("stud_" + module)
+
+def getTutorsOf(module):
+    return getMembers("tuts_" + module)
+
+def getTAsOf(module):
+    return getMembers("teachasst_" + module)
+
+def getLecturorsOf(module):
+    return getMembers("lect_" + module)
 
 def findPerson(filterName, filterValue):
     try:
