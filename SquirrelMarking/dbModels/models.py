@@ -126,13 +126,13 @@ def getAssessment():
 class Sessions(models.Model):
     session_name=models.CharField(max_length=100)
     assessment_id = models.ForeignKey(Assessment)
-    open = models.DateTimeField()
+    opened = models.DateTimeField()
     closed = models.DateTimeField()
-    status = models.BooleanField()
+    status = models.IntegerField()
     def setAssessmentID(self,id):
         self.assessment_id = id
-    def setOpen(self,open):
-        self.open = open
+    def setOpened(self,opened):
+        self.opened = opened
     def setClosed(self,closed):
         self.closed = closed
     def setID(self,status):
@@ -150,14 +150,14 @@ class Sessions(models.Model):
         return self.closed
     def getStatus(self):
         return self.status
-    def getOpen(self):
-        return self.open
+    def getOpened(self):
+        return self.opened
 
 def deleteSessions(self):
     Sessions.delete(self)
 
-def insertSessions(assessment_id_,open_,closed_,status_):
-    temp = Sessions(assessment_id=assessment_id_,open=open_,closed=closed_,status=status_)
+def insertSessions(session_name_, assessment_id_,opened_,closed_,status_):
+    temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=status_)
     temp.save()
     return temp
 

@@ -9,13 +9,13 @@ from businessLogicAPI import *
 def test(request):
     x2 = insertModule("COS301")
     x3 = insertAssessment('test','asdas',"type",x2)
-    x4 = insertSessions(x3,'2012-12-12 12:12','2012-12-12 12:12',True)
+    x4 = insertSessions("test",x3,'2012-12-12 12:12','2015-12-12 12:12',1)
     xx = insertMarkSession("u89000999",x4)
     x5 = insertMarkerModule("u89000999",x2)
     x6 = insertLeafAssessment("name",x3,100,True)
     x7 = insertMarkAllocation(x6,x3,20,x4,"asdsad","sadasd",'2012-12-12 12:12')
     x8 = insertMarkerModule("asdasd",x2)
-    return HttpResponse("<html><body><p>"+str(getAllMarkersOfModule("COS301"))+"</p></body></html>")
+    return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
 def login(request):
 	t = get_template('login.html')
