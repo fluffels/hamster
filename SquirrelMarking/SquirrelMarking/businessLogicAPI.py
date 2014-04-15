@@ -43,11 +43,13 @@ def getAllMarkersOfModule(mod_code):
         list.append(x.marker_id)
     return list
 
-def createAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_):
-    insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
+def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
+    obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
+    logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 
-def createLeafAssessment(eaf_name_,assessment_id_,max_mark_):
-    insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
+def createLeafAssessment(request, eaf_name_,assessment_id_,max_mark_):
+    obj = insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
+    logAudit(request,"Inserted new leaf assessment","insert","dbModels_leafassessment","id",None,obj.id)
 
 def getAssessmentForModuleByName(mod_code, name):
     temp = Assessment.objects.filter(module_id=mod_code,assessment_name=name)
@@ -58,7 +60,7 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_nam
     list = []
     if(temp):
         temp2 = LeafAssessment.objects.filter(assessment_id=temp[0], leaf_name=leaf_name_)
-        if(temp2)
+        if(temp2):
             list.append(temp2[0])
     return list
 
@@ -113,59 +115,86 @@ def getAllSessionsForModule(mod_code):
         for y in sessions:
             list.append(y)
     return list
-	
-def createSession(mod_code,assess_id, opentime, closetime ):
-	insertSessions(mod_code,assess_id,opentime,closetime)
 
-def closeSession(sess_id):
-	try:
-		sess = Sessions.objects.get(id=sess_id)
-		sess.setClose()
-	except Exception, e:
-		raise e
+def createSession(mod_code,assess_id, opentime, closetime ):
+    obj = insertSessions(mod_code,assess_id,opentime,closetime)
+    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
+
+def closeSession(request, sess_id):
+    try:
+        sess = Sessions.objects.get(id=sess_id)
+        old = sess.status
+        sess.setClose()
+        logAuditDetail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
+    except Exception, e:
+        raise e
 
 def openSession(sess_id):
-	try:
-		sess = Sessions.objects.get(id=sess_id)
-		sess.setOpen()
-	except Exception, e:
-		raise e
+    try:
+        sess = Sessions.objects.get(id=sess_id)
+        old = sess.status
+        sess.setOpen()
+        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
+    except Exception, e:
+        raise e
 
-def removeSession(sess_id):
+def removeSession(request,sess_id):
     try:
         MarkSess = MarkerSessions.objects.filter(id=sess_id)
 
         for x in MarkSess:
+            oldid0 = x.id
+            oldid1 = x.marker_id
+            oldid2 = x.session_id_id
             deleteMarkerSessions(x)
+            logAuditDetail(request,"Deleted marker session","delete","dbModels_markersessions","id",str(oldid1) + "," + str(oldid2),None,oldid0)
         sess = Sessions.objects.get(id=sess_id)
         MarkAlloc = MarkAllocation.objects.filter(session_id=sess)
 
         for x in MarkAlloc:
+            oldid = x.id
+            oldmark = x.mark
             deleteMarkAllocation(x)
+            logAuditDetail(request,"Deleted mark allocation","delete","dbModels_markallocation","id",oldmark,None,oldid)
 
-
+        old = sess.session_name
+        oldid = sess.id
         deleteSessions(sess)
+        logAuditDetail(request,"Deleted session","delete","dbModels_sessions","id",old,None,sess.id)
 
     except Exception, e:
         raise e
 
-def removeMarkerFromSession(sess_id, uid):
-	try:
-		MarkSess = MarkerSessions.objects.get(id=sess_id, marker_id=uid)
-		deleteMarkerSessions(MarkSess)
-	except Exception, e:
-		raise e	
+def removeMarkerFromSession(request, sess_id, uid):
+    try:
+        MarkSess = MarkerSessions.objects.get(id=sess_id, marker_id=uid)
 
-def removeMarkerFromModule(mod_code, uid):
+        oldid0 = MarkSess.id
+        oldid1 = MarkSess.marker_id
+        oldid2 = MarkSess.session_id_id
+        deleteMarkerSessions(MarkSess)
+        logAuditDetail(request,"Deleted marker session","delete","dbModels_markersessions","id",str(oldid1) + "," + str(oldid2),None,oldid0)
+    except Exception, e:
+        raise e	
+
+def removeMarkerFromModule(request, mod_code, uid):
     try:
         sessions = getAllSessionsForModule(mod_code)
         for x in sessions:
             MarkSess = MarkerSessions.objects.filter(id=x.getID(), marker_id=uid)
             for m in MarkSess:
-               deleteMarkerSessions(m)
+                oldid0 = m.id
+                oldid1 = m.marker_id
+                oldid2 = m.session_id_id
+                deleteMarkerSessions(m)
+                logAuditDetail(request,"Deleted marker session","delete","dbModels_markersessions","id",str(oldid1) + "," + str(oldid2),None,oldid0)
         marker = MarkerModule.objects.filter(marker_id=uid,module=mod_code)
         for x in marker:
+            oldid0 = x.id
+            oldid1 = x.marker_id
+            oldid2 = x.module_id
             deleteMarkerModule(x)
+            logAuditDetail(request,"Deleted marker module","delete","dbModels_markermodule","id",str(oldid1) + "," + str(oldid2),None,oldid0)
     except Exception, e:
 	   raise e	
 
@@ -181,11 +210,13 @@ def getSessionPerson(request):
   return getPersonFromArr(information)
 
 
-def setMarkerForModule(uid, mod_code):
-    insertMarkerModule(uid, mod_code)
+def setMarkerForModule(request, uid, mod_code):
+    obj = insertMarkerModule(uid, mod_code)
+    logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,obj.id)
 
-def setMarkerForSession(uid, session_id):
-    insertMarkSession(uid, session_id)
+def setMarkerForSession(request, uid, session_id):
+    obj = insertMarkSession(uid, session_id)
+    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.id)
 
 def getOpenSessions(assessment_id_):
     temp = Sessions.objects.filter(assessment_id_id=assessment_id_,status=1)
@@ -228,3 +259,7 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
     
     return totals
 
+def populateModules():
+    list = getAllModuleCodes()
+    for module in list:
+        insertModule(module)

@@ -1,0 +1,4 @@
+#!/bin/bash
+for command in "insert" "update" "delete"; do echo "insert into dbModels_auditaction (auditDesc) values (\"$command\");"; done > auditaction.sql
+echo "show tables" | mysql -N -proot hamsterMarking | grep dbModels | grep -v audit | while read table; do echo "insert into dbModels_audittable (tableName) values (\"$table\");"; done > audittable.sql
+echo "show tables" | mysql -N -proot hamsterMarking | grep dbModels | grep -v audit | while read table; do echo "select column_name from information_schema.columns where table_schema='hamsterMarking' and table_name='$table'" | mysql -N -proot information_schema | while read column; do echo "insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='$table'),'$column');"; done; done > audittablecolumn.sql
