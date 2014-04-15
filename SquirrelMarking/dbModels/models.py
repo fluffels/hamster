@@ -69,7 +69,7 @@ def getPersonFromArr(data):
 
 class Module(models.Model):
     code=models.CharField(max_length=100,primary_key=True)
-    def getModuleCode()
+    def getModuleCode():
 		return code
     def __unicode__(self):
         return self.code
@@ -180,6 +180,8 @@ class MarkerSessions(models.Model):
     def getMarker(self):
         return self.marker_id
     def getID(self):
+        return self.id
+    def getSessionID(self):
         return self.session_id
     def __unicode__(self):
         return "MarkerSessions"

@@ -86,64 +86,69 @@ def getAllAssementsForStudent(empl_no,mod_code):
             list.append(temp3)
     return list
 
-def getAllSessionsForModule(mod_code)
-	assessments = getAllAssessmentsForModule(mod_code)
-	list = []
-	for x in assessments
-		sessions = Session.object.filter(x)
-		list.append(sessions)
-	return list
+def getAllSessionsForModule(mod_code):
+    assessments = getAllAssessmentsForModule(mod_code)
+    list = []
+    for x in assessments:
+        sessions = Sessions.objects.filter(assessment_id=x)
+        for y in sessions:
+            list.append(y)
+    return list
 	
-def createSession(mod_code,assess_id, opentime, opentime, )
+def createSession(mod_code,assess_id, opentime, closetime ):
 	insertSessions(mod_code,assess_id,opentime,closetime)
 
-def closeSession(sess_id)
+def closeSession(sess_id):
 	try:
 		sess = Sessions.objects.get(id=sess_id)
 		sess.setClose()
-	except DoesNotException e:
+	except Exception, e:
 		raise e
 
-def openSession(sess_id)
+def openSession(sess_id):
 	try:
 		sess = Sessions.objects.get(id=sess_id)
 		sess.setOpen()
-	except DoesNotExist e:
+	except Exception, e:
 		raise e
 
-def removeSession(sess_id)
-	try:
-		MarkSess = MarkerSessions.objects.filter(id=sess_id)
-		
-		for x in MarkSess:
-			deleteMarkerSessions(x)
-		
-		sess = Sessions.objects.get(id=sess_id)
-		deleteSessions(sess)
-		
-	except DoesNotExist e
-		raise e
+def removeSession(sess_id):
+    try:
+        MarkSess = MarkerSessions.objects.filter(id=sess_id)
 
-def removeMarkerFromSession(sess_id, uid)
+        for x in MarkSess:
+            deleteMarkerSessions(x)
+        sess = Sessions.objects.get(id=sess_id)
+        MarkAlloc = MarkAllocation.objects.filter(session_id=sess)
+
+        for x in MarkAlloc:
+            deleteMarkAllocation(x)
+
+
+        deleteSessions(sess)
+
+    except Exception, e:
+        raise e
+
+def removeMarkerFromSession(sess_id, uid):
 	try:
 		MarkSess = MarkerSessions.objects.get(id=sess_id, marker_id=uid)
 		deleteMarkerSessions(MarkSess)
-	except DoesNotExist e
+	except Exception, e:
 		raise e	
 
-def removeMarkerFromModule(mod_code, uid)
-	try:
-		sessions = getAllSessionsForModule(mod_code)
-		
-		for x in sessions:
-			MarkSess = MarkerSessions.objects.filter(id=x.getID(), marker_id=uid)
-			for m in MarkSess:
-				deleteMarkerSessions(MarkSess)
-		marker = MarkerModule.object().get(marker_id=uid,module=mod_code)
-		deleteMarkerModule(marker)
-		
-	except DoesNotExist e
-		raise e	
+def removeMarkerFromModule(mod_code, uid):
+    try:
+        sessions = getAllSessionsForModule(mod_code)
+        for x in sessions:
+            MarkSess = MarkerSessions.objects.filter(id=x.getID(), marker_id=uid)
+            for m in MarkSess:
+               deleteMarkerSessions(m)
+        marker = MarkerModule.objects.filter(marker_id=uid,module=mod_code)
+        for x in marker:
+            deleteMarkerModule(x)
+    except Exception, e:
+	   raise e	
 
 def getAllAggregatedResultsForStudentOfModule(empl_no, mod_code, level):
   
