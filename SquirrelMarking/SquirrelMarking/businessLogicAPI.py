@@ -43,6 +43,25 @@ def getAllMarkersOfModule(mod_code):
         list.append(x.marker_id)
     return list
 
+def createAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_):
+    insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
+
+def createLeafAssessment(eaf_name_,assessment_id_,max_mark_):
+    insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
+
+def getAssessmentForModuleByName(mod_code, name):
+    temp = Assessment.objects.filter(module_id=mod_code,assessment_name=name)
+    return temp
+
+def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_):
+    temp = getAssessmentForModuleByName(mod_code, assess_name)
+    list = []
+    if(temp):
+        temp2 = LeafAssessment.objects.filter(assessment_id=temp[0], leaf_name=leaf_name_)
+        if(temp2)
+            list.append(temp2[0])
+    return list
+
 def getAllAssessmentsForModule(mod_code):
     temp= Assessment.objects.filter(module_id=mod_code)
     return temp
@@ -177,3 +196,35 @@ def getOpenSessions(assessment_id_):
     for x in temp:
         list.append(x)
     return list
+
+def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
+    leafs = getAllLeafAssessmentsForAssessment(assess_id)
+    listMark = []
+    for x in leafs:
+        
+        marks = MarkAllocation.objects().filter(leaf_id=x,student=uid)
+        if(marks):
+            listMark.append(x.getMax_mark())
+            listMark.append(marks[0].getMark())
+    
+    return listMark
+
+def getAllAssessmentTotalsForStudent(uid, mod_code):
+    assessments = getAllAssementsForStudent(uid,mod_code)
+    totals = []
+    for x in assessments:
+        leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
+        total = 0
+        mark = 0
+        counter = 0
+        for m in leafMarks:
+            counter = counter + 1
+            if (counter % 2 == 0):
+                totals = totals + m
+            else:
+                mark = mark + m 
+        totals.append(totals)
+        totals.append(marks)
+    
+    return totals
+

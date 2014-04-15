@@ -9,15 +9,23 @@ from businessLogicAPI import *
 def test(request):
     x2 = insertModule("COS301")
     x3 = insertAssessment('test','asdas',"type",x2)
-    x4 = insertSessions("test",x3,'2012-12-12 12:12','2015-12-12 12:12',1)
+    x4 = insertSessions("test",x3,'2012-12-12 12:12','2015-12-12 12:12')
     xx = insertMarkSession("u89000999",x4)
     x5 = insertMarkerModule("u89000999",x2)
     x6 = insertLeafAssessment("name",x3,100,True)
     x7 = insertMarkAllocation(x6,x3,20,x4,"asdsad","sadasd",'2012-12-12 12:12')
-    x8 = insertMarkerModule("asdasd",x2)
+    x8 = insertMarkerModule("u89000999",x2)
+    login(request,"u89000989","Flanigan")
+    p = getSessionPerson(request)
+    print (p.studentOf)
+    print (p.firstName)
+    removeMarkerFromModule("COS301","asdasd")
+    #removeSession(x4.getID())
+    print getAllSessionsForModule("COS301")
     return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
-def login(request):
+
+def loginData(request):
 	t = get_template('login.html')
 	html = t.render(Context())
 	return HttpResponse(html)
