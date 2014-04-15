@@ -69,6 +69,8 @@ def getPersonFromArr(data):
 
 class Module(models.Model):
     code=models.CharField(max_length=100,primary_key=True)
+    def getModuleCode()
+	return code
     def __unicode__(self):
         return self.code
 
@@ -126,17 +128,15 @@ def getAssessment():
 class Sessions(models.Model):
     session_name=models.CharField(max_length=100)
     assessment_id = models.ForeignKey(Assessment)
-    open = models.DateTimeField()
+    opened = models.DateTimeField()
     closed = models.DateTimeField()
-    status = models.BooleanField()
+    status = models.IntegerField()
     def setAssessmentID(self,id):
         self.assessment_id = id
-    def setOpen(self,open):
-        self.open = open
-    def setClosed(self,closed):
-        self.closed = closed
-    def setID(self,status):
-        self.status = status
+    def setOpen(self):
+        self.status = 1
+    def setClosed(self):
+        self.status = 2
     def setName(self,name):
         self.session_name = name
     #getters
@@ -156,8 +156,8 @@ class Sessions(models.Model):
 def deleteSessions(self):
     Sessions.delete(self)
 
-def insertSessions(assessment_id_,open_,closed_,status_):
-    temp = Sessions(assessment_id=assessment_id_,open=open_,closed=closed_,status=status_)
+def insertSessions(assessment_id_,open_,closed_):
+    temp = Sessions(assessment_id=assessment_id_,open=open_,closed=closed_,status=0)
     temp.save()
     return temp
 
@@ -198,7 +198,7 @@ class MarkerModule(models.Model):
     module= models.ForeignKey(Module)
     def __unicode__(self):
         return "MarkerModule"
-def deleteMarkerSessions(self):
+def deleteMarkerModule(self):
     MarkerModule.delete(self)
 
 def insertMarkerModule(marker_id_,module_):
