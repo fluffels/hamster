@@ -45,9 +45,6 @@ class Person:
     def __unicode__(self):
         return self.getfirstName()+" "+self.getsurname()+" "+self.getupId()
 
-def login(request, username, password):
-  personInfo = authenticateUser(username, password)
-
 def getPersonFromArr(data):
     objPerson = Person()
     objPerson.setfirstName(data["cn"])
