@@ -48,10 +48,6 @@ class Person:
 def login(request, username, password):
   personInfo = authenticateUser(username, password)
 
-def getSessionPerson(request):
-  information = request.session["user"]
-  return getPersonFromArr(information)
-
 def getPersonFromArr(data):
     objPerson = Person()
     objPerson.setfirstName(data["cn"])

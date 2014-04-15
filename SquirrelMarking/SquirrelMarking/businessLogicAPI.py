@@ -90,7 +90,7 @@ def getAllAggregatedResultsForStudentOfModule(empl_no, mod_code, level):
   return
 
 def login(request, username, password):
-  personInfo = authenticateUser(username, password)
+  authenticateUser(request,username, password)
 
 def getSessionPerson(request):
   information = request.session["user"]
