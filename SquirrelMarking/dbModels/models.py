@@ -70,7 +70,7 @@ def getPersonFromArr(data):
 class Module(models.Model):
     code=models.CharField(max_length=100,primary_key=True)
     def getModuleCode()
-	return code
+		return code
     def __unicode__(self):
         return self.code
 
@@ -133,9 +133,13 @@ class Sessions(models.Model):
     status = models.IntegerField()
     def setAssessmentID(self,id):
         self.assessment_id = id
+	def setOpenedDate(self, date):
+		self.opened = date
+	def setClosedDate(self, date):
+		self.closed = date
     def setOpen(self):
         self.status = 1
-    def setClosed(self):
+    def setClose(self):
         self.status = 2
     def setName(self,name):
         self.session_name = name
@@ -146,18 +150,18 @@ class Sessions(models.Model):
         return self.id
     def getAssessmentID(self):
         return self.assessment_id
-    def getClosed(self):
+    def getClosedDate(self):
         return self.closed
     def getStatus(self):
         return self.status
-    def getOpen(self):
-        return self.open
+    def getOpenedDate(self):
+        return self.opened
 
 def deleteSessions(self):
     Sessions.delete(self)
 
-def insertSessions(assessment_id_,open_,closed_):
-    temp = Sessions(assessment_id=assessment_id_,open=open_,closed=closed_,status=0)
+def insertSessions(session_name_, assessment_id_,opened_,closed_):
+    temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=0)
     temp.save()
     return temp
 

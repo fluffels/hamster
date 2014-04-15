@@ -1,5 +1,6 @@
 from dbModels.models import *
 from ldapView import *
+import datetime
 
 #general retrival functions
 
@@ -76,7 +77,7 @@ def getAllLeafAssessmentsForAssessment(assess_code):
   return temp
 
 def getAllAssementsForStudent(empl_no,mod_code):
-    temp= MarkAllocation.objects.filter(student=empl_no)
+    temp = MarkAllocation.objects.filter(student=empl_no)
     list = []
     for x in temp:
         temp2 = LeafAssessment.objects.filter(leaf_id=x.leaf_id)
@@ -154,3 +155,20 @@ def login(request, username, password):
 def getSessionPerson(request):
   information = request.session["user"]
   return getPersonFromArr(information)
+
+
+def setMarkerForModule(uid, mod_code):
+    insertMarkerModule(uid, mod_code)
+
+def setMarkerForSession(uid, session_id):
+    insertMarkSession(uid, session_id)
+
+def getOpenSessions(assessment_id_):
+    temp = Sessions.objects.filter(assessment_id_id=assessment_id_,status=1)
+    list = []
+    for x in temp:
+        list.append(x)
+    temp = Sessions.objects.filter(assessment_id_id=assessment_id_,opened__lte=datetime.datetime.now(),closed__gte=datetime.datetime.now(),status=0)
+    for x in temp:
+        list.append(x)
+    return list
