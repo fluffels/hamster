@@ -1,10 +1,17 @@
 from django.conf.urls import patterns, include, url
 from views import *
+from Android import userUrls, studentUrls, markerUrls
 
 urlpatterns = patterns('',
 	#home page
+	
 	(r'^$', loginWeb),
 	(r'^viewAssessments/$', viewAssessments),
+	(r'^test/$', test),
+	url(r'^Android/User/',include(userUrls)),
+	url(r'^Android/Student/',include(studentUrls)),
+	url(r'^Android/Marker/',include(markerUrls)),
+
 	#student report page
 	#~ (r'^studentReport/$', studentReport),
 	#~ #audit report page

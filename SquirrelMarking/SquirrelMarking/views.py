@@ -152,7 +152,7 @@ def test(request):
 	#print getAllOpenAssessmentsForModule("COS301")
 	#print getAuditLogFromTableName("MarkerSessions")
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
-<<<<<<< HEAD
+
 #def logout(request)
 
 def loginData(request):
@@ -161,9 +161,6 @@ def loginData(request):
 	return HttpResponse(html)
 
 	
-=======
-
->>>>>>> f561a58fed524d0f477015d17fa9a9b476fa289d
 def student_home(request):
 	t = get_template('student.html')
 	html = t.render(Context())

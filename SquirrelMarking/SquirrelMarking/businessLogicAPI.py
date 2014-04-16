@@ -391,7 +391,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 	list = getOpenSessions(assessment_id_)
 	listy = []
 	for x in list:
-		markerS =MarkerSessions.objects.filter(marker_id=marker_id_, session_id =x))
+		markerS =MarkerSessions.objects.filter(marker_id=marker_id_, session_id =x)
 		for m in markerS:
 			listy.append(m.getSessionID())
 	return listy
