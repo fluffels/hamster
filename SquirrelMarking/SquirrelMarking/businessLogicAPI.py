@@ -127,9 +127,9 @@ def getAllOpenAssessmentsForModule(mod_code):
     temp=Assessment.objects.filter(module_id=mod_code)
     list =[]
     for x in temp:
-        temp2=Sessions.objects.filter(assessment_id=x.assessment_id,status=True)#implement
-        if temp2:
-            list.append(temp2)
+        temp2=getOpenSessions(x.id)
+        for item in temp2:
+            list.append(item)
     return list
 
 # Name:
