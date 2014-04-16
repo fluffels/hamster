@@ -136,9 +136,9 @@ def getAllOpenAssessmentsForModule(mod_code):
     temp=Assessment.objects.filter(module_id=mod_code)
     list =[]
     for x in temp:
-        temp2=Sessions.objects.filter(assessment_id=x.assessment_id,status=True)#implement
-        if temp2:
-            list.append(temp2)
+        temp2=getOpenSessions(x.id)
+        for item in temp2:
+            list.append(item)
     return list
 
 # Name: getAllModulesForStudent(uid)
@@ -490,53 +490,76 @@ def removeMarkAlloccation(markAlloc_id):
 # Parameter: 
 # Return: 
 def getAssessmentFromID(row_id):
-        result = Assessment.objects.get(id=row_id)
-        return result
+        return Assessment.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getLeafAssessmentFromID(row_id):
-        result = LeafAssessment.objects.get(id=row_id)
-        return result
+        return LeafAssessment.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getMarkAllocationFromID(row_id):
-        result = MarkAllocation.objects.get(id=row_id)
-        return result
+        return MarkAllocation.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getMarkerModuleFromID(row_id):
-        result = Markermodule.objects.get(id=row_id)
-        return result
+        return Markermodule.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getMarkerSessionsFromID(row_id):
-        result = Markersessions.objects.get(id=row_id)
-        return result
+        return Markersessions.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getModuleFromID(row_id):
-        result = Module.objects.get(id=row_id)
-        return result
+        return Module.objects.get(id=row_id)
 
 # Name:
 # Description:
 # Parameter: 
 # Return: 
 def getSessionsFromID(row_id):
-        result = Sessions.objects.get(id=row_id)
-        return result
+        return Sessions.objects.get(id=row_id)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromID(row_id):
+    return AuditLog.objects.get(id=row_id)
+
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromAction(action):
+    actionObj = AuditAction.objects.get(auditDesc=action)
+    return AuditLog.objects.filter(action=actionObj)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromUsername(username):
+    return AuditLog.objects.filter(user_id=username)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromTimeRange(fromTime, toTime):
+    return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
