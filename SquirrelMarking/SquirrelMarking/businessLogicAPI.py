@@ -302,3 +302,31 @@ def updateMarkAllocation(request, markAlloc_id, mark):
         logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.mark,markAlloc.id)
     except Exception, e:
         raise e
+
+def getAssessmentFromID(row_id):
+        result = Assessment.objects.get(id=row_id)
+        return result
+
+def getLeafAssessmentFromID(row_id):
+        result = LeafAssessment.objects.get(id=row_id)
+        return result
+
+def getMarkAllocationFromID(row_id):
+        result = MarkAllocation.objects.get(id=row_id)
+        return result
+
+def getMarkerModuleFromID(row_id):
+        result = Markermodule.objects.get(id=row_id)
+        return result
+
+def getMarkerSessionsFromID(row_id):
+        result = Markersessions.objects.get(id=row_id)
+        return result
+
+def getModuleFromID(row_id):
+        result = Module.objects.get(id=row_id)
+        return result
+
+def getSessionsFromID(row_id):
+        result = Sessions.objects.get(id=row_id)
+        return result

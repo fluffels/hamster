@@ -32,6 +32,7 @@ def test(request):
 	removeMarkerFromModule(request,"COS301","u89000999")
 	setMarkerForModule(request,"u89000999",x2)
 	print getSessionByName("COS301","test")
+	print getMarkAllocationFromID(2)
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
 
