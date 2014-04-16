@@ -599,7 +599,7 @@ def getAuditLogFromTimeRange(fromTime, toTime):
 def getStudentsForASession(sess_id_):
 	temp = StudentSessions.objects.filter(sess_id=sess_id_)
 	list = []
-	for x in temp
+	for x in temp:
 		list.append(temp.getStudent_id())
 	return list
 
@@ -614,16 +614,17 @@ def addStudentToSession(uid, sess_id):
 # Description: removes the student from the session
 # Parameter: uid:string, sess_id_:session Object
 # Return:  None
-def removeStudentFromSession(uid, sess_id_)
+def removeStudentFromSession(uid, sess_id_):
 	try:
 		stsess = StudentSessions.objects.get(sess_id=sess_id_, student_id=uid)
 		deleteStudentSessions(stsess)
-	except: Exception, e
+	except Exception, e:
 		raise e
 # Name:
 # Description:
 # Parameter: 
 # Return: 
+
 def getAuditLogFromTableName(tableName_):
     mymodel = get_model('dbModels', tableName_)
     if (mymodel):
