@@ -1,5 +1,6 @@
 from dbModels.models import *
 from ldapView import *
+from django.db.models import get_model
 import datetime
 
 #general retrival functions
@@ -563,3 +564,18 @@ def getAuditLogFromUsername(username):
 # Return: 
 def getAuditLogFromTimeRange(fromTime, toTime):
     return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromTableName(tableName_):
+    mymodel = get_model('dbModels', tableName_)
+    if (mymodel):
+        table = AuditTable.objects.get(tableName=mymodel._meta.db_table)
+        if (table):
+            return AuditLog.objects.filter(audit_table_id=table)
+        else:
+            raise Exception("Table " + mymodel._meta.db_table + " is not being tracked by the audit log")
+    else:
+        raise Exception("Table " + tableName_ + " does not exist")

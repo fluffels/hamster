@@ -184,14 +184,14 @@ class StudentSessions(models.Model):
 	student_id = models.CharField(max_length=100)
 	def getSess_id(self):
 		return self.sess_id
-	def getStudent_id(self)
+	def getStudent_id(self):
 		return self.student_id
 
-def insertStudentSessions(sess_id_, uid)
+def insertStudentSessions(sess_id_, uid):
 	temp = StudentSessions(sess_id = sess_id, student_id=uid)
 	temp.save()
 
-def deleteStudentSessions(self)
+def deleteStudentSessions(self):
 	StudentSessions.delete(self)
 
 class MarkerSessions(models.Model):

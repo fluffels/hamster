@@ -34,6 +34,8 @@ def test(request):
 	#print getSessionByName("COS301","test")
 	#print getMarkAllocationFromID(2)
 	getAuditLogFromTimeRange('2012-12-12 12:12','2015-12-12 12:12')
+	print getAllOpenAssessmentsForModule("COS301")
+	print getAuditLogFromTableName("MarkerSessions")
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
 
