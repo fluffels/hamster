@@ -1,59 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8" lang="English-US">
-<style >
-#main-menu{	margin:auto; width:80%;	background-color:#E1DFD9;	}
+{% extends "base.html" %}
 
-#menu-pane{	margin:auto; width:85%;}
+{% block title %}Marks Management{% endblock %}
 
-ul{list-style-type:none;margin:0;padding:0;	overflow:hidden;}
+{% block includes %}
+	<link href="{{ STATIC_URL }}/static/css/marks.css" rel="stylesheet" type="text/css" />
+	<script src="{{ STATIC_URL }}/static/js/marks.js" type="text/javascript"></script>
+{% endblock %}
 
-.pane{float:left;}
+{% block menu_shortcuts %}
+<!--add menu shorxcut -->
+{% endblock %}
+{% block content_title %}<h1 align="center">Marks Management</h1>{% endblock %}
 
-span{display:block;	width:170px;font-weight:bold;color:#FFFFFF;
-background-color:#4D79A3;text-align:center;	padding:8px;
-text-decoration:none;text-transform:uppercase;}
-
-h1{text-alight: right}
-
-#marksheet{	margin:auto;width:86%;border: 2;}
-
-#marksheetTable tr td{text-align:center;width: 170px;padding:8px;}
-
-tr:nth-child(even) {background: #CCC}
-
-tr:nth-child(odd) {background: #FFF}
-
-#submit{padding:4px;margin:4px;background-color:#4D79A3; width: 170px;
- height: 50px;font-weight:bold;color:#FFFFFF;text-align:center;	padding:8px;
-text-decoration:none;text-transform:uppercase;}
-
-#filter{margin:auto;	width:85%;}	
-
-select{padding:4px;margin:8px;}
-
-#right{top:1;float:right;width:20%;height:500px;	background-color:red;}
-</style>
-
-<title>Home</title>
-
-</head>
-
-<body>
-
+{% block content %}
 	<div id="main-menu">
-	
-		<h1 align="center">Marks Management</h1>
+			
 		<div id="menu-pane">
 			<div id="filter">
 				Course:<select>
-				  <option value="Lecture">COS 301</option>
-				  <option value="Marker">COS 332</option>
-				  <option value="Student">COS 330</option>
-				  <option value="Lecture">COS 314</option>
-				  <option value="Marker">COS 333</option>
-				  <option value="Student">COS 344</option>
+				{% for course in courses.courseList %}
+					<option value="Lecture"> Cos {{ courses.moduleCode.0}}</option>
+				{% endfor%}
+				
 				</select>
 				Assesment:<select>
 				  <option value="Lecture">Semester test</option>
@@ -67,17 +35,19 @@ select{padding:4px;margin:8px;}
 				</select>
 				
 				<button type="button" id="go"> GO!</button>
+				<button type="button" id="publish"><a href="/unpublish/">Publish Marks</a></button>
 			</div>
 			<br>
-			<ul id="menu-pane">
+			<!--<ul id="menu-pane">
 			<li class="pane"><span>Surname, Initials</span></li>
 			<li class="pane"><span>Student #</span></li>
 			<li class="pane"><span>Weight</span></li>
 			<li class="pane"><span>Mark</span></li>
-			</ul>
+			</ul>-->
 			
 			<form id="marksheet" name="marksheet">
 				<table id="marksheetTable" >
+					<tr id="thead"><th>Surname, Initials</th><th>Student #</th><th>Weight</th><th>Mark</th></tr>
 					<tr><td >Mphabantshi, C</td><td>10404687</td><td>100</td><td contenteditable="true">99</td></tr>
 					<tr><td>Banchi, OKK</td><td>10405587</td><td>100</td><td contenteditable="true">68</td></tr>
 					<tr><td>Mickey, UU</td><td>10498562</td><td>100</td><td contenteditable="true">86</td></tr>
@@ -90,14 +60,10 @@ select{padding:4px;margin:8px;}
 					<tr><td>Roling, TJ</td><td>13856687</td><td>100</td><td contenteditable="true">56</td></tr>
 				</table>
 				<br>
-				<button type="button" id="submit"> Submit Changes</button>
+				<button type="button" onclick="myFunction()" id="submit"> Submit Changes</button>
 				<br>
 			</form>
 		</div>
 	
 	</div>
-	
-	
-</body>
-
-</html>
+{% endblock %}

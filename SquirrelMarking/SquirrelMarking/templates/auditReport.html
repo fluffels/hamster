@@ -1,12 +1,22 @@
 <div class="displayContainerClass" id="stuRepSearch" >
 	<div id="auditLogReportContainer">
+		<div id="filters">
+			<label id="dateFrom"> Date From: </label> <input  type="date" name="bday" placeholder="YYYY-MM-DD"><br>
+			<label id="dateTo"> Date To: </label> <input type="date" name="bday" placeholder="YYYY-MM-DD"><br>
+			<label id="person"> Person: </label> <input type="text" name="Person" placeholder="Name or upID"><br><br>
+			<input class="renderButton" type="button" value="Filter Audit Log" id="displayAuditLog">
+		</div>
 		<!-- Plug in audit log -->
-		<!-- Dummy Data ... -->
-		<div id="auditlogList" style="width:700px; text-align:center">
+		<div id="auditlogList" style="width:700px;text-align:center">
 			<h1> Audit Log </h1>
-			<div id="auditReportDisaply">
-				 <img src="{{ STATIC_URL }}/static/img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
+			<div id="auditReportDisplay">
+				<img src="{{ STATIC_URL }}/static/img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
 			</div>
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function(){
+		
+	});
+</script>

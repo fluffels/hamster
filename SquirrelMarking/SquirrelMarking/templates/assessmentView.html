@@ -1,15 +1,30 @@
+<!--Add javascript at menu bar -->
 {% extends "base.html" %}
 
 {% block title %}Squirrel Marking - Assessment View{% endblock %}
 
-{% block menu_shortcuts %}{% endblock %}
-{% block content_title %}<h1 id="content_title">Assessment View</h1>{% endblock %}
+{% block menu_shortcuts %}
+	<ul id="menu-bar">
+	<li><a href="">Home</a></li>
+	<li><a href="">Reporting</a></li>
+	<li><a href="">Marks Management</a>
+		<ul>
+			<li><a href="/assessmentManager/">Create/Edit Assessment</a></li>
+		</ul>
+	</li>
+	</ul>
+{% endblock %}
+{% block content_title %}
+	<h1 id="content_title">Assessment View</h1>
+{% endblock %}
+{% block includes %}
+	 <link href="{{ STATIC_URL }}/static/css/assessmentView.css" rel="stylesheet" type="text/css" />
+	 <script src="{{ STATIC_URL }}/static/js/jquery-1.9.1.min.js"></script>
+	<script src="{{ STATIC_URL }}/static/js/jquery.mobile-1.4.2.min.js"></script>
+	<script src="{{ STATIC_URL }}/static/js/assessmentView.js"></script>
+{% endblock %}
 {% block content %}
-<a href="/assessmentManager/">Create/Edit Assessment</a>
-</br>
-<ul id="list">
-
-</ul>
-</br>
-
+    <div role="main" class="ui-content">
+        <div id="menu-content"></div>
+    </div>
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Hamster Marking - User{% endblock %}
+{% block menu_shortcuts %}{% endblock %}
+
+{% block content_title %}<h1 id="content_title">User courses</h1>{% endblock %}
+{% block content %}
+
+
+<h3>Welcome {{ person.firstName.0 }} {{ person.surname.0 }}</h3>
+	{% if person.studentOf %}
+		<h4>Student Courses</h4>
+		<ul>
+		{% for module in person.studentOf %}
+			<li id="course/{{ module.code }}">{{ module }}</li>
+		{% endfor %}
+		</ul>
+		<br />
+	{% endif %}
+	
+	{% if person.tutorOf %}
+		<h4>Tutor Courses</h4>
+		<ul>
+		{% for module in person.tutorOf %}
+			<li id="course/{{ module.code }}">{{ module }}</li>
+		{% endfor %}
+		</ul>	
+		<br />
+	{% endif %}
+	{% if person.teachingAssistantOf %}
+		<h4>Teaching Assistant Courses</h4>
+		<ul id="ta">
+		{% for module in person.teachingAssistantOf %}
+			<li id="course/{{ module.code }}">{{ module }}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+	
+		
+{% endblock %}

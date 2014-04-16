@@ -1,19 +1,20 @@
-<!DOCTYPE html>
-<html>
-	<body>
-		<h3> Student Details </h3>
-		<div id= "stuDetails">
-			<br>
-			<label> Name: Daniel</label><br>
-			<label> Surname: Makgonta</label><br>
-			<label> Student Number: 12147100</label>
-		</div>
-		<br><br>
-		<div id="stuStats">
-			<label> <strong> Student Statistics </strong> </label><br>
-			<label> Class Tests: 97%</label><br>
-			<label> Practicals: 45%</label><br>
-			<label> Semester Tests: 56%</label><br>
-		</div>
-	</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Student{% endblock %}
+
+{% block includes %}
+	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
+{% endblock %}
+{% block content %}
+	<div>
+	<h3> Student Details </h3>
+	<label> Student Name:{{ stu_name}} </label> <br>
+	<label> Student Surname: {{ stu_surname }} </label> <br>
+	<label> Student Number: {{ stu_num }} </label> <br>
+	{% for assessment in assessments %}
+		<label> Mean: {{ mean }}  </label> <br>
+		<label> Median:{{ median }}  </label> <br>
+		<label> Mode:{{ mode }}  </label> <br>					 
+	{% endfor %}
+	</div>
+{% endblock %}

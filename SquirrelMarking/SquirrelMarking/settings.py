@@ -99,7 +99,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-	"C:/Mini-Project/SquirrelMarking/static",
+	"static",
 	)
 STATICFILES_FINDER = (
 	'django.contrib.staticfiles.finders.FileSystemFinder',

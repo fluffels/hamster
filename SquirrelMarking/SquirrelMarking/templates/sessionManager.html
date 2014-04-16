@@ -2,19 +2,30 @@
 
 {% block title %}Squirrel Marking - Assessment View{% endblock %}
 
-{% block menu_shortcuts %}{% endblock %}
-{% block content_title %}<h1 id="content_title">Session Manager</h1>{% endblock %}
-{% block content %}
-Assessment:
-<select id="assessments">
+{% block menu_shortcuts %}
+<!--add menu shortcut -->
+{% endblock %}
+{% block content_title %}
+	<h1 id="content_title">Session Manager</h1>
+{% endblock %}
 
-</select>
-</br>
-Open date:<input type="date" id="date">
-</br>
-Close date:<input type="date" id="date">
-</br>
-Add marker:<input type="text" id="marker"><input type="button" value="add" id="add">
-</br>
-<a href="">Add student list</a>
+{% block includes %}
+	<link href="{{ STATIC_URL }}/static/css/inputStyle.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+	Assessment:
+	<select id="assessments" class="input"></select>
+	</br></br>
+	<div id="panel">
+		Open date:<input type="date" id="date" class="input">
+		</br>
+		Close date:<input type="date" id="date" class="input">
+		</br>
+		Add marker:<input type="text" id="marker" class="input"><input type="button" value="add" id="add">
+		</br>
+		<a href="">Add student list</a>
+	</div>
+	</br>
+	<a href="/assessmentManager/">Assessment Manager</a>
 {% endblock %}

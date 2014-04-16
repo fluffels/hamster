@@ -1,44 +1,128 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<script src="{{ STATIC_URL }}/static/js/jquery.js"></script>
-		<script>
-			$(document).ready(function(){
+{% extends "base.html" %}
+
+{% block title %}Reporting{% endblock %}
+
+{% block includes %}
+	<script src="{{ STATIC_URL }}/static/js/jquery.js"></script> 
+	<script>
+		$(document).ready(function(){
 			
-				$('#containerDisplay').load('Statistics.html');
-				
-				$('#assessReport').click(function(){
-					$('#containerDisplay').load('Statistics.html');
-				});
-				
-				$('#studentReport').click(function(){
-					$('#containerDisplay').load('studentReport.html');
-				});
-				
-				$('#auditReport').click(function(){
-					$('#containerDisplay').load('auditReport.html');
-				});
-				
-				$('#searchBtn').click(function(){
-					$('#list').load('studentChosen.html');
-				});
+			$('#containerDisplay').load('assessmentReport.html');
+			
+			$('#renderingOptions').hide();
+			
+			$('.ReportingOptions a').click(function(){
+				return false;
 			});
-		</script>
-		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">
-	</head>
-	<body>
-		<div class="reports" id="reportingContainer">
-			<div id="reportingMenu">
-				<h2> Reporting Types </h2>
-				<div id="options">
-					<input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"> <br><br>
-					<input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"> <br><br>
-					<input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"> <br>
-				</div>
+			
+			$('#assessReport').click(function(){
+				$('#renderingOptions').hide();
+				$('#containerDisplay').load('assessmentReport.html');
+			});
+			
+			$('#studentReport').click(function(){
+				$('#containerDisplay').load('studentReport.html');
+				$('#renderingOptions').show();
+			});
+			
+			$('#auditReport').click(function(){
+				$('#containerDisplay').load('auditReport.html');
+				$('#renderingOptions').show();
+			});
+			
+			$('#searchBtn').click(function(){
+				$('#list').load('studentChosen.html');
+			});
+			
+			$('#SaveAsPDFBtn').click(function(){
+				//implement code here
+			});
+			
+			$('#SaveAsCVSBtn').click(function(){
+				//implement code here
+			});
+			
+			$('#allRequest').click(function(){
+				if(this.checked) { 
+					$('.allradio').each(function() { 
+						this.checked = false;             
+					});
+				}else{
+					$('.allradio').each(function() { 
+						this.checked = true;                      
+					});        
+				}
+			});
+			
+			$('#submitRequestButton').click(function(){
+				$('#containerDisplay').load('Statistics.html');
+			});
+		});
+	</script>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
+{% endblock %}
+	
+{% block menu_shortcuts %}
+<!-- add shortcut menu -->
+{% endblock %}
+
+{% block content_title %}<h1 align="center">Reporting</h1>{% endblock %}
+{% block content %}
+	<div class="reports" id="reportingContainer">
+		<div id="reportingMenu">
+			<h2> Reporting Types </h2>
+			<div id="options" class='ReportingOptions'>
+				<a href='#'><input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"></a> <br><br>
+				<a href='/studentReport/'><input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"></a><br><br>
+				<a href='#'><input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"></a><br>
 			</div>
 		</div>
-		<div id='containerDisplay'>
-			
+	</div>
+	<div id='containerDisplay' class="displayContainerClass" style="width:415px;">
+		<div id="AssessmentReportContainer">
+			<h2> Assessment Report </h2>
+			<div id="moduleMarkContainer">
+				<input id="moduleMark" type='button' class="submitButtons" name='moduleMark' value="Module Mark">
+			</div>
+			<div id="examMarkContainer">
+				<input id="examMark" type='button' class="submitButtons" name='examMark' value="Exam Mark">
+			</div>
+			<div id="semesterMarkContainer">
+				<input id="semesterMark" type='button' class="submitButtons" name='semesterMark' value="Semester Mark">
+			</div>
+			<div id="semesterTestContainer">
+				<h3 class="AssessmentTitle"> Semester Tests: </h3>
+				<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST1
+				<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST2
+			</div>
+			<div id="classTestContainer">
+				<h3 class="AssessmentTitle"> Class Tests: </h3>
+				<input class='allradio' type="radio" name="leafAssessment" value="CT1">CT1
+				<input class='allradio' type="radio" name="leafAssessment" value="CT2">CT2
+				<input class='allradio' type="radio" name="leafAssessment" value="CT3">CT3
+				<input class='allradio' type="radio" name="leafAssessment" value="CT4">CT4
+			</div>
+			<div id="tutorialTestContainer">
+				<h3 class="AssessmentTitle"> Tutorial Tests: </h3>
+				<input class='allradio' type="radio" name="leafAssessment" value="TUT1">TUT1
+				<input class='allradio' type="radio" name="leafAssessment" value="TUT2">TUT2
+				<input class='allradio' type="radio" name="leafAssessment" value="TUT3">TUT3
+				<input class='allradio' type="radio" name="leafAssessment" value="TUT4">TUT4
+			</div>
+			<div id="practicalTestContainer">
+				<h3 class="AssessmentTitle"> Practical Tests: </h3>
+				<input class='allradio' type="radio" name="leafAssessment" value="P1">P1
+				<input class='allradio' type="radio" name="leafAssessment" value="CT2">P2
+				<input class='allradio' type="radio" name="leafAssessment" value="CT3">P3
+				<input class='allradio' type="radio" name="leafAssessment" value="CT4">P4
+			</div>
+			<br>
+			<input id='submitRequestButton' type='button' class="submitButtons" name='SubmitAssessmentRequest' value="Submit Request">
 		</div>
-	</body>
-</html>
+	</div>
+	<div id="renderingOptions">
+		<h3> Rendering options </h3>
+		<div id="renderAsPDF"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsPDf" type="button" value="Save as PDF"> </div><br>
+		<div id="renderAsCSV"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsCSV" type="button" value="Save as CSV"> </div>
+	</div>
+{% endblock %}

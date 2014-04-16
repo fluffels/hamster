@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link href="{{ STATIC_URL }}/static/css/style.css" rel="stylesheet" type="text/css" />
 		<title>{% block title %}{% endblock %}</title>
+		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
+		<link href="{{ STATIC_URL }}css/menubar.css" rel="stylesheet" type="text/css" />
+		{% block includes %}{% endblock %}
+		<meta http-equiv="cache-control" content="max-age=0" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
 	</head>
-
 	<body>
-		
 		<header>
 			<div id="logo">
-				<img id="logo_img" src="{{ STATIC_URL }}/static/img/logo.jpg" height="50%" width="50%" alt="Squirrel Marking Logo">
+				<img id="logo_img" src="{{ STATIC_URL }}img/logo.jpg" alt="Hamster Marking Logo">
 			</div>
 			<div id="menu_shortcuts">
 				{% block menu_shortcuts %}{% endblock %}
 			</div>
 		</header>
-		
 		<nav>
 			<div id="content_title">
 				{% block content_title %}{% endblock %}
