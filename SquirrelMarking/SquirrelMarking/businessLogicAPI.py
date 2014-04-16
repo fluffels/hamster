@@ -4,38 +4,69 @@ import datetime
 
 #general retrival functions
 
+# Name: getAllModules()
+# Description: Returns all the module objects
+# Parameter: 
+# Return: Module[]
 def getAllModules():
     return Module.objects.all()
 
-#module specific retrival functions
+# Name: getPersonListFromArrayList(list)
+# Description: Returns a list of Person objects constructed from a list of Person id's
+# Parameter: list: UP_ID[]
+# Return: Person[]
 def getPersonListFromArrayList(list):
     returnlist = []
     for item in list:
         returnlist.append(getPersonFromArr(constructPersonDetails(item)))
     return returnlist
 
+# Name: getAllLecturesOfModule(mod_code)
+# Description: Returns the lecturers of a module
+# Parameter: mod_code : String
+# Return: Person[]
 def getAllLecturesOfModule(mod_code):
     list = getLecturorsOf(mod_code)
     return getPersonListFromArrayList(list)
 
+# Name: getAllStudentsOfModule(mod_code
+# Description: Returns all the students enrolled in a module
+# Parameter: mod_code : String
+# Return: Person[]
 def getAllStudentsOfModule(mod_code):
     list = getStudentsOf(mod_code)
     return getPersonListFromArrayList(list)
 
+# Name: getAllTAsOfModule(mod_code)
+# Description: Returns all the TA's assigned to a module
+# Parameter: mod_code : String
+# Return: 
 def getAllTAsOfModule(mod_code):
     list = getTAsOf(mod_code)
     return getPersonListFromArrayList(list)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllNamesOf(listy):
     list = []
     for x in listy:
         list.append(x.getfirstName())
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllTutorsOfModule(mod_code):
     list = getTutorsOf(mod_code)
     return getPersonListFromArrayList(list)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllMarkersOfModule(mod_code):
     temp = MarkerModule.objects.filter(module=mod_code)
     list =[]
@@ -43,18 +74,34 @@ def getAllMarkersOfModule(mod_code):
         list.append(x.marker_id)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
     obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def createLeafAssessment(request, eaf_name_,assessment_id_,max_mark_):
     obj = insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
     logAudit(request,"Inserted new leaf assessment","insert","dbModels_leafassessment","id",None,obj.id)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAssessmentForModuleByName(mod_code, name):
     temp = Assessment.objects.filter(module_id=mod_code,assessment_name=name)
     return temp
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_):
     temp = getAssessmentForModuleByName(mod_code, assess_name)
     list = []
@@ -64,10 +111,18 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_nam
             list.append(temp2[0])
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllAssessmentsForModule(mod_code):
     temp= Assessment.objects.filter(module_id=mod_code)
     return temp
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllOpenAssessmentsForModule(mod_code):
     temp=Assessment.objects.filter(module_id=mod_code)
     list =[]
@@ -77,9 +132,17 @@ def getAllOpenAssessmentsForModule(mod_code):
             list.append(temp2)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllModulesForStudent(uid):
     return sourceEnrollments(uid)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllModulesForMarker(empl_no):
     temp = MarkerModule.objects.filter(marker_id=empl_no)
     list =[]
@@ -89,14 +152,26 @@ def getAllModulesForMarker(empl_no):
             list.append(temp2)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllModulesForLecturer(uid):
     return sourceLecturerDesignations(uid)
 
 #Assessment specific retrival functions
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllLeafAssessmentsForAssessment(assess_code):
   temp = LeafAssessment.objects.filter(assessment_id=assess_code)
   return temp
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllAssementsForStudent(empl_no,mod_code):
     temp = MarkAllocation.objects.filter(student=empl_no)
     list = []
@@ -107,6 +182,10 @@ def getAllAssementsForStudent(empl_no,mod_code):
             list.append(temp3)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllSessionsForModule(mod_code):
     assessments = getAllAssessmentsForModule(mod_code)
     list = []
@@ -116,10 +195,18 @@ def getAllSessionsForModule(mod_code):
             list.append(y)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def createSession(mod_code,assess_id, opentime, closetime ):
     obj = insertSessions(mod_code,assess_id,opentime,closetime)
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def closeSession(request, sess_id):
     try:
         sess = Sessions.objects.get(id=sess_id)
@@ -129,6 +216,10 @@ def closeSession(request, sess_id):
     except Exception, e:
         raise e
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def openSession(sess_id):
     try:
         sess = Sessions.objects.get(id=sess_id)
@@ -138,6 +229,10 @@ def openSession(sess_id):
     except Exception, e:
         raise e
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def removeSession(request,sess_id):
     try:
         MarkSess = MarkerSessions.objects.filter(id=sess_id)
@@ -165,6 +260,10 @@ def removeSession(request,sess_id):
     except Exception, e:
         raise e
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def removeMarkerFromSession(request, sess_id, uid):
     try:
         MarkSess = MarkerSessions.objects.get(id=sess_id, marker_id=uid)
@@ -177,6 +276,10 @@ def removeMarkerFromSession(request, sess_id, uid):
     except Exception, e:
         raise e	
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def removeMarkerFromModule(request, mod_code, uid):
     try:
         sessions = getAllSessionsForModule(mod_code)
@@ -198,26 +301,50 @@ def removeMarkerFromModule(request, mod_code, uid):
     except Exception, e:
 	   raise e	
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllAggregatedResultsForStudentOfModule(empl_no, mod_code, level):
   
   return
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def login(request, username, password):
   authenticateUser(request,username, password)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getSessionPerson(request):
   information = request.session["user"]
   return getPersonFromArr(information)
 
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def setMarkerForModule(request, uid, mod_code):
     obj = insertMarkerModule(uid, mod_code)
     logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,obj.id)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def setMarkerForSession(request, uid, session_id):
     obj = insertMarkSession(uid, session_id)
     logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.id)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getOpenSessions(assessment_id_):
     temp = Sessions.objects.filter(assessment_id_id=assessment_id_,status=1)
     list = []
@@ -228,6 +355,10 @@ def getOpenSessions(assessment_id_):
         list.append(x)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
@@ -240,6 +371,10 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     
     return listMark
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAllAssessmentTotalsForStudent(uid, mod_code):
     assessments = getAllAssementsForStudent(uid,mod_code)
     totals = []
@@ -259,11 +394,19 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
     
     return totals
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def populateModules():
     list = getAllModuleCodes()
     for module in list:
         insertModule(module)
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def searchBySurname(surname):
     list = findPerson("sn",surname)
     newlist = []
@@ -271,6 +414,10 @@ def searchBySurname(surname):
         newlist.append(getPersonFromArr(list[uid]))
     return newlist
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def searchByName(surname):
     list = findPerson("sn",surname)
     newlist = []
@@ -278,6 +425,10 @@ def searchByName(surname):
         newlist.append(getPersonFromArr(list[uid]))
     return newlist
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getSessionByName(mod_code, name):
     assessments = getAllAssessmentsForModule(mod_code)
     list = []
@@ -287,6 +438,10 @@ def getSessionByName(mod_code, name):
             list.append(y)
     return list
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
     leaf = LeafAssessment.objects.get(id=leaf_id)
     session = Sessions.objects.get(id=session_id)
@@ -294,6 +449,10 @@ def createMarkAllocation(request, leaf_id, session_id, marker, student, timestam
     logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
     return obj.id
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def updateMarkAllocation(request, markAlloc_id, mark):
     try:
         markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
@@ -303,6 +462,10 @@ def updateMarkAllocation(request, markAlloc_id, mark):
     except Exception, e:
         raise e
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def removeMarkAlloccation(markAlloc_id):
     try:
         markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
@@ -313,30 +476,58 @@ def removeMarkAlloccation(markAlloc_id):
     except Exception, e:
         raise e
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getAssessmentFromID(row_id):
         result = Assessment.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getLeafAssessmentFromID(row_id):
         result = LeafAssessment.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getMarkAllocationFromID(row_id):
         result = MarkAllocation.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getMarkerModuleFromID(row_id):
         result = Markermodule.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getMarkerSessionsFromID(row_id):
         result = Markersessions.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getModuleFromID(row_id):
         result = Module.objects.get(id=row_id)
         return result
 
+# Name:
+# Description:
+# Parameter: 
+# Return: 
 def getSessionsFromID(row_id):
         result = Sessions.objects.get(id=row_id)
         return result
