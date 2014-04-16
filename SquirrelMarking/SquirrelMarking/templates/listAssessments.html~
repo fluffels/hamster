@@ -1,0 +1,3 @@
+{% for Assessment in Assessments %}
+	<li class="Assessment">{{ Assessment }}	</li>
+{% endfor %}

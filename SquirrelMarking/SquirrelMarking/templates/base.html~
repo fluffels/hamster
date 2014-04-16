@@ -44,7 +44,7 @@
 	<body>
 		<header>
 			<div id="logo">
-				<img id="logo_img" src="{{ STATIC_URL }}img/logo.jpg" height="98px" alt="Hamster Marking Logo">
+				<img id="logo_img" src="{{ STATIC_URL }}img/logo.jpg" alt="Hamster Marking Logo">
 			</div>
 			<div id="menu_shortcuts">
 				{% block menu_shortcuts %}{% endblock %}

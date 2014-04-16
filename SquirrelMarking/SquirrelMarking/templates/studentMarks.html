@@ -41,38 +41,38 @@
 			
 		<div id="menu-pane">
 			<div id="filter">
-				Course:<select>
+				Module:<select>
 				{% for course in courses.courseList %}
 					<option value="Lecture"> Cos {{ courses.moduleCode.0}}</option>
 				{% endfor%}
 				
 				</select>
 				Assesment:<select>
+				  <option value="Lecture">Semester Test 1</option>
+				  <option value="Lecture">Semester Test 2</option>
 				  <option value="Lecture">Practical 1</option>
-				  <option value="Marker">Practical 2</option>
-				  <option value="Student">Practical 3</option>
+				  <option value="Lecture">Practical 2</option>
+				  <option value="Lecture">Practical 3</option>
+				  <option value="Lecture">Practical 4</option>
 				</select>
-				<div id="tfheader">
-					<form id="tfnewsearch" method="get" action="#">
-							<input type="text" class="tftextinput" name="q" placeholder="student # / name /surname"size="21" maxlength="120"><input type="submit" value="search" class="tfbutton">
-					</form>
-					<div class="tfclear"></div>
-				</div>
-				
+
+				<button type="button" id="go"> GO!</button>
+		
 			</div>
 			<br>
+		
 			
-			
-			<form id="marksheet" name="marksheet">
+			<form id="marksheet" name="marksheet" method="post" action="/marks-management/">
 				<table id="marksheetTable" >
-					<tr id="thead"><th>Surname, Initials</th><th>Student #</th><th>Weight</th><th>Mark</th><th>Edit</th></tr>
-					<tr><td >Mphabantshi, C</td><td>10404687</td><td>100</td><td contenteditable="true">99</td><td> <a href='/studentMarks/'><span>click</span></a> </td></tr>
-					<tr><td>Banchi, OKK</td><td>10405587</td><td>100</td><td contenteditable="true">68</td><td> <a href='/studentMarks/'><span>click</span></a></td></tr>
-					<tr><td>Mickey, UU</td><td>10498562</td><td>100</td><td contenteditable="true">86</td><td> <a href='/studentMarks/'><span>click</span></a></td></tr>
-					
+					<tr id="thead"><th>Task/Question#</th><th>Weight</th><th>Mark</th><th>Student #</th></tr>
+					<tr><td >Task 1</td><td>10</td><td contenteditable="true">12</td><td>10404687</td></tr>
+					<tr><td >Task 2</td><td>15</td><td contenteditable="true">3</td><td>10404687</td></tr>
+					<tr><td >Task 3</td><td>12</td><td contenteditable="true">12</td><td>10404687</td></tr>
+					<tr><td >Task 4</td><td>13</td><td contenteditable="true">9</td><td>10404687</td></tr>
+					<tr id="thead"><th></th><th>Total</th><th>36</th><th></th></tr>
 				</table>
 				<br>
-				<button type="button" onclick="myFunction()" id="submit"> Submit Changes</button>
+				<button type="button"id="submit"> Save Changes</button>
 				<br>
 			</form>
 		</div>

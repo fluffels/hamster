@@ -51,7 +51,7 @@
 				<div id="frequencyAnalysis">
 					<h4> Frequency Analysis </h4>
 					<div id="imageContainer">
-						<img src="{{ STATIC_URL }}img/pieChartDummy.jpg" alt='image cannot be displayed' height='300' width='300'/>
+						<img src="{{ STATIC_URL }}/static/img/pieChartDummy.jpg" alt='image cannot be displayed' height='300' width='300'/>
 					</div>
 				</div>
 				<div id="renderingOptions">

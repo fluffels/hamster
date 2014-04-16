@@ -3,7 +3,7 @@
 {% block title %}Reporting{% endblock %}
 
 {% block includes %}
-	<script src="{{ STATIC_URL }}js/jquery.js"></script> 
+	<script src="{{ STATIC_URL }}/static/js/jquery.js"></script> 
 	<script>
 		$(document).ready(function(){
 			

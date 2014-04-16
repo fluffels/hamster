@@ -3,8 +3,8 @@
 {% block title %}Marks Management{% endblock %}
 
 {% block includes %}
-	<link href="{{ STATIC_URL }}css/marks.css" rel="stylesheet" type="text/css" />
-	<script src="{{ STATIC_URL }}js/marks.js" type="text/javascript"></script>
+	<link href="{{ STATIC_URL }}/static/css/marks.css" rel="stylesheet" type="text/css" />
+	<script src="{{ STATIC_URL }}/static/js/marks.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block menu_shortcuts %}

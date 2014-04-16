@@ -3,8 +3,8 @@
 {% block title %}Student report{% endblock %}
 	
 	{% block includes %}
-		<script src="{{ STATIC_URL }}js/jquery.js"></script>
-		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
+		<script src="{{ STATIC_URL }}/static/js/jquery.js"></script>
+		<link href="{{ STATIC_URL }}/static/css/style.css" rel="stylesheet" type="text/css" />
 	{% endblock %}
 {% block menu_shortcuts %}
 <div id='menu-bar'>

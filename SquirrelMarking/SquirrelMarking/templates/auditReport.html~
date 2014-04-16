@@ -1,7 +1,6 @@
-<!--Add javascript at menu bar -->
 {% extends "base.html" %}
 
-{% block title %}Squirrel Marking - Assessment View{% endblock %}
+{% block title %}Squirrel Marking - Audit Report{% endblock %}
 
 {% block menu_shortcuts %}
 <div id='menu-bar'>
@@ -31,16 +30,29 @@
 {% endblock %}
 
 {% block content_title %}
-	<h1 id="content_title">Assessment View</h1>
+	<h1 id="content_title">Audit Report</h1>
 {% endblock %}
+
 {% block includes %}
-	 <!--<link href="{{ STATIC_URL }}css/assessmentView.css" rel="stylesheet" type="text/css" />-->
-	 <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
-	<script src="{{ STATIC_URL }}js/jquery.mobile-1.4.2.min.js"></script>
-	<script src="{{ STATIC_URL }}js/assessmentView.js"></script>
+	
 {% endblock %}
 {% block content %}
-    <div role="main" class="ui-content">
-        <div id="menu-content"></div>
-    </div>
+
+<div class="displayContainerClass" id="stuRepSearch" >
+	<div id="auditLogReportContainer">
+		<div id="filters">
+			<label id="dateFrom"> Date From: </label> <input  type="date" name="bday" placeholder="YYYY-MM-DD"><br>
+			<label id="dateTo"> Date To: </label> <input type="date" name="bday" placeholder="YYYY-MM-DD"><br>
+			<label id="person"> Person: </label> <input type="text" name="Person" placeholder="Name or upID"><br><br>
+			<input class="renderButton" type="button" value="Filter Audit Log" id="displayAuditLog">
+		</div>
+		<!-- Plug in audit log -->
+		<div id="auditlogList" style="width:700px;text-align:center">
+			<h1> Audit Log </h1>
+			<div id="auditReportDisplay">
+				<img src="{{ STATIC_URL }}/static/img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

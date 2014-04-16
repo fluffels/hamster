@@ -22,7 +22,7 @@
 		      url: '/assessmentView/',
 		      data: {mod_code : code, assessment : assess},		    
 		      }).success(function(response) {
-			$(this).append("hi");
+			$(this).append(response);
 			
 		      });
 		  });

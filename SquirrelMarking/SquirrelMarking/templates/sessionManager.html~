@@ -1,7 +1,7 @@
-<!--Add javascript at menu bar -->
 {% extends "base.html" %}
 
 {% block title %}Squirrel Marking - Assessment View{% endblock %}
+
 
 {% block menu_shortcuts %}
 <div id='menu-bar'>
@@ -31,16 +31,26 @@
 {% endblock %}
 
 {% block content_title %}
-	<h1 id="content_title">Assessment View</h1>
+	<h1 id="content_title">Session Manager</h1>
 {% endblock %}
+
 {% block includes %}
-	 <!--<link href="{{ STATIC_URL }}css/assessmentView.css" rel="stylesheet" type="text/css" />-->
-	 <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
-	<script src="{{ STATIC_URL }}js/jquery.mobile-1.4.2.min.js"></script>
-	<script src="{{ STATIC_URL }}js/assessmentView.js"></script>
+	<link href="{{ STATIC_URL }}/static/css/inputStyle.css" rel="stylesheet" type="text/css" />
 {% endblock %}
+
 {% block content %}
-    <div role="main" class="ui-content">
-        <div id="menu-content"></div>
-    </div>
+	Assessment:
+	<select id="assessments" class="input"></select>
+	</br></br>
+	<div id="panel">
+		Open date:<input type="date" id="date" class="input">
+		</br>
+		Close date:<input type="date" id="date" class="input">
+		</br>
+		Add marker:<input type="text" id="marker" class="input"><input type="button" value="add" id="add">
+		</br>
+		<a href="">Add student list</a>
+	</div>
+	</br>
+	<a href="/assessmentManager/">Assessment Manager</a>
 {% endblock %}

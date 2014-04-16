@@ -3,7 +3,7 @@
 {% block title %}Student{% endblock %}
 
 {% block includes %}
-	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css"> 
+	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
 {% endblock %}
 {% block content %}
 	<div>

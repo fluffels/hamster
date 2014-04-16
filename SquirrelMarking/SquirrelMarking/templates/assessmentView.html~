@@ -34,10 +34,10 @@
 	<h1 id="content_title">Assessment View</h1>
 {% endblock %}
 {% block includes %}
-	 <!--<link href="{{ STATIC_URL }}css/assessmentView.css" rel="stylesheet" type="text/css" />-->
-	 <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
-	<script src="{{ STATIC_URL }}js/jquery.mobile-1.4.2.min.js"></script>
-	<script src="{{ STATIC_URL }}js/assessmentView.js"></script>
+	 <!--<link href="{{ STATIC_URL }}/static/css/assessmentView.css" rel="stylesheet" type="text/css" />-->
+	 <script src="{{ STATIC_URL }}/static/js/jquery-1.9.1.min.js"></script>
+	<script src="{{ STATIC_URL }}/static/js/jquery.mobile-1.4.2.min.js"></script>
+	<script src="{{ STATIC_URL }}/static/js/assessmentView.js"></script>
 {% endblock %}
 {% block content %}
     <div role="main" class="ui-content">
