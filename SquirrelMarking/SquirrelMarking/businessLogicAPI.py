@@ -303,6 +303,16 @@ def updateMarkAllocation(request, markAlloc_id, mark):
     except Exception, e:
         raise e
 
+def removeMarkAlloccation(markAlloc_id):
+    try:
+        markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
+        old = markAlloc.mark
+        oldid = markAlloc.id
+        markAlloc.delete()
+        logAuditDetail(request,"Deleted Mark Allocation","delete","dbModels_markallocation","id",old,None,oldid)
+    except Exception, e:
+        raise e
+
 def getAssessmentFromID(row_id):
         result = Assessment.objects.get(id=row_id)
         return result
