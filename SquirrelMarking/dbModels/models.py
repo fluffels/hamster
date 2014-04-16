@@ -10,10 +10,14 @@ class Person:
     tutorOf  = [] #module
     teachingAssistantOf  = [] #module
     lectureOf = []
-    def _init_(self,fn, sn, uid):
-        self.firstName = fn
-        self.upId = uid
-        self.surname = sn
+    def __init__(self):
+        self.firstName = ""
+        self.upId = ""
+        self.surname = ""
+	self.studentOf  = [] #module
+	self.tutorOf  = [] #module
+	self.teachingAssistantOf  = [] #module
+	self.lectureOf = []  
     def getfirstName(self):
         return self.firstName
     def getupId(self):
@@ -65,7 +69,6 @@ def getPersonFromArr(data):
         objPerson.lectureOfInsert(x)
 
     return objPerson
-
 
 class Module(models.Model):
     code=models.CharField(max_length=100,primary_key=True)

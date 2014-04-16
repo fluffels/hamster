@@ -36,6 +36,8 @@ def authenticateUser(request, username, password):
             newUsername = dn
             ldapConnectionTemp = ldap.initialize(ldapURI)
             ldapConnectionTemp.simple_bind_s(newUsername,password)
+            if 'user' in request.session:
+	      del request.session['user']
             request.session['user'] = constructPersonDetails(username)
             return request.session['user']
 
