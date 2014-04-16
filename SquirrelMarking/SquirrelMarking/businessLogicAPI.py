@@ -40,33 +40,33 @@ def getAllStudentsOfModule(mod_code):
 # Name: getAllTAsOfModule(mod_code)
 # Description: Returns all the TA's assigned to a module
 # Parameter: mod_code : String
-# Return: 
+# Return: Person[]
 def getAllTAsOfModule(mod_code):
     list = getTAsOf(mod_code)
     return getPersonListFromArrayList(list)
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllNamesOf(listy)
+# Description: Returns a list of the first names of the Person objects 
+# Parameter: listy : Person[]
+# Return: String[]
 def getAllNamesOf(listy):
     list = []
     for x in listy:
         list.append(x.getfirstName())
     return list
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllTutorsOfModule(mod_code)
+# Description: Returns all the Tutor's assigned to a module
+# Parameter: mod_code : String
+# Return: Person[]
 def getAllTutorsOfModule(mod_code):
     list = getTutorsOf(mod_code)
     return getPersonListFromArrayList(list)
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllMarkersOfModule(mod_code)
+# Description: Returns an array of marker id's that are markers for a specific module
+# Parameter: mod_code : String
+# Return: String[]
 def getAllMarkersOfModule(mod_code):
     temp = MarkerModule.objects.filter(module=mod_code)
     list =[]
@@ -74,34 +74,43 @@ def getAllMarkersOfModule(mod_code):
         list.append(x.marker_id)
     return list
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_)
+# Description: Creates an assessment object and saves it to the database
+# Parameter: request : HTTPRequest
+# Parameter: assessment_name_ : String
+# Parameter: assessment_weight_ : Integer?
+# Parameter: assessment_type_ : ?
+# Parameter: module_code_ : String
+# Return: Nothing
 def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
     obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 
-# Name:
-# Description:
-# Parameter: 
+# Name: createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_)
+# Description: Creates a leaf assessment object and saves it to tge database
+# Parameter: request : HTTPRequest
+# Parameter: leaf_name_ : String
+# Parameter: assessment_id_ : ?
+# Parameter: max_mark_ : Integer
 # Return: 
-def createLeafAssessment(request, eaf_name_,assessment_id_,max_mark_):
+def createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_):
     obj = insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
     logAudit(request,"Inserted new leaf assessment","insert","dbModels_leafassessment","id",None,obj.id)
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAssessmentForModuleByName(mod_code, name)
+# Description: Returns all Assessments according to their name and the module that they belong to
+# Parameter: mod_code : String
+# Parameter: name : String
+# Return: Assessment[] (This list either contains one element or none if it doesnt exist)
 def getAssessmentForModuleByName(mod_code, name):
     temp = Assessment.objects.filter(module_id=mod_code,assessment_name=name)
     return temp
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_)
+# Description: Returns all the LeafAssessments according to their name, and the assessments and module they belong to 
+# Parameter: mod_code : String
+# Parameter: assess_name : String
+# Return: LeafAssessment[] (This list either contains one element or none if it doesnt exist)
 def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_):
     temp = getAssessmentForModuleByName(mod_code, assess_name)
     list = []
@@ -111,18 +120,18 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_nam
             list.append(temp2[0])
     return list
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllAssessmentsForModule(mod_code):
+# Description: Returns all Assessments of a module
+# Parameter: mod_code : String
+# Return: Assessments[]
 def getAllAssessmentsForModule(mod_code):
     temp= Assessment.objects.filter(module_id=mod_code)
     return temp
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllOpenAssessmentsForModule(mod_code)
+# Description: Returns all the Assessments that have an open session
+# Parameter: mod_code : String
+# Return: Assessment[]
 def getAllOpenAssessmentsForModule(mod_code):
     temp=Assessment.objects.filter(module_id=mod_code)
     list =[]
@@ -132,16 +141,16 @@ def getAllOpenAssessmentsForModule(mod_code):
             list.append(temp2)
     return list
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
+# Name: getAllModulesForStudent(uid)
+# Description: Returns all the modules that a student is enrolled for
+# Parameter: uid : String
+# Return: ?
 def getAllModulesForStudent(uid):
     return sourceEnrollments(uid)
 
-# Name:
-# Description:
-# Parameter: 
+# Name: getAllModulesForMarker(empl_no)
+# Description: Returns all the modules that a marker is assigned to
+# Parameter: empl_no : String
 # Return: 
 def getAllModulesForMarker(empl_no):
     temp = MarkerModule.objects.filter(marker_id=empl_no)
