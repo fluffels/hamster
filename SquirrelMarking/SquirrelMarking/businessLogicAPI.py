@@ -400,7 +400,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 # Description: Returns all marks of a student for a specific assessment
 # Parameter: uid : String
 # Parameter assess_id : Assessment
-# Return: ?
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
 def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
@@ -408,16 +408,20 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
         
         marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
         if(marks):
-            listMark.append(x.getMax_mark())
-            listMark.append(marks[0].getMark())
+            list = []
+	    list.append(x.getName())
+	    list.append(x.getMax_mark())
+	    list.append(marks[0].getMark())
+	    listMark.append(list)
     
     return listMark
 
+    
 # Name: getAllAssessmentTotalsForStudent(uid, mod_code)
 # Description: Returns all the totals for a specific Assessment?
 # Parameter: uid : String
 # Parameter: mod_code : String
-# Return: >
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
 def getAllAssessmentTotalsForStudent(uid, mod_code):
     assessments = getAllAssementsForStudent(uid,mod_code)
     totals = []
@@ -425,15 +429,19 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
         leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
         total = 0
         mark = 0
+	name = x.assessment_name
         counter = 0
         for m in leafMarks:
             counter = counter + 1
             if (counter % 2 == 0):
                 totals = totals + m
             else:
-                mark = mark + m 
-        totals.append(totals)
-        totals.append(marks)
+                mark = mark + m
+	list = []
+	list.append(name)
+	list.append(total)
+	list.append(mark)
+        totals.append(list)
     
     return totals
 
