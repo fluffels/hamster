@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Home page{% endblock %}
+
+{% block includes %}
+	<link href="{{ STATIC_URL }}css/marks.css" rel="stylesheet" type="text/css" />
+	<script src="{{ STATIC_URL }}js/marks.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block menu_shortcuts %}
+<div id='menu-bar'>
+	<ul>
+	   <li class='active'><a href='/index/'><span>Home</span></a></li>
+	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
+		  <ul>
+			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
+			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
+			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
+		  </ul>
+	   </li>
+	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
+		  <ul>
+			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
+			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
+			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
+		  </ul>
+	   </li>
+	   <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
+			<ul>
+			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
+		  </ul>
+	   </li>
+	</ul>
+</div>
+{% endblock %}
+
+{% block content_title %}<h1 align="center">Welcome to Hamster</h1>{% endblock %}
+
+{% block content %}
+	<h3>Welcome {{ person.firstName.0 }} {{ person.surname.0 }}</h3>
+	{% if person.studentOf %}
+		<h3>Student Courses</h3>
+		<ul class="accordianCourse">
+		{% for module in person.studentOf %}
+			<!--{% for session in SOlist %}
+				<li><a>{{ session }} </a></li>
+			{% endfor %}-->
+		
+			<li><div onload="function () 
+			{
+				$.ajax (
+				{
+					type: 'POST',
+					url: '/viewAssessments/',
+					data: 'mod_code : {{ module }}'
+				}).done
+				(
+					function(response)
+					{
+						$('#ul{{ module }}').html(response);
+					}
+				);
+			}"
+				
+				<ul id="ul{{ module }}">
+				</ul>
+			</li>
+		{% endfor %}
+		</ul>
+		<br ?>
+	{% endif %}
+	
+	{% if person.tutorOf %}
+		<h3>Tutor Courses</h3>
+		<ul class="accordianCourse">
+		{% for module in person.tutorOf %}
+			<input type="submit" name="mod_code" value="{{ module }}" /><br />
+		{% endfor %}
+		</ul>
+		<br ?>
+	{% endif %}
+	{% if person.teachingAssistantOf %}
+		<h3>Teaching Assistant Courses</h3>.
+		<ul class="accordianCourse">
+		{% for module in person.teachingAssistantOf %}
+			<input type="submit" name="mod_code" value="{{ module }}" /><br />
+		{% endfor %}
+		</ul>
+		<br ?>
+	{% endif %}
+	{% if person.lectureOf %}
+		<h3>Lecturer Courses</h3>
+		<ul class="accordianCourse">
+		{% for module in person.teachingAssistantOf %}
+			<input type="submit" name="mod_code" value="{{ module }}" /><br />
+		{% endfor %}
+		</ul>
+		<br ?>
+	{% endif %}
+{% endblock %}
