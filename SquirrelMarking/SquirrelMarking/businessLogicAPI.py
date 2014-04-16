@@ -80,13 +80,15 @@ def getAllMarkersOfModule(mod_code):
 # Parameter: request : HTTPRequest
 # Parameter: assessment_name_ : String
 # Parameter: assessment_weight_ : Integer?
-# Parameter: assessment_type_ : ?
-# Parameter: module_code_ : String
+# Parameter: assessment_type_ : String
+# Parameter: module_code_ : Object
 # Return: Nothing
 def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
     obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 
+def getAssessment():
+	return Assessment.objects.all()
 # Name: createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_)
 # Description: Creates a leaf assessment object and saves it to tge database
 # Parameter: request : HTTPRequest
@@ -100,7 +102,7 @@ def createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_):
 
 # Name: getAssessmentForModuleByName(mod_code, name)
 # Description: Returns all Assessments according to their name and the module that they belong to
-# Parameter: mod_code : String
+# Parameter: mod_code : Module
 # Parameter: name : String
 # Return: Assessment[] (This list either contains one element or none if it doesnt exist)
 def getAssessmentForModuleByName(mod_code, name):
@@ -380,6 +382,19 @@ def getOpenSessions(assessment_id_):
     for x in temp:
         list.append(x)
     return list
+    
+# Name: getOpenSessions(assessment_id_)
+# Description: Returns all the sessions that are open for marking
+# Parameter: assessment_id : Assessment
+# Return: Sessions[]
+def getOpenSessionsForMarker(assessment_id_,marker_id_):
+	list = getOpenSessions(assessment_id_)
+	listy = []
+	for x in list:
+		markerS =MarkerSessions.objects.filter(marker_id=marker_id_, session_id =x)
+		for m in markerS:
+			listy.append(m.getSessionID())
+	return listy
 
 # Name:  getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id)
 # Description: Returns all marks of a student for a specific assessment

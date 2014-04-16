@@ -28,3 +28,6 @@ insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((selec
 insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_sessions'),'opened');
 insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_sessions'),'closed');
 insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_sessions'),'status');
+insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_studentsessions'),'id');
+insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_studentsessions'),'sess_id_id');
+insert into dbModels_audittablecolumn (auditTableId_id,columnName) values((select id from dbModels_audittable where tableName='dbModels_studentsessions'),'student_id');
