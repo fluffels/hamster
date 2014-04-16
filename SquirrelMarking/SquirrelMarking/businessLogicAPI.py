@@ -233,7 +233,7 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     listMark = []
     for x in leafs:
         
-        marks = MarkAllocation.objects().filter(leaf_id=x,student=uid)
+        marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
         if(marks):
             listMark.append(x.getMax_mark())
             listMark.append(marks[0].getMark())
@@ -263,3 +263,42 @@ def populateModules():
     list = getAllModuleCodes()
     for module in list:
         insertModule(module)
+
+def searchBySurname(surname):
+    list = findPerson("sn",surname)
+    newlist = []
+    for uid in list:
+        newlist.append(getPersonFromArr(list[uid]))
+    return newlist
+
+def searchByName(surname):
+    list = findPerson("sn",surname)
+    newlist = []
+    for uid in list:
+        newlist.append(getPersonFromArr(list[uid]))
+    return newlist
+
+def getSessionByName(mod_code, name):
+    assessments = getAllAssessmentsForModule(mod_code)
+    list = []
+    for x in assessments:
+        sessions = Sessions.objects.filter(assessment_id=x,session_name=name)
+        for y in sessions:
+            list.append(y)
+    return list
+
+def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
+    leaf = LeafAssessment.objects.get(id=leaf_id)
+    session = Sessions.objects.get(id=session_id)
+    obj = insertMarkAllocation(leaf,0,session,marker,student,timestamp)
+    logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
+    return obj.id
+
+def updateMarkAllocation(request, markAlloc_id, mark):
+    try:
+        markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
+        old = markAlloc.mark
+        markAlloc.setMark(mark)
+        logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.mark,markAlloc.id)
+    except Exception, e:
+        raise e

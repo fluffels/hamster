@@ -318,7 +318,7 @@ class MarkAllocation(models.Model):
 def deleteMarkAllocation(self):
     MarkAllocation.delete(self)
 
-def insertMarkAllocation(leaf_id_,assessment_id_,mark_,session_id_,marker_,student_,timeStamp_):
+def insertMarkAllocation(leaf_id_,mark_,session_id_,marker_,student_,timeStamp_):
     temp = MarkAllocation(leaf_id=leaf_id_,mark=mark_,session_id=session_id_,marker=marker_,student=student_,timeStamp=timeStamp_)
     temp.save()
     return temp
