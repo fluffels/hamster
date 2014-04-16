@@ -94,12 +94,16 @@ class Assessment(models.Model):
 
     def setName(self,name):
         self.assessment_name = name
+        self.save()
     def setWeight(self,weight):
         self.assessment_weight = weight
+        self.save()
     def setType(self,type):
         self.assessment_type = type
+        self.save()
     def setModule(self,module):
         self.module_id = module
+        self.save()
     def getID(self):
         return self.id
     def getName(self):
@@ -133,16 +137,22 @@ class Sessions(models.Model):
     status = models.IntegerField()
     def setAssessmentID(self,id):
         self.assessment_id = id
-	def setOpenedDate(self, date):
-		self.opened = date
-	def setClosedDate(self, date):
-		self.closed = date
+        self.save()
+    def setOpenedDate(self, date):
+        self.opened = date
+        self.save()
+    def setClosedDate(self, date):
+        self.closed = date
+        self.save()
     def setOpen(self):
         self.status = 1
+        self.save()
     def setClose(self):
         self.status = 2
+        self.save()
     def setName(self,name):
         self.session_name = name
+        self.save()
     #getters
     def __unicode__(self):
         return self.session_name
@@ -169,13 +179,30 @@ def getSessions():
     temp=Sessions.objects.all()
     return temp
 
+class StudentSessions(models.Model):
+	sess_id = models.ForeignKey(Sessions)
+	student_id = models.CharField(max_length=100)
+	def getSess_id(self):
+		return self.sess_id
+	def getStudent_id(self):
+		return self.student_id
+
+def insertStudentSessions(sess_id_, uid):
+	temp = StudentSessions(sess_id = sess_id, student_id=uid)
+	temp.save()
+
+def deleteStudentSessions(self):
+	StudentSessions.delete(self)
+
 class MarkerSessions(models.Model):
     marker_id=models.CharField(max_length=100)
     session_id= models.ForeignKey(Sessions)
     def setMarker(self, marker):
         self.marker_id = marker
+        self.save()
     def setID(self,id):
         self.session_id = id
+        self.save()
 
     def getMarker(self):
         return self.marker_id
@@ -224,12 +251,16 @@ class LeafAssessment(models.Model):
 
     def setName(self,name):
         self.leaf_name = name
+        self.save()
     def setAssessment_id(self,id):
         self.assessment_id = id
+        self.save()
     def setMax_mark(self,mark):
         self.max_mark = mark
+        self.save()
     def setPublished(self,pub):
         self.published = pub
+        self.save()
     def getID(self):
         return self.id
     def getName(self):
@@ -265,16 +296,22 @@ class MarkAllocation(models.Model):
 
     def setLeaf_id(self,id):
         self.leaf_id = id
+        self.save()
     def setMark(self,_mark):
         self.mark = _mark
+        self.save()
     def setSession_id(self,id):
         self.session_id = id
+        self.save()
     def setMarker(self,_marker):
         self.marker = _marker
+        self.save()
     def setStudent(self,_student):
         self.student = _student
+        self.save()
     def setTimeStamp(self,time):
         self.timeStamp= time
+        self.save()
 
     def getID(self):
         return self.id
@@ -296,7 +333,7 @@ class MarkAllocation(models.Model):
 def deleteMarkAllocation(self):
     MarkAllocation.delete(self)
 
-def insertMarkAllocation(leaf_id_,assessment_id_,mark_,session_id_,marker_,student_,timeStamp_):
+def insertMarkAllocation(leaf_id_,mark_,session_id_,marker_,student_,timeStamp_):
     temp = MarkAllocation(leaf_id=leaf_id_,mark=mark_,session_id=session_id_,marker=marker_,student=student_,timeStamp=timeStamp_)
     temp.save()
     return temp
@@ -366,3 +403,50 @@ class SimpleSumAggregator(Aggregator):
 
 
 
+class AuditAction(models.Model):
+    #auditAction = models.IntegerField()
+    auditDesc = models.CharField(max_length=15)
+
+class AuditTable(models.Model):
+    #tableId = models.IntegerField()
+    tableName = models.CharField(max_length=50, unique=True)
+
+
+class AuditTableColumn(models.Model):
+    auditTableId = models.ForeignKey(AuditTable)
+    #columnId = models.IntegerField()
+    columnName = models.CharField(max_length=30)
+
+
+class AuditLog(models.Model):
+    person_id = models.CharField(max_length=100)
+    description = models.CharField(max_length=50)
+    action = models.ForeignKey(AuditAction)
+    time = models.DateTimeField()
+    audit_table_id = models.ForeignKey(AuditTable,null=True)
+    audit_table_column_id = models.ForeignKey(AuditTableColumn,null=True)
+    old_value = models.CharField(max_length=255,null=True)
+    new_value = models.CharField(max_length=255,null=True)
+    affected_row_id = models.IntegerField(null=True)
+
+#AuditLog functions=======================================================================
+
+def logAudit(request,desc,act,table,column,old,new):
+    p = request.session['user']['uid'][0]
+    t = AuditTable.objects.get(tableName=table)
+    c = AuditTableColumn.objects.get(auditTableId=t.id, columnName=column)
+    ti = time.strftime("%Y-%m-%d %H:%M:%S")
+    aa = AuditAction.objects.get(auditDesc=act)
+
+    AuditLog(person_id=p,description=desc,action=aa,time=ti,audit_table_id=t,audit_table_column_id=c,old_value=old,new_value=new).save()
+
+
+def logAuditDetail(request,desc,act,table,column,old,new,row_id):
+    p = request.session['user']['uid'][0]
+    t = AuditTable.objects.get(tableName=table)
+    c = AuditTableColumn.objects.get(auditTableId=t.id,columnName=column)
+    aa = AuditAction.objects.get(auditDesc=act)
+    ti = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    AuditLog(person_id=p,description=desc,action=aa,time=ti,audit_table_id=t,
+             audit_table_column_id=c,old_value=old,new_value=new,affected_row_id=row_id).save()

@@ -5,15 +5,15 @@ from django import from django.http import HttpResponse
 import time                     # [jacques] For audit logging
 import datetime
 
-def login(request, username, password)
+def login(request, username, password):
   personInfo = authenticateUser(username, password)
   
   
-def getSessionPerson(request)
+def getSessionPerson(request):
   information = request.session["user"]
   return getPersonFromArr(information)
 
-def getPersonFromArr(data)
+def getPersonFromArr(data):
   information = request.session["user"]
   
   objPerson = Person(data["cn"],data["sn"],data["uid"])
