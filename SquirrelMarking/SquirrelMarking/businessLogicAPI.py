@@ -563,3 +563,33 @@ def getAuditLogFromUsername(username):
 # Return: 
 def getAuditLogFromTimeRange(fromTime, toTime):
     return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+  
+# Name: getStudentsForASession
+# Description:
+# Parameter: sess_id_:session Object
+# Return:  list of uids e.g ["u1200000", "u12233423"]   
+def getStudentsForASession(sess_id_):
+	temp = StudentSessions.objects.filter(sess_id=sess_id_)
+	list = []
+	for x in temp
+		list.append(temp.getStudent_id())
+	return list
+
+# Name: addStudentToSession
+# Description: Adds a student to the session
+# Parameter: uid:string, sess_id_:session Object
+# Return: None
+def addStudentToSession(uid, sess_id):
+	insertStudentSessions(sess_id,uid)
+
+# Name:removeStudentFromSession
+# Description: removes the student from the session
+# Parameter: uid:string, sess_id_:session Object
+# Return:  None
+def removeStudentFromSession(uid, sess_id_)
+	try:
+		stsess = StudentSessions.objects.get(sess_id=sess_id_, student_id=uid)
+		deleteStudentSessions(stsess)
+	except: Exception, e
+		raise e
+	
