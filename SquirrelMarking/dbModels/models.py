@@ -179,6 +179,21 @@ def getSessions():
     temp=Sessions.objects.all()
     return temp
 
+class StudentSessions(models.Model):
+	sess_id = models.ForeignKey(Sessions)
+	student_id = models.CharField(max_length=100)
+	def getSess_id(self):
+		return self.sess_id
+	def getStudent_id(self)
+		return self.student_id
+
+def insertStudentSessions(sess_id_, uid)
+	temp = StudentSessions(sess_id = sess_id, student_id=uid)
+	temp.save()
+
+def deleteStudentSessions(self)
+	StudentSessions.delete(self)
+
 class MarkerSessions(models.Model):
     marker_id=models.CharField(max_length=100)
     session_id= models.ForeignKey(Sessions)

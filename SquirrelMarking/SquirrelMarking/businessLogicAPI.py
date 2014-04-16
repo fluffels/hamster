@@ -136,9 +136,9 @@ def getAllOpenAssessmentsForModule(mod_code):
     temp=Assessment.objects.filter(module_id=mod_code)
     list =[]
     for x in temp:
-        temp2=Sessions.objects.filter(assessment_id=x.assessment_id,status=True)#implement
-        if temp2:
-            list.append(temp2)
+        temp2=getOpenSessions(x.id)
+        for item in temp2:
+            list.append(item)
     return list
 
 # Name: getAllModulesForStudent(uid)
@@ -517,53 +517,106 @@ def removeMarkAlloccation(markAlloc_id):
 # Parameter: row_id = Integer
 # Return: Assessment object of specific ID
 def getAssessmentFromID(row_id):
-        result = Assessment.objects.get(id=row_id)
-        return result
+        return Assessment.objects.get(id=row_id)
 
 # Name: getLeafAssessmentFromID(row_id)
 # Description: Returns a LeafAssessment object from a specific ID
 # Parameter: row_id = Integer
 # Return: LeafAssessment object of specific ID
 def getLeafAssessmentFromID(row_id):
-        result = LeafAssessment.objects.get(id=row_id)
-        return result
+        return LeafAssessment.objects.get(id=row_id)
 
 # Name: getMarkAllocationFromID(row_id)
 # Description: Returns a MarkAllocation object from a specific ID
 # Parameter: row_id = Integer
 # Return: MarkAllocation object of specific ID
 def getMarkAllocationFromID(row_id):
-        result = MarkAllocation.objects.get(id=row_id)
-        return result
+        return MarkAllocation.objects.get(id=row_id)
 
 # Name: getMarkerModuleFromID(row_id)
 # Description: Returns a MarkerModule object from a specific ID
 # Parameter: row_id = Integer
 # Return: MarkerModule object of specific ID
 def getMarkerModuleFromID(row_id):
-        result = Markermodule.objects.get(id=row_id)
-        return result
+        return Markermodule.objects.get(id=row_id)
 
 # Name: getMarkerSessionsFromID(row_id)
 # Description: Returns a MarkerSessions object from a specific ID
 # Parameter: row_id = Integer
 # Return: MarkerSessions object of specific ID
 def getMarkerSessionsFromID(row_id):
-        result = Markersessions.objects.get(id=row_id)
-        return result
+        return Markersessions.objects.get(id=row_id)
 
 # Name: getModuleFromID(row_id)
 # Description: Returns a Module object from a specific ID
 # Parameter: row_id = Integer
 # Return: Module object of specific ID
 def getModuleFromID(row_id):
-        result = Module.objects.get(id=row_id)
-        return result
+        return Module.objects.get(id=row_id)
 
 # Name: getSessionsFromID(row_id)
 # Description: Returns a Sessions object from a specific ID
 # Parameter: row_id = Integer
 # Return: Sessions object of specific ID
 def getSessionsFromID(row_id):
-        result = Sessions.objects.get(id=row_id)
-        return result
+        return Sessions.objects.get(id=row_id)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromID(row_id):
+    return AuditLog.objects.get(id=row_id)
+
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromAction(action):
+    actionObj = AuditAction.objects.get(auditDesc=action)
+    return AuditLog.objects.filter(action=actionObj)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromUsername(username):
+    return AuditLog.objects.filter(user_id=username)
+
+# Name:
+# Description:
+# Parameter: 
+# Return: 
+def getAuditLogFromTimeRange(fromTime, toTime):
+    return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+  
+# Name: getStudentsForASession
+# Description:
+# Parameter: sess_id_:session Object
+# Return:  list of uids e.g ["u1200000", "u12233423"]   
+def getStudentsForASession(sess_id_):
+	temp = StudentSessions.objects.filter(sess_id=sess_id_)
+	list = []
+	for x in temp
+		list.append(temp.getStudent_id())
+	return list
+
+# Name: addStudentToSession
+# Description: Adds a student to the session
+# Parameter: uid:string, sess_id_:session Object
+# Return: None
+def addStudentToSession(uid, sess_id):
+	insertStudentSessions(sess_id,uid)
+
+# Name:removeStudentFromSession
+# Description: removes the student from the session
+# Parameter: uid:string, sess_id_:session Object
+# Return:  None
+def removeStudentFromSession(uid, sess_id_)
+	try:
+		stsess = StudentSessions.objects.get(sess_id=sess_id_, student_id=uid)
+		deleteStudentSessions(stsess)
+	except: Exception, e
+		raise e
+	
