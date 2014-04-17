@@ -1,3 +1,10 @@
-{% for Assessment in Assessments %}
-	<li class="assessment">{{ Assessment }}	</li>
-{% endfor %}
+<div id="{{ C }}">
+  <div class='submenu'>
+  {% for Assessment in Assessments %}
+	  <a href="SassessmentView/{{ Assessment }}/" class="assessment">{{ Assessment }}</a>
+  {% endfor %}
+  </div>
+  <div class="options">
+    <a href="addAss">Add new Assessment</a>
+  </div>
+</div>

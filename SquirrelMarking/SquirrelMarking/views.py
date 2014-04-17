@@ -60,59 +60,60 @@ def test(request):
 	for temp in getAssessment():
 		print temp.getName()
 			
-	print "getAssessmentForModuleByName"
-	for temp in getAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName()):
-		print temp
+	#print "getAssessmentForModuleByName"
+	#for temp in getAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName()):
+		#print temp
 	
-	print "getLeafAssessmentOfAssessmentForModuleByName"
-	for temp in getLeafAssessmentOfAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName(), 'test'):
-		print temp
+	#print "getLeafAssessmentOfAssessmentForModuleByName"
+	#for temp in getLeafAssessmentOfAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName(), 'test'):
+		#print temp
 		
-	print "getAllAssessmentsForModule"
-	for temp in getAllAssessmentsForModule(getAllModules()[1].code):
-		print temp
+	#print "getAllAssessmentsForModule"
+	#for temp in getAllAssessmentsForModule(getAllModules()[1].code):
+		#print temp
 	
-	print "getAllOpenAssessmentsForModule"
-	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
-		print temp
+	#print "getAllOpenAssessmentsForModule"
+	#for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
+		#print temp
 		
-	print "getAllOpenAssessmentsForModule"
-	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
-		print temp
+	#print "getAllOpenAssessmentsForModule"
+	#for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
+		#print temp
 	
-	print "getAllModulesForStudent"
-	for temp in getAllModulesForStudent('u89000847'):
-		print temp
+	#print "getAllModulesForStudent"
+	#for temp in getAllModulesForStudent('u89000847'):
+		#print temp
 		
-	print "getAllModulesForMarker"
-	for temp in getAllModulesForMarker('u89000999'):
-		print temp
+	#print "getAllModulesForMarker"
+	#for temp in getAllModulesForMarker('u89000999'):
+		#print temp
 	
-	print "getAllModulesForLecturer"
-	for temp in getAllModulesForLecturer('ALeffley'):
-		print temp
+	#print "getAllModulesForLecturer"
+	#for temp in getAllModulesForLecturer('ALeffley'):
+		#print temp
 	
-	print "getAllLeafAssessmentsForAssessment"
-	#re-check functionality
-	for temp in getAllLeafAssessmentsForAssessment(getAssessment()[1].getID()):
-		print temp
+	#print "getAllLeafAssessmentsForAssessment"
+	##re-check functionality
+	#for temp in getAllLeafAssessmentsForAssessment(getAssessment()[1].getID()):
+		#print temp
 	
-	print "getAllAssementsForStudent"
-	for temp in getAllAssementsForStudent('u89000847', 'COS301'):
-		print temp.getName()
+	#print "getAllAssementsForStudent"
+	#for temp in getAllAssementsForStudent('u89000847', 'COS301'):
+		#print temp.getName()
 		
-	print "getAllSessionsForModule"
-	for temp in getAllSessionsForModule('COS301'):
-		print temp
+	#print "getAllSessionsForModule"
+	#for temp in getAllSessionsForModule('COS301'):
+		#print temp
 		
-	print "getLeafAssessmentMarksOfAsssessmentForStudent"
-	for temp in getLeafAssessmentMarksOfAsssessmentForStudent(studentNumber[0],getAssessment()[1].getID()):
-		print temp
+	#print "getLeafAssessmentMarksOfAsssessmentForStudent"
+	#for temp in getLeafAssessmentMarksOfAsssessmentForStudent(studentNumber[0],getAssessment()[1].getID()):
+		#print temp
 		
-	print "getAllAssessmentTotalsForStudent"
-	for temp in getAllAssessmentTotalsForStudent('u89000999',getAllModules()[1].code):
-		print temp
-	#createAssessment(request, "test",123,"asd",getAllModules()[1])
+	#print "getAllAssessmentTotalsForStudent"
+	#for temp in getAllAssessmentTotalsForStudent('u89000999',getAllModules()[1].code):
+		#print temp
+		
+	createAssessment(request, "test",123,"asd",getAllModules()[1])
 	#print "getAssessmentForModuleByName"
 	#a=getAssessmentForModuleByName(getAllModules()[1],"test")
 	#print a.getName()
@@ -123,9 +124,17 @@ def test(request):
 	#print "createAssessment"
 	#done 
 
-	#x2 = insertModule("COS301")
-	#x3 = insertAssessment('test','asdas',"type",x2)
-	#x4 = insertSessions("test",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	x2 = getModuleFromID("COS132")
+	x3 = insertAssessment('testAs1','asdas',"Practical",x2)
+	x4 = insertSessions("testAs1",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	x3 = insertAssessment('testAs2','asdas',"Practical",x2)
+	x4 = insertSessions("testAs2",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	x3 = insertAssessment('testAs3','asdas',"Test",x2)
+	x4 = insertSessions("testAs3",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	x3 = insertAssessment('testAs4','asdas',"Practical",x2)
+	x4 = insertSessions("testAs4",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	x3 = insertAssessment('testAs5','asdas',"Test",x2)
+	x4 = insertSessions("testAs5",x3,'2012-12-12 12:12','2015-12-12 12:12')
 	#xx = insertMarkSession("u89000999",x4)
 	#x5 = insertMarkerModule("u89000999",x2)
 	#x6 = insertLeafAssessment("name",x3,100,True)
@@ -151,8 +160,8 @@ def test(request):
 	#getAuditLogFromTimeRange('2012-12-12 12:12','2015-12-12 12:12')
 	#print getAllOpenAssessmentsForModule("COS301")
 	#print getAuditLogFromTableName("MarkerSessions")
-	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
-
+	#return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
+	return loginWeb(request)
 #def logout(request)
 
 def loginData(request):
@@ -183,6 +192,10 @@ def loginData(request):
 
 @csrf_protect
 def loginWeb(request):
+    try:
+      P = getSessionPerson(request)
+      return render(request,'index.html', {'person': P})
+    except:
 	nform = LoginForm() 
 	if request.method == 'POST': # If the form has been submitted...		
 		# ContactForm was defined in the the previous section
@@ -194,31 +207,7 @@ def loginWeb(request):
 			try:
 				login(request,username,password)
 				try:
-					P = getSessionPerson(request)
-					SOCourses = P.studentOf
-					TOCourses = P.tutorOf
-					TAOCourses = P.teachingAssistantOf
-					LOCourses = P.lectureOf
-					
-					#~ SOlist = []
-					#~ for mod in SOCourses:
-						#~ y = getAllSessionsForModule(mod)
-						#~ SOlist.append(y)
-						
-					#~ TOlist = []
-					#~ for mod in TOCourses:
-						#~ y = getAllSessionsForModule(mod)
-						#~ TOlist.append(y)
-
-					#~ TAOlist = []
-					#~ for mod in TAOCourses:
-						#~ y = getAllSessionsForModule(mod)
-						#~ TAOlist.append(y)
-
-					#~ LOlist = []
-					#~ for mod in LOCourses:
-						#~ y = getAllSessionsForModule(mod)
-						#~ LOlist.append(y)	
+					P = getSessionPerson(request)		
 					
 					print (P.firstName)
 					return render(request,'index.html', {'person': P})#, 'studentOf':SOlist, 'tutorOf':TOlist, 'teachingAssistantOf':TAOlist, 'lectureOf':LOlist}) # Redirect after POST
@@ -232,15 +221,12 @@ def loginWeb(request):
 			return render(request,'login.html', {'form': nform, 'msg':form.errors})#form.errors
 	else:	
 		return render(request,'login.html', {'form': nform})
+
 		
-		
-def viewAssessments(request, mod_code):
-	try:
-		P = getSessionPerson(request)
-		Assessments = getAllAssessmentsForModule(mod_code)
-		return render(request,'div.html', {'Assessments': Assessments})		
-	except:
-		return render(request,'login.html', {'form': nform,  'msg':"Please login"})
+def viewAssessments(request):
+	c = request.POST['mod_code']
+	Assessments = getAllAssessmentsForModule(c)
+	return render(request,'listAssessments.html', {'Assessments': Assessments, 'C': c})	
 		
 '''
     REPORTING FUNCTIONS

@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Reporting{% endblock %}
-
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
 {% block includes %}
 	<script src="{{ STATIC_URL }}js/jquery.js"></script> 
 	<script>

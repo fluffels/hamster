@@ -5,6 +5,9 @@
 {% block includes %}
 	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css"> 
 {% endblock %}
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
 {% block content %}
 	<div>
 	<h3> Student Details </h3>

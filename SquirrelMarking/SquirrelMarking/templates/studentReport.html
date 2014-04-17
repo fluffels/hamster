@@ -7,30 +7,7 @@
 		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
 	{% endblock %}
 {% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li ><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	  <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
+{% include "menu.html" %}
 {% endblock %}
 {% block content_title %}<h1 align="center">Student report</h1>{% endblock %}
 
