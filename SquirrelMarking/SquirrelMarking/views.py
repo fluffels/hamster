@@ -12,6 +12,128 @@ from businessLogicAPI import *
 from forms import *
 from django.shortcuts import render
 #from django.http import HttpResponseRedirect
+def ldapTest(request):
+	try:
+		return HttpResponse("<table border='1' style='width:1000px'>"+ 
+			"<tr>"+
+			"<td>Authenticate User Object</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Enrollments of user</td>" +
+			"<td>"+str(sourceEnrollments("u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Tuter Designations</td>" +
+			"<td>"+str(sourceTutorDesignations("u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>TeachAsst Designations</td>" +
+			"<td>"+str(sourceTeachingAssistantDesignations("u89000915"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Lecturer Designations</td>" +
+			"<td>"+str(sourceLecturerDesignations("BWingfield"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Demographics of User </td>" +
+			"<td>"+str(sourceDemographics("BWingfield"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Members of Module </td>" +
+			"<td>"+str(getMembers("stud_COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Find a user by attribute</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Tries to look up a student</td>" +
+			"<td>"+str(findPerson("uid","u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints all module codes </td>" +
+			"<td>"+str(getAllModuleCodes())+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Prints Students of a module </td>" +
+			"<td>"+str(getStudentsOf("COS300"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Tutors of a module</td>" +
+			"<td>"+str(getTutorsOf("COS344"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints TAs of a module</td>" +
+			"<td>"+str(getTAsOf("COS110"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Lecturers of a module</td>" +
+			"<td>"+str(getLecturorsOf("COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Test * character</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+
+			"<tr>"+
+			"<td> " +"</td>" +
+			"</tr>"+
+			"<tr>"+
+			"<td> " +"</td>" +
+			"</tr>"+
+			"<tr>"+
+			"<td>Authenticate User Object</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Enrollments of user test char * </td>" +
+			"<td>"+str(sourceEnrollments("u8*"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Tuter Designations test char + </td>" +
+			"<td>"+str(sourceTutorDesignations("u8900044+"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>TeachAsst Designations test char $ </td>" +
+			"<td>"+str(sourceTeachingAssistantDesignations("u8900091$"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Lecturer Designations test char # </td>" +
+			"<td>"+str(sourceLecturerDesignations("##########"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Demographics of User test char \ n </td>" +
+			"<td>"+str(sourceDemographics("BWingfie\n"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Members of Module </td>" +
+			"<td>"+str(getMembers("stud_COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Find a user by attribute</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Tries to look up a student test char @</td>" +
+			"<td>"+str(findPerson("uid","u8900044@"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Prints Students of a module </td>" +
+			"<td>"+str(getStudentsOf("*"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Tutors of a module</td>" +
+			"<td>"+str(getTutorsOf("COS344"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints TAs of a module test char _ </td>" +
+			"<td>"+str(getTAsOf("COS11_"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Lecturers of a module test char - </td>" +
+			"<td>" + str(getLecturorsOf("COS30-")) +"</td>" +
+			"</tr> " +  
+			"</table>");
+	except Exception,e:
+		raise e
 
 def test(request):
 	
