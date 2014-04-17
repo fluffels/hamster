@@ -4,11 +4,13 @@ import SquirrelMarking.businessLogicAPI as BL
 import json
 
 def login(request):	
-	if request.method == 'POST':
+	if request.method == 'GET':
 		#print("Method: " +request.method)
-		json_data = json.loads(request.body)
-		username =json_data['uid']
-		password =json_data['pwd']
+		username = request.GET['uid']
+		password = request.GET['pwd']
+		#json_data = json.loads(request.body)
+		#username =json_data['uid']
+		#password =json_data['pwd']
 		#print username + " - " + password
 		#print "User object "
 		#print request.session['user']
@@ -49,7 +51,7 @@ def login(request):
 
 
 def logout(request):
-	if request.method == 'POST':
+	if request.method == 'GET':
 		try:
 			BL.logout(request)
 			data =[
