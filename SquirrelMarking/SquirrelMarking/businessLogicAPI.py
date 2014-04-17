@@ -445,6 +445,35 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
     
     return totals
 
+# Name: getAssessmentTotalsForStudent(uid, mod_code, assess_id)
+# Description: Returns all the totals for a specific Assessment?
+# Parameter: uid : String
+# Parameter: mod_code : String
+# Parameter: assess_id : Integer
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
+def getAssessmentTotalForStudent(uid, mod_code, assess_id):
+    assessments = Assessment.objects.filter(id=assess_id)
+    totals = []
+    for x in assessments:
+        leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
+        total = 0
+        mark = 0
+	name = x.assessment_name
+        counter = 0
+        for m in leafMarks:
+            counter = counter + 1
+            if (counter % 2 == 0):
+                totals = totals + m
+            else:
+                mark = mark + m
+	list = []
+	list.append(name)
+	list.append(total)
+	list.append(mark)
+        totals.append(list)
+    
+    return totals
+
 # Name: populateModules()
 # Description: Populates the database with the modules found in the ldap database
 # Parameter: 
