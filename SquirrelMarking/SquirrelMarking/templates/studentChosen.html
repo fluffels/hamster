@@ -1,23 +1,39 @@
-{% extends "base.html" %}
-
-{% block title %}Student{% endblock %}
-
 {% block includes %}
-	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css"> 
+	 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
 {% endblock %}
-{% block menu_shortcuts %}
-{% include "menu.html" %}
-{% endblock %}
-{% block content %}
-	<div>
-	<h3> Student Details </h3>
-	<label> Student Name:{{ stu_name}} </label> <br>
-	<label> Student Surname: {{ stu_surname }} </label> <br>
-	<label> Student Number: {{ stu_num }} </label> <br>
-	{% for assessment in assessments %}
-		<label> Mean: {{ mean }}  </label> <br>
-		<label> Median:{{ median }}  </label> <br>
-		<label> Mode:{{ mode }}  </label> <br>					 
-	{% endfor %}
-	</div>
-{% endblock %}
+<div>
+	{% if students is not None: %}
+		{% for student in students: %}
+			<h3> Student Details </h3>
+			<label> Student Name:{{ student.firstName}} </label> <br>
+			<label> Student Surname: {{ student.surname }} </label> <br>
+			<label> Student Number: {{ student.upId }} </label> <br><br>
+		{% endfor %}
+	{% endif %}
+	{% elif per is not None: %}
+		<h3> Student Details </h3>
+		<label> Student Name: {{ student.firstName}} </label> <br>
+		<label> Student Surname: {{ student.surname }} </label> <br>
+		<label> Student Number: {{ student.upId }} </label> <br><br>
+		{%  if type == 'moduleMark': %}
+			{% for assessment in usrAllAssessments: %}
+				<label> Assessment: {{ assessment.getName() }} </label> <br>	
+				<label> Module: {{ assessment.getModule() }} </label> <br>
+				<label> Mark: {{ assessment.getMark() }} </label> <br><br>
+			{% endfor %}
+		{% elif type == 'semesterMark': %}
+			<label> Assessment: {{ assessment.getName() }} </label> <br>	
+			<label> Module: {{ assessment.getModule() }} </label> <br>
+			<label> Mark: {{ assessment.getMark() }} </label> <br><br>
+			
+		{% elif type == 'examMark': %}
+			<label> Assessment: {{ assessment.getName() }} </label> <br>	
+			<label> Module: {{ assessment.getModule() }} </label> <br>
+			<label> Mark: {{ assessment.getMark() }} </label> <br><br>
+			
+		{% elif type == 'submitRequestButton': %} <!-- Leaf Assessments -->
+			<label> Assessment: {{ assessment.getName() }} </label> <br>	
+			<label> Module: {{ assessment.getModule() }} </label> <br>
+			<label> Mark: {{ assessment.getMark() }} </label> <br><br>
+	{% endif %}
+</div>

@@ -1,17 +1,20 @@
-{% extends "base.html" %}
-
-{% block title %}Squirrel Marking - Audit Report{% endblock %}
-
-{% block menu_shortcuts %}
-{% include "menu.html" %}
-{% endblock %}
-
-{% block content_title %}
-	<h1 id="content_title">Audit Report</h1>
-{% endblock %}
 
 {% block includes %}
-	
+	 <script type="text/javascript">
+			
+		var type = $(".assType").attr('id');
+
+		$('#GetPDFAudit').click(function(){
+			  
+			$("#aud").load("renderForm.html #formDiv");
+			  
+		});
+		  
+		$('#GetCSVAudit').click(function(){
+			//implement code here
+		});
+
+	</script>
 {% endblock %}
 {% block content %}
 
@@ -30,6 +33,17 @@
 				<img src="{{ STATIC_URL }}img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
 			</div>
 		</div>
+		
+		<form action="/renderAsPDF/" method="post">{% csrf_token %}
+			{{ form.as_p }}
+			<h2> Rendering options </h2>
+			<div id="renderAsPDF"> <input class="renderButton" id="GetPDFAudit" name="SaveAsPDf" type="button" value="Get PDF"> </div>	
+		</form>
+			<form action="/renderAsCSV/" method="post">{% csrf_token %}
+			{{ form.as_p }}
+			<h2> Rendering options </h2>
+			<div id="renderAsCSV"> <input class="renderButton" id="GetCSVAudit" name="SaveAsCSV" type="button" value="Get CSV"></div>
+		</form>
 	</div>
 </div>
 {% endblock %}

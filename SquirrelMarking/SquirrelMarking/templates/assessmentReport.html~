@@ -1,3 +1,13 @@
+{% block title %}Squirrel Marking - Assessment Report{% endblock %}
+
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+
+{% block content_title %}
+	<h1 id="content_title">Assessment Report</h1>
+{% endblock %}
+
 {% block includes %}
 	<script type = "text/javascript">
 		$(document).ready(function(){

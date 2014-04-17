@@ -11,6 +11,9 @@ from ldapView import *
 from businessLogicAPI import *
 from forms import *
 from django.shortcuts import render
+#from DBAdapter import *
+import sys
+import csv
 #from django.http import HttpResponseRedirect
 
 def test(request):
@@ -190,6 +193,12 @@ def loginData(request):
 	html = t.render(Context())
 	return HttpResponse(html)
 
+def logout(request):
+    try:
+      login(request,"","")
+    except:
+      return loginWeb(request)
+    
 @csrf_protect
 def loginWeb(request):
     try:
@@ -227,46 +236,158 @@ def viewAssessments(request):
 	c = request.POST['mod_code']
 	Assessments = getAllAssessmentsForModule(c)
 	return render(request,'listAssessments.html', {'Assessments': Assessments, 'C': c})	
-		
+
+	
+def viewAssessmentsOptions(request):
+	c = request.POST['mod_code']
+	print (c);
+	Assessments = getAllAssessmentsForModule(c)
+	print (Assessments);
+	return render(request,'listAssessmentsOptions.html', {'Assessments': Assessments})	
+
+def viewAssessmentSessionsOptions(request):
+	c = request.POST['mod_code']
+	a = request.POST['assess_id']
+	P = getSessionPerson(request)
+	#Sessions = getOpenSessionsForMarker(a, P.upId)
+	Sessions = getOpenSessions(a)
+	print (Sessions)
+	return render(request,'listAssessmentSessionsOptions.html', {'Sessions': Sessions})
+	
+def getSessionStudentMarks(request):
+	m = request.POST['mod_code']
+	a = request.POST['assess_id']
+	s = request.POST['sess_id']
+	session = getSessionsFromID(s)
+	students = getStudentsForASession(s)
+	weight = session.assessment_id.assessment_weight
+	class Student:
+	    firstName = ""
+	    upId = ""
+	    surname = ""
+	    total = ""
+	    def __init__(self):
+	      self.firstName = ""
+	      self.upId = ""
+	      self.surname = ""
+	      self.total  = ""
+	list = []
+	for student in students:
+	  stud = Student()
+	  stud.firstName = student.firstName
+	  stud.upId = student.upId
+	  stud.surname = student.surname
+	  stud.total = getAssessmentTotalForStudent(student.upId, m, a)
+	  list.append(stud)
+	print (Sessions)
+	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
+
+def assessment_view(request):
+    return render(request,'assessmentView.html', {'Assessments': assessmentName})	
+	
+def openAssessment(request, assessmentName):
+	print (assessmentName)
+	return render(request,'assessmentView.html', {'Assessments': assessmentName})	
+
+def marks_management(request):
+	P = getSessionPerson(request)
+	modules = getAllModulesForMarker(P.upId)
+	return render(request,'marks-management.html', {'modules': modules})	
+	
 '''
     REPORTING FUNCTIONS
 '''
+
+def renderCSV(request):
+	try:
+		P = getSessionPerson(request)	
+		person = getPersonByID(request.POST['studentID'])
+	
+	
+		nform = RenderForm() 
+		if request.method == 'POST':
+		  form = RenderForm(request.POST) # A form bound to the POST data
+  
+		  if form.is_valid():
+		  
+		    outputType = form.cleaned_data['outputType']
+		    assessment = form.cleaned_data['assessment']	
+		    module = form.cleaned_data['module']
+		    userID = form.cleaned_data['userID']
+		    alteredTable = form.cleaned_data['alteredTable']
+		    dateFrom = form.cleaned_data['dateFrom']
+		    dateTo = form.cleaned_data['dateTo']
+	except:
+		return render(request,'Reporting_Main.html', {'form': nform,  'msg':"Please Log In"})
+		
+def renderPDF(request): 
+	try:
+		P = getSessionPerson(request)	
+		person = getPersonByID(request.POST['studentID'])
+	
+			
+		nform = RenderForm() 
+		if request.method == 'POST':
+		  form = RenderForm(request.POST) # A form bound to the POST data
+
+		  if form.is_valid():
+
+		    outputType = form.cleaned_data['outputType']
+		    assessment = form.cleaned_data['assessment']
+		    module = form.cleaned_data['module']
+		    userID = form.cleaned_data['userID']
+		    alteredTable = form.cleaned_data['alteredTable']
+		    dateFrom = form.cleaned_data['dateFrom']
+		    dateTo = form.cleaned_data['dateTo']
+		  
+		    try:
+			    pdfGen = PDFReportGenerator()
+			    type = request.POST['type']
+			    if type == "ass" :
+				    report =  pdfGen.generateReport(self,  request.POST['mod_code'], assessment, outputType) #Assessment Report
+				    return render_to_response(report,'Reporting_Main.html', {'person': P}) # Redirect after POST
+
+			    elif type == "stu" :
+				    report =  pdfGen.generateReport(self,  request.POST['mod_code'], P.getID(), assessments, outputType)  #Student Marks Report
+
+			    else:#type == 'aud'
+				    report =  pdfGen.generateReport(self,  request.POST['mod_code'], P.getID(), alteredTable, dateFrom, dateTo, outputType) 
+
+		    except Exception, e:
+				    return render(request,'Reporting_Main.html', {'form': nform, 'msg':"Session ERROR"})	
+	
+		else:	
+			return render(request,'Reporting_Main.html', {'form': nform},{'pdf' : report})
+	except:
+		return render(request,'Reporting_Main.html', {'form': nform,  'msg':"Please Log In"})
+
+
 # frequency analysis function to initialize variables	
+
 def frequency_analysis(request):
-        person = Person()
-        return render_to_response('studentChosen.html',{'per': person,} )
+        person = getSessionPerson(request)
+        assessment = getAllAssementsForStudent(person.upId, getAllModulesForStudent(person.upId))
+        return render(request, 'studentChosen.html', {'per': person, 'assessment' : assessment})
 
 def getLeafAssessments(request):
         person = getSessionPerson(request)
         assess_id = request.POST['assess_id']
         x = getLeafAssessmentMarksOfAsssessmentForStudent(person.upId, assess_id)
-        return render_to_response( 'studentChosen.html', {'leafAssessmentList' : x})
+        return render(request,  'studentChosen.html', {'leafAssessmentList' : x})
         
 def  getAssessments(request):
-        person = getPresonByID(request.POST['studentID'])
+        person = getPersonByID(request.POST['studentID'])
         leaf = request.POST['leafAssessment']
-        leafAssesment = getLeafAssesment() #function does not exist, make it!!!!!
+        if person == 'Empty':
+            person = getSessionPerson(request)
+        mode = request.POST['mode']
+        if mode == 'Not Leaf':
+            assessmentList = getAllLeafAssessmentsForAssessment(person.upId, leaf)
+        else:
+                assessmentList = getAllLeafAssessments(person.upId, leaf)
         type = request.POST['type']
-        assessmentList = getAllAssessmentTotalsForStudent(person.empl_no, request.POST['mod_code'])
-        return render_to_response( 'studentChosen.html', {'per' : person, 'usrAllAssessments' : assessmentList, 'type' : type, 'leafAssesment' : leafAssesment })
+        return render(request,  'studentChosen.html', {'per' : person, 'usrAllAssessments' : assessmentList, 'type' : type, 'leafAssesment' : leafAssesment })
 
-def assessment_view(request):
-	t = get_template('assessmentView.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def assessment_manager(request):
-	t = get_template('assessmentManager.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def session_manager(request):
-	t = get_template('sessionManager.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-	
-	
-	
 def audit_report(request):
 	t = get_template('auditReport.html')
 	html = t.render(Context())
@@ -276,26 +397,93 @@ def reporting_main(request):
 	t = get_template('Reporting_Main.html')
 	html = t.render(Context())
 	return HttpResponse(html)
-        
+
+def assessmentReport(request):
+        t = get_template('assessmentReport.html')
+        html = t.render(Context())
+        return HttpResponse(html)
+
 def studentModules(request):
         student = getSessionPerson(request)
-        render_to_response('studentChosen.html', {'modules' : student.getAllModulesForStudent()})        
+        return render(request, 'studentChosen.html', {'modules' : student.getAllModulesForStudent()})
+        
         
 def getLecturerModules(request):
         lecturer = getSessionPerson(request)
-        return render_to_response('assessmentReport.html', {'modules' : getAllModulesForLecturer(lecturer.upId)})
+        return render(request, 'assessmentReport.html', {'modules' : getAllModulesForLecturer(lecturer.upId)})
         
 def searchStudents(request):
         searchedItemRequest = request.POST['searchedItem']
-        students = findPerson(searchedItemRequest) #function does not exist, make it!!!!!
-        render_to_response('studentChosen.html', {'students' : students})
+        studentSurnamesList = searchBySurname(searchedItemrequest) 
+        studentNamesList = searchByName(searchedItemrequest)
+        students = studentSurnamesList + studentNamesList
+        return render(request, 'studentChosen.html', {'students' : students})
         
 def displayStudent(request):
-	person = getStudentByID(request.POST['upId'])
-	render_to_response('studentReport.html', {'person' : person})
+        person = getStudentByID(request.POST['upId'])
+        return render(request, 'studentReport.html', {'person' : person})
+        
+def generate_auditLog(request):
+        dateFrom = request.POST['dateFrom']
+        dateTo = request.POST['dateTo']
+        upId = request.POST['upId']
+        if dateFrom is None and dateTo is None and upId is None:
+            auditlog = getAuditLogFromID(upId) 
+        elif dateFrom is None and dateTo is None and upId is not None:
+            auditlog = getAuditLogFromTimeRange(dateFrom, dateTo) 
+        return render(request, 'auditReport.html', {'auditlog' : auditlog})
+        
+        
+def get_statistics(request):
+        module = POST.request['module']
+        frequencyAnalysisOfModule = getFrequencyAnalysis(module) #implement business logic function
+        return render(request, 'stat.html', {'freqOfModule' : frequencyAnalysisOfModule, 'module' : module})
+
 '''
     END REPORTING FUNCTIONS
 '''
+
+'''COLLEN'''
+def get_all_modules_lecture(request):
+	person = getSessionPerson(request)
+	modules  = getAllModulesForLecturer(person.upId)
+	return render(request, 'marks-management.html', {'modules': modules})
+
+def get_all_modules_marker(request):
+	person = getSessionPerson(request)
+	modules  = getAllModulesForMarker(person.upId)
+	return render(request, 'marks-management.html', {'modules': modules})
+
+def get_all_students_of_module():
+	module_code = request.POST['mod_code']
+	students = getAllStudentsOfModule(module_code)
+	return render(request, 'marks-management.html', {'students': students})
+
+'''END COLLEN'''
+
+'''MARTIN'''
+def AssessmentManager(request):
+	if request.method == 'POST':
+		form = AssessmentManagerForm(request.POST)
+		if form.is_valid():
+			course = forms.cleaned_data['course']
+			assessmentType = forms.cleaned_data['assessmentType']
+			assessmentDetails = forms.cleaned_data['assessmentDetails']
+			totalMark = forms.cleaned_data['totalMark']
+			markWeight = forms.cleaned_data['markWeight']
+			assessmentName = forms.cleaned_data['assessmentName']
+			moduleId = forms.cleaned_data['moduleId']
+			assessmentId = forms.cleaned_data['assessmentId']
+			insertAssessment(assessmentId,assessmentName,markWeight,assessmentType,moduleId)
+			return render(request, 'assessmentManager.html', {'msg': "Assessment Inserted"}) # Redirect after POST
+		else:
+		  return render(request, 'assessmentManager.html', {'form': form, 'msg': form.errors})
+	else:
+	  P = getSessionPerson(request)	  
+	  form = AssessmentManagerForm() 
+	  return render(request, 'assessmentManager.html', {'form': form, 'Courses' : P.lectureOf})
+'''END MARTIN'''
+
 def statistics(request):
 	t = get_template('Statistics.html')
 	html = t.render(Context())
@@ -312,52 +500,14 @@ def student_report(request):
 	return HttpResponse(html)
 	
 	
-def unpublish(request):
-	t = get_template('unpublish.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def marks_management(request):
-        t = get_template('marks-management.html')
-	html = t.render(Context())
-	return HttpResponse(html)	
+def publish(request):
+	if request.method == 'POST': 
+	  try:	      
+	    csvfile = request.FILES['csvFile']
+	    parseMarksToDB(request, csvfile)
+	    return render(request, 'publish.html', {'msg' : "Marks Published!"})
+	  except IOError, e:
+	    return render(request, 'publish.html', {'msg' : "Unable to open the file!"})
+	else:
+	  return render(request, 'publish.html', {})
 	
-def user_login(request):
-    # Like before, obtain the context for the user's request.
-    context = RequestContext(request)
-    print >>sys.stderr, 'Goodbye, cruel world!'
-    # If the request is a HTTP POST, try to pull out the relevant information.
-    if request.method == 'POST':
-        # Gather the username and password provided by the user.
-        # This information is obtained from the login form.
-        username = request.POST['username']
-        password = request.POST['password']
-
-        # Use Django's machinery to attempt to see if the username/password
-        # combination is valid - a User object is returned if it is.
-        user = authenticateUser(username, password)
-
-        # If we have a User object, the details are correct.
-        # If None (Python's way of representing the absence of a value), no user
-        # with matching credentials was found.
-        if user is not None:
-            # Is the account active? It could have been disabled.
-            if user.is_active:
-                # If the account is valid and active, we can log the user in.
-                # We'll send the user back to the homepage.
-                login(request, user)
-                return HttpResponseRedirect('home.html')
-            else:
-                # An inactive account was used - no logging in!
-                return HttpResponse("Your Squirrel account is not active.")
-        else:
-            # Bad login details were provided. So we can't log the user in.
-            print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
-
-        # The request is not a HTTP POST, so display the login form.
-        # This scenario would most likely be a HTTP GET.
-    else:
-        # No context variables to pass to the template system, hence the
-        # blank dictionary object...
-        return render_to_response('login.html', {}, context)

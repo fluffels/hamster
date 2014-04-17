@@ -1,0 +1,6 @@
+<select id="assesments">
+    <option value="">Select an Assessment</option>
+  {% for Assessment in Assessments %}
+    <option value="{{ Assessment.getID() }}"> {{ Assessment }}</option>
+  {% endfor %}
+</select>

@@ -14,6 +14,7 @@
 	   </li>
 	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
 		  <ul>
+			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
 			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
 			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
 		  </ul>

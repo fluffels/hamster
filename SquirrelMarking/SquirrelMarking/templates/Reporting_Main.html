@@ -1,154 +1,88 @@
 {% extends "base.html" %}
 
 {% block title %}Reporting{% endblock %}
-{% block menu_shortcuts %}
-{% include "menu.html" %}
-{% endblock %}
-{% block includes %}
-	<script src="{{ STATIC_URL }}js/jquery.js"></script> 
-	<script>
-		$(document).ready(function(){
-			
-			$('#containerDisplay').load('assessmentReport.html');
-			
-			$('#renderingOptions').hide();
-			
-			$('.ReportingOptions a').click(function(){
-				return false;
-			});
-			
-			$('#assessReport').click(function(){
-				$('#renderingOptions').hide();
-				$('#containerDisplay').load('assessmentReport.html');
-			});
-			
-			$('#studentReport').click(function(){
-				$('#containerDisplay').load('studentReport.html');
-				$('#renderingOptions').show();
-			});
-			
-			$('#auditReport').click(function(){
-				$('#containerDisplay').load('auditReport.html');
-				$('#renderingOptions').show();
-			});
-			
-			$('#searchBtn').click(function(){
-				$('#list').load('studentChosen.html');
-			});
-			
-			$('#SaveAsPDFBtn').click(function(){
-				//implement code here
-			});
-			
-			$('#SaveAsCVSBtn').click(function(){
-				//implement code here
-			});
-			
-			$('#allRequest').click(function(){
-				if(this.checked) { 
-					$('.allradio').each(function() { 
-						this.checked = false;             
-					});
-				}else{
-					$('.allradio').each(function() { 
-						this.checked = true;                      
-					});        
-				}
-			});
-			
-			$('#submitRequestButton').click(function(){
-				$('#containerDisplay').load('Statistics.html');
-			});
-		});
-	</script>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
-{% endblock %}
-	
-{% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li ><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
-{% endblock %}
 
-{% block content_title %}<h1 align="center">Reporting</h1>{% endblock %}
-{% block content %}
-	<div class="reports" id="reportingContainer">
-		<div id="reportingMenu">
-			<h2> Reporting Types </h2>
-			<div id="options" class='ReportingOptions'>
-				<a href='#'><input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"></a> <br><br>
-				<a href='/studentReport/'><input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"></a><br><br>
-				<a href='#'><input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"></a><br>
+{% block includes %}
+		
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">		
+		<script>
+			$(document).ready(function(){
+				
+				$('#containerDisplay').load('assessmentReport.html');
+				
+				$('#renderingOptions').hide();
+				
+				$('.ReportingOptions a').on('click',  function(){
+					return false;
+				});
+				
+				$('#assessReport').on('click',  function(){
+					$('#renderingOptions').hide();
+					$('#containerDisplay').load('/assessmentReport/');
+				});
+				
+				$('#studentReport').on('click',  function(){
+					$('#containerDisplay').load('/studentReport/');
+					$('#renderingOptions').show();
+				});
+				
+				$('#auditReport').on('click',  function(){
+					$('#containerDisplay').load('/auditReport/');
+					$('#renderingOptions').show();
+				});
+				
+				$('#searchBtn').on('click',  function(){
+					$('#list').load('/studentChosen/');
+				});
+				
+				$('#allRequest').on('click',  function(){
+					if(this.checked) { 
+						$('.allradio').each(function() { 
+							this.checked = false;             
+						});
+					}else{
+						$('.allradio').each(function() { 
+							this.checked = true;                      
+						});        
+					}
+				});
+				
+				$('#submitRequestButton').on('click',  function(){
+					$('#containerDisplay').load('/Statistics/');
+				});
+			});
+		</script>
+		
+		 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
+	{% endblock %}
+	
+	{% block menu_shortcuts %}
+		<table id="navigation-bar" style="color:white;">
+		<tr ><th><a href="/Reporting_Main/"> Reporting </a></th>
+		<th><a href="/marks-management/">Marks Management</a></th>
+		<th><a href="/assessmentManager/">Create/Edit Assessment</a></th>
+		</tr>
+		</table  >
+	{% endblock %}
+	{% block content_title %} <h1 align="center"> Reporting </h1> {% endblock %}
+	{% block content %}
+		<div class="reports" id="reportingContainer">
+			<div id="reportingMenu">
+				<h2> Reporting Types </h2>
+				<div id="options" class='ReportingOptions'>
+					<a href='/assessmentReport/'><input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"></a> <br><br>
+					<a href='/studentReport/'><input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"></a><br><br>
+					<a href='/audit_report/'><input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"></a><br>
+					<a href='/Statistics/'><input class="menuButtons" type="button" value="Statistics" name="Statistics" id="statistics"></a><br>
+				</div>
+				<div id="renderingOptions">
+					<h3> Rendering options </h3>
+					<div id="renderAsPDF"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsPDf" type="button" value="Save as PDF"> </div><br>
+					<div id="renderAsCSV"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsCSV" type="button" value="Save as CSV"> </div>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div id='containerDisplay' class="displayContainerClass" style="width:415px;">
-		<div id="AssessmentReportContainer">
-			<h2> Assessment Report </h2>
-			<div id="moduleMarkContainer">
-				<input id="moduleMark" type='button' class="submitButtons" name='moduleMark' value="Module Mark">
-			</div>
-			<div id="examMarkContainer">
-				<input id="examMark" type='button' class="submitButtons" name='examMark' value="Exam Mark">
-			</div>
-			<div id="semesterMarkContainer">
-				<input id="semesterMark" type='button' class="submitButtons" name='semesterMark' value="Semester Mark">
-			</div>
-			<div id="semesterTestContainer">
-				<h3 class="AssessmentTitle"> Semester Tests: </h3>
-				<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST1
-				<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST2
-			</div>
-			<div id="classTestContainer">
-				<h3 class="AssessmentTitle"> Class Tests: </h3>
-				<input class='allradio' type="radio" name="leafAssessment" value="CT1">CT1
-				<input class='allradio' type="radio" name="leafAssessment" value="CT2">CT2
-				<input class='allradio' type="radio" name="leafAssessment" value="CT3">CT3
-				<input class='allradio' type="radio" name="leafAssessment" value="CT4">CT4
-			</div>
-			<div id="tutorialTestContainer">
-				<h3 class="AssessmentTitle"> Tutorial Tests: </h3>
-				<input class='allradio' type="radio" name="leafAssessment" value="TUT1">TUT1
-				<input class='allradio' type="radio" name="leafAssessment" value="TUT2">TUT2
-				<input class='allradio' type="radio" name="leafAssessment" value="TUT3">TUT3
-				<input class='allradio' type="radio" name="leafAssessment" value="TUT4">TUT4
-			</div>
-			<div id="practicalTestContainer">
-				<h3 class="AssessmentTitle"> Practical Tests: </h3>
-				<input class='allradio' type="radio" name="leafAssessment" value="P1">P1
-				<input class='allradio' type="radio" name="leafAssessment" value="CT2">P2
-				<input class='allradio' type="radio" name="leafAssessment" value="CT3">P3
-				<input class='allradio' type="radio" name="leafAssessment" value="CT4">P4
-			</div>
-			<br>
-			<input id='submitRequestButton' type='button' class="submitButtons" name='SubmitAssessmentRequest' value="Submit Request">		
-			<a href="javascript:location.reload(true)">Refresh Page</a>
+		<div id='containerDisplay' class="displayContainerClass">
+		
 		</div>
-	</div>
-	<div id="renderingOptions">
-		<h3> Rendering options </h3>
-		<div id="renderAsPDF"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsPDf" type="button" value="Save as PDF"> </div><br>
-		<div id="renderAsCSV"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsCSV" type="button" value="Save as CSV"> </div>
-	</div>
 {% endblock %}

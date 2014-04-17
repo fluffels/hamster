@@ -14,14 +14,16 @@
 	      data: {mod_code : code},
 	     
 	      }).success(function(response) {
-		$("#"+code).replaceWith(response);		
+		$("#"+code).replaceWith(response);
+		$("#"+code).find('a').button();
+		$('button').button();
 		$module.unbind('click', modClick);
 		  $('.assessment').click(function(){
 		    assess = $(this).text().trim();
 		    $.ajax({
 		      type: 'POST',
 		      url: '/assessmentView/',
-		      data: {mod_code : code, assessment : assess},		    
+		      data: {mod_code : code, assessment : assess},    
 		      }).success(function(response) {
 			$(this).append("hi");
 			
@@ -30,7 +32,7 @@
 	      });
 	  };
 	  $('.module').on('click',modClick);
-	  $('.accordianCourse').accordion({ collapsible: true, heightStyle: "content"  });
+	  $('.accordianCourse').accordion({ active: false, collapsible: true, heightStyle: "content"});  
 	});
 	</script>
 {% endblock %}
@@ -56,35 +58,32 @@
 	
 	{% if person.tutorOf %}
 		<h3>Tutor Courses</h3>
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.tutorOf %}
-			<li class="module">{{ module }}
-			   <ul id="{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 	{% if person.teachingAssistantOf %}
 		<h3>Teaching Assistant Courses</h3>.
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.teachingAssistantOf %}
-			<li class="module">{{ module }}
-			  <ul id="{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 	{% if person.lectureOf %}
 		<h3>Lecturer Courses</h3>
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.lectureOf %}
-			<li class="module">{{ module }}
-			  <ul id="{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 {% endblock %}
