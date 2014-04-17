@@ -149,23 +149,16 @@ def AssReportTest(request):
 	return HttpResponse(dataOut)
 	
 def studReportTest(request):
-	dataOut = renderAssessmentReport("COS301", 1)
+	dataOut = renderStudentReport("COS301", "u89000583", 1)
 	return HttpResponse(dataOut)
+	
 def auditReportTest(request):
 	dataOut = renderAssessmentReport("COS301", 1)
 	return HttpResponse(dataOut)
 
 def test(request):
-	
-	string = "<h1>Business Logic</h1>"
-	string += "<p><h2>populateModules</h2>"
 	populateModules()
 	
-	string += "</p><p><h2>getAllModules</h2>"
-	for module  in getAllModules():
-		string += "<br/>" + module.code
-	sting += "</p>"
-	return HTTPResponse(string)
 	print "getPersonListFromArrayList"
 	studentNumber = []
 	studentNumber.append("u89000960")
@@ -173,12 +166,12 @@ def test(request):
 	studentNumber.append("u89000962")
 	for person  in getPersonListFromArrayList(studentNumber):
 		print person.getupId()
-	
+
 	print "getAllLecturesOfModule"		
-	
+
 	for lecmodel  in getAllLecturesOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()
-		
+
 	print "getAllStudentsOfModule"
 	for lecmodel  in getAllStudentsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
@@ -186,73 +179,73 @@ def test(request):
 	print "getAllTAsOfModule"
 	for lecmodel  in getAllTAsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
-		
+
 	print "getAllNamesOf in this case TA"
 	person = getAllTAsOfModule(getAllModules()[0].code)
 	for lecmodel  in getAllNamesOf(person):
 		print lecmodel
-	
+
 	print "getAllTutorsOfModule"
 	for lecmodel  in getAllTutorsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
-		
+
 	print "getAllMarkersOfModule"
 	for lecmodel  in getAllMarkersOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()	
-	
+		print lecmodel
+
 	print "getAssessment"
 	for temp in getAssessment():
 		print temp.getName()
-			
+
 	print "getAssessmentForModuleByName"
 	for temp in getAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName()):
 		print temp
-	
+
 	print "getLeafAssessmentOfAssessmentForModuleByName"
 	for temp in getLeafAssessmentOfAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName(), 'test'):
 		print temp
-		
+
 	print "getAllAssessmentsForModule"
 	for temp in getAllAssessmentsForModule(getAllModules()[1].code):
 		print temp
-	
+
 	print "getAllOpenAssessmentsForModule"
 	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
 		print temp
-		
+
 	print "getAllOpenAssessmentsForModule"
 	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
 		print temp
-	
+
 	print "getAllModulesForStudent"
 	for temp in getAllModulesForStudent('u89000847'):
 		print temp
-		
+
 	print "getAllModulesForMarker"
 	for temp in getAllModulesForMarker('u89000999'):
 		print temp
-	
+
 	print "getAllModulesForLecturer"
 	for temp in getAllModulesForLecturer('ALeffley'):
 		print temp
-	
+
 	print "getAllLeafAssessmentsForAssessment"
 	#re-check functionality
 	for temp in getAllLeafAssessmentsForAssessment(getAssessment()[1].getID()):
 		print temp
-	
+
 	print "getAllAssementsForStudent"
 	for temp in getAllAssementsForStudent('u89000847', 'COS301'):
 		print temp.getName()
-		
+
 	print "getAllSessionsForModule"
 	for temp in getAllSessionsForModule('COS301'):
 		print temp
-		
+
 	print "getLeafAssessmentMarksOfAsssessmentForStudent"
 	for temp in getLeafAssessmentMarksOfAsssessmentForStudent(studentNumber[0],getAssessment()[1].getID()):
 		print temp
-		
+
 	print "getAllAssessmentTotalsForStudent"
 	for temp in getAllAssessmentTotalsForStudent('u89000999',getAllModules()[1].code):
 		print temp
@@ -262,8 +255,8 @@ def test(request):
 	#print a.getName()
 	#print "createLeafAssessment"
 	#createLeafAssessment(request,"Task1",a,20)
-	
-	
+
+
 	#print "createAssessment"
 	#done 
 
@@ -298,7 +291,6 @@ def test(request):
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
 #def logout(request)
-
 def loginData(request):
 	t = get_template('login.html')
 	html = t.render(Context())

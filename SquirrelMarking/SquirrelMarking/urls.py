@@ -12,9 +12,9 @@ urlpatterns = patterns('',
 	url(r'^Android/Marker/',include(markerUrls)),
 	(r'^ldapTest/$', ldapTest),
 	(r'^importTest/$', importTest),
-	(r'^reportTest/$', AssReportTest),
-	(r'^reportTest/$', studReportTest),
-	(r'^reportTest/$', auditReportTest)
+	(r'^AssReportTestTest/$', AssReportTest),
+	(r'^studReportTest/$', studReportTest),
+	(r'^auditReportTest/$', auditReportTest)
 
 	#student report page
 	#~ (r'^studentReport/$', studentReport),
