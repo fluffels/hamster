@@ -21,7 +21,10 @@ class CSVReportGenerator(ReportGenerator):
   
   #return csvOutput
 
-	def generateAssessmentReport(self, module, assessment, outputType):  #Assessment Report
+	def generateAssessmentReport(self, module, assessment):  #Assessment Report
+		reportGenerator = WebReportGenerator()
+		report = reportGenerator.generateAssessmentReport(module, assessment)
+		
 		reportname = "Assessmentcsv_" + module + datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 	      #INTEGRATE HERE
 	      
@@ -38,8 +41,11 @@ class CSVReportGenerator(ReportGenerator):
 		return"test.csv"
 	    
 	    
-	def generateStudentMarksReport(self, module, studentNo, assessments, outputType):  #Student Marks Report
-	    if outputType == "csv":
+	def generateStudentMarksReport(self, module, studentNo, assessments):  #Student Marks Report
+		
+	       reportGenerator = WebReportGenerator()
+	       report = reportGenerator.generateStudentMarksReport(module, studentNo, assessments)
+		
 	      if assessments != "":
 		dataA = getStudentMarks(module,studentNo, assessments)
 		dataT = getTotals(module)
@@ -52,10 +58,10 @@ class CSVReportGenerator(ReportGenerator):
 	      genCSV(student.getData,header,student.getReportName)
 	      return student.getReportName+".csv"
 
-	def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo, outputType):  #Audit Report
-	    
-	    if outputType == "csv":
-	      
+	def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
+	       reportGenerator = WebReportGenerator()
+	       report = reportGenerator.generateAuditReport(userID, alteredTable, datefrom, dateTo)
+		
 	      if module != "":
 		
 		if userID != "":
