@@ -587,11 +587,11 @@ def getMarkAllocationFromID(row_id):
         return MarkAllocation.objects.get(id=row_id)
 
 # Name: getMarkerModuleFromID(row_id)
-# Description: Returns a MarkerModule object from a specific code
-# Parameter: module_name = String
-# Return: MarkerModule object of specific code
-def getMarkerModuleFromID(module_name):
-        return Markermodule.objects.get(code=module_name)
+# Description: Returns a MarkerModule object from a specific ID
+# Parameter: row_id = Integer
+# Return: MarkerModule object of specific ID
+def getMarkerModuleFromID(row_id):
+        return Markermodule.objects.get(id=row_id)
 
 # Name: getMarkerSessionsFromID(row_id)
 # Description: Returns a MarkerSessions object from a specific ID
@@ -604,8 +604,8 @@ def getMarkerSessionsFromID(row_id):
 # Description: Returns a Module object from a specific ID
 # Parameter: row_id = Integer
 # Return: Module object of specific ID
-def getModuleFromID(row_id):
-        return Module.objects.get(id=row_id)
+def getModuleFromID(code_name):
+        return Module.objects.get(code=code_name)
 
 # Name: getSessionsFromID(row_id)
 # Description: Returns a Sessions object from a specific ID
@@ -643,6 +643,10 @@ def getAuditLogFromUsername(username):
 # Return: 
 def getAuditLogFromTimeRange(fromTime, toTime):
     return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+    
+def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
+	auditObjects = AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+	return auditObjects.objects.filter(user_id=username)
   
 # Name: getStudentsForASession
 # Description:
@@ -687,3 +691,11 @@ def getAuditLogFromTableName(tableName_):
             raise Exception("Table " + mymodel._meta.db_table + " is not being tracked by the audit log")
     else:
         raise Exception("Table " + tableName_ + " does not exist")
+
+def getTableAudit(alteredTable,dateFrom,dateTo):
+	list = getAuditLogFromTableName(alteredTable)
+	return list.filter(time__lte=dateTo,time__gte=dateFrom)
+
+def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
+	list = getTableAudit(alteredTable,dateFrom,dateTo)
+	return list.filter(person_id=userID)

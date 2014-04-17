@@ -4,102 +4,106 @@ from Report import Report
 from AuditReport import AuditReport
 from StudentMarksReport import StudentMarksReport
 from AssessmentReport import AssessmentReport
+from SquirrelMarking.businessLogicAPI import *
 
 class WebReportGenerator(ReportGenerator):
   def __init__(self):		#Constructor
     test = ""
    
-  
-  def generateAssessmentReport(self, module, assessment, outputType): #Assessment Report
+ #api 
+#getAllAssessmentTotalsForStudent(uid, mod_code)
+# getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id)
+#getAssessmentTotalForStudent(uid, mod_code, assess_id)
+#getAllAssementsForStudent(empl_no,mod_code)
+#getAllStudentsOfModule(mod_code)
+  def generateAssessmentReport(self, module, assessment): #Assessment Report
 
-            if outputType == "object":
-                    
-                    _module = "COS332"
-                    reportName = _module + " Assessment Report for "  + assessment
-                    headings = ["Student No", "ST1", "ST2", "T1", "T2"]
-                    totals = [50, 50, 10, 10]
-                    returnedData = [["10122893", 45, 50, 5, 10], ["10392837", 45, 50, 5, 10], ["12748392", 45, 50, 5, 10]]
-                    
-                    """
-                    #This part can be uncommented once BusinessLogic provides the functions called below
-                    _module = module
-                    
-                    BLogicObject = businessLogicAPI()
-                    totals = BLogicObject.getTotals(_module, assessments)
-                    returnedData = BLogicObject.getAssessmentMarks(_module, assessments)
-                    
-                    """
-                    
-                    report = AssessmentReport(reportName, headings, totals, returnedData)
-                    
-                    return report;
-            else:
-                    return "Error: Incorrect output type"
-                  
+	returnData =[]
+	name = []
+	total = []
+	mark = []
+
+
+	people = getAllStudentsOfModule(module)
+	for x in people:
+		tempList = []
+		tempList.append(x.getupId())
+		tempData = getAssessmentTotalForStudent(x.getupId(),module,assessment)
+		for y in tempData:
+			tempList.append(y[2])
+		returnData.append(templist)
+	        
+	tempData = getAssessmentTotalForStudent(people[0].getupId(),module,assessment)
+	for y in tempData:
+		name.append(y[0])
+		total.append(y[1])
+	reportName = module + " Assessment Report for "  + assessment
+	#~ getAllAssessmentTotalsForStudent
+	#~ headings = ["Student No", "ST1", "ST2", "T1", "T2"]
+	#~ totals = [50, 50, 10, 10]
+	#~ returnedData = [["10122893", 45, 50, 5, 10], ["10392837", 45, 50, 5, 10], ["12748392", 45, 50, 5, 10]]
+	report = AssessmentReport(reportName, name, total, returnData)
+	return report
   #--------------------------------------------------------------------------------------------------
   
-  def generateStudentMarksReport(self, module, studentNo, assessments, outputType):  #Student Marks Report
+  def generateStudentMarksReport(self, module, studentNo, assessments):  #Student Marks Report
                     
-            if outputType == "object":
-                    
-
-                    studentNumber = "10189337"
-                    _module = "COS332"
-                    reportName = _module + " Student Marks Report for " + studentNumber 
-                    headings = ["ST1", "ST2", "P1", "P2", "P3"]
-                    totals = [50, 50, 10, 10, 10]
-                    returnedData = [23, 45, 3, 7, 9]
-                    """
-                    #This part can be uncommented once BusinessLogic provides the functions called below
-                    
-                    BLogicObject = businessLogicAPI()
-                    studentNumber = studentNo
-                    _module = module
-                    
-                    
-                    if assessments == "":
-                            totals = BLogicObject.getTotals(_module)
-                            returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
-                    else:
-                            totals = BLogicObject.getTotals(_module, assessments)
-                            returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
-                    """
-                    report = StudentMarksReport(reportName, headings, totals, returnedData)
-                    return report
-            else:
-                    return "Error: Incorrect output type"
+	tempData = getAllAssessmentTotalsForStudent(studentNo,module)
 
 
-  def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo, outputType):  #Audit Report
-          
-            if outputType == "object":
-                 
-                  
-                    _module = module
-                    _userID = userID
-                    reportName = _module + " Audit Report for "
-                    table = alteredTable
-                    _dateFrom = dateFrom
-                    _dateTo = dateTo
-                    headings = ""
-                    returnedData = ""
-                    """
-                    #This part can be uncommented once BusinessLogic provides the functions called below
-                    
-                    BLogicObject = businessLogicAPI()
-                    if userID == "":
-                            
-                            returnedData = BLogicObject.getUserTableAudit(_module, table, _dateFrom, _dateTo)
-                    elif table == "":
-                            
-                            returnedData = BLogicObject.getUserTableAudit(_module, _userID, _dateFrom, _dateTo)
-                    else:
-                            if _dateTo != "":
-                                    import time
-                                    _dateTo = time.strftime("%d/%m/%y")
-                            returnedData = BLogicObject.getUserTableAudit(_module, _userID, table, _dateFrom,_dateTo) 
-                 """
-                    report = WebReport(reportName, headings, returnedData)
-                    return report
-            else:
-                  return "Error: Incorrect output type"
+	name = []
+	total = []
+	mark = []
+
+	for x in tempData:
+		name.append(x[0])
+		total.append(x[1])
+		mark.append(x[2])
+
+
+
+	#studentNumber = "10189337"
+	#_module = "COS332"
+	reportName = module + " Student Marks Report for " + studentNumber 
+	#headings = ["ST1", "ST2", "P1", "P2", "P3"]
+	#totals = [50, 50, 10, 10, 10]
+	#returnedData = [23, 45, 3, 7, 9]
+
+
+	"""
+	#This part can be uncommented once BusinessLogic provides the functions called below
+
+	BLogicObject = businessLogicAPI()
+	studentNumber = studentNo
+	_module = module
+
+
+	if assessments == "":
+	    totals = BLogicObject.getTotals(_module)
+	    returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
+	else:
+	    totals = BLogicObject.getTotals(_module, assessments)
+	    returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
+	"""
+	report = StudentMarksReport(reportName, name, totals, mark)
+	return report
+
+
+  def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
+	reportName = _module + " Audit Report for "
+	name = ""
+
+	if module != "":
+
+		if userID != "":
+
+			if alteredTable != "":
+				date = getUserTableAudit(module,userID,alteredTable,dateFrom,dateTo)
+			else:
+				data = getAuditLogFromTimeRangeAndUser(userID,dateFrom,dateTo) 
+		else:
+			if alteredTable != "":
+				data = getTableAudit(module,alteredTable,dateFrom,dateTo)
+
+	report = AuditReport(reportName, headings, data)
+	return report

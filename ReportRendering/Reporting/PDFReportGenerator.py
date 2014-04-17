@@ -15,19 +15,22 @@ class PDFReportGenerator(ReportGenerator):
   csvGen = CSVReportGenerator()
   course_name = 'COS xxx'
 
-  def generateAssessmentReport(self, module, assessment):  #Assessment Report
-      report = self.csvGen.generateAssessmentReport(module, assessment)
+  def generateAssessmentReport(self, module, assessment, outputType):  #Assessment Report
+    if outputType == "pdf":
+      report = self.csvGen.generateAssessmentReport(module, assessment, 'csv')
       self.course_name = module
       print "Test"
       self.create_report(report)
     
-  def generateStudentMarksReport(self, module, studentNo, assessments):  #Student Marks Report
-      report = self.csvGen.generateStudentMarksReport(module, studentNo, assessments)
+  def generateStudentMarksReport(self, module, studentNo, assessments, outputType):  #Student Marks Report
+    if outputType == "pdf":
+      report = self.csvGen.generateStudentMarksReport(module, studentNo, assessments, 'csv')
       self.course_name = studentNo + ' ' + module
       self.create_report(report)
   
-  def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
-      report = self.csvGen.generateAuditReport( module, userID, alteredTable, dateFrom, dateTo)
+  def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo, outputType):  #Audit Report
+    if outputType == "pdf":
+      report = self.csvGen.generateAuditReport( module, userID, alteredTable, dateFrom, dateTo, 'csv')
       self.course_name = module + ' Audit Report'
       self.create_report(report)
 
