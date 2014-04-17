@@ -1,0 +1,1 @@
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",1);

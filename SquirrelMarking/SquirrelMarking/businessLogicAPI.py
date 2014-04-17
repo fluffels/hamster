@@ -587,11 +587,11 @@ def getMarkAllocationFromID(row_id):
         return MarkAllocation.objects.get(id=row_id)
 
 # Name: getMarkerModuleFromID(row_id)
-# Description: Returns a MarkerModule object from a specific ID
-# Parameter: row_id = Integer
-# Return: MarkerModule object of specific ID
-def getMarkerModuleFromID(row_id):
-        return Markermodule.objects.get(id=row_id)
+# Description: Returns a MarkerModule object from a specific code
+# Parameter: module_name = String
+# Return: MarkerModule object of specific code
+def getMarkerModuleFromID(module_name):
+        return Markermodule.objects.get(code=module_name)
 
 # Name: getMarkerSessionsFromID(row_id)
 # Description: Returns a MarkerSessions object from a specific ID
