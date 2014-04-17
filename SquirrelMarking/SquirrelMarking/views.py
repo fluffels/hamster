@@ -12,6 +12,7 @@ from businessLogicAPI import *
 from forms import *
 from django.shortcuts import render
 from reportRenderers import *
+from DBAdapter import *
 
 #from django.http import HttpResponseRedirect
 
@@ -139,12 +140,18 @@ def ldapTest(request):
 		raise e
 		
 def importTest(request):
-	fo.close()
-	t = get_template('login.html')
-	html = t.render(Context())
-	return HttpResponse(html)
+	with open("SquirrelMarking/data.csv", "rb") as csvFile:
+		parseMarksToDB(request, csvFile)
+	return HttpResponse("<p>imported</p>")
 	
-def reportTest(request):
+def AssReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
+	
+def studReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
+def auditReportTest(request):
 	dataOut = renderAssessmentReport("COS301", 1)
 	return HttpResponse(dataOut)
 
