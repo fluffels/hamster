@@ -11,7 +11,11 @@ from ldapView import *
 from businessLogicAPI import *
 from forms import *
 from django.shortcuts import render
+from reportRenderers import *
+from DBAdapter import *
+
 #from django.http import HttpResponseRedirect
+
 def ldapTest(request):
 	try:
 		return HttpResponse("<table border='1' style='width:1000px'>"+ 
@@ -134,16 +138,34 @@ def ldapTest(request):
 			"</table>");
 	except Exception,e:
 		raise e
+		
+def importTest(request):
+	with open("SquirrelMarking/data.csv", "rb") as csvFile:
+		parseMarksToDB(request, csvFile)
+	return HttpResponse("<p>imported</p>")
+	
+def AssReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
+	
+def studReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
+def auditReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
 
 def test(request):
 	
-	print "populateModules"
+	string = "<h1>Business Logic</h1>"
+	string += "<p><h2>populateModules</h2>"
 	populateModules()
 	
-	print "getAllModules"
+	string += "</p><p><h2>getAllModules</h2>"
 	for module  in getAllModules():
-		print module.code
-	
+		string += "<br/>" + module.code
+	sting += "</p>"
+	return HTTPResponse(string)
 	print "getPersonListFromArrayList"
 	studentNumber = []
 	studentNumber.append("u89000960")

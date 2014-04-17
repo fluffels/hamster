@@ -31,13 +31,13 @@ class WebReportGenerator(ReportGenerator):
 		tempData = getAssessmentTotalForStudent(x.getupId(),module,assessment)
 		for y in tempData:
 			tempList.append(y[2])
-		returnData.append(templist)
+		returnData.append(tempList)
 	        
 	tempData = getAssessmentTotalForStudent(people[0].getupId(),module,assessment)
 	for y in tempData:
 		name.append(y[0])
 		total.append(y[1])
-	reportName = module + " Assessment Report for "  + assessment
+	reportName = module + " Assessment Report"
 	#~ getAllAssessmentTotalsForStudent
 	#~ headings = ["Student No", "ST1", "ST2", "T1", "T2"]
 	#~ totals = [50, 50, 10, 10]
