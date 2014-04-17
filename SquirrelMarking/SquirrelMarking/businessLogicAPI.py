@@ -400,7 +400,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 # Description: Returns all marks of a student for a specific assessment
 # Parameter: uid : String
 # Parameter assess_id : Assessment
-# Return: ?
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
 def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
@@ -408,16 +408,20 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
         
         marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
         if(marks):
-            listMark.append(x.getMax_mark())
-            listMark.append(marks[0].getMark())
+            list = []
+	    list.append(x.getName())
+	    list.append(x.getMax_mark())
+	    list.append(marks[0].getMark())
+	    listMark.append(list)
     
     return listMark
 
+    
 # Name: getAllAssessmentTotalsForStudent(uid, mod_code)
 # Description: Returns all the totals for a specific Assessment?
 # Parameter: uid : String
 # Parameter: mod_code : String
-# Return: >
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
 def getAllAssessmentTotalsForStudent(uid, mod_code):
     assessments = getAllAssementsForStudent(uid,mod_code)
     totals = []
@@ -425,15 +429,48 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
         leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
         total = 0
         mark = 0
+	name = x.assessment_name
         counter = 0
         for m in leafMarks:
             counter = counter + 1
             if (counter % 2 == 0):
                 totals = totals + m
             else:
-                mark = mark + m 
-        totals.append(totals)
-        totals.append(marks)
+                mark = mark + m
+	list = []
+	list.append(name)
+	list.append(total)
+	list.append(mark)
+        totals.append(list)
+    
+    return totals
+
+# Name: getAssessmentTotalsForStudent(uid, mod_code, assess_id)
+# Description: Returns all the totals for a specific Assessment?
+# Parameter: uid : String
+# Parameter: mod_code : String
+# Parameter: assess_id : Integer
+# Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
+def getAssessmentTotalForStudent(uid, mod_code, assess_id):
+    assessments = Assessment.objects.filter(id=assess_id)
+    totals = []
+    for x in assessments:
+        leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
+        total = 0
+        mark = 0
+	name = x.assessment_name
+        counter = 0
+        for m in leafMarks:
+            counter = counter + 1
+            if (counter % 2 == 0):
+                totals = totals + m
+            else:
+                mark = mark + m
+	list = []
+	list.append(name)
+	list.append(total)
+	list.append(mark)
+        totals.append(list)
     
     return totals
 
@@ -567,8 +604,8 @@ def getMarkerSessionsFromID(row_id):
 # Description: Returns a Module object from a specific ID
 # Parameter: row_id = Integer
 # Return: Module object of specific ID
-def getModuleFromID(row_id):
-        return Module.objects.get(id=row_id)
+def getModuleFromID(code_name):
+        return Module.objects.get(code=code_name)
 
 # Name: getSessionsFromID(row_id)
 # Description: Returns a Sessions object from a specific ID
@@ -606,6 +643,10 @@ def getAuditLogFromUsername(username):
 # Return: 
 def getAuditLogFromTimeRange(fromTime, toTime):
     return AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+    
+def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
+	auditObjects = AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
+	return auditObjects.objects.filter(user_id=username)
   
 # Name: getStudentsForASession
 # Description:
@@ -650,3 +691,11 @@ def getAuditLogFromTableName(tableName_):
             raise Exception("Table " + mymodel._meta.db_table + " is not being tracked by the audit log")
     else:
         raise Exception("Table " + tableName_ + " does not exist")
+
+def getTableAudit(alteredTable,dateFrom,dateTo):
+	list = getAuditLogFromTableName(alteredTable)
+	return list.filter(time__lte=dateTo,time__gte=dateFrom)
+
+def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
+	list = getTableAudit(alteredTable,dateFrom,dateTo)
+	return list.filter(person_id=userID)

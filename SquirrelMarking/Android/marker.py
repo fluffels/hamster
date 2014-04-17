@@ -10,13 +10,17 @@ def saveMarks(request):
 		'message':'Request failed',
 		'success':'false'
 	}]
-	if request.method == 'POST':
+	if request.method == 'GET':
 		try:
-			json_data =json.loads(request.body)
-			student = json_data['uid']
-			course = json_data['courseCode']
-			leafAssessmentID = json_data['leafAssessmentID']
-			mark = json_data['mark']
+			student = request.GET['uid']
+			course = request.GET['courseCode']
+			leafAssessmentID = request.GET['leafAssessmentID']
+			mark = request.GET['mark']
+			#json_data =json.loads(request.body)
+			#student = json_data['uid']
+			#course = json_data['courseCode']
+			#leafAssessmentID = json_data['leafAssessmentID']
+			#mark = json_data['mark']
 			markAlloc =getMarkAllocationFromID(leafAssessmentID)
 			BL.updateMarkAllocation(request, markAlloc, mark)
 			
@@ -39,10 +43,10 @@ def saveMarks(request):
 		return HttpResponse(json.dumps(data))
 
 def getStudents(request):
-	if request.method == 'POST':
+	if request.method == 'GET':
 		try:
-			json_data =json.loads(request.body)
-			assessmentID = json_data["assessmentID"]
+			#json_data =json.loads(request.body)
+			assessmentID = request.GET["assessmentID"]
 			marker =BL.getSessionPerson(request)
 			openSessions = BL.getOpenSessionsForMarker(assessmentID,marker)
 			students = []
@@ -74,12 +78,12 @@ def getTaskListByAssessment(request):
 		'type' :-1,
 		'message':'Error in request'
 	}]
-	if request.method == 'POST':
+	if request.method == 'GET':
 		try:
-			json_data =json.loads(request.body)
-			module =json_data['module']
-			assessmentID =json_data['assessmentID']
-			suid =json_data['studentuid']
+			#json_data =json.loads(request.body)
+			module =request.GET['module']
+			assessmentID =request.GET['assessmentID']
+			suid =request.GET['studentuid']
 
 			assessment =BL.getAssessmentFromID(assessmentID)
 
@@ -118,9 +122,9 @@ def getActiveAssessments(request):
 		'type' :-1,
 		'message':'Error in request'
 	}]
-	if request.method == 'POST':
-		json_data =json.loads(request.body)
-		module = json_data['module']
+	if request.method == 'GET':
+		#json_data =json.loads(request.body)
+		module = request.GET['module']
 		assessments = BL.getAllOpenAssessmentsForModule(module)
 		assessment =[]
 		AssessmentName = []

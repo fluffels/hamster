@@ -34,18 +34,18 @@ studentReport = StudentMarksReport(reportName, headings, totals, returnedData)
 #myCSVGen = CSVReportGenerator()
 #test =myCSVGen.generateAssessmentReport("Cos332", "P1", "csv")
 
-myPDFGen = PDFReportGenerator()
-test = myPDFGen.generateAssessmentReport("Cos332", "P1", "pdf")
+#myPDFGen = PDFReportGenerator()
+#test = myPDFGen.generateAssessmentReport("Cos332", "P1", "pdf")
 
 
-dataOut = renderAuditReport(testReport)
+#dataOut = renderAuditReport(module, userID, alteredTable, dateFrom, dateTo)
 fo = open("AuditReport.html","wb")
 fo.write(bytes(dataOut))
 fo.close()
 print "Report Generated"
 print "Saved to file 'AuditReport.html'"
 
-dataOut = renderAssessmentReport(assessmentReport)	
+dataOut = renderAssessmentReport("COS301", "Prac 1")
 fo = open("AssessmentReport.html","wb")
 fo.write(bytes(dataOut))
 fo.close()

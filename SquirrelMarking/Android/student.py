@@ -4,9 +4,9 @@ import SquirrelMarking.businessLogicAPI as BL
 import json
 
 def getAllMarksForModule(request):
-	json_data =json.loads(request.body)
-	studentNumber = json_data['uid']
-	module = json_data['module']
+	#json_data =json.loads(request.body)
+	studentNumber = request.GET['uid']
+	module = request.GET['module']
 	assessments = BL.getAllAssementsForStudent(studentNumber,module)
 	AssessmentName = []
 	mark = []
@@ -33,9 +33,9 @@ def getAllMarksForModule(request):
 	return ret
 	
 def getModules(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		student =json_data['uid']
+	if request.method == 'GET':
+		#json_data = json.loads(request.body)
+		student =request.GET['uid']
 		moduleObjects = BL.getAllModulesForStudent(student)
 		print moduleObjects
 		modules = []
@@ -54,10 +54,10 @@ def getModules(request):
 		raise Http404()
 
 def getMark(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		student = json_data['uid']
-		module = json_data['module']
+	if request.method == 'GET':
+		#json_data = json.loads(request.body)
+		student = request.GET['uid']
+		module = request.GET['module']
 		
 		#business logic will provide mark for this particular module
 		#mark = BL.getMark(student, module)
@@ -92,9 +92,9 @@ def getMark(request):
 		#total
 
 def getModuleMarks(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		student = json_data['uid']
+	if request.method == 'GET':
+		#json_data = json.loads(request.body)
+		student = request.GET['uid']
 		data = [
 			{
 				'type' : 1,

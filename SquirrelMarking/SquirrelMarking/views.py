@@ -11,10 +11,153 @@ from ldapView import *
 from businessLogicAPI import *
 from forms import *
 from django.shortcuts import render
+from reportRenderers import *
+from DBAdapter import *
+
 #from DBAdapter import *
 import sys
 import csv
 #from django.http import HttpResponseRedirect
+
+def ldapTest(request):
+	try:
+		return HttpResponse("<table border='1' style='width:1000px'>"+ 
+			"<tr>"+
+			"<td>Authenticate User Object</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Enrollments of user</td>" +
+			"<td>"+str(sourceEnrollments("u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Tuter Designations</td>" +
+			"<td>"+str(sourceTutorDesignations("u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>TeachAsst Designations</td>" +
+			"<td>"+str(sourceTeachingAssistantDesignations("u89000915"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Lecturer Designations</td>" +
+			"<td>"+str(sourceLecturerDesignations("BWingfield"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Demographics of User </td>" +
+			"<td>"+str(sourceDemographics("BWingfield"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Members of Module </td>" +
+			"<td>"+str(getMembers("stud_COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Find a user by attribute</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Tries to look up a student</td>" +
+			"<td>"+str(findPerson("uid","u89000447"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints all module codes </td>" +
+			"<td>"+str(getAllModuleCodes())+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Prints Students of a module </td>" +
+			"<td>"+str(getStudentsOf("COS300"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Tutors of a module</td>" +
+			"<td>"+str(getTutorsOf("COS344"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints TAs of a module</td>" +
+			"<td>"+str(getTAsOf("COS110"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Lecturers of a module</td>" +
+			"<td>"+str(getLecturorsOf("COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Test * character</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+
+			"<tr>"+
+			"<td> " +"</td>" +
+			"</tr>"+
+			"<tr>"+
+			"<td> " +"</td>" +
+			"</tr>"+
+			"<tr>"+
+			"<td>Authenticate User Object</td>" +
+			"<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Enrollments of user test char * </td>" +
+			"<td>"+str(sourceEnrollments("u8*"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Tuter Designations test char + </td>" +
+			"<td>"+str(sourceTutorDesignations("u8900044+"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>TeachAsst Designations test char $ </td>" +
+			"<td>"+str(sourceTeachingAssistantDesignations("u8900091$"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Lecturer Designations test char # </td>" +
+			"<td>"+str(sourceLecturerDesignations("##########"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Demographics of User test char \ n </td>" +
+			"<td>"+str(sourceDemographics("BWingfie\n"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Members of Module </td>" +
+			"<td>"+str(getMembers("stud_COS301"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Find a user by attribute</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Tries to look up a student test char @</td>" +
+			"<td>"+str(findPerson("uid","u8900044@"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td> Prints Students of a module </td>" +
+			"<td>"+str(getStudentsOf("*"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Tutors of a module</td>" +
+			"<td>"+str(getTutorsOf("COS344"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints TAs of a module test char _ </td>" +
+			"<td>"+str(getTAsOf("COS11_"))+"</td>" +
+			"</tr> "+ 
+			"<tr>"+
+			"<td>Prints Lecturers of a module test char - </td>" +
+			"<td>" + str(getLecturorsOf("COS30-")) +"</td>" +
+			"</tr> " +  
+			"</table>");
+	except Exception,e:
+		raise e
+		
+def importTest(request):
+	with open("SquirrelMarking/data.csv", "rb") as csvFile:
+		parseMarksToDB(request, csvFile)
+	return HttpResponse("<p>imported</p>")
+	
+def AssReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
+	
+def studReportTest(request):
+	dataOut = renderStudentReport("COS301", "u89000583", 1)
+	return HttpResponse(dataOut)
+	
+def auditReportTest(request):
+	dataOut = renderAssessmentReport("COS301", 1)
+	return HttpResponse(dataOut)
 
 def test(request):
 	
@@ -32,12 +175,12 @@ def test(request):
 	studentNumber.append("u89000962")
 	for person  in getPersonListFromArrayList(studentNumber):
 		print person.getupId()
-	
+
 	print "getAllLecturesOfModule"		
-	
+
 	for lecmodel  in getAllLecturesOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()
-		
+
 	print "getAllStudentsOfModule"
 	for lecmodel  in getAllStudentsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
@@ -45,99 +188,90 @@ def test(request):
 	print "getAllTAsOfModule"
 	for lecmodel  in getAllTAsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
-		
+
 	print "getAllNamesOf in this case TA"
 	person = getAllTAsOfModule(getAllModules()[0].code)
 	for lecmodel  in getAllNamesOf(person):
 		print lecmodel
-	
+
 	print "getAllTutorsOfModule"
 	for lecmodel  in getAllTutorsOfModule(getAllModules()[0].code):
 		print lecmodel.getupId()	
-		
+
 	print "getAllMarkersOfModule"
 	for lecmodel  in getAllMarkersOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()	
-	
+		print lecmodel
+
 	print "getAssessment"
 	for temp in getAssessment():
 		print temp.getName()
-			
-	#print "getAssessmentForModuleByName"
-	#for temp in getAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName()):
-		#print temp
-	
-	#print "getLeafAssessmentOfAssessmentForModuleByName"
-	#for temp in getLeafAssessmentOfAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName(), 'test'):
-		#print temp
-		
-	#print "getAllAssessmentsForModule"
-	#for temp in getAllAssessmentsForModule(getAllModules()[1].code):
-		#print temp
-	
-	#print "getAllOpenAssessmentsForModule"
-	#for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
-		#print temp
-		
-	#print "getAllOpenAssessmentsForModule"
-	#for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
-		#print temp
-	
-	#print "getAllModulesForStudent"
-	#for temp in getAllModulesForStudent('u89000847'):
-		#print temp
-		
-	#print "getAllModulesForMarker"
-	#for temp in getAllModulesForMarker('u89000999'):
-		#print temp
-	
-	#print "getAllModulesForLecturer"
-	#for temp in getAllModulesForLecturer('ALeffley'):
-		#print temp
-	
-	#print "getAllLeafAssessmentsForAssessment"
-	##re-check functionality
-	#for temp in getAllLeafAssessmentsForAssessment(getAssessment()[1].getID()):
-		#print temp
-	
-	#print "getAllAssementsForStudent"
-	#for temp in getAllAssementsForStudent('u89000847', 'COS301'):
-		#print temp.getName()
-		
-	#print "getAllSessionsForModule"
-	#for temp in getAllSessionsForModule('COS301'):
-		#print temp
-		
-	#print "getLeafAssessmentMarksOfAsssessmentForStudent"
-	#for temp in getLeafAssessmentMarksOfAsssessmentForStudent(studentNumber[0],getAssessment()[1].getID()):
-		#print temp
-		
-	#print "getAllAssessmentTotalsForStudent"
-	#for temp in getAllAssessmentTotalsForStudent('u89000999',getAllModules()[1].code):
-		#print temp
-		
-	createAssessment(request, "test",123,"asd",getAllModules()[1])
+
+	print "getAssessmentForModuleByName"
+	for temp in getAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName()):
+		print temp
+
+	print "getLeafAssessmentOfAssessmentForModuleByName"
+	for temp in getLeafAssessmentOfAssessmentForModuleByName(getAllModules()[1].code, getAssessment()[0].getName(), 'test'):
+		print temp
+
+	print "getAllAssessmentsForModule"
+	for temp in getAllAssessmentsForModule(getAllModules()[1].code):
+		print temp
+
+	print "getAllOpenAssessmentsForModule"
+	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
+		print temp
+
+	print "getAllOpenAssessmentsForModule"
+	for temp in getAllOpenAssessmentsForModule(getAllModules()[1].code):
+		print temp
+
+	print "getAllModulesForStudent"
+	for temp in getAllModulesForStudent('u89000847'):
+		print temp
+
+	print "getAllModulesForMarker"
+	for temp in getAllModulesForMarker('u89000999'):
+		print temp
+
+	print "getAllModulesForLecturer"
+	for temp in getAllModulesForLecturer('ALeffley'):
+		print temp
+
+	print "getAllLeafAssessmentsForAssessment"
+	#re-check functionality
+	for temp in getAllLeafAssessmentsForAssessment(getAssessment()[1].getID()):
+		print temp
+
+	print "getAllAssementsForStudent"
+	for temp in getAllAssementsForStudent('u89000847', 'COS301'):
+		print temp.getName()
+
+	print "getAllSessionsForModule"
+	for temp in getAllSessionsForModule('COS301'):
+		print temp
+
+	print "getLeafAssessmentMarksOfAsssessmentForStudent"
+	for temp in getLeafAssessmentMarksOfAsssessmentForStudent(studentNumber[0],getAssessment()[1].getID()):
+		print temp
+
+	print "getAllAssessmentTotalsForStudent"
+	for temp in getAllAssessmentTotalsForStudent('u89000999',getAllModules()[1].code):
+		print temp
+	#createAssessment(request, "test",123,"asd",getAllModules()[1])
 	#print "getAssessmentForModuleByName"
 	#a=getAssessmentForModuleByName(getAllModules()[1],"test")
 	#print a.getName()
 	#print "createLeafAssessment"
 	#createLeafAssessment(request,"Task1",a,20)
-	
-	
+
+
 	#print "createAssessment"
 	#done 
 
-	x2 = getModuleFromID("COS132")
-	x3 = insertAssessment('testAs1','asdas',"Practical",x2)
-	x4 = insertSessions("testAs1",x3,'2012-12-12 12:12','2015-12-12 12:12')
-	x3 = insertAssessment('testAs2','asdas',"Practical",x2)
-	x4 = insertSessions("testAs2",x3,'2012-12-12 12:12','2015-12-12 12:12')
-	x3 = insertAssessment('testAs3','asdas',"Test",x2)
-	x4 = insertSessions("testAs3",x3,'2012-12-12 12:12','2015-12-12 12:12')
-	x3 = insertAssessment('testAs4','asdas',"Practical",x2)
-	x4 = insertSessions("testAs4",x3,'2012-12-12 12:12','2015-12-12 12:12')
-	x3 = insertAssessment('testAs5','asdas',"Test",x2)
-	x4 = insertSessions("testAs5",x3,'2012-12-12 12:12','2015-12-12 12:12')
+	#x2 = insertModule("COS301")
+	#x3 = insertAssessment('test','asdas',"type",x2)
+	#x4 = insertSessions("test",x3,'2012-12-12 12:12','2015-12-12 12:12')
 	#xx = insertMarkSession("u89000999",x4)
 	#x5 = insertMarkerModule("u89000999",x2)
 	#x6 = insertLeafAssessment("name",x3,100,True)
@@ -163,8 +297,8 @@ def test(request):
 	#getAuditLogFromTimeRange('2012-12-12 12:12','2015-12-12 12:12')
 	#print getAllOpenAssessmentsForModule("COS301")
 	#print getAuditLogFromTableName("MarkerSessions")
-	#return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
-	return loginWeb(request)
+	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
+
 #def logout(request)
 
 def loginData(request):
@@ -305,7 +439,8 @@ def renderCSV(request):
 	
 	
 		nform = RenderForm() 
-		if request.method == 'POST':
+		if request.method == 'POST':
+
 		  form = RenderForm(request.POST) # A form bound to the POST data
   
 		  if form.is_valid():
@@ -361,6 +496,13 @@ def renderPDF(request):
 	except:
 		return render(request,'Reporting_Main.html', {'form': nform,  'msg':"Please Log In"})
 
+def viewAssessments(request, mod_code):
+	try:
+		P = getSessionPerson(request)
+		Assessments = getAllAssessmentsForModule(mod_code)
+		return render(request,'div.html', {'Assessments': Assessments})		
+	except:
+		return render(request,'login.html', {'form': nform,  'msg':"Please login"})
 
 # frequency analysis function to initialize variables	
 
@@ -388,6 +530,23 @@ def  getAssessments(request):
         type = request.POST['type']
         return render(request,  'studentChosen.html', {'per' : person, 'usrAllAssessments' : assessmentList, 'type' : type, 'leafAssesment' : leafAssesment })
 
+def assessment_view(request):
+	t = get_template('assessmentView.html')
+	html = t.render(Context())
+	return HttpResponse(html)
+
+def assessment_manager(request):
+	t = get_template('assessmentManager.html')
+	html = t.render(Context())
+	return HttpResponse(html)
+
+def session_manager(request):
+	t = get_template('sessionManager.html')
+	html = t.render(Context())
+	return HttpResponse(html)
+	
+	
+	
 def audit_report(request):
 	t = get_template('auditReport.html')
 	html = t.render(Context())
@@ -511,3 +670,53 @@ def publish(request):
 	else:
 	  return render(request, 'publish.html', {})
 	
+
+def unpublish(request):
+	t = get_template('unpublish.html')
+	html = t.render(Context())
+	return HttpResponse(html)
+
+def marks_management(request):
+        t = get_template('marks-management.html')
+	html = t.render(Context())
+	return HttpResponse(html)	
+	
+def user_login(request):
+    # Like before, obtain the context for the user's request.
+    context = RequestContext(request)
+    print >>sys.stderr, 'Goodbye, cruel world!'
+    # If the request is a HTTP POST, try to pull out the relevant information.
+    if request.method == 'POST':
+        # Gather the username and password provided by the user.
+        # This information is obtained from the login form.
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Use Django's machinery to attempt to see if the username/password
+        # combination is valid - a User object is returned if it is.
+        user = authenticateUser(username, password)
+
+        # If we have a User object, the details are correct.
+        # If None (Python's way of representing the absence of a value), no user
+        # with matching credentials was found.
+        if user is not None:
+            # Is the account active? It could have been disabled.
+            if user.is_active:
+                # If the account is valid and active, we can log the user in.
+                # We'll send the user back to the homepage.
+                login(request, user)
+                return HttpResponseRedirect('home.html')
+            else:
+                # An inactive account was used - no logging in!
+                return HttpResponse("Your Squirrel account is not active.")
+        else:
+            # Bad login details were provided. So we can't log the user in.
+            print "Invalid login details: {0}, {1}".format(username, password)
+            return HttpResponse("Invalid login details supplied.")
+
+        # The request is not a HTTP POST, so display the login form.
+        # This scenario would most likely be a HTTP GET.
+    else:
+        # No context variables to pass to the template system, hence the
+        # blank dictionary object...
+        return render_to_response('login.html', {}, context)

@@ -4,7 +4,7 @@ import re
 from django.http import HttpResponse
 
 global ldapURI
-ldapURI = "ldap://137.215.40.94"
+ldapURI = "ldap://localhost"
 global basedn
 basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
 # Create your views here.
@@ -60,7 +60,7 @@ def getGroups(username, filterv):
 
 def sourceEnrollments(username):
     return getGroups(username,"stud_")
-
+    
 def sourceTutorDesignations(username):
     return getGroups(username,"tuts_")
 
@@ -111,16 +111,28 @@ def getMembers(groupName):
     return resultArray
 
 def getStudentsOf(module):
-    return getMembers("stud_" + module)
+  try:
+      return getMembers("stud_" + module)
+  except:
+      raise Exception("Module code does not exist")
 
 def getTutorsOf(module):
-    return getMembers("tuts_" + module)
-
+  try:
+      return getMembers("tuts_" + module)
+  except:
+      raise Exception("Module code does not exist")
+    
 def getTAsOf(module):
-    return getMembers("teachasst_" + module)
+  try:
+      return getMembers("teachasst_" + module)
+  except:
+      raise Exception("Module code does not exist")
 
 def getLecturorsOf(module):
-    return getMembers("lect_" + module)
+  try:
+      return getMembers("lect_" + module)
+  except:
+      raise Exception("Module code does not exist")
 
 def findPerson(filterName, filterValue):
     try:
