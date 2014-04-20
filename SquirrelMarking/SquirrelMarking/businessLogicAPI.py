@@ -656,7 +656,7 @@ def getStudentsForASession(sess_id_):
 	temp = StudentSessions.objects.filter(sess_id=sess_id_)
 	list = []
 	for x in temp:
-		list.append(temp.getStudent_id())
+		list.append(x.getStudent_id())
 	return list
 
 # Name: addStudentToSession
@@ -699,3 +699,6 @@ def getTableAudit(alteredTable,dateFrom,dateTo):
 def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 	list = getTableAudit(alteredTable,dateFrom,dateTo)
 	return list.filter(person_id=userID)
+
+def logout(request):
+    del request['user']
