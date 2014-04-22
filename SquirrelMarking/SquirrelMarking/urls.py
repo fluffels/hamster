@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 from views import *
 from Android import userUrls, studentUrls, markerUrls
-import sys
+import sys
+
 import csv
 
 urlpatterns = patterns('',
@@ -24,7 +25,7 @@ urlpatterns = patterns('',
 	(r'^importTest/$', importTest),
 	(r'^AssReportTestTest/$', AssReportTest),
 	(r'^studReportTest/$', studReportTest),
-	(r'^auditReportTest/$', auditReportTest)
+	(r'^auditReportTest/$', auditReportTest),
 
 	#student report page
 	#~ (r'^studentReport/$', studentReport),
@@ -59,20 +60,34 @@ urlpatterns = patterns('',
 	(r'^auditReport/$', audit_report),
 	(r'^Reporting_Main/$', reporting_main),
 	#~ (r'^Statistics/$', statistics),
-	(r'^studentChosen/$', student_chosen),
-	(r'^studentReport/$', student_report),
-        (r'^assessmentReport/$', assessmentReport),
-	(r'^marks-management/$', marks_management),
-        (r'^frequency_analysis/$', frequency_analysis),
-        #(r'^get_module_mark/$', get_module_mark),
-        (r'^getAssessments/$', getAssessments),
-        (r'^getLeafAssessments/$', getLeafAssessments),
-        (r'^getLecturerModules/$', getLecturerModules),
-        (r'^studentModules/$', studentModules),
-        (r'^searchStudents/$', searchStudents),
-        (r'^displayStudent/$', displayStudent),
-        (r'^generateAuditLog/$', generate_auditLog),
+	(r'^studentChosen/$', student_chosen),
+
+	(r'^studentReport/$', student_report),
+
+        (r'^assessmentReport/$', assessmentReport),
+
+	(r'^marks-management/$', marks_management),
+
+        (r'^frequency_analysis/$', frequency_analysis),
+
+        #(r'^get_module_mark/$', get_module_mark),
+
+        (r'^getAssessments/$', getAssessments),
+
+        (r'^getLeafAssessments/$', getLeafAssessments),
+
+        (r'^getLecturerModules/$', getLecturerModules),
+
+        (r'^studentModules/$', studentModules),
+
+        (r'^searchStudents/$', searchStudents),
+
+        (r'^displayStudent/$', displayStudent),
+
+        (r'^generateAuditLog/$', generate_auditLog),
+
         (r'^getStatistics/$', get_statistics),
-        (r'^renderPDF/$', renderPDF),
+        (r'^renderPDF/$', renderPDF),
+
 	(r'^renderCSV/$', renderCSV),
 )
