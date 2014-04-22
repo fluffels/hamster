@@ -5,106 +5,85 @@
 {% block includes %}
 	<script type = "text/javascript">
 	$(document).ready(function () {
-	  $('.module').on('click',function(){
-	    code = $(this).text().trim();
+	  modClick = function(){	    
+	    $module = $(this);
+	    code = $module.text().trim();
 	    $.ajax({
 	      type: 'POST',
 	      url: '/getAssessments/',
 	      data: {mod_code : code},
 	     
 	      }).success(function(response) {
-		$("#"+code).append(response);
+		$("#"+code).replaceWith(response);
+		$("#"+code).find('a').button();
+		$('button').button();
+		$module.unbind('click', modClick);
 		  $('.assessment').click(function(){
-		    alert('Helllooo ZANE!!!')
 		    assess = $(this).text().trim();
 		    $.ajax({
 		      type: 'POST',
 		      url: '/assessmentView/',
-		      data: {mod_code : code, assessment : assess},		    
+		      data: {mod_code : code, assessment : assess},    
 		      }).success(function(response) {
-			$(this).append(response);
+			$(this).append("hi");
 			
 		      });
-		  });
+		  });		
 	      });
-	  });
+	  };
+	  $('.module').on('click',modClick);
+	  $('.accordianCourse').accordion({ active: false, collapsible: true, heightStyle: "content"});  
 	});
 	</script>
 {% endblock %}
 
 {% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li class='active'><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
+{% include "menu.html" %}
 {% endblock %}
 
 {% block content_title %}<h1 align="center">Welcome to Hamster</h1>{% endblock %}
 
 {% block content %}
-	<h3>Welcome {{ person.firstName.0 }} {{ person.surname.0 }}</h3>
+	<h2>{{ person.firstName.0 }} {{ person.surname.0 }}</h2>
 	{% if person.studentOf %}
 		<h3>Student Courses</h3>
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.studentOf %}
-			<li class="module">{{ module }}
-			   <ul id="{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
+		</div>
 		<br />
 	{% endif %}
 	
 	{% if person.tutorOf %}
 		<h3>Tutor Courses</h3>
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.tutorOf %}
-			<li class="module">{{ module }}
-			   <ul id="ul{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 	{% if person.teachingAssistantOf %}
 		<h3>Teaching Assistant Courses</h3>.
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.teachingAssistantOf %}
-			<li class="module">{{ module }}
-			  <ul id="ul{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 	{% if person.lectureOf %}
 		<h3>Lecturer Courses</h3>
-		<ul class="accordianCourse">
+		<div class="accordianCourse">
 		{% for module in person.lectureOf %}
-			<li class="module">{{ module }}
-			  <ul id="ul{{ module }}"></ul>			
-			</li>
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
 		{% endfor %}
-		</ul>
+		</div>
 		<br />
 	{% endif %}
 {% endblock %}

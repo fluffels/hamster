@@ -1,32 +1,7 @@
-{% extends "base.html" %}
-
 {% block title %}Squirrel Marking - Audit Report{% endblock %}
 
 {% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li ><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
+{% include "menu.html" %}
 {% endblock %}
 
 {% block content_title %}
@@ -34,7 +9,21 @@
 {% endblock %}
 
 {% block includes %}
-	
+	 <script type="text/javascript">
+			
+		var type = $(".assType").attr('id');
+
+		$('#GetPDFAudit').click(function(){
+			  
+			$("#aud").load("renderForm.html #formDiv");
+			  
+		});
+		  
+		$('#GetCSVAudit').click(function(){
+			//implement code here
+		});
+
+	</script>
 {% endblock %}
 {% block content %}
 
@@ -50,9 +39,20 @@
 		<div id="auditlogList" style="width:700px;text-align:center">
 			<h1> Audit Log </h1>
 			<div id="auditReportDisplay">
-				<img src="{{ STATIC_URL }}/static/img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
+				<img src="{{ STATIC_URL }}img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
 			</div>
 		</div>
+		
+		<form action="/renderAsPDF/" method="post">{% csrf_token %}
+			{{ form.as_p }}
+			<h2> Rendering options </h2>
+			<div id="renderAsPDF"> <input class="renderButton" id="GetPDFAudit" name="SaveAsPDf" type="button" value="Get PDF"> </div>	
+		</form>
+			<form action="/renderAsCSV/" method="post">{% csrf_token %}
+			{{ form.as_p }}
+			<h2> Rendering options </h2>
+			<div id="renderAsCSV"> <input class="renderButton" id="GetCSVAudit" name="SaveAsCSV" type="button" value="Get CSV"></div>
+		</form>
 	</div>
 </div>
 {% endblock %}

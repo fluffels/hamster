@@ -1,98 +1,249 @@
-{% extends "base.html" %}
-
-{% block title %}Student report{% endblock %}
+{% block includes %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">
+<script src="{{ STATIC_URL }}/static/js/jquery.js"></script>
+<script>
+	$(document).ready(function(){
 	
-	{% block includes %}
-		<script src="{{ STATIC_URL }}js/jquery.js"></script>
-		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
-	{% endblock %}
-{% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li ><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	  <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
-{% endblock %}
-{% block content_title %}<h1 align="center">Student report</h1>{% endblock %}
-
-{% block content %}
-	<div id="stuRepSearch" >
-		<div id="searchContainer" style="width:600px">
-			<form autocomplete = "on">
-				<div> Search Student: <div> <input type="text" name ="StudentSearch" id="searchStudent" placeholder="Search student">
-				<img id='searchBtn' src="{{ STATIC_URL }}/static/img/search_icon.jpg" width='20px' height='20px'/> 
-				<!--<img id='searchBtn' src="search_icon.jpg" width='20px' height='20px'/>-->
-			</form>
-			<div id="list">
+		$('#AssessmentReportContainer').hide();
+	
+		$('#studentModules').load(function(){
+			$.ajax({
+			  type: "POST",
+			  url: '/studentModules/'
+			}).success(function(reponse){
+				return reponse;
+			});
+		});
+	
+		$('#semesterTestContainerList').load(function(){
+			var type = 'ST';
+			$.ajax({
+			  type: "POST",
+			  url: '/getLeafAssessments/',
+			  data: {type : type}
+			}).success(function(reponse){
+				return reponse;
+			});
+		});
+		
+		$('#classTestContainerList').load(function(){
+			var type = 'CT';
+			$.ajax({
+			  type: "POST",
+			  url: '/getLeafAssessments/',
+			  data: {type : type}
+			}).success(function(reponse){
+				return reponse;
+			});
+		});
+		
+		
+		$('#tutorialTestContainerList').load(function(){
+			var type = 'TUT';
+			$.ajax({
+			  type: "POST",
+			  url: '/getLeafAssessments/',
+			  data: {type : type}
+			}).success(function(reponse){
+				return reponse;
+			});
+		});
+		
+		$('#practicalTestContainerList').load(function(){
+			var type = 'P';
+			$.ajax({
+			  type: "POST",
+			  url: '/getLeafAssessments/',
+			  data: {type : type}
+			}).success(function(reponse){
+				return reponse;
+			});
+		});
+	
+		$('#searchBtn').on('click', function(){
+			var searchedItem = $('#searchStudent').val();
+			$('#list').load(function(){
+				$.ajax({
+				  type: "POST",
+				  url: '/searchStudents/',
+				  data: {searchedItem : searchedItem}
+				}).success(function(reponse){
+				return reponse;
+				});
+			});
+		});
+		
+		$('#moduleMark, #semesterMark, #examMark').on('click', function(){
+			var type = $(this).attr('id');
+			var module = $('#studentModules').val();
+			var studentID = $('.searchContainer div').attr('id');
+			var mode = 'Not Leaf';
+			$('#AssessmentReportContainer').load(function(){
+				$.ajax({
+				  type: "POST",
+				  url: '/getAssessments/',
+				  data: {type : type, mod_code : module, studentID : studentID}
+				}).success(function(reponse){
+				   return reponse;
+				});
+		});
 			
-			</div>
-			<div id="assessmentStudentReport">
-				<div id="AssessmentReportContainer">
-					<h2> Assessment Report </h2>
-					<div id="moduleMarkContainer">
-						<input id="moduleMark" type='button' class="submitButtons" name='moduleMark' value="Module Mark">
+		});
+		
+		$('#submitRequestButton').on('click', function(){
+			var leafAssessment;
+			
+			$('input:radio').each(function () {
+				if ($(this).is(':checked').length > 0)
+				{
+					leafAssessment = $(this).val();
+				}
+				
+				else
+				{
+					alert('No Leaf Assessment Chosen');
+					return;
+				}
+			});
+			
+			var type = $(this).attr('id');
+			var module = $('#studentModules').val();
+			var studentID = $('.searchContainer div').attr('id');
+			var mode  = 'Leaf';
+			
+			$('#AssessmentReportContainer').load(function(){
+				$.ajax({
+				  type: "POST",
+				  url: '/getAssessments/',
+				  data: {type : type, mod_code : module, studentID : studentID, leafAssessment : leafAssessment, mode : mode}
+				}).success(function(reponse){
+				   return reponse;
+				});
+			});
+		});
+		
+		$('#searchStudent').on('click', function(){
+			var upId = $(this).attr('id');
+			$.ajax({
+			  type: "POST",
+			  url: '/displayStudent/',
+			  data: {type : type, mod_code : module}
+			});
+			$('#AssessmentReportContainer').show();
+			
+		});
+		
+		$('#practicals, #semestertests, #classtests, #tutorialtests').on('click', function(){
+			var type = $(this).attr('id');
+			var module = $('#studentModules').val();
+			var studentID = $('.searchContainer div').attr('id');
+			var mode = 'Not Leaf';
+			$('#searchStudent').load(function(){
+				$.ajax({
+				  type: "POST",
+				  url: '/getAssessments/',
+				  data: {type : type, mod_code : module, studentID : studentID, mode : mode}
+				}).success(function(reponse){
+				   return reponse;
+				});
+			});
+			
+		});
+	});
+</script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">
+{% endblock %}
+		
+<h1 align="center"> Student Report </h1>
+
+<div id="stuRepSearch" >
+	<div id="searchContainer">
+		<form autocomplete = "on">
+			<div> Search Student: <div> <input type="text" name ="StudentSearch" id="searchStudent" placeholder="Search student">
+			<img id='searchBtn' src="{{ STATIC_URL }}/static/img/search_icon.jpg" width='20px' height='20px'/> 
+		</form>
+		<div id="list" class="searchContainer">
+			{% if student %}
+				<h1> No results </h1>
+			{% else%}
+				{% for student in students %}
+					<div id="{{ student.upId }}" class='searchStudent'>
+						<label> Name: </label> {{ student.firstName }} <br>
+						<label> Surname: </label> {{ student.surname }} <br>
+						<label> Student Number: </label> {{ student.upId }} <br><br>
 					</div>
-					<div id="examMarkContainer">
-						<input id="examMark" type='button' class="submitButtons" name='examMark' value="Exam Mark">
-					</div>
-					<div id="semesterMarkContainer">
-						<input id="semesterMark" type='button' class="submitButtons" name='semesterMark' value="Semester Mark">
-					</div>
-					<div id="semesterTestContainer">
-						<h3 class="AssessmentTitle"> Semester Tests: </h3>
-						<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST1
-						<input class='allradio' type="radio" name="leafAssessment" value="ST1">ST2
-					</div>
-					<div id="classTestContainer">
-						<h3 class="AssessmentTitle"> Class Tests: </h3>
-						<input class='allradio' type="radio" name="leafAssessment" value="CT1">CT1
-						<input class='allradio' type="radio" name="leafAssessment" value="CT2">CT2
-						<input class='allradio' type="radio" name="leafAssessment" value="CT3">CT3
-						<input class='allradio' type="radio" name="leafAssessment" value="CT4">CT4
-					</div>
-					<div id="tutorialTestContainer">
-						<h3 class="AssessmentTitle"> Tutorial Tests: </h3>
-						<input class='allradio' type="radio" name="leafAssessment" value="TUT1">TUT1
-						<input class='allradio' type="radio" name="leafAssessment" value="TUT2">TUT2
-						<input class='allradio' type="radio" name="leafAssessment" value="TUT3">TUT3
-						<input class='allradio' type="radio" name="leafAssessment" value="TUT4">TUT4
-					</div>
-					<div id="practicalTestContainer">
-						<h3 class="AssessmentTitle"> Practical Tests: </h3>
-						<input class='allradio' type="radio" name="leafAssessment" value="P1">P1
-						<input class='allradio' type="radio" name="leafAssessment" value="CT2">P2
-						<input class='allradio' type="radio" name="leafAssessment" value="CT3">P3
-						<input class='allradio' type="radio" name="leafAssessment" value="CT4">P4
-					</div>
-					<br>
-					<input id='submitRequestButton' type='button' class="submitButtons" name='SubmitAssessmentRequest' value="Submit Request">
+				{% endfor %}
+			{% endif %}
+		</div>
+		<div id="assessmentStudentReport">
+			<div id="searchedStudentDetails">
+				<div id="{{ student.upId ]}" class='searchStudent'>
+					<label> Name: </label> {{ student.firstName }} <br>
+					<label> Surname: </label> {{ student.surname }} <br>
+					<label> Student Number: </label> {{ student.upId }} <br><br>
 				</div>
 			</div>
-			<script>
-				$('#searchBtn').click(function(){
-					var searchedItem = $('#searchStudent').val();
-					$('#list').load('studentChosen.html');
-				});
-			</script>
+			<div id="AssessmentReportContainer">
+				<h2> Assessment Report </h2>
+				<div id="modulesContainer">
+					<select id='studentModules'>
+						{% for module in modules %}
+							<option id='{{ module }}' value='{{ module }}'>{{ module }}</option> 
+						{% endfor %}
+					</select>
+				</div>
+				<div id="moduleMarkContainer">
+					<input id="moduleMark" type='button' class="submitButtons" name='moduleMark' value="Module Mark">
+				</div>
+				<div id="examMarkContainer">
+					<input id="examMark" type='button' class="submitButtons" name='examMark' value="Exam Mark">
+				</div>
+				<div id="semesterMarkContainer">
+					<input id="semesterMark" type='button' class="submitButtons" name='semesterMark' value="Semester Mark">
+				</div>
+				<div id="semesterTestContainer">
+					<h3 class="AssessmentTitle" id='semestertests'> Semester Tests: </h3>
+					<div id="semesterTestContainerList">
+					{% if type == ST %}
+						{% for leaf in leafAssessmentList %}
+							<input class='allradio' type="radio" name="leafAssessment" value="{{ leaf.leaf_name }}">{{ leaf.leaf_name }}
+						{% endfor %}
+					{% endif %}	
+					</div>
+				</div>
+				<div id="classTestContainer">
+					<h3 class="AssessmentTitle" id='classtests'> Class Tests: </h3>
+					<div id="classTestContainerList">
+						{% if type == CT %}
+							{% for leaf in leafAssessmentList %}
+								<input class='allradio' type="radio" name="leafAssessment" value="{{ leaf.leaf_name }}">{{ leaf.leaf_name }}
+							{% endfor %}
+						{% endif %}
+					</div>
+				</div>
+				<div id="tutorialTestContainer">
+					<h3 class="AssessmentTitle" id='tutorialtests'> Tutorial Tests: </h3>
+					<div id="tutorialTestContainerList">
+					{% if type == TUT %}
+						{% for leaf in leafAssessmentList %}
+							<input class='allradio' type="radio" name="leafAssessment" value="{{ leaf.leaf_name }}">{{ leaf.leaf_name }}
+						{% endfor %}
+					{% endif %}
+					</div>
+				</div>
+				<div id="practicalTestContainer">
+					<h3 class="AssessmentTitle" id="practicals"> Practical Tests: </h3>
+					<div id="practicalTestContainerList">
+					{% if type == P %}
+						{% for leaf in leafAssessmentList %}
+							<input class='allradio' type="radio" name="leafAssessment" value="{{ leaf.leaf_name }}">{{ leaf.leaf_name }}
+						{% endfor %}
+					{% endif %}
+					</div>
+				</div>
+				<br>
+				<input id='submitRequestButton' type='button' class="submitButtons" name='SubmitAssessmentRequest' value="Submit Request">
+			</div>
 		</div>
 	</div>
-{% endblock %}
+</div>
