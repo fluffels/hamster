@@ -702,3 +702,52 @@ def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 
 def logout(request):
     del request['user']
+    
+def checkLeafAssessmentExists(leafAssessmentID):
+	a = LeafAssessment.objects.filter(id = leafAssessmentID)
+	if (a):
+		return True
+	else:
+		return False
+		
+def checkSessionExists(sessionId):
+	a = Sessions.objects.filter(id = sessionId)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkSessionBelongsToAssessment(sessionId, AssessmentID):
+	a = Sessions.objects.filter(id = sessionId,assessment_id=AssessmentID)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkSessionBelongsToLeafAssessment(sessionId, LeafAssessmentID):
+	a = LeafAssessment.objects.filter(id = LeafAssessmentID)
+	if (a):
+		return checkSessionBelongsToAssessment(sessionId, a[0].assessment_id)
+	else:
+		return False
+
+def isStudentInSession(sessionId, student):
+	a = StudentSessions.objects.filter(sess_id = sessionId, student_id = student)
+	if (a):
+		return True
+	else:
+		return False
+
+def isMarkerInSession(sessionId, marker):
+	a = MarkerSessions.objects.filter(session_id = sessionId, marker_id = marker)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkMarkAllocationExists(sessionId, student_, leafAssessmentID):
+	a = MarkAllocation.objects.filter(session_id = sessionId, student = student_, leaf_id = leafAssessmentID)
+	if (a):
+		return True
+	else:
+		return False
