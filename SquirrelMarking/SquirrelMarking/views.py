@@ -156,7 +156,9 @@ def studReportTest(request):
 	return HttpResponse(dataOut)
 	
 def auditReportTest(request):
-	dataOut = renderAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2014-04-20 12:12')
+	login(request,"u89000583","Mason")
+	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
+	dataOut = renderAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12')
 	return HttpResponse(dataOut)
 
 def test(request):

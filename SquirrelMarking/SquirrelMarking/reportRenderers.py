@@ -14,8 +14,8 @@ def renderAuditReport(module, userID, alteredTable, dateFrom, dateTo):
 	htmlCode += "</tr>"
 	for item in testReport.getData():
 		htmlCode += "<tr>" 
-		for innerItem in item:
-			htmlCode += "<td>" + str(innerItem) + "</td>"
+		#for innerItem in item:
+		htmlCode += "<td>" + str(item) + "</td>"
 		htmlCode += '</tr>'
 	htmlCode += "</table>"
 	htmlCode += "</div>"
