@@ -1,1 +1,17 @@
 insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",1);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",2);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",3);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",4);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",5);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",6);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",7);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",8);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000105",9);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",10);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",11);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",12);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",13);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",14);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",15);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",16);
+insert into dbModels_markersessions (marker_id,session_id_id) values ("u89000999",17);
