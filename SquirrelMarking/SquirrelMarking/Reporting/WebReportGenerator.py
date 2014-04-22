@@ -64,7 +64,7 @@ class WebReportGenerator(ReportGenerator):
 
 	#studentNumber = "10189337"
 	#_module = "COS332"
-	reportName = module + " Student Marks Report for " + studentNumber 
+	reportName = module + " Student Marks Report for " + studentNo 
 	#headings = ["ST1", "ST2", "P1", "P2", "P3"]
 	#totals = [50, 50, 10, 10, 10]
 	#returnedData = [23, 45, 3, 7, 9]
@@ -85,25 +85,30 @@ class WebReportGenerator(ReportGenerator):
 	    totals = BLogicObject.getTotals(_module, assessments)
 	    returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
 	"""
-	report = StudentMarksReport(reportName, name, totals, mark)
+	report = StudentMarksReport(reportName, name, total, mark)
 	return report
 
 
   def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
-	reportName = _module + " Audit Report for "
+	reportName = module + " Audit Report for "
 	name = ""
-
+	data = ""
+	print userID
+	headings =  reportName
 	if module != "":
-
+		
 		if userID != "":
-
+			
 			if alteredTable != "":
-				date = getUserTableAudit(module,userID,alteredTable,dateFrom,dateTo)
+				data = getUserTableAudit(module,userID,alteredTable,dateFrom,dateTo)
 			else:
 				data = getAuditLogFromTimeRangeAndUser(userID,dateFrom,dateTo) 
 		else:
 			if alteredTable != "":
 				data = getTableAudit(module,alteredTable,dateFrom,dateTo)
-
+	print data
+	for x in data:
+		print "t"
+	
 	report = AuditReport(reportName, headings, data)
 	return report

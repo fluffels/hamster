@@ -156,7 +156,7 @@ def studReportTest(request):
 	return HttpResponse(dataOut)
 	
 def auditReportTest(request):
-	dataOut = renderAssessmentReport("COS301", 1)
+	dataOut = renderAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2014-04-20 12:12')
 	return HttpResponse(dataOut)
 
 def test(request):

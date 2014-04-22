@@ -5,12 +5,12 @@ from Reporting.WebReportGenerator import *
 
 def renderAuditReport(module, userID, alteredTable, dateFrom, dateTo):
 	reportGenerator = WebReportGenerator()
-	testReport = reportGenerator.generateAuditReport(module, userID, alteredTable, dateFrom, dateTo, "")
+	testReport = reportGenerator.generateAuditReport(module, userID, alteredTable, dateFrom, dateTo)
 	htmlCode = "<div>"
 	htmlCode += "<h1>" + testReport.getReportName() + "</h1>"
 	htmlCode += "<table><tr>"
-	for item in testReport.getHeadings():
-		htmlCode += "<th>" + item + "</th>"
+	#~ for item in testReport.getHeadings():
+		#~ htmlCode += "<th>" + item + "</th>"
 	htmlCode += "</tr>"
 	for item in testReport.getData():
 		htmlCode += "<tr>" 
