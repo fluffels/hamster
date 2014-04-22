@@ -48,7 +48,7 @@ def getStudents(request):
 			#json_data =json.loads(request.body)
 			assessmentID = request.GET["assessmentID"]
 			marker =BL.getSessionPerson(request)
-			openSessions = BL.getOpenSessionsForMarker(assessmentID,marker)
+			openSessions = BL.getOpenSessionsForMarker(assessmentID,marker.upId[0])
 			students = []
 
 			for s in openSessions:

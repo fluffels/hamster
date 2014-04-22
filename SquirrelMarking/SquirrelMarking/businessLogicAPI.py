@@ -635,7 +635,7 @@ def getAuditLogFromAction(action):
 # Parameter: 
 # Return: 
 def getAuditLogFromUsername(username):
-    return AuditLog.objects.filter(user_id=username)
+    return AuditLog.objects.filter(person_id=username)
 
 # Name:
 # Description:
@@ -646,7 +646,7 @@ def getAuditLogFromTimeRange(fromTime, toTime):
     
 def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
 	auditObjects = AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
-	return auditObjects.objects.filter(user_id=username)
+	return auditObjects.filter(person_id=username)
   
 # Name: getStudentsForASession
 # Description:
@@ -656,7 +656,7 @@ def getStudentsForASession(sess_id_):
 	temp = StudentSessions.objects.filter(sess_id=sess_id_)
 	list = []
 	for x in temp:
-		list.append(temp.getStudent_id())
+		list.append(x.getStudent_id())
 	return list
 
 # Name: addStudentToSession
@@ -699,3 +699,55 @@ def getTableAudit(alteredTable,dateFrom,dateTo):
 def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 	list = getTableAudit(alteredTable,dateFrom,dateTo)
 	return list.filter(person_id=userID)
+
+def logout(request):
+    del request['user']
+    
+def checkLeafAssessmentExists(leafAssessmentID):
+	a = LeafAssessment.objects.filter(id = leafAssessmentID)
+	if (a):
+		return True
+	else:
+		return False
+		
+def checkSessionExists(sessionId):
+	a = Sessions.objects.filter(id = sessionId)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkSessionBelongsToAssessment(sessionId, AssessmentID):
+	a = Sessions.objects.filter(id = sessionId,assessment_id=AssessmentID)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkSessionBelongsToLeafAssessment(sessionId, LeafAssessmentID):
+	a = LeafAssessment.objects.filter(id = LeafAssessmentID)
+	if (a):
+		return checkSessionBelongsToAssessment(sessionId, a[0].assessment_id)
+	else:
+		return False
+
+def isStudentInSession(sessionId, student):
+	a = StudentSessions.objects.filter(sess_id = sessionId, student_id = student)
+	if (a):
+		return True
+	else:
+		return False
+
+def isMarkerInSession(sessionId, marker):
+	a = MarkerSessions.objects.filter(session_id = sessionId, marker_id = marker)
+	if (a):
+		return True
+	else:
+		return False
+
+def checkMarkAllocationExists(sessionId, student_, leafAssessmentID):
+	a = MarkAllocation.objects.filter(session_id = sessionId, student = student_, leaf_id = leafAssessmentID)
+	if (a):
+		return True
+	else:
+		return False

@@ -9,7 +9,7 @@ class AuditReport(Report):
   
   def __init__(self,reportName,headings,data):
     self.reportName = reportName
-    #~ self.headings = headings
+    self.headings = headings
     self.data = data
   
   def getReportName(self):
@@ -18,5 +18,5 @@ class AuditReport(Report):
   def getData(self):
     return self.data
 
-  #~ def getHeadings(self):
-    #~ return self.headings
+  def getHeadings(self):
+    return self.headings

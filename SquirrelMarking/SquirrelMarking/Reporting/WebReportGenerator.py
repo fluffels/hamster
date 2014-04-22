@@ -64,7 +64,7 @@ class WebReportGenerator(ReportGenerator):
 
 	#studentNumber = "10189337"
 	#_module = "COS332"
-	reportName = module + " Student Marks Report for " + studentNumber 
+	reportName = module + " Student Marks Report for " + studentNo 
 	#headings = ["ST1", "ST2", "P1", "P2", "P3"]
 	#totals = [50, 50, 10, 10, 10]
 	#returnedData = [23, 45, 3, 7, 9]
@@ -85,25 +85,41 @@ class WebReportGenerator(ReportGenerator):
 	    totals = BLogicObject.getTotals(_module, assessments)
 	    returnedData = BLogicObject.getStudentMarks(_module, studentNumber)
 	"""
-	report = StudentMarksReport(reportName, name, totals, mark)
+	report = StudentMarksReport(reportName, name, total, mark)
 	return report
 
-
   def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
-	reportName = _module + " Audit Report for "
+	reportName = module + " Audit Report for "
 	name = ""
-
+	data = ""
+	headings = []
+	headings.append("PersonId Description AuditDescription Time TableName ColumnName OldValue NewValue AffectedRow")
 	if module != "":
-
+		
 		if userID != "":
-
+			
 			if alteredTable != "":
-				date = getUserTableAudit(module,userID,alteredTable,dateFrom,dateTo)
+				data = getUserTableAudit(module,userID,alteredTable,dateFrom,dateTo)
 			else:
 				data = getAuditLogFromTimeRangeAndUser(userID,dateFrom,dateTo) 
 		else:
 			if alteredTable != "":
 				data = getTableAudit(module,alteredTable,dateFrom,dateTo)
-
-	report = AuditReport(reportName, headings, data)
+	list = []
+	
+	for row in data:
+		old_value = ""
+		new_value = ""
+		if row.old_value==None:
+			old_value = "None"
+		else:
+			old_value = row.old_value
+		if row.new_value==None:
+			new_value = "None"
+		else:
+			new_value = row.new_value
+		list.append(row.person_id + " " +  row.description + " " + row.action.auditDesc + " " +  row.time.strftime("%Y-%m-%d %H:%M:%S") + " " +  row.audit_table_id.tableName + " " +  row.audit_table_column_id.columnName+ " " +  old_value+ " " +  new_value + " " +  str(row.affected_row_id))
+	
+	
+	report = AuditReport(reportName, headings, list)
 	return report
