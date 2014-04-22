@@ -88,13 +88,12 @@ class WebReportGenerator(ReportGenerator):
 	report = StudentMarksReport(reportName, name, total, mark)
 	return report
 
-
   def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo):  #Audit Report
 	reportName = module + " Audit Report for "
 	name = ""
 	data = ""
-	print userID
-	headings =  reportName
+	headings = []
+	headings.append("PersonId Description AuditDescription Time TableName ColumnName OldValue NewValue AffectedRow")
 	if module != "":
 		
 		if userID != "":
@@ -106,9 +105,21 @@ class WebReportGenerator(ReportGenerator):
 		else:
 			if alteredTable != "":
 				data = getTableAudit(module,alteredTable,dateFrom,dateTo)
-	print data
-	for x in data:
-		print "t"
+	list = []
 	
-	report = AuditReport(reportName, headings, data)
+	for row in data:
+		old_value = ""
+		new_value = ""
+		if row.old_value==None:
+			old_value = "None"
+		else:
+			old_value = row.old_value
+		if row.new_value==None:
+			new_value = "None"
+		else:
+			new_value = row.new_value
+		list.append(row.person_id + " " +  row.description + " " + row.action.auditDesc + " " +  row.time.strftime("%Y-%m-%d %H:%M:%S") + " " +  row.audit_table_id.tableName + " " +  row.audit_table_column_id.columnName+ " " +  old_value+ " " +  new_value + " " +  str(row.affected_row_id))
+	
+	
+	report = AuditReport(reportName, headings, list)
 	return report
