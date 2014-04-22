@@ -10,37 +10,22 @@ def parseMarksToDB(request,csvFile):
 		ts = time.time()
 		time_stamp = st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 		for row in reader:
-			student = row[0]
+			student = row[2]
 			sessionId = row[1]
-			mark = row[2]
-			marker = row[3]
-			module = row[4]
-			assessment = row[5]
-			leafAssessment = row[6]
-			leafAssessmentID = row[7]
-			#Check if student is valid
-			student_modules = getAllModulesForStudent(student)
-			if module in student_modules:
-				#Check is session exists
-				sessions_module = getAllSessionsForModule(module)
-				# check if session 
-				if checkSessionList(sessions_module,sessionId):
-					#Check of isLeaf
-					list = getLeafAssessmentOfAssessmentForModuleByName(module,assessment,leafAssessment)
-					if len(list) == 0:
-						raise Exception('leaf does not exist')
-					else:
-						alloc_id = createMarkAllocation(request,leafAssessmentID,sessionId,marker,student,time_stamp)
-						updateMarkAllocation(request,alloc_id,mark)
-				else:
-					raise Exception('session does not exist')
-			else:
-				raise Exception('not a student')
-		
-def checkSessionList(list,id):
-	for row in list:
-		print row.getID()
-		print id
-		if row.getID() == int(id):
-			return True
-	return False
+			mark = row[3]
+			marker = row[4]
+			leafAssessmentID = row[0]
+			
+			if !checkLeafAssessmentExists(leafAssessmentID):
+				raise Exception("Leaf Assessment does not exist")
+			if !checkSessionExists(sessionId):
+				raise Exception("Session does not exist")
+			if !checkSessionBelongsToLeafAssessment(sessionId, leafAssessmentID)
+				raise Exception("Sessions does not belong to leaf assessment")
+			if !isStudentInSession(sessionId, student)
+				raise Exception("Student not in session")
+			if !isMarkerInSession(sessionId, marker)
+				raise Exception("Marker not in session")
+				
+			alloc_id = createMarkAllocation(request,leafAssessmentID,sessionId,marker,student,time_stamp)
+			updateMarkAllocation(request,alloc_id,mark)
