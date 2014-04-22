@@ -18,9 +18,9 @@
 		<h2>Marks </h2>
 		<br/>
 		{{ msg }}
-		<form action="publish.html" enctype="multipart/form-data" method="post">{% csrf_token %}
+		<form action="/publish/" enctype="multipart/form-data" method="post">{% csrf_token %}
 			Please select file to upload:<br/>
-			<input type="file" name="upload" value=""/>
+			<input type="file" name="csvFile" value=""/>
 			<br/>
 			<input type="submit" name="publish" value="Publish"/> 
 			<br/>
