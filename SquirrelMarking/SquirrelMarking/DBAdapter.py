@@ -16,15 +16,15 @@ def parseMarksToDB(request,csvFile):
 			marker = row[4]
 			leafAssessmentID = row[0]
 			
-			if !checkLeafAssessmentExists(leafAssessmentID):
+			if (not(checkLeafAssessmentExists(leafAssessmentID))):
 				raise Exception("Leaf Assessment does not exist")
-			if !checkSessionExists(sessionId):
+			if (not(checkSessionExists(sessionId))):
 				raise Exception("Session does not exist")
-			if !checkSessionBelongsToLeafAssessment(sessionId, leafAssessmentID):
+			if (not(checkSessionBelongsToLeafAssessment(sessionId, leafAssessmentID))):
 				raise Exception("Sessions does not belong to leaf assessment")
-			if !isStudentInSession(sessionId, student):
+			if (not(isStudentInSession(sessionId, student))):
 				raise Exception("Student not in session")
-			if !isMarkerInSession(sessionId, marker):
+			if (not(isMarkerInSession(sessionId, marker))):
 				raise Exception("Marker not in session")
 				
 			alloc_id = createMarkAllocation(request,leafAssessmentID,sessionId,marker,student,time_stamp)

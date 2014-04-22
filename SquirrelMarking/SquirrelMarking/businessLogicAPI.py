@@ -635,7 +635,7 @@ def getAuditLogFromAction(action):
 # Parameter: 
 # Return: 
 def getAuditLogFromUsername(username):
-    return AuditLog.objects.filter(user_id=username)
+    return AuditLog.objects.filter(person_id=username)
 
 # Name:
 # Description:
@@ -646,7 +646,7 @@ def getAuditLogFromTimeRange(fromTime, toTime):
     
 def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
 	auditObjects = AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
-	return auditObjects.objects.filter(user_id=username)
+	return auditObjects.filter(person_id=username)
   
 # Name: getStudentsForASession
 # Description:
