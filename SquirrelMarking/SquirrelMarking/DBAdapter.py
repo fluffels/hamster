@@ -26,7 +26,7 @@ def parseMarksToDB(request,csvFile):
 				raise Exception("Student not in session")
 			if (not(isMarkerInSession(sessionId, marker))):
 				raise Exception("Marker not in session")
-			if (not(checkMarkAllocationExists(sessionId, student, leafAssessmentID)))
+			if (not(checkMarkAllocationExists(sessionId, student, leafAssessmentID))):
 				raise Exception("Mark Allocation alredy exists")
 				
 			alloc_id = createMarkAllocation(request,leafAssessmentID,sessionId,marker,student,time_stamp)
