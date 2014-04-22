@@ -335,40 +335,69 @@ def logout(request):
     
 @csrf_protect
 def loginWeb(request):
-    try:
-      P = getSessionPerson(request)
-      return render(request,'index.html', {'person': P})
-    except:
-	nform = LoginForm() 
-	if request.method == 'POST': # If the form has been submitted...		
-		# ContactForm was defined in the the previous section
-		form = LoginForm(request.POST) # A form bound to the POST data
-		if form.is_valid(): # All validation rules pass
-		# Process the data in form.cleaned_data
-			username = form.cleaned_data['username']
-			password = form.cleaned_data['password']
-			try:
-				login(request,username,password)
+    #try:
+    #  P = getSessionPerson(request)
+    #  return render(request,'index.html', {'person': P})
+   #except:
+	#nform = LoginForm() 
+	#if request.method == 'POST': # If the form has been submitted...		
+		## ContactForm was defined in the the previous section
+		#form = LoginForm(request.POST) # A form bound to the POST data
+		#if form.is_valid(): # All validation rules pass
+		## Process the data in form.cleaned_data
+			#username = form.cleaned_data['username']
+			#password = form.cleaned_data['password']
+			#try:
+				#login(request,username,password)
 				try:
-					P = getSessionPerson(request)		
-					
-					print (P.firstName)
-					return render(request,'index.html', {'person': P})#, 'studentOf':SOlist, 'tutorOf':TOlist, 'teachingAssistantOf':TAOlist, 'lectureOf':LOlist}) # Redirect after POST
+					#P = getSessionPerson(request)		
+					class Person1:
+					    firstName = "FirstNameHere"
+					    upId = "123456789"
+					    surname = "SurnameHere"
+					    studentOf  = ['COS123','COS321'] #module
+					    tutorOf  = ['COS456','COS654'] #module
+					    teachingAssistantOf  = ['COS789','COS987'] #module
+					    lectureOf = ['COS135','COS790']
+					P = Person1()
+					#print (P.firstName)
+					return render(request,'index.html', {'person': P})
 				except Exception, e:
 					print (e)
 					return render(request,'login.html', {'form': nform, 'msg':"Session ERROR"})					
-			except Exception, e:
-				print (e)
-				return render(request,'login.html', {'form': nform, 'msg':"Invalid details entered"})
-		else:
-			return render(request,'login.html', {'form': nform, 'msg':form.errors})#form.errors
-	else:	
-		return render(request,'login.html', {'form': nform})
+			#except Exception, e:
+				#print (e)
+				#return render(request,'login.html', {'form': nform, 'msg':"Invalid details entered"})
+		#else:
+			#return render(request,'login.html', {'form': nform, 'msg':form.errors})#form.errors
+	#else:	
+		#return render(request,'login.html', {'form': nform})
 
 		
-def viewAssessments(request):
+def getCourseAssessments(request):
+	print ('hi')
 	c = request.POST['mod_code']
-	Assessments = getAllAssessmentsForModule(c)
+	class Assessment1():
+	  assessment_name="ass1"
+	  assessment_weight="59"
+	  assessment_type="Prac"
+	  module_id =request.POST['mod_code']
+	class Assessment2():
+	  assessment_name="ass2"
+	  assessment_weight="76"
+	  assessment_type="Prac"
+	  module_id =request.POST['mod_code']
+	class Assessment3():
+	  assessment_name="ass3"
+	  assessment_weight="23"
+	  assessment_type="Prac"
+	  module_id =request.POST['mod_code']
+	Assessments=[]
+	print (Assessment1())
+	Assessments.append(Assessment1())
+	Assessments.append(Assessment2())
+	Assessments.append(Assessment3())
+	#Assessments = getAllAssessmentsForModule(c)
 	return render(request,'listAssessments.html', {'Assessments': Assessments, 'C': c})	
 
 	
@@ -517,7 +546,8 @@ def getLeafAssessments(request):
         x = getLeafAssessmentMarksOfAsssessmentForStudent(person.upId, assess_id)
         return render(request,  'studentChosen.html', {'leafAssessmentList' : x})
         
-def  getAssessments(request):
+def  getAssessments(request):      
+  
         person = getPersonByID(request.POST['studentID'])
         leaf = request.POST['leafAssessment']
         if person == 'Empty':
@@ -661,7 +691,7 @@ def student_report(request):
 	
 def publish(request):
 	if request.method == 'POST': 
-	  try:	      
+	  try:    
 	    csvfile = request.FILES['csvFile']
 	    parseMarksToDB(request, csvfile)
 	    return render(request, 'publish.html', {'msg' : "Marks Published!"})
