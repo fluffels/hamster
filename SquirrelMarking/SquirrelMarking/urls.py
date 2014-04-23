@@ -26,6 +26,12 @@ urlpatterns = patterns('',
 	(r'^AssReportTestTest/$', AssReportTest),
 	(r'^studReportTest/$', studReportTest),
 	(r'^auditReportTest/$', auditReportTest),
+	(r'^PDFauditReportTest/$', PDFauditReportTest),
+	(r'^PDFAssReportTestTest/$', PDFAssReportTest),
+	(r'^PDFstudReportTest/$', PDFstudReportTest),
+	(r'^CSVauditReportTest/$', CSVauditReportTest),
+	(r'^CSVAssReportTestTest/$', CSVAssReportTest),
+	(r'^CSVstudReportTest/$', CSVstudReportTest),
 
 	#student report page
 	#~ (r'^studentReport/$', studentReport),

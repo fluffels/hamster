@@ -52,10 +52,10 @@ def renderAssessmentReport(module, assessment):
 	htmlCode += "<h2>Stats</h2>"
 	htmlCode += "<br/><b>Student Marks </b>"
 	htmlCode += "<table>"
-	htmlCode += "<tr>"
-	for item in assessmentReport.getHeadings():
-		htmlCode += "<th>"+item+"</th>"
-	htmlCode += "</tr>"
+	#~ htmlCode += "<tr>"
+	#~ for item in assessmentReport.getHeadings():
+		#~ htmlCode += "<th>"+item+"</th>"
+	#~ htmlCode += "</tr>"
 	htmlCode += "<tr>"
 	htmlCode += "<td> Mean </td>"
 	for item in assessmentReport.getAverage():
