@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Squirrel Marking - Course Management{% endblock %}
+
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+{% block content_title %}<h1 id="content_title">Course {{ C }} Manager</h1>{% endblock %}
+{% block includes %}
+    <script type = "text/javascript">
+	$(document).ready(function () {
+		$('.assessment').button();
+		$('.assessment').on('click', function(){
+			
+			assess_name = $(this).text();
+			par = $(this).parent();
+			assess_id = par.attr('id');
+			assess_weight = par.children('.weight').val();
+			assess_type = par.children('.type').val();
+			$('#assessmentFrom :input').each(function(index, elm) {
+				if ($(elm).attr('name')=='assessmentID')
+					$(elm).val(assess_id);
+				if ($(elm).attr('name')==('assessmentName'))
+					$(elm).val(assess_name);
+				if ($(elm).attr('name')==('assessmentType'))
+					$(elm).val(assess_type);
+				if ($(elm).attr('name')==('markWeight'))
+					$(elm).val(assess_weight);
+			});
+		});
+	});
+    </script>
+{% endblock %}
+{% block content %}
+  {% if Courses %}
+    <h2>Select a course to manage</h2>
+    <div id='CourseAssessments'>
+    {% if Courses|length > 0 %}
+      {% for Course in Courses %}        
+	  <a href="/lecturer/manage/{{ Course }}/" class="course">{{ Course }}</a>      
+      {% endfor %}
+    {% else %}
+      <p>No data yet :)</p>  
+    {% endif %}
+    </div>
+  {% endif %}
+
+  {% if Assessments %}
+    <h3>Create or edit an assessment:</h3>
+    <form id="assessmentFrom" action="" method="post">{% csrf_token %}
+	<input hidden name='assessmentID' Value="">
+	{{ form.as_p }}	
+	<input type="submit" name='func' Value="Add">
+	<input type="submit" name='func' Value="Update">
+	{{ msg }}
+    </form>
+    <div id='CourseAssessments'>
+      {% if Assessments|length > 0 %}
+      {% for Assessment in Assessments %}
+      
+	      <div id="{{ Assessment.id }}">
+		  <input hidden value='{{ Assessment.assessment_weight }}' class='weight' />
+		  <input hidden value='{{ Assessment.assessment_type }}' class='type' />
+		  <button class="assessment">{{ Assessment.assessment_name }}</button><a href="/lecturer/{{ C }}/{{ Assessment.id }}/" >manage</a>	     
+	      </div><br />
+	      
+      {% endfor %}
+    {% else %}
+      <p>No data yet :)</p>  
+    {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 <div id="{{ C }}">
-  {% if role == 'lecturer' %}	
-    <button class='addAssessment'>Add new Assessment</button>
+  {% if role == 'lecturer' %}
+    <a href="lecturer/manage/{{ C }}">Manage</a>
   {% endif %}
   <div class='submenu'>  
   {% if ObjectList|length > 0 %}

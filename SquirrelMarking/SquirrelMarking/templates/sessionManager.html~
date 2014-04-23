@@ -1,33 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Squirrel Marking - Assessment View{% endblock %}
+{% block title %}Squirrel Marking - Session Manager{% endblock %}
 
 
 {% block menu_shortcuts %}
-<div id='menu-bar'>
-	<ul>
-	   <li ><a href='/index/'><span>Home</span></a></li>
-	   <li class='has-sub'><a href='/assessmentView/'><span>Assessments</span></a>
-		  <ul>
-			 <li><a href='/assessmentManager/'><span>Create/Edit Assessment</span></a></li>
-			 <li><a href='/sessionManager/'><span>Session Management</span></a></li>
-			 <li class='last'><a href='/assessmentReport/'><span>Assessment Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/Reporting_Main/'><span>Reporting</span></a>
-		  <ul>
-			 <li><a href='/Statistics/'><span>Statistics</span></a></li>
-			 <li><a href='/auditReport/'><span>Audit Report</span></a></li>
-			 <li class='last'><a href='/studentReport/'><span>Student Report</span></a></li>
-		  </ul>
-	   </li>
-	   <li class='has-sub'><a href='/marks-management/'><span>Marks Management</span></a>
-			<ul>
-			 <li class='last'><a href='/unpublish/'><span>Marks Publishing </span></a></li>
-		  </ul>
-	   </li>
-	</ul>
-</div>
+{% include "menu.html" %}
 {% endblock %}
 
 {% block content_title %}
@@ -35,22 +12,21 @@
 {% endblock %}
 
 {% block includes %}
-	<link href="{{ STATIC_URL }}/static/css/inputStyle.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block content %}
-	Assessment:
-	<select id="assessments" class="input"></select>
-	</br></br>
+	<p>Assessment:
+	<select id="assessments" class="input"></select></p>
+	<br /><br />
 	<div id="panel">
 		Open date:<input type="date" id="date" class="input">
-		</br>
+		<br />
 		Close date:<input type="date" id="date" class="input">
-		</br>
+		<br />
 		Add marker:<input type="text" id="marker" class="input"><input type="button" value="add" id="add">
-		</br>
+		<br />
 		<a href="">Add student list</a>
 	</div>
-	</br>
+	<br />
 	<a href="/assessmentManager/">Assessment Manager</a>
 {% endblock %}

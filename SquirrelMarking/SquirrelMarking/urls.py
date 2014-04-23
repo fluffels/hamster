@@ -25,6 +25,9 @@ urlpatterns = patterns('',
 	(r'^teachingAssistant/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', teachingAssistantPage),
 	(r'^lecturer/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', lecturerPage),
 	
+	(r'^lecturer/manage/(?P<course>\w{6})/$', manageCourse),
+	(r'^lecturer/manage/$', manageCourse),
+	
 	(r'^assessmentView/$', assessment_view),
 	(r'^test/$', test),
 	(r'^marks-management/$', marks_management),
@@ -48,7 +51,7 @@ urlpatterns = patterns('',
 	#manage assessments
 	(r'^assessmentManager/$', AssessmentManager),
 	#~ #manage sessions
-	#(r'^sessionManager/$', session_manager),
+	(r'^sessionManager/$', session_manager),
 	#~ #view audit report
 	###(r'^auditReport/$', view_audit_report),
 	#~ #reporting mani menu

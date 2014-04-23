@@ -17,6 +17,7 @@ from DBAdapter import *
 #from DBAdapter import *
 import sys
 import csv
+import StringIO
 #from django.http import HttpResponseRedirect
 
 def ldapTest(request):
@@ -150,16 +151,63 @@ def importTest(request):
 def AssReportTest(request):
 	dataOut = renderAssessmentReport("COS301", 1)
 	return HttpResponse(dataOut)
-	
+
 def studReportTest(request):
-	dataOut = renderStudentReport("COS301", "u89000583", 1)
+	dataOut = renderStudentReport("COS301", "u89000583", 26)
 	return HttpResponse(dataOut)
-	
+
 def auditReportTest(request):
 	login(request,"u89000583","Mason")
 	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
 	dataOut = renderAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12')
 	return HttpResponse(dataOut)
+
+def PDFAssReportTest(request):
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="AssessmentReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateAssessmentReport("COS301", 1,response)
+	return response
+
+def PDFstudReportTest(request):
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="StudentReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateStudentMarksReport("COS301", "u89000583", 1,response)
+	return response
+
+def PDFauditReportTest(request):
+	login(request,"u89000583","Mason")
+	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="AuditReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12',response)
+	return response
+
+def CSVAssReportTest(request):
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", 1)
+	response = HttpResponse(testReport, content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="AssessmentReport.csv"'
+	return response
+
+def CSVstudReportTest(request):
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateStudentMarksReport("COS301", "u89000583", 1)
+	file_to_send = ContentFile(testReport)
+	response = HttpResponse(testReport,'application/csv')
+	response['Content-Disposition'] = 'attachment; filename="StudentReport.csv"'
+	return response
+
+def CSVauditReportTest(request):
+	login(request,"u89000583","Mason")
+	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12')
+	response = HttpResponse(testReport,'text/csv')
+	response['Content-Disposition'] = 'attachment; filename="AuditReport.csv"'
+	return response 
 
 def test(request):
 	
@@ -376,6 +424,7 @@ def loginWeb(request):
 
 		
 def getCourseAssessments(request):
+	junk = 'remove this junk comments'
 	#class Person1:
 	    #firstName = "FirstNameHere"
 	    #upId = "123456789"
@@ -547,10 +596,10 @@ def checkUserRole(role, course, assessment):
 
 
 '''Student Assessment'''
-def studentPage(request, course, assessment= ''):
+def studentPage(request, course, assessment=None):
     P = getSessionPerson(request) 
-    Assessments = getAllAssessmentsForModule(course)#getAllAssementsForStudent(P.upId, course)  
-    if (assessment != ''):
+    Assessments = getAllAssementsForStudent(P.upId, course) #getAllAssessmentsForModule(course)#
+    if (assessment):
       SpecificA = getAssessmentFromID(assessment)
       return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments, 'Specific': SpecificA})
     return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments})
@@ -564,28 +613,83 @@ def getLeafAssessmentsTableWeb(request):
     return render(request,'tableLeafAssessmentMarks.html', {'leafAssessments': leafAssessmentList})  
     
 '''Tutor Assessment'''      
-def tutorPage(request, course, assessment='', session=''):
-    if assessment != '':
+def tutorPage(request, course, assessment=None, session=None):
+    if assessment:
       leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-      if session != '':
+      if session:
 	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
     return render(request,'marks_management.html', {'Assessments': assessmentName})
     
 '''teachingAssistant Assessment'''  
-def teachingAssistantPage(request, course, assessment='', session=''):
-    if assessment != '':
+def teachingAssistantPage(request, course, assessment=None, session=None):
+    if assessment:
       leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-      if session != '':
+      if session:
 	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
     return render(request,'marks_management.html', {'Assessments': assessmentName})  
+
     
+'''Lecturer'''      
+def manageCourse(request, course=None):
+	P = getSessionPerson(request)
+	Courses = P.lectureOf	
+	msg = ''
+	if course:
+		if course in Courses:
+			Tutors = getAllTutorsOfModule(course)
+			TAs = getAllTAsOfModule(course)
+			form = AssessmentManagerForm()
+			if request.method == 'POST':
+				form = AssessmentManagerForm(request.POST)
+				if form.is_valid():
+					AName = form.cleaned_data['assessmentName']
+					AType = form.cleaned_data['assessmentType']
+					AWeight = form.cleaned_data['markWeight']
+					if (request.POST['func'] == 'Add'):
+						Module = getModuleFromID(course)
+						createAssessment(request, AName,AWeight,AType,Module)
+						msg = 'New Assessment Added'
+					if (request.POST['func'] == 'Update'):
+						assessmentID = request.POST['assessmentID']
+						A = getAssessmentFromID(assessmentID)
+						A.setName(AName)
+						A.setType(AType)
+						A.setWeight(AWeight)
+						msg = "Assignment details updated" 
+				else:
+					msg = form.errors
+			Assessments = getAllAssessmentsForModule(course)
+			print (Assessments)
+			return render(request,'courseManager.html', {'C': course, 'Assessments':Assessments, 'Tutors': Tutors, 'TAs': TAs, 'form': form, 'msg': msg})
+		else:
+			return render(request,'error.html', {})
+	else:
+		return render(request,'courseManager.html', {'C': '', 'Courses':Courses})	    
+	    
 '''Lecturer Assessment'''  
-def lecturerPage(request, course, assessment='', session=''):
-    if assessment != '':
-      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-      if session != '':
-	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
-    return render(request,'marks_management.html', {'Assessments': assessmentName})
+def lecturerPage(request, course, assessment=None, session=None):
+	Assessments = getAllAssessmentsForModule(course)
+	if session:	    
+	    
+	    return render(request,'marks_management.html', {'Assessments': Assessments})
+	else:
+		if assessment:
+			nform = AssessmentManagerForm()
+			msg = ''
+			if request.method == 'POST':
+				form = AssessmentManagerForm(request.POST)
+				if form.is_valid():
+					AName = form.cleaned_data['assessmentName']
+					AType = form.cleaned_data['assessmentType']
+					AWeight = form.cleaned_data['markWeight']
+					A = getAssessmentFromID(assessment)
+					A.setName(AName)
+					A.setType(AType)
+					A.setWeight(AWeight)
+					msg = "Assignment details updated"      
+	      
+			return render(request,'marks_management.html', {'Assessments': Assessments})
+
       
       
 def openAssessment(request, assessmentName):

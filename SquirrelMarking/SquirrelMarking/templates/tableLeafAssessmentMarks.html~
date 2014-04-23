@@ -1,0 +1,18 @@
+<div id='markTable'>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Mark</th>
+      <th>Total</th>
+    </tr>
+    {% if leafAssessments|length > 0 %}
+      {% for Leaf in leafAssessments %}
+	<tr>
+	    <td>{{ Leaf.0 }}</td>
+	    <td>{{ Leaf.2 }}</td>
+	    <td>{{ Leaf.1 }}</td>
+	</tr>
+      {% endfor %}
+    {% endif %}
+  </table>
+</div>
