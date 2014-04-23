@@ -47,6 +47,7 @@ def getStudents(request):
 		try:
 			#json_data =json.loads(request.body)
 			assessmentID = request.GET["assessmentID"]
+			print request.session['user']
 			marker =BL.getSessionPerson(request)
 			openSessions = BL.getOpenSessionsForMarker(assessmentID,marker.upId[0])
 			students = []
@@ -83,21 +84,22 @@ def getTaskListByAssessment(request):
 			#json_data =json.loads(request.body)
 			module =request.GET['module']
 			assessmentID =request.GET['assessmentID']
-			suid =request.GET['studentuid']
+			uid =request.GET['studentuid']
 
 			assessment =BL.getAssessmentFromID(assessmentID)
 
-			LeafAssessments =BL.getAllLeafAssessmentsForAssessment(assessment)
+			LeafAssessments =BL.getLeafAssessmentMarksOfAsssessmentForStudent(uid, assessmentID)
+			print LeafAssessments
 			leafName =[]
 			maxMark =[]
 			currentMark =[]
 			leafID =[]
 			for lAssessment in LeafAssessments:
-				mark =BL.getMarkAllocationForLeafAssessmentOfStudent(uid, lAssessment)
-				maxMark.append(lAssessment.getMax_mark())
-				currentMark.append(mark.getMark())
-				leafID.append(mark.getID())
-				leadName.append(lAssessment.getName())
+				
+				
+				leafName.append(lAssessment[0])
+				maxMark.append(lAssessment[1])
+				currentMark.append(lAssessment[2])
 
 			data =[{
 				'type' :1,
@@ -109,6 +111,7 @@ def getTaskListByAssessment(request):
 			}]
 			return HttpResponse(json.dumps(data))
 		except Exception ,e:
+			raise e
 			data =[{
 				'type':-1,
 				'message':'Request failed'
@@ -132,7 +135,7 @@ def getActiveAssessments(request):
 			
 		for assessment in assessments:
 			AssessmentName.append(assessment.getName())
-			ID.append(assessment.getID())
+			Id.append(assessment.getID())
 		data = [
 			{
 				'type':1,
