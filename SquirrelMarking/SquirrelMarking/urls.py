@@ -7,15 +7,25 @@ import csv
 
 urlpatterns = patterns('',
 	#home page
-	(r'^logout/$', logout),
+	(r'^logout/$', logoutWeb),
 	(r'^$', loginWeb),
 	(r'^index/$', loginWeb),
-	(r'^getAssessments/$', viewAssessments),
+	(r'^getCourseAssessments/$', getCourseAssessments),
 	(r'^getAssessmentsOptions/$', viewAssessmentsOptions),
 	(r'^getAssessmentSessionsOptions/$', viewAssessmentSessionsOptions),
 	(r'^getSessionStudentMarks/$', getSessionStudentMarks),
+	(r'^student/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', studentPage),
+	(r'^getLeafAssessmentsTableWeb/$', getLeafAssessmentsTableWeb),
 	
-	(r'^SassessmentView/(?P<assessmentName>\w{100})/$', assessment_view),
+	(r'^tutor/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', tutorPage),
+	(r'^teachingAssistant/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', teachingAssistantPage),
+	(r'^lecturer/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', lecturerPage),
+	
+	(r'^tutor/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', tutorPage),
+	(r'^teachingAssistant/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', teachingAssistantPage),
+	(r'^lecturer/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', lecturerPage),
+	
+	(r'^assessmentView/$', assessment_view),
 	(r'^test/$', test),
 	(r'^marks-management/$', marks_management),
 	url(r'^Android/User/',include(userUrls)),
@@ -50,7 +60,7 @@ urlpatterns = patterns('',
 	#~ #reporting mani menu
 	###(r'^Reporting_Main/$', reporting_main),
 	#~ #statistics
-	(r'^Statistics/$', statistics),
+	#(r'^Statistics/$', statistics),
 	#~ #all students
 	#~ (r'^students/$', view_all_students),
 	#~ #view individual student
@@ -96,4 +106,5 @@ urlpatterns = patterns('',
         (r'^renderPDF/$', renderPDF),
 
 	(r'^renderCSV/$', renderCSV),
+	(r'^assessment/lecturer$', lecturer_assessment),
 )

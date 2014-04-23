@@ -18,6 +18,21 @@
 {% endblock %}
 {% block content %}
     <div role="main" class="ui-content">
-        <div id="menu-content"></div>
+    <table>
+    {% if StudentAssessments %}
+    <tr>
+      <th>Name</th>
+      <th>Mark</th>
+      <th>Total</th>
+    </tr>
+        {% for Assessment in StudentAssessments %}
+        <tr>
+	    <td>{{ Assessment[0] }}</td>
+	    <td>{{ Assessment[2] }}</td>
+	    <td>{{ Assessment[1] }}</td>
+	</tr>
+	{% endfor %}
+    {% endif %}
+    </table>
     </div>
 {% endblock %}

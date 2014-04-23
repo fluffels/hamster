@@ -352,8 +352,6 @@ def test(request):
 	#print getAuditLogFromTableName("MarkerSessions")
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
-#def logout(request)
-
 def loginData(request):
 	t = get_template('login.html')
 	html = t.render(Context())
@@ -380,17 +378,18 @@ def loginData(request):
 	html = t.render(Context())
 	return HttpResponse(html)
 
-def logout(request):
+def logoutWeb(request):
     try:
-      login(request,"","")
-    except:
-      return loginWeb(request)
+	logout(request);
+    except Exception, e:
+	print (e)
+    return render(request,'logout.html', {})
     
 @csrf_protect
 def loginWeb(request):
     try:
-      P = getSessionPerson(request)
-      return render(request,'index.html', {'person': P})
+	P = getSessionPerson(request)
+	return render(request,'index.html', {'person': P})
     except:
 	nform = LoginForm() 
 	if request.method == 'POST': # If the form has been submitted...		
@@ -404,9 +403,17 @@ def loginWeb(request):
 				login(request,username,password)
 				try:
 					P = getSessionPerson(request)		
-					
-					print (P.firstName)
-					return render(request,'index.html', {'person': P})#, 'studentOf':SOlist, 'tutorOf':TOlist, 'teachingAssistantOf':TAOlist, 'lectureOf':LOlist}) # Redirect after POST
+					#class Person1:
+					    #firstName = "FirstNameHere"
+					    #upId = "123456789"
+					    #surname = "SurnameHere"
+					    #studentOf  = ['COS123','COS321'] #module
+					    #tutorOf  = ['COS456','COS654'] #module
+					    #teachingAssistantOf  = ['COS789','COS987'] #module
+					    #lectureOf = ['COS135','COS790']
+					#P = Person1()					
+					#print (P.firstName)
+					return render(request,'index.html', {'person': P})
 				except Exception, e:
 					print (e)
 					return render(request,'login.html', {'form': nform, 'msg':"Session ERROR"})					
@@ -419,12 +426,91 @@ def loginWeb(request):
 		return render(request,'login.html', {'form': nform})
 
 		
-def viewAssessments(request):
-	c = request.POST['mod_code']
-	Assessments = getAllAssessmentsForModule(c)
-	return render(request,'listAssessments.html', {'Assessments': Assessments, 'C': c})	
-
+def getCourseAssessments(request):
+	#class Person1:
+	    #firstName = "FirstNameHere"
+	    #upId = "123456789"
+	    #surname = "SurnameHere"
+	    #studentOf  = ['COS123','COS321'] #module
+	    #tutorOf  = ['COS456','COS654'] #module
+	    #teachingAssistantOf  = ['COS789','COS987'] #module
+	    #lectureOf = ['COS135','COS790']
+	#P = Person1()
 	
+	
+	#class Assessment1():
+	  #assessment_name="ass1"
+	  #assessment_weight="59"
+	  #assessment_type="Prac"
+	  #module_id =request.POST['mod_code']
+	  #id='1'
+	  
+	#class Assessment2():
+	  #assessment_name="ass2"
+	  #assessment_weight="76"
+	  #assessment_type="Prac"
+	  #module_id =request.POST['mod_code']
+	  #id='1'
+	  
+	#class Assessment3():
+	  #assessment_name="ass3"
+	  #assessment_weight="23"
+	  #assessment_type="Prac"
+	  #module_id =request.POST['mod_code']
+	  #id='1'
+	  
+	#Assessments=[]
+	#print (Assessment1())
+	#Assessments.append(Assessment1())
+	#Assessments.append(Assessment2())
+	#Assessments.append(Assessment3())	
+	
+	P = getSessionPerson(request)	
+	c = request.POST['mod_code']
+	ObjectList = []
+	role = ""
+	try:
+	  if c in P.studentOf:
+	    role='student'
+	    Assessments = getAllAssementsForStudent(P.upId, c)# getAllAssessmentsForModule(c)#
+	    for assessment in Assessments:
+	      list = []
+	      assessmentTotal = getAssessmentTotalForStudent(P.upId,c,assessment.id)
+	      list.append(assessment)
+	      list.append(assessmentTotal)
+	      ObjectList.append(list)	
+	  else:  
+	    Assessments = getAllOpenAssessmentsForModule(c)
+	    if c in P.tutorOf:
+	      role='tutor'
+	      for assessment in Assessments:
+		list = []
+		sessions = getOpenSessionsForMarker(assessment.id, P.upId)
+		list.append(assessment)
+		list.append(sessions)
+		ObjectList.append(list)	  
+	    else:  
+	      if c in P.teachingAssistantOf:
+		role='teachingAssistant'
+		for assessment in Assessments:
+		  list = []
+		  sessions = getOpenSessionsForMarker(assessment.id, P.upId)
+		  list.append(assessment)
+		  list.append(sessions)
+		  ObjectList.append(list)
+	      else:   
+		if c in P.lectureOf:
+		  role='lecturer'
+		  Assessments = getAllAssessmentsForModule(c)
+		  for assessment in Assessments:
+		    list = []
+		    sessions = getOpenSessions(assessment.id)
+		    list.append(assessment)
+		    list.append(sessions)
+		    ObjectList.append(list) 
+	except Exception, e:
+	  print (e)
+	return render(request,'listAssessments.html', {'ObjectList': ObjectList, 'C': c, 'role': role})	
 def viewAssessmentsOptions(request):
 	c = request.POST['mod_code']
 	print (c);
@@ -470,8 +556,89 @@ def getSessionStudentMarks(request):
 	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
 
 def assessment_view(request):
-    return render(request,'assessmentView.html', {'Assessments': assessmentName})	
+    m = "COS110"#request.POST['mod_code']
+    class Person1:
+	firstName = "FirstNameHere"
+	upId = "123456789"
+	surname = "SurnameHere"
+	studentOf  = ['COS110','COS321'] #module
+	tutorOf  = ['COS456','COS654'] #module
+	teachingAssistantOf  = ['COS789','COS987'] #module
+	lectureOf = ['COS135','COS790']
 	
+    class Assessment1():
+	  assessment_name="ass1"
+	  assessment_weight="59"
+	  assessment_type="Prac"
+	  module_id ="COS110"
+    
+    listMark = []
+    list = []
+    list.append("ass1")
+    list.append("10")
+    list.append("8")
+    listMark.append(list)
+	
+    P = Person1()
+ 
+def checkUserRole(role, course, assessment):
+    P = getSessionPerson(request) 
+    if role == 'student':
+      if course in P.studentOf:
+	return 1
+    if role == 'tutor':  
+      if course in P.tutorOf:
+	return 1
+    if role == 'teachingAssistant':  
+      if course in P.teachingAssistantOf:
+	return 1
+    if role == 'lecture':  
+      if course in P.lectureOf:
+	return 1
+
+
+'''Student Assessment'''
+def studentPage(request, course, assessment= ''):
+    P = getSessionPerson(request) 
+    Assessments = getAllAssessmentsForModule(course)#getAllAssementsForStudent(P.upId, course)  
+    if (assessment != ''):
+      SpecificA = getAssessmentFromID(assessment)
+      return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments, 'Specific': SpecificA})
+    return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments})
+    
+def getLeafAssessmentsTableWeb(request): 
+    P = getSessionPerson(request) 
+    a = request.POST['assess_id']
+    assess = getAssessmentFromID(a);
+    leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assess)  
+    print (leafAssessmentList)
+    return render(request,'tableLeafAssessmentMarks.html', {'leafAssessments': leafAssessmentList})  
+    
+'''Tutor Assessment'''      
+def tutorPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
+    return render(request,'marks_management.html', {'Assessments': assessmentName})
+    
+'''teachingAssistant Assessment'''  
+def teachingAssistantPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
+    return render(request,'marks_management.html', {'Assessments': assessmentName})  
+    
+'''Lecturer Assessment'''  
+def lecturerPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
+    return render(request,'marks_management.html', {'Assessments': assessmentName})
+      
+      
 def openAssessment(request, assessmentName):
 	print (assessmentName)
 	return render(request,'assessmentView.html', {'Assessments': assessmentName})	
@@ -570,7 +737,8 @@ def getLeafAssessments(request):
         x = getLeafAssessmentMarksOfAsssessmentForStudent(person.upId, assess_id)
         return render(request,  'studentChosen.html', {'leafAssessmentList' : x})
         
-def  getAssessments(request):
+def  getAssessments(request):      
+  
         person = getPersonByID(request.POST['studentID'])
         leaf = request.POST['leafAssessment']
         if person == 'Empty':
@@ -582,11 +750,6 @@ def  getAssessments(request):
                 assessmentList = getAllLeafAssessments(person.upId, leaf)
         type = request.POST['type']
         return render(request,  'studentChosen.html', {'per' : person, 'usrAllAssessments' : assessmentList, 'type' : type, 'leafAssesment' : leafAssesment })
-
-def assessment_view(request):
-	t = get_template('assessmentView.html')
-	html = t.render(Context())
-	return HttpResponse(html)
 
 def assessment_manager(request):
 	t = get_template('assessmentManager.html')
@@ -694,6 +857,9 @@ def AssessmentManager(request):
 	  P = getSessionPerson(request)	  
 	  form = AssessmentManagerForm() 
 	  return render(request, 'assessmentManager.html', {'form': form, 'Courses' : P.lectureOf})
+
+def lecturer_assessment(request):
+	return render(request, 'lecturerAssessment.html')
 '''END MARTIN'''
 
 def statistics(request):
@@ -714,7 +880,7 @@ def student_report(request):
 	
 def publish(request):
 	if request.method == 'POST': 
-	  try:	      
+	  try:    
 	    csvfile = request.FILES['csvFile']
 	    parseMarksToDB(request, csvfile)
 	    return render(request, 'publish.html', {'msg' : "Marks Published!"})
@@ -724,10 +890,10 @@ def publish(request):
 	  return render(request, 'publish.html', {})
 	
 
-def unpublish(request):
-	t = get_template('unpublish.html')
-	html = t.render(Context())
-	return HttpResponse(html)
+#def unpublish(request):
+	#t = get_template('unpublish.html')
+	#html = t.render(Context())
+	#return HttpResponse(html)
 
 def marks_management(request):
         t = get_template('marks-management.html')

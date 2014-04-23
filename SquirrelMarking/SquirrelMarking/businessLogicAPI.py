@@ -185,13 +185,24 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssementsForStudent(empl_no,mod_code):
-    temp = MarkAllocation.objects.filter(student=empl_no)
+    temp = MarkAllocation.objects.filter(student=empl_no[0])
     list = []
+    alreadyScanned = []
+    
     for x in temp:
-        temp2 = LeafAssessment.objects.filter(leaf_id=x.leaf_id)
-        temp3 = Assessment.objects.filter(assessment_id=temp2.assessment_id)
-        if temp3.get() == mod_code:
-            list.append(temp3)
+        temp2 = LeafAssessment.objects.filter(id=x.leaf_id_id)
+        found  = False
+        for m in alreadyScanned:
+	  if(temp2[0].assessment_id_id == m.assessment_id_id):
+	    found = True
+	if (found == False):
+	  alreadyScanned.append(temp2[0])
+
+    for x in alreadyScanned:
+        temp3 = Assessment.objects.filter(id=x.assessment_id_id)
+	
+        if (str(temp3[0].getModule()) == str(mod_code)):
+	  list.append(temp3[0])
     return list
 
 # Name: getAllSessionsForModule(mod_code)
@@ -404,16 +415,19 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
-    for x in leafs:
-        
-        marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
-        if(marks):
-            list = []
-	    list.append(x.getName())
-	    list.append(x.getMax_mark())
-	    list.append(marks[0].getMark())
-	    listMark.append(list)
     
+    for x in leafs:
+        list = []
+        list.append(x.getName())
+        list.append(x.getMax_mark())
+        try:
+            marks = MarkAllocation.objects.get(leaf_id=x,student=uid)
+
+            list.append(marks.getMark())
+        except:
+            list.append(-2)
+        list.append(x.id)
+        listMark.append(list)
     return listMark
 
     
@@ -429,18 +443,18 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
         leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
         total = 0
         mark = 0
-	name = x.assessment_name
+        name = x.assessment_name
         counter = 0
         for m in leafMarks:
             counter = counter + 1
             if (counter % 2 == 0):
-                totals = totals + m
+                total = total + m[3]
             else:
-                mark = mark + m
-	list = []
-	list.append(name)
-	list.append(total)
-	list.append(mark)
+                mark = mark + m[3]
+        list = []
+        list.append(name)
+        list.append(total)
+        list.append(mark)
         totals.append(list)
     
     return totals
@@ -460,12 +474,10 @@ def getAssessmentTotalForStudent(uid, mod_code, assess_id):
         mark = 0
 	name = x.assessment_name
         counter = 0
+        
         for m in leafMarks:
-            counter = counter + 1
-            if (counter % 2 == 0):
-                totals = totals + m
-            else:
-                mark = mark + m
+	  total = total + m[1]
+	  mark = mark + m[2]
 	list = []
 	list.append(name)
 	list.append(total)
@@ -701,7 +713,7 @@ def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 	return list.filter(person_id=userID)
 
 def logout(request):
-    del request['user']
+    del request.session['user']
     
 def checkLeafAssessmentExists(leafAssessmentID):
 	a = LeafAssessment.objects.filter(id = leafAssessmentID)
