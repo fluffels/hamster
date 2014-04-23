@@ -185,7 +185,7 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssementsForStudent(empl_no,mod_code):
-    temp = MarkAllocation.objects.filter(student=empl_no[0])
+    temp = MarkAllocation.objects.filter(student=empl_no)
     list = []
     alreadyScanned = []
     
@@ -193,16 +193,15 @@ def getAllAssementsForStudent(empl_no,mod_code):
         temp2 = LeafAssessment.objects.filter(id=x.leaf_id_id)
         found  = False
         for m in alreadyScanned:
-	  if(temp2[0].assessment_id_id == m.assessment_id_id):
-	    found = True
-	if (found == False):
-	  alreadyScanned.append(temp2[0])
+            if(temp2[0].assessment_id_id == m.assessment_id_id):
+                found = True
+        if (found == False):
+            alreadyScanned.append(temp2[0])
 
     for x in alreadyScanned:
         temp3 = Assessment.objects.filter(id=x.assessment_id_id)
-	
         if (str(temp3[0].getModule()) == str(mod_code)):
-	  list.append(temp3[0])
+            list.append(temp3[0])
     return list
 
 # Name: getAllSessionsForModule(mod_code)
@@ -438,6 +437,7 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
 # Return: returns 2D list first indices indicate assessment number and second indices consist of [0..2]: [0 ]= Name; [1] = Total; [2]= mark obtained;
 def getAllAssessmentTotalsForStudent(uid, mod_code):
     assessments = getAllAssementsForStudent(uid,mod_code)
+    print assessments
     totals = []
     for x in assessments:
         leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
