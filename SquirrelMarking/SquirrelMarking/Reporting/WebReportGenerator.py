@@ -27,13 +27,14 @@ class WebReportGenerator(ReportGenerator):
 	people = getAllStudentsOfModule(module)
 	for x in people:
 		tempList = []
-		tempList.append(x.getupId())
+		tempList.append(x.getupId()[0])
 		tempData = getAssessmentTotalForStudent(x.getupId(),module,assessment)
 		for y in tempData:
 			tempList.append(y[2])
 		returnData.append(tempList)
 	        
 	tempData = getAssessmentTotalForStudent(people[0].getupId(),module,assessment)
+	name.append("uid")
 	for y in tempData:
 		name.append(y[0])
 		total.append(y[1])
@@ -54,7 +55,6 @@ class WebReportGenerator(ReportGenerator):
 	name = []
 	total = []
 	mark = []
-
 	for x in tempData:
 		name.append(x[0])
 		total.append(x[1])
@@ -93,7 +93,15 @@ class WebReportGenerator(ReportGenerator):
 	name = ""
 	data = ""
 	headings = []
-	headings.append("PersonId Description AuditDescription Time TableName ColumnName OldValue NewValue AffectedRow")
+	headings.append("PersonId")
+	headings.append("Description")
+	headings.append("AuditDescription")
+	headings.append("Time")
+	headings.append("TableName")
+	headings.append("ColumnName")
+	headings.append("OldValue")
+	headings.append("NewValue")
+	headings.append("AffectedRow")
 	if module != "":
 		
 		if userID != "":

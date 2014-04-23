@@ -13,6 +13,9 @@ from forms import *
 from django.shortcuts import render
 from reportRenderers import *
 from DBAdapter import *
+from Reporting.CSVReportGenerator import *
+from Reporting.PDFReportGenerator import *
+from django.core.files.base import ContentFile
 
 #from DBAdapter import *
 import sys
@@ -161,6 +164,53 @@ def auditReportTest(request):
 	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
 	dataOut = renderAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12')
 	return HttpResponse(dataOut)
+	
+def PDFAssReportTest(request):
+	response     = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="AssessmentReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateAssessmentReport("COS301", 1,response)
+	return response 
+	
+def PDFstudReportTest(request):
+	response     = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="StudentReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateStudentMarksReport("COS301", "u89000583", 1,response)
+	return response 
+	
+def PDFauditReportTest(request):
+	login(request,"u89000583","Mason")
+	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
+	response     = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="AuditReport.pdf"'
+	reportGenerator = PDFReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12',response)
+	return response 
+	
+def CSVAssReportTest(request):
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", 1)
+	response     = HttpResponse(testReport, content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="AssessmentReport.csv"'
+	return response 
+	
+def CSVstudReportTest(request):
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateStudentMarksReport("COS301", "u89000583", 1)
+	file_to_send = ContentFile(testReport)
+	response     = HttpResponse(testReport,'application/csv')
+	response['Content-Disposition'] = 'attachment; filename="StudentReport.csv"'
+	return response 
+	
+def CSVauditReportTest(request):
+	login(request,"u89000583","Mason")
+	createAssessment(request,"test",50,"thingamabob",Module.objects.get(code="COS301"))
+	reportGenerator = CSVReportGenerator()
+	testReport = reportGenerator.generateAuditReport("COS301", "u89000583", "" ,'2012-12-12 12:12','2015-04-20 12:12')
+	response     = HttpResponse(testReport,'text/csv')
+	response['Content-Disposition'] = 'attachment; filename="AuditReport.csv"'
+	return response 
 
 def PDFAssReportTest(request):
 	response = HttpResponse(content_type='application/pdf')
