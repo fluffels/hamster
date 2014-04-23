@@ -1,7 +1,22 @@
 <div id="{{ C }}">
-  <div class='submenu'>
-  {% for Assessment in Assessments %}
-	  <a href="assessmentManager/" class="assessment">{{ Assessment }}</a><br />
+  <div class='submenu'>  
+  {% for Assessment in ObjectList %}
+	  <div id="">
+	  {% if role == 'student' %}	  
+	  <a href="/student/{{ C }}/{{ Assessment.0.id }}/" class="assessment">{{ Assessment.0.assessment_name }}</a>{{ Assessment.1.0.0 }}: {{ Assessment.1.0.2 }}/{{ Assessment.1.0.1 }}
+	  {% endif %}
+	  {% if role == 'tutor' %}	  
+	  <a href="/tutor/{{ C }}/{{ Assessment.0.id }}/" class="assessment">{{ Assessment.0.assessment_name }}</a>
+	  {% endif %}
+	  {% if role == 'teachingAssistant' %}	  
+	  <a href="teachingAssistant/{{ C }}/{{ Assessment.0.id }}/" class="assessment">{{ Assessment.0.assessment_name }}</a>
+	  {% endif %}
+	  {% if role == 'lecturer' %}	  
+	  <a href="/lecturer/{{ C }}/{{ Assessment.0.id }}/" class="assessment">{{ Assessment.0.assessment_name }}</a>
+	  <button class='addAssessment'>Add</button>
+	  <button class='removeAssessment'>Remove</button>
+	  {% endif %}
+	  </div><br />
   {% endfor %}
   </div>
 </div>

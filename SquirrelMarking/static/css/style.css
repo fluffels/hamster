@@ -56,9 +56,11 @@ section{
 	top:26%;
 	left:10%;
 	width:80%;
-	bottom:0;
-	height:100%;
+	paddding-top: 20px;
+	paddding-bottom: 10px;
+	height:auto;
 	background-color:#ddeafa;
+	margin-bottom: 25px;
 		-webkit-box-shadow: 0px 0px 15px -2px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 15px -2px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 15px -2px rgba(0,0,0,0.75);
