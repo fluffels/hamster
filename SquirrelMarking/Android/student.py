@@ -7,19 +7,16 @@ def getAllMarksForModule(request):
 	#json_data =json.loads(request.body)
 	studentNumber = request.GET['uid']
 	module = request.GET['module']
-	assessments = BL.getAllAssementsForStudent(studentNumber,module)
+	assessments = BL.getAllAssessmentTotalsForStudent(studentNumber,module)
 	AssessmentName = []
 	mark = []
 	total = []
 		
 	for assessment in assessments:
-		AssessmentName.append(assessment.getName())
-		assessmentID = assessment.getID()
-		studentMarkObject = getAssessmentMarkForStudent(studentNumber, assessmentID)
-		achievedMark = studentMarkObject.GET.get('achieved_mark')
-		totalMark = studentMarkObject.GET.get('total_mark')
-		mark.append(achievedMark)
-		total.append(totalMark)
+		print assessment
+		AssessmentName.append(assessment[0])
+		total.append(assessment[1])
+		mark.append(assessment[2])
 	data = [
 		{
 			'type':1,

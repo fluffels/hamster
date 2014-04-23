@@ -100,6 +100,7 @@ def getTaskListByAssessment(request):
 				leafName.append(lAssessment[0])
 				maxMark.append(lAssessment[1])
 				currentMark.append(lAssessment[2])
+				leafID.append(lAssessment[3])
 
 			data =[{
 				'type' :1,

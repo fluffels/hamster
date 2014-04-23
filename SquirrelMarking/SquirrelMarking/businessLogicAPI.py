@@ -188,10 +188,11 @@ def getAllAssementsForStudent(empl_no,mod_code):
     temp = MarkAllocation.objects.filter(student=empl_no)
     list = []
     for x in temp:
-        temp2 = LeafAssessment.objects.filter(leaf_id=x.leaf_id)
-        temp3 = Assessment.objects.filter(assessment_id=temp2.assessment_id)
-        if temp3.get() == mod_code:
-            list.append(temp3)
+        temp2 = LeafAssessment.objects.filter(assessment_id=x.leaf_id)
+        for x in temp2:
+            temp3 = Assessment.objects.get(id=x.assessment_id.id)
+            if temp3.getModule().code == mod_code:
+                list.append(temp3)
     return list
 
 # Name: getAllSessionsForModule(mod_code)
@@ -405,15 +406,17 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
     for x in leafs:
-        
-        marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
-        if(marks):
-            list = []
-	    list.append(x.getName())
-	    list.append(x.getMax_mark())
-	    list.append(marks[0].getMark())
-	    listMark.append(list)
-    
+        list = []
+        list.append(x.getName())
+        list.append(x.getMax_mark())
+        try:
+            marks = MarkAllocation.objects.get(leaf_id=x,student=uid)
+
+            list.append(marks.getMark())
+        except:
+            list.append(-2)
+        list.append(x.id)
+        listMark.append(list)
     return listMark
 
     
@@ -429,18 +432,18 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
         leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
         total = 0
         mark = 0
-	name = x.assessment_name
+        name = x.assessment_name
         counter = 0
         for m in leafMarks:
             counter = counter + 1
             if (counter % 2 == 0):
-                totals = totals + m
+                total = total + m[3]
             else:
-                mark = mark + m
-	list = []
-	list.append(name)
-	list.append(total)
-	list.append(mark)
+                mark = mark + m[3]
+        list = []
+        list.append(name)
+        list.append(total)
+        list.append(mark)
         totals.append(list)
     
     return totals
