@@ -169,6 +169,8 @@ class Sessions(models.Model):
         return self.status
     def getOpenedDate(self):
         return self.opened
+    def getName(self):
+        return self.session_name
 
 def deleteSessions(self):
     Sessions.delete(self)

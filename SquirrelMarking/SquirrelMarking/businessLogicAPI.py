@@ -701,7 +701,7 @@ def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 	return list.filter(person_id=userID)
 
 def logout(request):
-    del request['user']
+    del request.session['user']
     
 def checkLeafAssessmentExists(leafAssessmentID):
 	a = LeafAssessment.objects.filter(id = leafAssessmentID)
