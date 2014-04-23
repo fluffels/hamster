@@ -8,28 +8,57 @@
 {% endblock %}
 
 {% block content_title %}
-	<h1 id="content_title">Assessment View</h1>
+	<h1 id="content_title">{{ C }} - Student Mark Assessment View</h1>
 {% endblock %}
 {% block includes %}
-	 <!--<link href="{{ STATIC_URL }}css/assessmentView.css" rel="stylesheet" type="text/css" />-->
+	<script type = "text/javascript">
+	$(document).ready(function () {
+	  assessId = $('#FilterAssessment').val();
+	  alert(assessId);
+	  if (assessId !== '')
+	  {
+	    displayAssessmentMarks($('#FilterAssessment').val());	    
+	  }
+	  $('#FilterAssessment').change(function()
+	  {
+	    assessId = $(this).val();
+	    if (assessId !== '')
+	      displayAssessmentMarks(assessId);
+	  });
+	});
+	
+	function displayAssessmentMarks(assessmentID)
+	{
+	  $.ajax({
+	      type: 'POST',
+	      url: '/getLeafAssessmentsTableWeb/',
+	      data: {assess_id : assessmentID},
+	     
+	      }).success(function(response) {
+		$("#markTable").replaceWith(response);		
+	      });
+	}
+	</script>
 {% endblock %}
 {% block content %}
-    <div role="main" class="ui-content">
-    <table>
-    {% if StudentAssessments %}
-      <tr>
-	<th>Name</th>
-	<th>Mark</th>
-	<th>Total</th>
-      </tr>
+    <select id='FilterAssessment'>
+      <option value="">Select Assessment</option>
+      {% if Specific %}
+	{% for Assessment in StudentAssessments %}
+	  {% if Specific.id == Assessment.id %}
+	    <option value="{{ Assessment.id }}" selected=''>{{ Assessment.assessment_name }}</option>
+	  {% else %}
+	    <option value="{{ Assessment.id }}">{{ Assessment.assessment_name }}</option>
+	  {% endif %}
+	{% endfor %}      
+      {% else %}
       {% for Assessment in StudentAssessments %}
-	<tr>
-	    <td>{{ Assessment.0 }}</td>
-	    <td>{{ Assessment.2 }}</td>
-	    <td>{{ Assessment.1 }}</td>
-	</tr>
+	<option value="{{ Assessment.id }}">{{ Assessment.assessment_name }}</option>
       {% endfor %}
-    {% endif %}
-    </table>
+      {% endif %}
+    </select> 
+    <form action='student/{{ C }}/{{ A }}'>
+    <div id='markTable'>
     </div>
+    
 {% endblock %}

@@ -301,8 +301,6 @@ def test(request):
 	#print getAuditLogFromTableName("MarkerSessions")
 	return HttpResponse("<html><body><p>"+str(len(getOpenSessions(2)))+"</p><p>"+str(getSessions()[0].assessment_id_id)+"</p></body></html>")
 
-#def logout(request)
-
 def loginData(request):
 	t = get_template('login.html')
 	html = t.render(Context())
@@ -329,17 +327,18 @@ def loginData(request):
 	html = t.render(Context())
 	return HttpResponse(html)
 
-def logout(request):
+def logoutWeb(request):
     try:
-      login(request,"","")
-    except:
-      return loginWeb(request)
+	logout(request);
+    except Exception, e:
+	print (e)
+    return render(request,'logout.html', {})
     
 @csrf_protect
 def loginWeb(request):
     try:
-     P = getSessionPerson(request)
-     return render(request,'index.html', {'person': P})
+	P = getSessionPerson(request)
+	return render(request,'index.html', {'person': P})
     except:
 	nform = LoginForm() 
 	if request.method == 'POST': # If the form has been submitted...		
@@ -417,18 +416,19 @@ def getCourseAssessments(request):
 	
 	P = getSessionPerson(request)	
 	c = request.POST['mod_code']
-	Assessments = getAllAssessmentsForModule(c)
 	ObjectList = []
 	role = ""
 	if c in P.studentOf:
 	  role='student'
+	  Assessments = getAllAssessmentsForModule(c)#getAllAssementsForStudent(P.upId, c) 
 	  for assessment in Assessments:
 	    list = []
 	    assessmentTotal = getAssessmentTotalForStudent(P.upId,c,assessment.id)
 	    list.append(assessment)
 	    list.append(assessmentTotal)
 	    ObjectList.append(list)	
-	else:    
+	else:  
+	  Assessments = getAllOpenAssessmentsForModule(c)
 	  if c in P.tutorOf:
 	    role='tutor'
 	    for assessment in Assessments:
@@ -449,6 +449,7 @@ def getCourseAssessments(request):
 	    else:   
 	      if c in P.lectureOf:
 		role='lecturer'
+		Assessments = getAllAssessmentsForModule(c)
 		for assessment in Assessments:
 		  list = []
 		  sessions = getOpenSessions(assessment.id)
@@ -543,22 +544,47 @@ def checkUserRole(role, course, assessment):
     if role == 'lecture':  
       if course in P.lectureOf:
 	return 1
-      
 
-def studentPage(request, course, assessment):
-    print(course +"|"+ assessment)
-    return render(request,'studentAssessment.html', {'StudentAssessments': listMark})
+
+'''Student Assessment'''
+def studentPage(request, course, assessment= ''):
+    P = getSessionPerson(request) 
+    Assessments = getAllAssessmentsForModule(course)#getAllAssementsForStudent(P.upId, course)  
+    if (assessment != ''):
+      SpecificA = getAssessmentFromID(assessment)
+      return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments, 'Specific': SpecificA})
+    return render(request,'studentAssessment.html', {'C': course, 'A': assessment,'StudentAssessments': Assessments})
     
-def tutorPage(request, course, assessment):
-    print(course +"|"+ assessment)
+def getLeafAssessmentsTableWeb(request): 
+    P = getSessionPerson(request) 
+    a = request.POST['assess_id']
+    assess = getAssessmentFromID(a);
+    leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assess)  
+    print (leafAssessmentList)
+    return render(request,'tableLeafAssessmentMarks.html', {'leafAssessments': leafAssessmentList})  
+    
+'''Tutor Assessment'''      
+def tutorPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
     return render(request,'marks_management.html', {'Assessments': assessmentName})
-
-def teachingAssistantPage(request, course, assessment):
-    print(course +"|"+ assessment)
-    return render(request,'marks_management.html', {'Assessments': assessmentName})    
-
-def lecturerPage(request, course, assessment):
-    print(course +"|"+ assessment)
+    
+'''teachingAssistant Assessment'''  
+def teachingAssistantPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
+    return render(request,'marks_management.html', {'Assessments': assessmentName})  
+    
+'''Lecturer Assessment'''  
+def lecturerPage(request, course, assessment='', session=''):
+    if assessment != '':
+      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+      if session != '':
+	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
     return render(request,'marks_management.html', {'Assessments': assessmentName})
       
       

@@ -7,7 +7,7 @@ import csv
 
 urlpatterns = patterns('',
 	#home page
-	(r'^logout/$', logout),
+	(r'^logout/$', logoutWeb),
 	(r'^$', loginWeb),
 	(r'^index/$', loginWeb),
 	(r'^getCourseAssessments/$', getCourseAssessments),
@@ -15,9 +15,15 @@ urlpatterns = patterns('',
 	(r'^getAssessmentSessionsOptions/$', viewAssessmentSessionsOptions),
 	(r'^getSessionStudentMarks/$', getSessionStudentMarks),
 	(r'^student/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', studentPage),
+	(r'^getLeafAssessmentsTableWeb/$', getLeafAssessmentsTableWeb),
+	
 	(r'^tutor/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', tutorPage),
 	(r'^teachingAssistant/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', teachingAssistantPage),
 	(r'^lecturer/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', lecturerPage),
+	
+	(r'^tutor/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', tutorPage),
+	(r'^teachingAssistant/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', teachingAssistantPage),
+	(r'^lecturer/(?P<course>\w{6})/(?P<assessment>[0-9]+)/(?P<session>[0-9]+)/$', lecturerPage),
 	
 	(r'^assessmentView/$', assessment_view),
 	(r'^test/$', test),

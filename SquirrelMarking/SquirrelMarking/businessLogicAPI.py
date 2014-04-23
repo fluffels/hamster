@@ -404,9 +404,9 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
     leafs = getAllLeafAssessmentsForAssessment(assess_id)
     listMark = []
+    
     for x in leafs:
-        
-        marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
+        marks = MarkAllocation.objects.filter(leaf_id_id=x,student=uid[0])
         if(marks):
             list = []
 	    list.append(x.getName())
