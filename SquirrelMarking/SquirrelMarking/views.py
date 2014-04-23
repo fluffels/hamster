@@ -418,48 +418,48 @@ def getCourseAssessments(request):
 	c = request.POST['mod_code']
 	ObjectList = []
 	role = ""
-	if c in P.studentOf:
-	  role='student'
-	  Assessments = getAllAssessmentsForModule(c)#getAllAssementsForStudent(P.upId, c) 
-	  for assessment in Assessments:
-	    list = []
-	    assessmentTotal = getAssessmentTotalForStudent(P.upId,c,assessment.id)
-	    list.append(assessment)
-	    list.append(assessmentTotal)
-	    ObjectList.append(list)	
-	else:  
-	  Assessments = getAllOpenAssessmentsForModule(c)
-	  if c in P.tutorOf:
-	    role='tutor'
+	try:
+	  if c in P.studentOf:
+	    role='student'
+	    Assessments = getAllAssementsForStudent(P.upId, c)# getAllAssessmentsForModule(c)#
 	    for assessment in Assessments:
 	      list = []
-	      sessions = getOpenSessionsForMarker(assessment.id, P.upId)
+	      assessmentTotal = getAssessmentTotalForStudent(P.upId,c,assessment.id)
 	      list.append(assessment)
-	      list.append(sessions)
-	      ObjectList.append(list)	  
+	      list.append(assessmentTotal)
+	      ObjectList.append(list)	
 	  else:  
-	    if c in P.teachingAssistantOf:
-	      role='teachingAssistant'
+	    Assessments = getAllOpenAssessmentsForModule(c)
+	    if c in P.tutorOf:
+	      role='tutor'
 	      for assessment in Assessments:
 		list = []
 		sessions = getOpenSessionsForMarker(assessment.id, P.upId)
 		list.append(assessment)
 		list.append(sessions)
-		ObjectList.append(list)
-	    else:   
-	      if c in P.lectureOf:
-		role='lecturer'
-		Assessments = getAllAssessmentsForModule(c)
+		ObjectList.append(list)	  
+	    else:  
+	      if c in P.teachingAssistantOf:
+		role='teachingAssistant'
 		for assessment in Assessments:
 		  list = []
-		  sessions = getOpenSessions(assessment.id)
+		  sessions = getOpenSessionsForMarker(assessment.id, P.upId)
 		  list.append(assessment)
 		  list.append(sessions)
 		  ObjectList.append(list)
-	
+	      else:   
+		if c in P.lectureOf:
+		  role='lecturer'
+		  Assessments = getAllAssessmentsForModule(c)
+		  for assessment in Assessments:
+		    list = []
+		    sessions = getOpenSessions(assessment.id)
+		    list.append(assessment)
+		    list.append(sessions)
+		    ObjectList.append(list) 
+	except Exception, e:
+	  print (e)
 	return render(request,'listAssessments.html', {'ObjectList': ObjectList, 'C': c, 'role': role})	
-
-	
 def viewAssessmentsOptions(request):
 	c = request.POST['mod_code']
 	print (c);

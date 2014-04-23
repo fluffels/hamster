@@ -185,13 +185,24 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssementsForStudent(empl_no,mod_code):
-    temp = MarkAllocation.objects.filter(student=empl_no)
+    temp = MarkAllocation.objects.filter(student=empl_no[0])
     list = []
+    alreadyScanned = []
+    
     for x in temp:
-        temp2 = LeafAssessment.objects.filter(leaf_id=x.leaf_id)
-        temp3 = Assessment.objects.filter(assessment_id=temp2.assessment_id)
-        if temp3.get() == mod_code:
-            list.append(temp3)
+        temp2 = LeafAssessment.objects.filter(id=x.leaf_id_id)
+        found  = False
+        for m in alreadyScanned:
+	  if(temp2[0].assessment_id_id == m.assessment_id_id):
+	    found = True
+	if (found == False):
+	  alreadyScanned.append(temp2[0])
+
+    for x in alreadyScanned:
+        temp3 = Assessment.objects.filter(id=x.assessment_id_id)
+	
+        if (str(temp3[0].getModule()) == str(mod_code)):
+	  list.append(temp3[0])
     return list
 
 # Name: getAllSessionsForModule(mod_code)
@@ -460,18 +471,15 @@ def getAssessmentTotalForStudent(uid, mod_code, assess_id):
         mark = 0
 	name = x.assessment_name
         counter = 0
+        
         for m in leafMarks:
-            counter = counter + 1
-            if (counter % 2 == 0):
-                totals = totals + m
-            else:
-                mark = mark + m
+	  total = total + m[1]
+	  mark = mark + m[2]
 	list = []
 	list.append(name)
 	list.append(total)
 	list.append(mark)
         totals.append(list)
-    
     return totals
 
 # Name: populateModules()
