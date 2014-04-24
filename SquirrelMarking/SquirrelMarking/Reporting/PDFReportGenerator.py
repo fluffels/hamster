@@ -14,6 +14,8 @@ class PDFReportGenerator(ReportGenerator):
 
 	csvGen = CSVReportGenerator()
 	course_name = 'COS xxx'
+	width_dec = 30
+	isAudit = 0
 	
 	def generateAssessmentReport(self, module, assessment,response):  #Assessment Report
 		report = self.csvGen.generateAssessmentReport(module, assessment)
@@ -30,6 +32,7 @@ class PDFReportGenerator(ReportGenerator):
 	def generateAuditReport(self, module, userID, alteredTable, dateFrom, dateTo,response):  #Audit Report
 		report = self.csvGen.generateAuditReport( module, userID, alteredTable, dateFrom, dateTo)
 		self.course_name = module + ' Audit Report'
+		self.isAudit = 1
 		c =self.create_report(report,response)
 		return c
 
@@ -45,7 +48,7 @@ class PDFReportGenerator(ReportGenerator):
 		heighty = 720
 		widthy = 100
 		max_width = 800
-		width_dec = 30
+		
 
 
 	#header text
@@ -56,13 +59,18 @@ class PDFReportGenerator(ReportGenerator):
 		tmp_data = csv.reader(report)
 		hdngs = next(tmp_data)
 		num_cols = len(hdngs)
-
-		if num_cols > 35:
-			width_dec = 600/num_cols
+		
+		if self.isAudit == 1:
+			self.width_dec = 50
+			sz = 5
+			c.setFont(fnt, sz, leading=None)
+			self.isAudit = 0
+		elif num_cols > 35:
+			self.width_dec = 600/num_cols
 			sz = 8
 			c.setFont(fnt, sz, leading=None)
 		elif num_cols > 20:
-			width_dec = 600/num_cols
+			self.width_dec = 600/num_cols
 			sz = 10
 			c.setFont(fnt, sz, leading=None)
 
@@ -77,7 +85,7 @@ class PDFReportGenerator(ReportGenerator):
 			widthy += 70
 			for k in range(1, num_cols):
 				c.drawCentredString(widthy, heighty, row[k])
-				widthy += width_dec
+				widthy += self.width_dec
 			widthy = 100
 			if heighty <= 100:
 				c.showPage()
