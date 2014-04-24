@@ -16,6 +16,8 @@ from DBAdapter import *
 from Reporting.CSVReportGenerator import *
 from Reporting.PDFReportGenerator import *
 from django.core.files.base import ContentFile
+import datetime
+from django.utils.timezone import utc
 
 #from DBAdapter import *
 import sys
@@ -274,20 +276,20 @@ def test(request):
 	studentNumber.append("u89000961")
 	studentNumber.append("u89000962")
 	for person  in getPersonListFromArrayList(studentNumber):
-		print person.getupId()
+		print person.upId
 
 	print "getAllLecturesOfModule"		
 
 	for lecmodel  in getAllLecturesOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()
+		print lecmodel.upId
 
 	print "getAllStudentsOfModule"
 	for lecmodel  in getAllStudentsOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()	
+		print lecmodel.upId	
 
 	print "getAllTAsOfModule"
 	for lecmodel  in getAllTAsOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()	
+		print lecmodel.upId	
 
 	print "getAllNamesOf in this case TA"
 	person = getAllTAsOfModule(getAllModules()[0].code)
@@ -296,7 +298,7 @@ def test(request):
 
 	print "getAllTutorsOfModule"
 	for lecmodel  in getAllTutorsOfModule(getAllModules()[0].code):
-		print lecmodel.getupId()	
+		print lecmodel.upId	
 
 	print "getAllMarkersOfModule"
 	for lecmodel  in getAllMarkersOfModule(getAllModules()[0].code):
@@ -558,23 +560,61 @@ def getCourseAssessments(request):
 		    ObjectList.append(list) 
 	except Exception, e:
 	  print (e)
-	return render(request,'listAssessments.html', {'ObjectList': ObjectList, 'C': c, 'role': role})	
-def viewAssessmentsOptions(request):
+	return render(request,'listAssessments.html', {'ObjectList': ObjectList, 'C': c, 'role': role})
+	
+def viewAssessmentsOptions(request, Marker=None):
 	c = request.POST['mod_code']
-	print (c);
-	Assessments = getAllAssessmentsForModule(c)
-	print (Assessments);
+	Assessments = ''
+	if Marker:
+		Assessments = getAllAssementsForStudent(Marker)
+	else:
+		Assessments = getAllAssessmentsForModule(c)
 	return render(request,'listAssessmentsOptions.html', {'Assessments': Assessments})	
 
 def viewAssessmentSessionsOptions(request):
 	c = request.POST['mod_code']
 	a = request.POST['assess_id']
 	P = getSessionPerson(request)
-	#Sessions = getOpenSessionsForMarker(a, P.upId)
 	Sessions = getOpenSessions(a)
-	print (Sessions)
 	return render(request,'listAssessmentSessionsOptions.html', {'Sessions': Sessions})
+
+class Student:
+	firstName = ""
+	upId = ""
+	surname = ""
+	total = ""
+	def __init__(self):
+		self.firstName = ''
+		self.upId = ''
+		self.surname = ''
+		self.total  = 0
+	def setfirstName(self,value):
+		  self.firstName=value
+	def setupId(self,value):
+		  self.upId=value
+	def setsurname(self,value):
+		  self.surname=value
+	def setTotal(self,value):
+		  self.total=value
+	def __unicode__(self):
+		return self.firstName+" "+self.surname+" "+self.upId	
 	
+	
+def getAssessmentStudentMarks(request):
+	m = request.POST['mod_code']
+	a = request.POST['assess_id']
+	students = getAllStudentsOfModule(m)	
+	weight = getAssessmentFromID(a).assessment_weight
+	list = []	
+	for student in students:
+		stud = Student()
+		stud.setfirstName(student.getfirstName())
+		stud.setupId(student.getupId)
+		stud.setsurname(student.surname)
+		stud.setTotal(getAssessmentTotalForStudent(student.upId, m, a))
+		list.append(stud)  
+	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
+  
 def getSessionStudentMarks(request):
 	m = request.POST['mod_code']
 	a = request.POST['assess_id']
@@ -582,27 +622,25 @@ def getSessionStudentMarks(request):
 	session = getSessionsFromID(s)
 	students = getStudentsForASession(s)
 	weight = session.assessment_id.assessment_weight
-	class Student:
-	    firstName = ""
-	    upId = ""
-	    surname = ""
-	    total = ""
-	    def __init__(self):
-	      self.firstName = ""
-	      self.upId = ""
-	      self.surname = ""
-	      self.total  = ""
-	list = []
-	for student in students:
-	  stud = Student()
-	  stud.firstName = student.firstName
-	  stud.upId = student.upId
-	  stud.surname = student.surname
-	  stud.total = getAssessmentTotalForStudent(student.upId, m, a)
-	  list.append(stud)
-	print (Sessions)
+	
+	list = []	
+	for student in getPersonListFromArrayList(students):
+		stud = Student()
+		stud.setfirstName(student.getfirstName())
+		stud.setupId(student.getupId)
+		stud.setsurname(student.surname)
+		stud.setTotal(getAssessmentTotalForStudent(student.upId, m, a))
+		list.append(stud)  
 	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
 
+def getLeafAssessmentStudentMarks(request):
+	m = request.POST['mod_code']
+	a = request.POST['assess_id']
+	studentID = request.POST['student_uid']
+	leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(studentID, getAssessmentFromID(a))
+	return render(request,'LeafAssessmentStudentMarksTable.html', {'leafAssessments': leafAssessmentList})  
+	
+	
 def assessment_view(request):
     m = "COS110"#request.POST['mod_code']
     class Person1:
@@ -659,24 +697,34 @@ def getLeafAssessmentsTableWeb(request):
     a = request.POST['assess_id']
     assess = getAssessmentFromID(a);
     leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assess)  
-    print (leafAssessmentList)
     return render(request,'tableLeafAssessmentMarks.html', {'leafAssessments': leafAssessmentList})  
     
 '''Tutor Assessment'''      
 def tutorPage(request, course, assessment=None, session=None):
-    if assessment:
-      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-      if session:
-	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
-    return render(request,'marks_management.html', {'Assessments': assessmentName})
+	P = getSessionPerson(request) 
+	request.POST['mod_code'] = course
+	assessments = ''
+	if assessment:		
+		request.POST['assess_id'] = assessment		  
+		if session:
+			return render(request,'marks-management.html', {'Assessments': assessmentName, })
+		else:
+			viewAssessmentSessionsOptions(request, P.upId)  
+	else:
+		assessments = viewAssessmentsOptions(request, P.upId)
+		return render(request,'marks-management.html', {'Assessments': assessmentName})
     
 '''teachingAssistant Assessment'''  
 def teachingAssistantPage(request, course, assessment=None, session=None):
-    if assessment:
-      leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-      if session:
-	leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
-    return render(request,'marks_management.html', {'Assessments': assessmentName})  
+	request.POST['mod_code'] = course
+	request.POST['assess_id'] = assessment
+	viewAssessmentsOptions(request)
+	viewAssessmentSessionsOptions(request)
+	if assessment:
+		leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
+		if session:
+			leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
+	return render(request,'marks-management.html', {'Assessments': assessmentName})  
 
     
 '''Lecturer'''      
@@ -709,38 +757,51 @@ def manageCourse(request, course=None):
 				else:
 					msg = form.errors
 			Assessments = getAllAssessmentsForModule(course)
-			print (Assessments)
 			return render(request,'courseManager.html', {'C': course, 'Assessments':Assessments, 'Tutors': Tutors, 'TAs': TAs, 'form': form, 'msg': msg})
 		else:
 			return render(request,'error.html', {})
 	else:
 		return render(request,'courseManager.html', {'C': '', 'Courses':Courses})	    
-	    
+		
+def manageCourseAssessment(request, course=None, assessmentID=None):
+	msg = ''
+	if request.method == 'POST':
+	  nform = AssessmentManagerForm()
+	  
+	  if request.method == 'POST':
+		  form = AssessmentManagerForm(request.POST)
+		  if form.is_valid():
+			  AName = form.cleaned_data['assessmentName']
+			  AType = form.cleaned_data['assessmentType']
+			  AWeight = form.cleaned_data['markWeight']
+			  assessmentID = request.POST['assessmentID']
+			  A = getAssessmentFromID(assessmentID)
+			  A.setName(AName)
+			  A.setType(AType)
+			  A.setWeight(AWeight)
+			  msg = "Assignment details updated"      
+	
+	print (assessmentID)
+	assessment = getAssessmentFromID(assessmentID)
+	form = AssessmentManagerForm()
+	form.assessmentName = 'cos'
+	form.assessmentType = 'type'
+	form.markWeight = 'weight'
+	return render(request,'assessmentManager.html', {'C': course, 'Assessment':assessment, 'form': form, 'msg': msg})
+	print('manageCourseAssessment')
+	
+def updateAssessmentInformation(request):  
+  print ('hi')
+  
 '''Lecturer Assessment'''  
 def lecturerPage(request, course, assessment=None, session=None):
-	Assessments = getAllAssessmentsForModule(course)
-	if session:	    
-	    
-	    return render(request,'marks_management.html', {'Assessments': Assessments})
-	else:
-		if assessment:
-			nform = AssessmentManagerForm()
-			msg = ''
-			if request.method == 'POST':
-				form = AssessmentManagerForm(request.POST)
-				if form.is_valid():
-					AName = form.cleaned_data['assessmentName']
-					AType = form.cleaned_data['assessmentType']
-					AWeight = form.cleaned_data['markWeight']
-					A = getAssessmentFromID(assessment)
-					A.setName(AName)
-					A.setType(AType)
-					A.setWeight(AWeight)
-					msg = "Assignment details updated"      
-	      
-			return render(request,'marks_management.html', {'Assessments': Assessments})
-
-      
+	P = getSessionPerson(request)
+	modules = P.lectureOf
+	Assessments = getAllAssessmentsForModule(course)	
+	if session:    
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment, 'S': session})
+	if assessment: 
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment})      
       
 def openAssessment(request, assessmentName):
 	print (assessmentName)
@@ -748,8 +809,161 @@ def openAssessment(request, assessmentName):
 
 def marks_management(request):
 	P = getSessionPerson(request)
-	modules = getAllModulesForMarker(P.upId)
-	return render(request,'marks-management.html', {'modules': modules})	
+	modules = P.lectureOf
+	return render(request,'marks-management.html', {'modules': modules})
+'''FORMS'''
+    
+class SaveAsPDFAssessment(forms.Form):
+	AssID = forms.CharField(required=False)
+	Module = forms.DateField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.mod = kwargs.pop('mod')
+		self.ass = kwargs.pop('ass')
+		super(SaveAsPDFAssessment,self).__init__(*args,**kwargs)
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['AssID'].widget = forms.HiddenInput(attrs={'value' : self.ass})
+
+class SaveAsCSVAssessment(forms.Form):
+	AssID = forms.CharField(required=False)
+	Module = forms.DateField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.mod = kwargs.pop('mod')
+		self.ass = kwargs.pop('ass')
+		super(SaveAsCSVAssessment,self).__init__(*args,**kwargs)
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['AssID'].widget = forms.HiddenInput(attrs={'value' : self.ass})
+		
+class SaveAsPDFStudent(forms.Form):
+	Upid = forms.CharField(required=False)
+	AssID = forms.CharField(required=False)
+	Module = forms.DateField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.id = kwargs.pop('id')
+		self.mod = kwargs.pop('mod')
+		self.ass = kwargs.pop('ass')
+		super(SaveAsPDFStudent,self).__init__(*args,**kwargs)
+		self.fields['Upid'].widget = forms.HiddenInput(attrs={'value' : self.id})
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['AssID'].widget = forms.HiddenInput(attrs={'value' : self.ass})
+
+class SaveAsCSVStudent(forms.Form):
+	Upid = forms.CharField(required=False)
+	AssID = forms.CharField(required=False)
+	Module = forms.DateField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.id = kwargs.pop('id')
+		self.mod = kwargs.pop('mod')
+		self.ass = kwargs.pop('ass')
+		super(SaveAsCSVStudent,self).__init__(*args,**kwargs)
+		self.fields['Upid'].widget = forms.HiddenInput(attrs={'value' : self.id})
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['AssID'].widget = forms.HiddenInput(attrs={'value' : self.ass})
+		
+class SaveAsPDF(forms.Form):
+	Upid = forms.CharField(required=False)
+	Module = forms.CharField(required=False)
+	DateFrom = forms.DateField(required=True)
+	DateTo = forms.DateField(required=True)
+	Table = forms.CharField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.id = kwargs.pop('id')
+		self.mod = kwargs.pop('mod')
+		self.datefrom = kwargs.pop('datefrom')
+		self.dateto = kwargs.pop('dateto')
+		self.table = kwargs.pop('table')
+		super(SaveAsPDF,self).__init__(*args,**kwargs)
+		self.fields['Upid'].widget = forms.HiddenInput(attrs={'value' : self.id})
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['DateFrom'].widget = forms.HiddenInput(attrs={'value' : self.datefrom})
+		self.fields['DateTo'].widget = forms.HiddenInput(attrs={'value' : self.dateto})
+		self.fields['Table'].widget = forms.HiddenInput(attrs={'value' : self.table})
+		
+class SaveAsCSV(forms.Form):
+	Upid = forms.CharField(required=False)
+	Module = forms.CharField(required=False)
+	DateFrom = forms.DateField(required=True)
+	DateTo = forms.DateField(required=True)
+	Table = forms.CharField(required=False)
+	def __init__(self,*args,**kwargs):
+		self.id = kwargs.pop('id')
+		self.mod = kwargs.pop('mod')
+		self.datefrom = kwargs.pop('datefrom')
+		self.dateto = kwargs.pop('dateto')
+		self.table = kwargs.pop('table')
+		super(SaveAsCSV,self).__init__(*args,**kwargs)
+		self.fields['Upid'].widget = forms.HiddenInput(attrs={'value' : self.id})
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['DateFrom'].widget = forms.HiddenInput(attrs={'value' : self.datefrom})
+		self.fields['DateTo'].widget = forms.HiddenInput(attrs={'value' : self.dateto})
+		self.fields['Table'].widget = forms.HiddenInput(attrs={'value' : self.table})	
+
+
+class FilterAuditLog(forms.Form):
+	Date_From = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder': 'e.g. 2014-04-23 15:00', 'class': 'datepicker'}), required=True)
+	Date_To = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder': 'e.g. 2014-04-24 16:00', 'class': 'datepicker'}), required=True)
+	Table = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'e.g. Person'}), required=False)
+	up_ID = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'e.g. 12345678'}), max_length=8, required=False)
+	Module = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'e.g. COS301'}), max_length=6, required=False)
+	
+
+def getStudentModules(request):
+	person = getSessionPerson(request)
+	return person.studentOf
+	
+class Modules(forms.Form):
+	Select_Module = forms.ChoiceField()
+	def __init__(self,*args,**kwargs):
+		self.req = kwargs.pop('req')
+		super(Modules,self).__init__(*args,**kwargs)
+		self.fields['Select_Module'] = forms.ChoiceField(widget = forms.Select(), choices=[(x, x) for x in getStudentModules(request=self.req)], required = True,)
+		
+def getAllAssessmentsStudent(request, module):
+	assessments = []
+	person = getSessionPerson(request)
+	ass = getAllAssementsForStudent(person.upId, module)
+	for assessment in ass:
+		assessments.append(assessment.getName())
+	#assessments = ['Exam', 'Semester Tests', 'Practicals', 'Tutorials', 'Class Tests']
+	return assessments
+	
+class Assessments(forms.Form):
+	Select_Assessment = forms.ChoiceField()
+	Module = forms.CharField()
+	def __init__(self,*args,**kwargs):
+		self.mod = kwargs.pop('mod')
+		self.req = kwargs.pop('req')
+		super(Assessments,self).__init__(*args,**kwargs)
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['Select_Assessment'] = forms.ChoiceField(widget = forms.Select(), choices=[(x, x) for x in getAllAssessmentsStudent(request=self.req, module=self.mod)], required = True,)
+		
+def getLecturerModules(request):
+	person = getSessionPerson(request)
+	return person.lectureOf
+	
+class LecturerModules(forms.Form):
+	Select_Module = forms.ChoiceField()
+	def __init__(self,*args,**kwargs):
+		self.req = kwargs.pop('req')
+		super(LecturerModules,self).__init__(*args,**kwargs)
+		self.fields['Select_Module'] = forms.ChoiceField(widget=forms.Select(), choices=[(x, x) for x in getLecturerModules(request=self.req)], required=True)
+
+def getAllAssessments(module):
+	assessments = []
+	ass = getAllAssessmentsForModule(module)
+	for assessment in ass:
+		assessments.append(assessment.getName())
+	#assessments = ['Exam', 'Semester Tests', 'Practicals', 'Tutorials', 'Class Tests']
+	return assessments
+	
+class AssessmentsLecturer(forms.Form):
+	Select_Assessment = forms.ChoiceField()
+	Module = forms.CharField()
+	def __init__(self,*args,**kwargs):
+		self.mod = kwargs.pop('mod')
+		super(AssessmentsLecturer,self).__init__(*args,**kwargs)
+		self.fields['Module'].widget = forms.HiddenInput(attrs={'value' : self.mod})
+		self.fields['Select_Assessment'] = forms.ChoiceField(widget = forms.Select(), choices=[(x, x) for x in getAllAssessments(module=self.mod)], required = True,)
+	
 	
 '''
     REPORTING FUNCTIONS
@@ -803,7 +1017,7 @@ def renderPDF(request):
 			    type = request.POST['type']
 			    if type == "ass" :
 				    report =  pdfGen.generateReport(self,  request.POST['mod_code'], assessment, outputType) #Assessment Report
-				    return render_to_response(report,'Reporting_Main.html', {'person': P}) # Redirect after POST
+				    return render(request, report,'Reporting_Main.html', {'person': P}) # Redirect after POST
 
 			    elif type == "stu" :
 				    report =  pdfGen.generateReport(self,  request.POST['mod_code'], P.getID(), assessments, outputType)  #Student Marks Report
@@ -827,95 +1041,177 @@ def viewAssessments(request, mod_code):
 	except:
 		return render(request,'login.html', {'form': nform,  'msg':"Please login"})
 
-# frequency analysis function to initialize variables	
-
-def frequency_analysis(request):
-        person = getSessionPerson(request)
-        assessment = getAllAssementsForStudent(person.upId, getAllModulesForStudent(person.upId))
-        return render(request, 'studentChosen.html', {'per': person, 'assessment' : assessment})
-
-def getLeafAssessments(request):
-        person = getSessionPerson(request)
-        assess_id = request.POST['assess_id']
-        x = getLeafAssessmentMarksOfAsssessmentForStudent(person.upId, assess_id)
-        return render(request,  'studentChosen.html', {'leafAssessmentList' : x})
-        
-def  getAssessments(request):      
-  
-        person = getPersonByID(request.POST['studentID'])
-        leaf = request.POST['leafAssessment']
-        if person == 'Empty':
-            person = getSessionPerson(request)
-        mode = request.POST['mode']
-        if mode == 'Not Leaf':
-            assessmentList = getAllLeafAssessmentsForAssessment(person.upId, leaf)
-        else:
-                assessmentList = getAllLeafAssessments(person.upId, leaf)
-        type = request.POST['type']
-        return render(request,  'studentChosen.html', {'per' : person, 'usrAllAssessments' : assessmentList, 'type' : type, 'leafAssesment' : leafAssesment })
-
-def assessment_manager(request):
-	t = get_template('assessmentManager.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def session_manager(request):
-	t = get_template('sessionManager.html')
-	html = t.render(Context())
-	return HttpResponse(html)
+def save_as_pdf_assessment(request):
+	if request.method == 'POST':
+		Module = request.POST['Module']
+		AssID = request.POST['AssID']
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="AssessmentReport.pdf"'
+		reportGenerator = PDFReportGenerator()
+		testReport = reportGenerator.generateAssessmentReport(Module, AssID, response)
+		return response
+		#p = canvas.Canvas(response)
+		#p.drawString(3, 3, "Look mommy I can download a PDF file :)")
+		#p.showPage()
+		#p.save()
+		#return response
+		
+def save_as_csv_assessment(request):
+	if request.method == 'POST':
+		Module = request.POST['Module']
+		AssID = request.POST['AssID']
+		reportGenerator = CSVReportGenerator()
+		testReport = reportGenerator.generateAuditReport(Module, AssID)
+		response = HttpResponse(testReport, content_type='text/csv')
+		response['Content-Disposition'] = 'attachment; filename="AssessmentReport.csv"'
+		return response
+		#response = HttpResponse('COS301, StudentMarks, 30, 40, 60','text/csv')
+		#response['Content-Disposition'] = 'attachment; filename="StudentReport.csv"'
+		#return response
+		
+def save_as_pdf_student(request):
+	if request.method == 'POST':
+		upID = request.POST['Upid']
+		Module = request.POST['Module']
+		AssID = request.POST['AssID']
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="StudentReport.pdf"'
+		reportGenerator = PDFReportGenerator()
+		testReport = reportGenerator.generateStudentMarksReport(Module, upID, AssID, response)
+		return response
+		#p = canvas.Canvas(response)
+		#p.drawString(3, 3, "Look mommy I can download a PDF file :)")
+		#p.showPage()
+		#p.save()
+		#return response
+		
+def save_as_csv_student(request):
+	if request.method == 'POST':
+		upID = request.POST['Upid']
+		Module = request.POST['Module']
+		AssID = request.POST['AssID']
+		reportGenerator = CSVReportGenerator()
+		testReport = reportGenerator.generateStudentMarksReport(Module, upID, AssID)
+		file_to_send = ContentFile(testReport)
+		response = HttpResponse(testReport,'application/csv')
+		response['Content-Disposition'] = 'attachment; filename="StudentReport.csv"'
+		return response 
+		#response = HttpResponse('COS301, StudentMarks, 30, 40, 60','text/csv')
+		#response['Content-Disposition'] = 'attachment; filename="StudentReport.csv"'
+		#return response
+		
+def save_as_pdf(request):
+	if request.method == 'POST':
+		upID = request.POST['Upid']
+		Module = request.POST['Module']
+		DateFrom = request.POST['DateFrom']
+		DateTo = request.POST['DateTo']
+		Table = request.POST['Table']
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="AuditReport.pdf"'
+		reportGenerator = PDFReportGenerator()
+		testReport = reportGenerator.generateAuditReport(Module, upID, Table, DateTo, DateFrom, response)	
+		return response
+		#p = canvas.Canvas(response)
+		#p.drawString(3, 3, "Look mommy I can download a PDF file :)")
+		#p.showPage()
+		#p.save()
+		#return response
 	
-	
+def save_as_csv(request):
+	if request.method == 'POST':
+		upID = request.POST['Upid']
+		Module = request.POST['Module']
+		DateFrom = request.POST['DateFrom']
+		DateTo = request.POST['DateTo']
+		Table = request.POST['Table']
+		reportGenerator = CSVReportGenerator()
+		testReport = reportGenerator.generateAuditReport(Module, upID, Table, DateTo, DateFrom)
+		response = HttpResponse(testReport,'text/csv')
+		return reponse
+		#response = HttpResponse('COS301, StudentMarks, 30, 40, 60','text/csv')
+		#response['Content-Disposition'] = 'attachment; filename="AuditReport.csv"'
+		#return response
 	
 def audit_report(request):
-	t = get_template('auditReport.html')
-	html = t.render(Context())
-	return HttpResponse(html)
+	if request.method == 'POST':
+		form = FilterAuditLog(request.POST)
+		if form.is_valid():
+			DateFrom = form.cleaned_data['Date_From']
+			DateTo = form.cleaned_data['Date_To']
+			upId = form.cleaned_data['up_ID']
+			table = form.cleaned_data['Table']
+			module = form.cleaned_data['Module']
+			auditReport = renderAuditReport(module, upId, table, DateFrom, DateTo)
+			#auditReport = '<div><h1>Test report</h1><table><tr><th>Date</th><th>Details</th></tr><tr><td>2014-04-14</td><td>Wrote rendering class</td></tr><tr><td>2014-04-14</td><td>Created Test Audit Log</td></tr><tr><td>2014-04-14</td><td>Inserted Test Data</td></tr><tr><td>2014-04-14</td><td>I hope this works</td></tr><tr><td>2014-04-14</td><td>How do you import classes?</td></tr><tr><td>2014-04-14</td><td>__init__</td></tr><tr><td>2014-04-14</td><td>If you see this then it worked</td></tr></table></div>'
+			PDFForm = SaveAsPDF(id=upId, mod=module, datefrom=DateFrom, dateto=DateTo, table=table)
+			CSVForm = SaveAsCSV(id=upId, mod=module, datefrom=DateFrom, dateto=DateTo, table=table)
+			form = FilterAuditLog()
+			return render(request, 'auditReport.html', {'form': form, 'auditReport' : auditReport, 'DateFrom' : DateFrom, 'DateTo' : DateTo, 'upId' : upId, 'table' : table, 'module' : module, 'PDFForm' : PDFForm, 'CSVForm' : CSVForm})
+		else:	
+			return render(request, 'auditReport.html', {'form': form})
+	else:
+		form = FilterAuditLog() 
+		return render(request, 'auditReport.html', {'form': form})
+
+def assessment_report(request):
+	if request.method == 'POST':
+		module = request.POST['Select_Module']
+		form = AssessmentsLecturer(mod=module)
+		return render(request, 'assessmentReport.html', {'formAssessments': form, 'name' : 'Assessments', 'module' : module})
+	else:
+		form = LecturerModules(req=request)
+		return render(request, 'assessmentReport.html', {'formModules' : form, 'name' : 'Modules'})
+
+def student_report(request):
+	if request.method == 'POST':
+		module = request.POST['Select_Module']
+		form1 = form = Modules(req=request)
+		form2 = Assessments(mod=module, req=request)
+		return render(request, 'studentReport.html', {'formModules' : form1, 'formAssessments': form2, 'name' : 'Assessments', 'module' : module})
+	else:	
+		form = Modules(req=request)
+		return render(request, 'studentReport.html', {'formModules' : form, 'name' : 'Modules'})
+		
+def assessment_report_leaf_assessments(request):
+	if request.method == 'POST':
+		ass = request.POST['Select_Assessment']
+		module = request.POST['Module']
+		form = AssessmentsLecturer(mod=module)
+		now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		assessment = getAssessmentForModuleByName(module, ass)
+		assessmentID = assessment[0].id
+		assessmentReportOutput = renderAssessmentReport(module, assessmentID)
+		PDFForm = SaveAsPDFAssessment(mod=module, ass=assessmentID)
+		CSVForm = SaveAsCSVAssessment(mod=module, ass=assessmentID)
+		#PDFForm = SaveAsPDFAssessment(mod='COS301', ass='11')
+		#CSVForm = SaveAsCSVAssessment(mod='COS301', ass='11')
+		#assessmentReportOutput = '<div><h2>Stats</h2><br/><b>Student Marks </b><table><tr><th>Student No</th><th>ST1</th><th>ST2</th><th>T1</th><th>T2</th></tr><tr><td> Mean </td><td>0</td><td>45.0</td><td>50.0</td><td>5.0</td></tr></table><br/><table><tr><td> Total marks </td><td>50</td><td>50</td><td>10</td><td>10</td></tr><tr><th>Student No</th><th>ST1</th><th>ST2</th><th>T1</th><th>T2</th></tr><tr><td>10122893</td><td>45</td><td>50</td><td>5</td><td>10</td></tr><tr><td>10392837</td><td>45</td><td>50</td><td>5</td><td>10</td></tr><tr><td>12748392</td><td>45</td><td>50</td><td>5</td><td>10</td></tr></table><br/><div>'
+		return render(request, 'assessmentReport.html', {'formAssessments' : form, 'name' : 'Assessments', 'assessmentName' : ass, 'assessmentReportOutput' : assessmentReportOutput, 'now' : now, 'PDFForm' : PDFForm, 'CSVForm' : CSVForm})
+	else:
+		form = LecturerModules(req=request)
+		return render(request, 'assessmentReport.html', {'formModules' : form, 'name' : 'Modules'})
 	
-def reporting_main(request):
-	t = get_template('Reporting_Main.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def assessmentReport(request):
-        t = get_template('assessmentReport.html')
-        html = t.render(Context())
-        return HttpResponse(html)
-
-def studentModules(request):
-        student = getSessionPerson(request)
-        return render(request, 'studentChosen.html', {'modules' : student.getAllModulesForStudent()})
-        
-        
-def getLecturerModules(request):
-        lecturer = getSessionPerson(request)
-        return render(request, 'assessmentReport.html', {'modules' : getAllModulesForLecturer(lecturer.upId)})
-        
-def searchStudents(request):
-        searchedItemRequest = request.POST['searchedItem']
-        studentSurnamesList = searchBySurname(searchedItemrequest) 
-        studentNamesList = searchByName(searchedItemrequest)
-        students = studentSurnamesList + studentNamesList
-        return render(request, 'studentChosen.html', {'students' : students})
-        
-def displayStudent(request):
-        person = getStudentByID(request.POST['upId'])
-        return render(request, 'studentReport.html', {'person' : person})
-        
-def generate_auditLog(request):
-        dateFrom = request.POST['dateFrom']
-        dateTo = request.POST['dateTo']
-        upId = request.POST['upId']
-        if dateFrom is None and dateTo is None and upId is None:
-            auditlog = getAuditLogFromID(upId) 
-        elif dateFrom is None and dateTo is None and upId is not None:
-            auditlog = getAuditLogFromTimeRange(dateFrom, dateTo) 
-        return render(request, 'auditReport.html', {'auditlog' : auditlog})
-        
-        
-def get_statistics(request):
-        module = POST.request['module']
-        frequencyAnalysisOfModule = getFrequencyAnalysis(module) #implement business logic function
-        return render(request, 'stat.html', {'freqOfModule' : frequencyAnalysisOfModule, 'module' : module})
+def student_report_leaf_assessments(request):
+	if request.method == 'POST':
+		ass = request.POST['Select_Assessment']
+		module = request.POST['Module']
+		form = Assessments(mod=module, req=request)
+		now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		person = getSessionPerson(request)
+		studentId = person.upId
+		assessment = getAssessmentForModuleByName(module, ass)
+		assessmentID = assessment[0].id
+		studentReportOutput = renderStudentReport(module, studentId, assessmentID)
+		PDFForm = SaveAsPDFStudent(id=studentId, mod=module, ass=assessmentID)
+		CSVForm = SaveAsCSVStudent(id=studentId, mod=module, ass=assessmentID)
+		#PDFForm = SaveAsPDFStudent(id='12147100', mod='COS301', ass='11')
+		#CSVForm = SaveAsCSVStudent(id='12147100', mod='COS301', ass='11')
+		#studentReportOutput = '<div><h1>COS332 Student Marks Report for 10189337 </h1><table><tr><td>Assessment </td><th>ST1</th><th>ST2</th><th>P1</th><th>P2</th><th>P3</th></tr><tr><td> Total marks </td><td>50</td><td>50</td><td>10</td><td>10</td><td>10</td></tr><tr><td>Student Mark</td><td>23</td><td>45</td><td>3</td><td>7</td><td>9</td></tr></table><br/></div>'
+		return render(request, 'studentReport.html', {'formAssessments' : form, 'name' : 'Assessments', 'assessmentName' : ass, 'studentReportOutput' : studentReportOutput, 'now' : now, 'PDFForm' : PDFForm, 'CSVForm' : CSVForm})
+	else:	
+		form = Modules(req=request)
+		return render(request, 'studentReport.html', {'formModules' : form, 'name' : 'Modules'})
 
 '''
     END REPORTING FUNCTIONS
@@ -965,20 +1261,6 @@ def lecturer_assessment(request):
 	return render(request, 'lecturerAssessment.html')
 '''END MARTIN'''
 
-def statistics(request):
-	t = get_template('Statistics.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def student_chosen(request):
-	t = get_template('studentChosen.html')
-	html = t.render(Context())
-	return HttpResponse(html)
-
-def student_report(request):
-	t = get_template('studentReport.html')
-	html = t.render(Context())
-	return HttpResponse(html)
 	
 	
 def publish(request):
@@ -992,16 +1274,6 @@ def publish(request):
 	else:
 	  return render(request, 'publish.html', {})
 	
-
-#def unpublish(request):
-	#t = get_template('unpublish.html')
-	#html = t.render(Context())
-	#return HttpResponse(html)
-
-def marks_management(request):
-        t = get_template('marks-management.html')
-	html = t.render(Context())
-	return HttpResponse(html)	
 	
 def user_login(request):
     # Like before, obtain the context for the user's request.
@@ -1041,4 +1313,4 @@ def user_login(request):
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
-        return render_to_response('login.html', {}, context)
+        return render(request, 'login.html', {}, context)

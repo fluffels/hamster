@@ -1,6 +1,13 @@
 <table id="marksheetTable" >
     <tr id="thead"><th>Surname, Name</th><th>Student #</th><th>Weight</th><th>Mark</th><th>Edit</th></tr>
 	{% for student in StudentMarks %}
-			<tr><td >{{student.surname}}, {{student.firstName}}</td><td>{{student.upId}}</td><td>{{ weight }}</td><td contenteditable="true">{{ total }}</td><td> <a href='/studentMarks/'><span>click</span></a> </td></tr>
+			<tr class='student'>
+				<td>{{student.surname.0}}, {{student.firstName.0}}</td>
+				<td>{{student.upId.0}}</td><td>{{ weight }}</td>
+				<td>{{ student.total.0.2 }}</td>
+				<td>
+					<button>Select</button>
+				</td>
+			</tr>
 	{% endfor%}
 </table>
