@@ -1,5 +1,6 @@
 <div id='studentmarksheetTable'>  
   <form>
+	<input hidden value='{{ studentID }}' id='studentID'>
 	<table>
 	  <tr id="thead">
 	    <th>Name</th>
@@ -7,16 +8,17 @@
 	    <th>Total</th>
 	  </tr>
 	  {% if leafAssessments|length > 0 %}
+		  
 	    {% for Leaf in leafAssessments %}
 	      <tr>
-		  <td><input hidden name='leafName' value='{{ Leaf.0 }}'>{{ Leaf.0 }}</td>
-		  <td><input type='number' name='mark' value='{{ Leaf.2 }}' pattern='[1-9\-]+'></td>
+		  <td><input hidden id='leafName{{ Leaf.4 }}' value='{{ Leaf.0 }}'>{{ Leaf.0 }}</td>
+		  <td><input type='number' id='mark{{ Leaf.4 }}' value='{{ Leaf.2 }}' pattern='[0-9\-]+'>
+		  <input hidden id='leafid{{ Leaf.4 }}' value='{{ Leaf.4 }}'>
+		  </td>
 		  <td>{{ Leaf.1 }}</td>
+		  <td><button class='button saveMark' id='{{ Leaf.3 }}'>Save</button></td>
 	      </tr>
 	    {% endfor %}
-	    <tr>
-		  <td></td><td><input type='submit' value='save'></td><td></td>
-	    </tr>
 	  {% else %}
 	      <tr>
 		  <td>No</td>

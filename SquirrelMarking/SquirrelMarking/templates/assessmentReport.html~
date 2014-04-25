@@ -110,6 +110,9 @@ table
 <div id='wrapper'>
 		<div id='container'>
 			<h3> {{ name }} </h3>
+			{% if assessmentName %}
+				<h3> {{ assessmentName }} </h3>
+			{% endif %}
 			{% if module %}
 				<h3> {{ module }} </h3>
 			{% endif %}

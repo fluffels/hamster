@@ -629,7 +629,7 @@ def getSessionStudentMarks(request):
 		stud.setfirstName(student.getfirstName())
 		stud.setupId(student.getupId)
 		stud.setsurname(student.surname)
-		stud.setTotal(getAssessmentTotalForStudent(student.upId, m, a))
+		stud.setTotal(getAssessmentTotalForStudent(student.upId, m, a))		
 		list.append(stud)  
 	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
 
@@ -639,19 +639,25 @@ def getLeafAssessmentStudentMarks(request):
 	a = request.POST['assess_id']
 	studentID = request.POST['student_uid']
 	leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(studentID, getAssessmentFromID(a))
-	return render(request,'LeafAssessmentStudentMarksTable.html', {'leafAssessments': leafAssessmentList})  
+	print (leafAssessmentList)
+	return render(request,'LeafAssessmentStudentMarksTable.html', {'leafAssessments': leafAssessmentList, 'studentID':studentID})  
 
 def setmark_allocation(request):
-	P = getSessionPerson(request)
+	print ('asd')
+	marker = getSessionPerson(request)
 	name = request.POST['name']
+	mark_id = request.POST['mark_id']
 	mark = request.POST['mark']
 	leaf_id = request.POST['leaf_id']
 	session_id = request.POST['session_id']
 	student = request.POST['student_uid']
-	
-	leaf = createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp)
+	timestamp = datetime.datetime.now()
+	print ('asasfd')
+	if mark_id == '-2':
+		mark_id = createMarkAllocation(request, leaf_id, session_id, marker.upId, student, timestamp)
+	print ('asgasgasgasgasdg')	
 	updateMarkAllocation(request, leaf, mark)
-	return response(request, 'marks-management.html')
+	return response(request, 'marks-management.html', {})
 	
 def assessment_view(request):
     m = "COS110"#request.POST['mod_code']
@@ -675,8 +681,7 @@ def assessment_view(request):
     list.append("ass1")
     list.append("10")
     list.append("8")
-    listMark.append(list)
-	
+    listMark.append(list)	
     P = Person1()
  
 def checkUserRole(role, course, assessment):
@@ -713,30 +718,23 @@ def getLeafAssessmentsTableWeb(request):
     
 '''Tutor Assessment'''      
 def tutorPage(request, course, assessment=None, session=None):
-	P = getSessionPerson(request) 
-	request.POST['mod_code'] = course
-	assessments = ''
-	if assessment:		
-		request.POST['assess_id'] = assessment		  
-		if session:
-			return render(request,'marks-management.html', {'Assessments': assessmentName, })
-		else:
-			viewAssessmentSessionsOptions(request, P.upId)  
-	else:
-		assessments = viewAssessmentsOptions(request, P.upId)
-		return render(request,'marks-management.html', {'Assessments': assessmentName})
+	P = getSessionPerson(request)
+	modules = P.tutorOf
+	Assessments = getAllAssessmentsForModule(course)	
+	if session:    
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment, 'S': session})
+	if assessment: 
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment}) 
     
 '''teachingAssistant Assessment'''  
-def teachingAssistantPage(request, course, assessment=None, session=None):
-	request.POST['mod_code'] = course
-	request.POST['assess_id'] = assessment
-	viewAssessmentsOptions(request)
-	viewAssessmentSessionsOptions(request)
-	if assessment:
-		leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment)    
-		if session:
-			leafAssessment = getLeafAssessmentMarksOfAsssessmentForStudent(P.upId, assessment) 
-	return render(request,'marks-management.html', {'Assessments': assessmentName})  
+def teachingAssistantPage(request, course, assessment=None, session=None):	
+	P = getSessionPerson(request)
+	modules = P.teachingAssistantOf
+	Assessments = getAllAssessmentsForModule(course)	
+	if session:    
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment, 'S': session})
+	if assessment: 
+		return render(request,'marks-management.html', {'modules': modules, 'C': course, 'A': assessment}) 
 
     
 '''Lecturer'''      

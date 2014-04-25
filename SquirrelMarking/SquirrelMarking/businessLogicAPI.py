@@ -425,16 +425,16 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
         list.append(x.getName())
         list.append(x.getMax_mark())
         try:
-            marks = MarkAllocation.objects.get(leaf_id=x,student=uid)
-
-            list.append(marks.getMark())
+            marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
+	    list.append(marks.getMark())
+	    list.append(marks.getID())
         except Exception, e:
             print e
+            list.append(-2)
             list.append(-2)
         list.append(x.id)
         listMark.append(list)
     return listMark
-
     
 # Name: getAllAssessmentTotalsForStudent(uid, mod_code)
 # Description: Returns all the totals for a specific Assessment?
@@ -475,7 +475,7 @@ def getAssessmentTotalForStudent(uid, mod_code, assess_id):
     assessments = Assessment.objects.filter(id=assess_id)
     totals = []
     for x in assessments:
-        leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)
+        leafMarks = getLeafAssessmentMarksOfAsssessmentForStudent(uid, x)        
         total = 0
         mark = 0
 	name = x.assessment_name
@@ -541,7 +541,7 @@ def getSessionByName(mod_code, name):
 # Name: createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp)
 # Description: Creates a MarkAllocation object and saves it to the database
 # Parameter: request : HTTPRequest
-# Parameter: leaf_id : ?
+# Parameter: leaf_id : Integer
 # Parameter: session_id : Integer
 # Parameter: marker : String
 # Parameter: student : String

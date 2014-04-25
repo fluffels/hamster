@@ -25,8 +25,14 @@
 	
 	
 	<script type = "text/javascript">
-		function showLeaves (code, assess, student)
+		code ='';
+		assess = '';
+		sess = '';
+		student = ''
+	
+		function showLeaves (code, assess, stud)
 		{
+			student = stud
 			$('#all').fadeOut(300);
 			studentid = $(student).children('td').eq(1).text();
 			$.ajax({
@@ -38,6 +44,21 @@
 					$('#studentmarksheetTable').replaceWith(response);
 					$('#specific').fadeIn(500);
 					$('.button').button();
+					$('.saveMark').on('click', function saveMark() 
+					{
+						id = $(this).attr('id');
+						var $name = $('#leafName'+id).val();
+						var $mark = $('#mark'+id).val();
+						var $leafid = $('#leafid'+id).val();
+						alert ($name +'|'+$mark+'|'+$leafid+'|'+'|'+sess+'|'+student);
+						$.ajax({
+							type: 'POST',
+							url: '/submit-leaf/',
+							data: {name : $name, mark_id:id, mark : $mark, leaf_id : $leafid, session_id : $sessionid, student_uid : $studentID, timestamp : $timestamp},
+							}).success(function(response) {
+							      alert(response);
+							      });
+					});
 				});
 		};
 		
@@ -91,7 +112,7 @@
 				url: '/getSessionStudentMarks/',
 				data: {mod_code : code, assess_id : assess, sess_id : sess},
 				}).success(function(response) {
-					updateMarkSheet(response);
+					updateMarkSheet(response, code, assess);
 				});
 		};
 		
@@ -128,9 +149,10 @@
 					$('assesments').val('{{ A }}'); 
 				{% endif %}
 			{% endif %}	
+			
+			
 		});
-	</script>
-		
+	</script>		
 	
 {% endblock %}
 

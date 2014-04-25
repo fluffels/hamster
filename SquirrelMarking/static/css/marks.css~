@@ -1,0 +1,82 @@
+#main-menu{	margin:auto; width:80%;	background-color:#E1DFD9;	}
+
+#menu-pane{	margin:auto; width:100%;}
+
+/**ul{list-style-type:none;margin:0;padding:0;	overflow:hidden;}**/
+
+.pane{float:left;}
+
+/**span{display:block;	width:150px;font-weight:bold;color:#FFFFFF;
+background-color:#4D79A3;text-align:center;	padding:4px;
+text-decoration:none;text-transform:uppercase;}**/
+
+h1{text-alight: right}
+
+#marksheet{	margin:auto;width:86%;border: 2;}
+
+#marksheetTable tr td{text-align:center;width: 170px;padding:8px;}
+
+tr:nth-child(even) {background: #CCC}
+
+tr:nth-child(odd) {background: #FFF}
+
+th
+{background-color:#4D79A3;color:white;}
+
+#submit{padding:4px;margin:4px;background-color:#4D79A3; width: 170px;
+ height: 50px;font-weight:bold;color:#FFFFFF;text-align:center;	padding:8px;
+text-decoration:none;text-transform:uppercase;}
+
+#filter{margin:auto;	width:85%;}	
+
+select{padding:4px;margin:8px;}
+
+#right{top:1;float:right;width:20%;height:500px;	background-color:red;}
+
+#tfheader{
+		/**background-color:#c3dfef;**/
+	}
+	#tfnewsearch{
+		float: left;
+		padding:10px;
+	}
+	.tftextinput{
+		margin: 0;
+		padding: 5px 15px;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size:14px;
+		border:1px solid #0076a3; border-right:0px;
+		border-top-left-radius: 5px 5px;
+		border-bottom-left-radius: 5px 5px;
+	}
+	.tfbutton {
+		margin: 0;
+		padding: 5px 15px;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size:14px;
+		outline: none;
+		cursor: pointer;
+		text-align: center;
+		text-decoration: none;
+		color: #ffffff;
+		border: solid 1px #0076a3; border-right:0px;
+		background: #0095cd;
+		background: -webkit-gradient(linear, left top, left bottom, from(#00adee), to(#0078a5));
+		background: -moz-linear-gradient(top,  #00adee,  #0078a5);
+		border-top-right-radius: 5px 5px;
+		border-bottom-right-radius: 5px 5px;
+	}
+	.tfbutton:hover {
+		text-decoration: none;
+		background: #007ead;
+		background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));
+		background: -moz-linear-gradient(top,  #0095cc,  #00678e);
+	}
+	/* Fixes submit button height problem in Firefox */
+	.tfbutton::-moz-focus-inner {
+	  border: 0;
+	}
+	.tfclear{
+		clear:both;
+	}
+	

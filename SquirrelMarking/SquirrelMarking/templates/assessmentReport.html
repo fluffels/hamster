@@ -141,7 +141,7 @@ table
 						{{ PDFForm.as_p }}
 						<input type='submit' value='Save As PDF' name="SaveAsPDF">
 					</form>
-					<form name='saveAsCSV' action="/saveAsPDFAssessment/" method='post' id='saveAsCSVButton'>{% csrf_token %}
+					<form name='saveAsCSV' action="/saveAsCSVAssessment/" method='post' id='saveAsCSVButton'>{% csrf_token %}
 						{{ CSVForm.as_p }}
 						<input type='submit' value='Save As CSV' name="SaveAsCSV">
 					</form>
