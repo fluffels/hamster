@@ -21,8 +21,8 @@ def saveMarks(request):
 			#course = json_data['courseCode']
 			#leafAssessmentID = json_data['leafAssessmentID']
 			#mark = json_data['mark']
-			markAlloc =getMarkAllocationFromID(leafAssessmentID)
-			BL.updateMarkAllocation(request, markAlloc, mark)
+			markAlloc =BL.getMarkAllocationFromID(leafAssessmentID)
+			BL.updateMarkAllocation(request, markAlloc.id, mark)
 			
 			data = [
 			{
