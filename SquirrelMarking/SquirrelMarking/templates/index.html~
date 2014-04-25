@@ -6,31 +6,30 @@
 	<script type = "text/javascript">
 	$(document).ready(function () {
 	  modClick = function(){	    
-	    $module = $(this);
-	    code = $module.text().trim();
-	    $.ajax({
-	      type: 'POST',
-	      url: '/getAssessments/',
-	      data: {mod_code : code},
-	     
-	      }).success(function(response) {
-		$("#"+code).replaceWith(response);
-		$("#"+code).find('a').button();
-		$('button').button();
-		$module.unbind('click', modClick);
-		  $('.assessment').click(function(){
-		    assess = $(this).text().trim();
-		    $.ajax({
-		      type: 'POST',
-		      url: '/assessmentView/',
-		      data: {mod_code : code, assessment : assess},    
-		      }).success(function(response) {
-			$(this).append("hi");
-			
-		      });
-		  });		
-	      });
-	  };
+		  $module = $(this);
+		  code = $module.text().trim();
+		  $.ajax({
+			type: 'POST',
+			url: '/getCourseAssessments/',
+			data: {mod_code : code},			
+			}).success(function(response) {
+				$("#"+code).replaceWith(response);
+				$("#"+code).find('a').button();
+				$('button').button();
+				$module.unbind('click', modClick);
+				$('.assessment').click(function(){
+					assess = $(this).text().trim();
+					role = $(this)
+					$.ajax({
+						type: 'POST',
+						url: '/assessmentView/',
+						data: {mod_code : code, assessment : assess},    
+						}).success(function(response) {
+							$(this).append("hi");					    
+							});
+					});		
+				});
+		};
 	  $('.module').on('click',modClick);
 	  $('.accordianCourse').accordion({ active: false, collapsible: true, heightStyle: "content"});  
 	});

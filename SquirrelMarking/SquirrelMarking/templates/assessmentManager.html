@@ -5,13 +5,123 @@
 {% block menu_shortcuts %}
 {% include "menu.html" %}
 {% endblock %}
-{% block content_title %}<h1 id="content_title">Assessment Manager</h1>{% endblock %}
-{% block includes %}<link href="{{ STATIC_URL }}css/inputStyle.css" rel="stylesheet" type="text/css" />{% endblock %}
+{% block content_title %}<h1 id="content_title">Assessment {{ assessment.assessment_name }} Manager</h1>{% endblock %}
+{% block includes %}
+	<script type = "text/javascript">
+	$(document).ready(function () {
+	  assess_id = {{ assessment.id }}
+	  addSession = function(){
+		  $module = $(this);
+		  code = $module.text().trim();
+		  $.ajax({
+			type: 'POST',
+			url: '/getCourseAssessments/',
+			data: {mod_code : code},
+			}).success(function(response) {
+				$("#"+code).replaceWith(response);
+				$("#"+code).find('a').button();
+				$('button').button();
+				$module.unbind('click', modClick);
+				$('.assessment').click(function(){
+					assess = $(this).text().trim();
+					role = $(this)
+					$.ajax({
+						type: 'POST',
+						url: '/assessmentView/',
+						data: {mod_code : code, assessment : assess},    
+						}).success(function(response) {
+							$(this).append("hi");    
+						});
+					});		
+				});
+		};
+	  $('#UpdateAssessment').on('click',updateAssessment);
+	  $('.accordianCourse').accordion({ active: false, collapsible: true, heightStyle: "content"});  
+	});
+	function frmLeafAssessment()
+	{
+		$.ajax({
+			type: 'POST',
+			url: '/getCourseAssessments/',
+			data: {mod_code : code},
+			}).success(function(response) {
+				$("#"+code).replaceWith(response);
+				$("#"+code).find('a').button();
+				$('button').button();
+				$module.unbind('click', modClick);
+				$('.assessment').click(function(){
+					assess = $(this).text().trim();
+					role = $(this)
+					$.ajax({
+						type: 'POST',
+						url: '/assessmentView/',
+						data: {mod_code : code, assessment : assess},    
+						}).success(function(response) {
+							$(this).append("hi");    
+						});
+					});		
+				});
+	}
+	
+	function frmSession()
+	{
+		$.ajax({
+			type: "POST",
+			url: '/session/',
+			data: $("#frmSession").serialize(),
+			success: function(response) {
+			  
+			}
+			});
+	}
+	</script>
+{% endblock %}
 {% block content %}
-<h3>Create or edit assessment:</h3>
-<form id="assessmentFrom" action="" method="post">{% csrf_token %}
-	{{ form.as_p }}	
-<input type="submit" Value="Save">
-{{ msg }}
-</form>
+    
+    <div>
+      <h1>Assessment Information</h1>
+      {{ msg }}<br/>
+      <form id="assessmentFrom" action="" method="post">{% csrf_token %}
+	<input hidden name='assessmentID' Value="{{ assessment.id }}">
+	{{ form.as_p }}
+	<input type="submit" name='func' Value="Update">
+      </form>
+    </div>    
+    
+    <h3>Assessment Properties</h3>
+    <div class="accordianCourse">
+      <h3 id="LeafAssessment">Leaf Assessments</h3>
+      <div>
+	<form id='frmSession' onsubmit="frmLeafAssessment(); return false;">
+	  <input hidden name='assessmentID' Value="{{ assessment.id }}">
+	  <label for="name">Name:</label><input type="text" name="name" required></br>
+	  <label for="mark">Mark:</label><input type="number" name="mark" required></br>
+	  <input type='submit' value='LAUpdate'>Update</input>
+	  <input type='submit' value='LAAdd'>Add</input>
+	  <input type='submit' value='LARemove'>Remove</input>
+	</form>
+	<div id="">
+	  <ul name="leafList">
+	  
+	  </ul>
+	</div>
+      </div>
+      <h3 id="Sessions">Sessions</h3>    
+      <div>
+	<form id='frmSession' onsubmit="frmSession(); return false;">
+	  <input hidden name='assessmentID' Value="{{ assessment.id }}">
+	  <label for="openTime">Open time:</label><input type="datetime-local" name="openTime" required></br>
+	  <label for="closeTime">Close time:</label><input type="datetime-local" name="closeTime" required></br>
+	  <input type='submit' name='func' value='SUpdate'>Update</input>
+	  <input type='submit' name='func' value='SAdd'>Add</input>
+	  <input type='submit' name='func' value='SRemove'>Remove</input>
+	</form>
+	<div id="">
+	  <ul name="sessionList">
+	  
+	  </ul>
+	</div>
+      </div>
+    </div>
+    <br />
 {% endblock %}

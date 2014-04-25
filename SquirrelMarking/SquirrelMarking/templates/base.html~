@@ -2,12 +2,12 @@
 <html lang="en">
 	<head>
 		<title>{% block title %}{% endblock %}</title>
-		<link href="{{ STATIC_URL }}static/css/style.css" rel="stylesheet" type="text/css" />
-		<link href="{{ STATIC_URL }}static/css/menubar.css" rel="stylesheet" type="text/css" />
+		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
+		<link href="{{ STATIC_URL }}css/menubar.css" rel="stylesheet" type="text/css" />
 		<!--<script src="{{ STATIC_URL }}js/jquery.js"></script>-->
-		<script src="{{ STATIC_URL }}static/jquery-ui/js/jquery.js"></script>
-		<script src="{{ STATIC_URL }}static/jquery-ui/js/jquery-ui.js"></script>
-		<link href="{{ STATIC_URL }}static/jquery-ui/css/cs_v1/jquery-ui.css" rel="stylesheet" type="text/css" />
+		<script src="{{ STATIC_URL }}jquery-ui/js/jquery.js"></script>
+		<script src="{{ STATIC_URL }}jquery-ui/js/jquery-ui.js"></script>
+		<link href="{{ STATIC_URL }}jquery-ui/css/cs_v1/jquery-ui.css" rel="stylesheet" type="text/css" />
 		
 		<script type = "text/javascript">
 		  function getCookie(name)
@@ -64,7 +64,5 @@
 				{% block content %}{% endblock %}
 			</div>
 		</section>
-		
-		<a href="/logout/">logout</a>
 	</body>
 </html>
