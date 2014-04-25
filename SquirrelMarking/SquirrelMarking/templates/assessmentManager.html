@@ -84,7 +84,7 @@
       <form id="assessmentFrom" action="" method="post">{% csrf_token %}
 	<input hidden name='assessmentID' Value="{{ assessment.id }}">
 	{{ form.as_p }}
-	<input type="submit" name='func' Value="Update">
+	<input type="submit" name='func' Value="Update Assessment">
       </form>
     </div>    
     
@@ -96,30 +96,32 @@
 	  <input hidden name='assessmentID' Value="{{ assessment.id }}">
 	  <label for="name">Name:</label><input type="text" name="name" required></br>
 	  <label for="mark">Mark:</label><input type="number" name="mark" required></br>
-	  <input type='submit' value='LAUpdate'>Update</input>
-	  <input type='submit' value='LAAdd'>Add</input>
-	  <input type='submit' value='LARemove'>Remove</input>
+	  <input type='submit' name='funcLA' value='Update'></input>
+	  <input type='submit' name='funcLA' value='Add'></input>
+	  <input type='submit' name='funcLA' value='Remove'></input>
 	</form>
-	<div id="">
-	  <ul name="leafList">
-	  
-	  </ul>
+	<div id="leafList">
+		{% for Leaf in LeafAssessments %}
+			<button class='session' id='{{ Leaf.id }}'>{{ Leaf.leaf_name }}</li>
+		{% endfor %}	
 	</div>
       </div>
       <h3 id="Sessions">Sessions</h3>    
       <div>
-	<form id='frmSession' onsubmit="frmSession(); return false;">
-	  <input hidden name='assessmentID' Value="{{ assessment.id }}">
-	  <label for="openTime">Open time:</label><input type="datetime-local" name="openTime" required></br>
-	  <label for="closeTime">Close time:</label><input type="datetime-local" name="closeTime" required></br>
-	  <input type='submit' name='func' value='SUpdate'>Update</input>
-	  <input type='submit' name='func' value='SAdd'>Add</input>
-	  <input type='submit' name='func' value='SRemove'>Remove</input>
-	</form>
-	<div id="">
-	  <ul name="sessionList">
-	  
-	  </ul>
+	<table>
+	  <form id='frmSession' onsubmit="frmSession(); return false;">
+	    <input hidden name='assessmentID' Value="{{ assessment.id }}">
+	    <label for="openTime">Open time:</label><input type="datetime-local" name="openTime" required></br>
+	    <label for="closeTime">Close time:</label><input type="datetime-local" name="closeTime" required></br>
+	    <input type='submit' name='funcS' value='Update'></input>
+	    <input type='submit' name='funcS' value='Add'></input>
+	    <input type='submit' name='funcS' value='Remove'></input>
+	  </form>
+	</table>
+	<div id="sessionList">
+		{% for Session in Sessions %}
+			<button class='session' id='{{ Session.id }}'>{{ Session.session_name }}</li>
+		{% endfor %}	  
 	</div>
       </div>
     </div>

@@ -32,6 +32,11 @@ urlpatterns = patterns('',
 	(r'^lecturer/manage/(?P<course>\w{6})/$', manageCourse),
 	(r'^lecturer/manage/(?P<course>\w{6})/(?P<assessmentID>[0-9]+)/$', manageCourseAssessment),
 	(r'^updateAssessmentInformation/$', updateAssessmentInformation),
+	
+	#SESSIONS
+	
+	(r'^delete_session/$', delete_session),
+	
 	#WEB PUBLISHING
 	(r'^publish/$', publish),
 	

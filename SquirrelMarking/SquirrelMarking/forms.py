@@ -18,3 +18,9 @@ class RenderForm(forms.Form):
     alteredTable = forms.CharField()
     dateFrom = forms.DateField(initial=datetime.date.today)
     dateTo = forms.DateField(initial=datetime.date.today)
+
+class SessionDetailsForm(forms.Form):    
+    session_name = forms.CharField(required=True)
+    opendate = forms.DateField(initial=datetime.date.today, required=True)
+    closedate = forms.DateField(initial=datetime.date.today, required=True)
+ 
