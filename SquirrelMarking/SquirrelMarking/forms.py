@@ -6,9 +6,9 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, required=True)
     
 class AssessmentManagerForm(forms.Form):
-    assessmentName = forms.CharField(required=True)
-    assessmentType = forms.CharField(required=True)
-    markWeight = forms.CharField(required=True)   
+    Assessment_Name = forms.CharField(required=True)
+    Assessment_Type = forms.CharField(required=True)
+    Mark_Weight = forms.CharField(required=True)   
 
 class RenderForm(forms.Form):
     outputType = forms.CharField(required=True)# //type either csv or pdf
@@ -19,8 +19,13 @@ class RenderForm(forms.Form):
     dateFrom = forms.DateField(initial=datetime.date.today)
     dateTo = forms.DateField(initial=datetime.date.today)
 
-class SessionDetailsForm(forms.Form):    
-    session_name = forms.CharField(required=True)
-    opendate = forms.DateField(initial=datetime.date.today, required=True)
-    closedate = forms.DateField(initial=datetime.date.today, required=True)
+class SessionDetailsForm(forms.Form): 
+    CHOICES=[('0','Opened between'),('1','Always opened'),('2','Always closed')]
+    session_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'id':'session_name'}))
+    open_date = forms.DateField(initial=datetime.date.today, required=True, widget=forms.TextInput(attrs={'id':'opendate'}))
+    close_date = forms.DateField(initial=datetime.date.today, required=True, widget=forms.TextInput(attrs={'id':'closedate'}))
+    status = forms.ChoiceField(choices=CHOICES, required=True, widget=forms.RadioSelect(attrs={'id':'status'}))
  
+class LeafAssessmentForm(forms.Form):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'id':'LAname'}))
+    maxMark = forms.CharField(required=True, widget=forms.TextInput(attrs={'id':'LAmaxMark'}))

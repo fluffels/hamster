@@ -582,8 +582,7 @@ def removeMarkAlloccation(markAlloc_id):
     except Exception, e:
         raise e
 
-def removeLeafAssessment(request,leaf_id):
-    
+def removeLeafAssessment(request,leaf_id):    
     deleteLeafAssessment(leaf_id)
       
 def removeAssessment(request,assess_id):

@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 	(r'^getSessionStudentMarks/$', getSessionStudentMarks),
 	(r'^getAssessmentStudentMarks/$', getAssessmentStudentMarks),
 	(r'^getLeafAssessmentStudentMarks/$', getLeafAssessmentStudentMarks),
-	
+	(r'^submit-leaf/$', setmark_allocation),
 	(r'^getLeafAssessmentsTableWeb/$', getLeafAssessmentsTableWeb),
 	(r'^student/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', studentPage),
 	(r'^tutor/(?P<course>\w{6})/(?P<assessment>[0-9]+)/$', tutorPage),

@@ -7,15 +7,16 @@
 	    <th>Total</th>
 	  </tr>
 	  {% if leafAssessments|length > 0 %}
+		  
 	    {% for Leaf in leafAssessments %}
 	      <tr>
-		  <td><input hidden name='leafName' value='{{ Leaf.0 }}'>{{ Leaf.0 }}</td>
-		  <td><input type='number' name='mark' value='{{ Leaf.2 }}' pattern='[1-9\-]+'></td>
+		  <td><input hidden id='leafName' name='leafName' value='{{ Leaf.0 }}'>{{ Leaf.0 }}</td>
+		  <td><input type='number' id='mark' name='mark' value='{{ Leaf.2 }}' pattern='[0-9\-]+'></td>
 		  <td>{{ Leaf.1 }}</td>
 	      </tr>
 	    {% endfor %}
 	    <tr>
-		  <td></td><td><input class='button' type='submit' value='save'></td><td></td>
+		  <td></td><td><button class='button' onclick='saveMark();'>Save</button></td><td></td>
 	    </tr>
 	  {% else %}
 	      <tr>

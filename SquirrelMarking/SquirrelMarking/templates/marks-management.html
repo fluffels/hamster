@@ -128,8 +128,24 @@
 					$('assesments').val('{{ A }}'); 
 				{% endif %}
 			{% endif %}	
+			
+			function saveMark() {
+				      var $name = $('#leafName').val();
+				      var $mark = $('#mark').val();
+				      $.ajax({
+					      type: 'POST',
+					      url: '/submit-leaf/',
+					      data: {name : $name, mark : $mark},
+				      }).success(function(response) {
+					      updateMarkSheet(response);
+				      });
+				};
 		});
+		
 	</script>
+	<script>
+
+</script>
 		
 	
 {% endblock %}

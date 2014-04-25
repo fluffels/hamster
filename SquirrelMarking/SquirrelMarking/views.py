@@ -634,12 +634,24 @@ def getSessionStudentMarks(request):
 	return render(request,'AssessmentStudentMarksTable.html', {'StudentMarks': list, 'weight' : weight})
 
 def getLeafAssessmentStudentMarks(request):
+	
 	m = request.POST['mod_code']
 	a = request.POST['assess_id']
 	studentID = request.POST['student_uid']
 	leafAssessmentList = getLeafAssessmentMarksOfAsssessmentForStudent(studentID, getAssessmentFromID(a))
 	return render(request,'LeafAssessmentStudentMarksTable.html', {'leafAssessments': leafAssessmentList})  
+
+def setmark_allocation(request):
+	P = getSessionPerson(request)
+	name = request.POST['name']
+	mark = request.POST['mark']
+	leaf_id = request.POST['leaf_id']
+	session_id = request.POST['session_id']
+	student = request.POST['student_uid']
 	
+	leaf = createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp)
+	updateMarkAllocation(request, leaf, mark)
+	return response(request, 'marks-management.html')
 	
 def assessment_view(request):
     m = "COS110"#request.POST['mod_code']
@@ -740,9 +752,9 @@ def manageCourse(request, course=None):
 			if request.method == 'POST':
 				form = AssessmentManagerForm(request.POST)
 				if form.is_valid():
-					AName = form.cleaned_data['assessmentName']
-					AType = form.cleaned_data['assessmentType']
-					AWeight = form.cleaned_data['markWeight']
+					AName = cleaned_data['Assessment_Name']
+					AType = form.cleaned_data['Assessment_Type']
+					AWeight = form.cleaned_data['Mark_Weight']
 					if (request.POST['func'] == 'Add'):
 						Module = getModuleFromID(course)
 						createAssessment(request, AName,AWeight,AType,Module)
@@ -767,53 +779,88 @@ def manageCourse(request, course=None):
 	else:
 		return render(request,'courseManager.html', {'C': '', 'Courses':Courses})	    
 		
-def manageCourseAssessment(request, course=None, assessmentID=None):
+def manageCourseAssessment(request, course, assessmentID):
 	msg = ''
-	if request.method == 'POST':
-	  assessmentForm = AssessmentManagerForm()
-	  sessionForm = SessionDetailsForm()
-	  if request.method == 'POST':
-		if (request.POST['func'] == 'Update Assessment'):
-			form = AssessmentManagerForm(request.POST)
+	A = getAssessmentFromID(assessmentID)
+	if request.method == 'POST':		
+		assessmentID = request.POST['assessmentID']
+		A = getAssessmentFromID(assessmentID)
+		if 'func' in request.POST:
+			if (request.POST['func'] == 'Update Assessment'):
+				form = AssessmentManagerForm(request.POST)
+				if form.is_valid():
+					AName = cleaned_data['Assessment_Name']
+					AType = form.cleaned_data['Assessment_Type']
+					AWeight = form.cleaned_data['Mark_Weight']				
+					A.setName(AName)
+					A.setType(AType)
+					A.setWeight(AWeight)				
+					msg = "Assignment details updated"    
+		
+		if 'funcLA' in request.POST:
+			form = LeafAssessmentForm(request.POST)
+			if form.is_valid():				
+				if request.POST['funcLA'] == 'Update':
+					leafA = getLeafAssessmentFromID(request.POST['leafID'])
+					name = form.cleaned_data['name']
+					maxMark = form.cleaned_data['maxMark']
+					lname = leafA.leaf_name
+					leafA.setName(name)
+					leafA.setMax_mark(maxMark)
+					msg = "LeafAssessment ("+lname+") updated ("+name+")"
+					
+				if request.POST['funcLA'] == 'Add':
+					try:
+						name = form.cleaned_data['name']
+						maxMark = form.cleaned_data['maxMark']
+						createLeafAssessment(request, name, A, maxMark)
+						msg = "LeafAssessment ("+name+") added"
+					except Exception, e:
+						msg = "LeafAssessment could not be addded!"+str(e) 
+					
+				if request.POST['funcLA'] == 'Remove':	
+					try:
+						lname = form.cleaned_data['name']
+						leafA = getLeafAssessmentOfAssessmentForModuleByName(course, A.assessment_name, lname)
+						if leafA:
+							removeLeafAssessment(request, leafA[0])
+							msg = "LeafAssessment ("+lname+") removed" 
+						else:
+							msg = "LeafAssessment NOT removed!"
+					except Exception, e:
+						msg = "LeafAssessment NOT removed!"+str(e)  
+			else:
+				msg = form.errors 
+
+		if 'funcS' in request.POST:
+			form = SessionDetailsForm(request.POST)
 			if form.is_valid():
-				AName = form.cleaned_data['assessmentName']
-				AType = form.cleaned_data['assessmentType']
-				AWeight = form.cleaned_data['markWeight']
-				assessmentID = request.POST['assessmentID']
-				A = getAssessmentFromID(assessmentID)
-				A.setName(AName)
-				A.setType(AType)
-				A.setWeight(AWeight)
-				msg = "Assignment details updated"     
-		if request.POST['funcLA'] == 'Update':
-			print('hi')
-		if request.POST['funcLA'] == 'Add':
-			print('hi')  
-		if request.POST['funcLA'] == 'Remove':
-			print('hi')
-		if request.POST['funcS'] == 'Update':
-			print('hi')
-		if request.POST['funcS'] == 'Add':
-			sessionForm = SessionDetailsForm(request.POST)
-			session_name = form.cleaned_data['session_name']
-			opentime = form.cleaned_data['opendate']
-			closetime = form.cleaned_data['closedate']
-			assessmentID = request.POST['assessmentID']
-			createSession(session_name,assessmentID, opentime, closetime)
-			msg = "Session added"    
-		if request.POST['funcS'] == 'Remove':
-			print('hi')
+				sessionLA = getSessionsFromID(request.POST['sessionID'])
+				if request.POST['funcS'] == 'Update':
+					print('hi')
+				if request.POST['funcS'] == 'Add':
+					session_name = form.cleaned_data['session_name']
+					opentime = form.cleaned_data['open_date']
+					closetime = form.cleaned_data['close_date']
+					createSession(session_name,assessmentID, opentime, closetime)
+					msg = "Session added"
+					
+				if request.POST['funcS'] == 'Remove':
+					sname = sessionLA.session_name
+					removeSession(request, sessionLA.id)
+					msg = "Session ("+sname+") removed" 
+			else:
+				msg = form.errors 
 	
-	print (assessmentID)
-	assessment = getAssessmentFromID(assessmentID)
-	form = AssessmentManagerForm()
-	form.assessmentName = 'cos'
-	form.assessmentType = 'type'
-	form.markWeight = 'weight'
+	assessmentForm = AssessmentManagerForm()
+	sessionForm = SessionDetailsForm()
+	leafAssessmentForm = LeafAssessmentForm()
+	#assessmentForm.cleaned_data['Assessment_Name'] = 'cos'
+	#assessmentForm.cleaned_data['Assessment_Type'] = 'type'
+	#assessmentForm.cleaned_data['Mark_Weight'] = 'weight'
 	ASessions = getAllSessionsForAssessment(assessmentID)
-	
-	return render(request,'assessmentManager.html', {'C': course, 'Assessment':assessment, 'Sessions':ASessions,'form': form, 'msg': msg})
-	print('manageCourseAssessment')
+	ALeafAssessments = getAllLeafAssessmentsForAssessment(A)
+	return render(request,'assessmentManager.html', {'C': course, 'Assessment':A, 'LeafAssessments':ALeafAssessments, 'Sessions':ASessions, 'assessmentForm': assessmentForm, 'leafAssessmentForm': leafAssessmentForm, 'sessionForm': sessionForm, 'msg': msg})
 	
 def updateAssessmentInformation(request):  
   print ('hi')
@@ -1286,11 +1333,11 @@ def AssessmentManager(request):
 		form = AssessmentManagerForm(request.POST)
 		if form.is_valid():
 			course = forms.cleaned_data['course']
-			assessmentType = forms.cleaned_data['assessmentType']
+			assessmentType = forms.cleaned_data['Assessment_Type']
 			assessmentDetails = forms.cleaned_data['assessmentDetails']
 			totalMark = forms.cleaned_data['totalMark']
-			markWeight = forms.cleaned_data['markWeight']
-			assessmentName = forms.cleaned_data['assessmentName']
+			markWeight = forms.cleaned_data['Mark_Weight']
+			assessmentName = forms.cleaned_data['Assessment_Name']
 			moduleId = forms.cleaned_data['moduleId']
 			assessmentId = forms.cleaned_data['assessmentId']
 			insertAssessment(assessmentId,assessmentName,markWeight,assessmentType,moduleId)
