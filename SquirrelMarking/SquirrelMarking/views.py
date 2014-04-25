@@ -754,6 +754,10 @@ def manageCourse(request, course=None):
 						A.setType(AType)
 						A.setWeight(AWeight)
 						msg = "Assignment details updated" 
+					if (request.POST['func'] == 'Remove'):
+						assessmentID = request.POST['assessmentID']
+						removeAssessment(request,assessmentID)
+						msg = "Assignment has been removed" 
 				else:
 					msg = form.errors
 			Assessments = getAllAssessmentsForModule(course)
@@ -766,20 +770,39 @@ def manageCourse(request, course=None):
 def manageCourseAssessment(request, course=None, assessmentID=None):
 	msg = ''
 	if request.method == 'POST':
-	  nform = AssessmentManagerForm()
-	  
+	  assessmentForm = AssessmentManagerForm()
+	  sessionForm = SessionDetailsForm()
 	  if request.method == 'POST':
-		  form = AssessmentManagerForm(request.POST)
-		  if form.is_valid():
-			  AName = form.cleaned_data['assessmentName']
-			  AType = form.cleaned_data['assessmentType']
-			  AWeight = form.cleaned_data['markWeight']
-			  assessmentID = request.POST['assessmentID']
-			  A = getAssessmentFromID(assessmentID)
-			  A.setName(AName)
-			  A.setType(AType)
-			  A.setWeight(AWeight)
-			  msg = "Assignment details updated"      
+		if (request.POST['func'] == 'Update Assessment'):
+			form = AssessmentManagerForm(request.POST)
+			if form.is_valid():
+				AName = form.cleaned_data['assessmentName']
+				AType = form.cleaned_data['assessmentType']
+				AWeight = form.cleaned_data['markWeight']
+				assessmentID = request.POST['assessmentID']
+				A = getAssessmentFromID(assessmentID)
+				A.setName(AName)
+				A.setType(AType)
+				A.setWeight(AWeight)
+				msg = "Assignment details updated"     
+		if request.POST['funcLA'] == 'Update':
+			print('hi')
+		if request.POST['funcLA'] == 'Add':
+			print('hi')  
+		if request.POST['funcLA'] == 'Remove':
+			print('hi')
+		if request.POST['funcS'] == 'Update':
+			print('hi')
+		if request.POST['funcS'] == 'Add':
+			sessionForm = SessionDetailsForm(request.POST)
+			session_name = form.cleaned_data['session_name']
+			opentime = form.cleaned_data['opendate']
+			closetime = form.cleaned_data['closedate']
+			assessmentID = request.POST['assessmentID']
+			createSession(session_name,assessmentID, opentime, closetime)
+			msg = "Session added"    
+		if request.POST['funcS'] == 'Remove':
+			print('hi')
 	
 	print (assessmentID)
 	assessment = getAssessmentFromID(assessmentID)
@@ -787,11 +810,33 @@ def manageCourseAssessment(request, course=None, assessmentID=None):
 	form.assessmentName = 'cos'
 	form.assessmentType = 'type'
 	form.markWeight = 'weight'
-	return render(request,'assessmentManager.html', {'C': course, 'Assessment':assessment, 'form': form, 'msg': msg})
+	ASessions = getAllSessionsForAssessment(assessmentID)
+	
+	return render(request,'assessmentManager.html', {'C': course, 'Assessment':assessment, 'Sessions':ASessions,'form': form, 'msg': msg})
 	print('manageCourseAssessment')
 	
 def updateAssessmentInformation(request):  
   print ('hi')
+  
+def create_session(request):
+	
+	session = insertSession( request.POST['session_name'],request.POST['assessment_id'],request.POST['opened'],request.POST['closed'])
+	studentList = request.POST['students']
+	markerList = request.POST['markers']
+	for student in studentList:
+		insertStudentSessions(session.getSess_id, student)
+	for marker in markerList:
+		insertMarkerSessions(session.getSess_id, marker)
+	return render_to_response( manage_session(request))
+	
+def manage_session(request):
+	studentsList = getAllStudentsOfModule(request.POST['mod_code'])
+	markersList = getAllMarkersOfModule(request.POST['mod_code'])
+	return render(request, 'sessionManager.html', {'students' : studentsList, 'markers' : markersList })
+	
+def delete_session(request):
+	sess_id = request.POST['session_id']
+	removeSession(request, sess_id)
   
 '''Lecturer Assessment'''  
 def lecturerPage(request, course, assessment=None, session=None):

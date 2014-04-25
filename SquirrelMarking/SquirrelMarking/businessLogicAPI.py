@@ -217,15 +217,20 @@ def getAllSessionsForModule(mod_code):
             list.append(y)
     return list
 
+def getAllSessionsForAssessment(assess_id):
+	assess = getAssessmentFromID(assess_id)
+	sessions = Sessions.objects.filter(assessment_id=assess)
+	return sessions
+
 # Name: createSession(mod_code,assess_id, opentime, closetime )
 # Description: Creates a Session object and saves it to the database
-# Parameter: mod_code : String
+# Parameter: session_name : String
 # Parameter: assess_id : Assessment
 # Parameter: opentime : DateTime
 # Parameter: closetime : DateTime
 # Return: Nothing
-def createSession(mod_code,assess_id, opentime, closetime ):
-    obj = insertSessions(mod_code,assess_id,opentime,closetime)
+def createSession(session_name,assess_id, opentime, closetime ):
+    obj = insertSessions(session_name,assess_id,opentime,closetime)
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
 
 # Name: closeSession(request, sess_id)
@@ -577,6 +582,24 @@ def removeMarkAlloccation(markAlloc_id):
     except Exception, e:
         raise e
 
+def removeLeafAssessment(request,leaf_id):
+    
+    deleteLeafAssessment(leaf_id)
+      
+def removeAssessment(request,assess_id):
+    #try:
+	assess = getAssessmentFromID(assess_id)
+	sessions = Sessions.objects.filter(assessment_id_id = assess)
+	for x in sessions:
+	    removeSession(request,x.id)
+	
+	leafs = getAllLeafAssessmentsForAssessment(assess)
+	
+	for x in leafs:
+		removeLeafAssessment(request,x)
+	deleteAssessment(assess)
+    #except Exception, e:
+	#raise e
 # Name: getAssessmentFromID(row_id)
 # Description: Returns an Assessment object from a specific ID
 # Parameter: row_id = Integer

@@ -1,49 +1,154 @@
+{% extends "base.html" %}
 
+{% block title %}Squirrel Marking - Assessment View{% endblock %}
 {% block includes %}
-	 <script type="text/javascript">
-			
-		var type = $(".assType").attr('id');
+<link href="{{ STATIC_URL }}css/assStyle.css" rel="stylesheet" type="text/css" />
+<style>
+#wrapperMain
+{
+	overflow : hidden;
+}
 
-		$('#GetPDFAudit').click(function(){
-			  
-			$("#aud").load("renderForm.html #formDiv");
-			  
-		});
-		  
-		$('#GetCSVAudit').click(function(){
-			//implement code here
-		});
+#filterAuditReport
+{
+	float:left;
+	width:10%;
+	margin-right:3cm;
+}
 
+label
+{
+	color : #882323;
+	display: block;
+	font-size: 11px;
+}
+
+h1
+{
+	color : #174c82	;
+	font-weight : bold;
+}
+
+h2
+{
+	color : #174c82	;
+	font-weight : bold;
+}
+
+h3
+{
+	color : #174c82	;
+	font-weight : bold;
+}
+
+b
+{
+	color : #174c82	;
+	font-weight : bold;
+}
+
+input[type="submit"]:hover 
+{
+	cursor : pointer;
+}
+
+#wrapper
+{
+	float:left;
+}
+
+#RenderingOptions
+{
+	width: 130px;
+    float:left;	
+}
+
+#auditReportContainer
+{
+    overflow: hidden;
+}
+
+table, td, th
+{
+border:1px solid #882323;
+}
+th
+{
+background-color:#882323;
+color:white;
+}
+
+table
+{
+    margin-left:auto; 
+    margin-right:auto;
+	width:600px;
+	text-align:center;
+}
+
+</style>
+
+<script type = "text/javascript">
+	$(document).ready(function () {	  
+	  $('.datepicker').datepicker({
+					  dateFormat: "yy-mm-dd",
+					  timeFormat:  "HH:mm"
+				      });  
+	});
 	</script>
 {% endblock %}
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+{% block content_title %}<h1 id="content_title">Audit Report</h1>{% endblock %}
 {% block content %}
-
-<div class="displayContainerClass" id="stuRepSearch" >
-	<div id="auditLogReportContainer">
-		<div id="filters">
-			<label id="dateFrom"> Date From: </label> <input  type="date" name="bday" placeholder="YYYY-MM-DD"><br>
-			<label id="dateTo"> Date To: </label> <input type="date" name="bday" placeholder="YYYY-MM-DD"><br>
-			<label id="person"> Person: </label> <input type="text" name="Person" placeholder="Name or upID"><br><br>
-			<input class="renderButton" type="button" value="Filter Audit Log" id="displayAuditLog">
+	<div id='wrapperMain'>
+		<div id='filterAuditReport'>
+			<form action="/auditReport/" method="post" class="auditReportLables" style="label{color:red}">{% csrf_token %}
+				{{ form.as_p }}
+				<br><input type="submit" value="Filter Audit Log" /><br>
+			</form>
+			{% if auditReport %}
+				<div id='RenderingOptions'>
+					<br>
+					<form name='saveAsPDF' action="/saveAsPDF/" method='post' id='saveAsPDFButton'>{% csrf_token %}
+						{{ PDFForm.as_p }}
+						<input type='submit' value='Save As PDF' name="SaveAsPDF">
+					</form>
+					<form name='saveAsCSV' action="/saveAsCSV/" method='post' id='saveAsCSVButton'>{% csrf_token %}
+						{{ CSVForm.as_p }}
+						<input type='submit' value='Save As CSV' name="SaveAsCSV">
+					</form>
+				</div>
+			{% endif %}
 		</div>
-		<!-- Plug in audit log -->
-		<div id="auditlogList" style="width:700px;text-align:center">
-			<h1> Audit Log </h1>
-			<div id="auditReportDisplay">
-				<img src="{{ STATIC_URL }}img/DummyAuditReport.jpg" alt='picture cannot be displayed' width='700' height='300'>
+		<div id='wrapper'>
+			<div id='auditReportContainer' style="text-align:left">
+				<div id='details'>
+					{% if upId %}
+						<p><strong> ID: </strong> {{ upId }} <p>
+					{% endif %}
+					{% if module %}
+						<p><strong> Module: </strong> {{ module }} <p>
+					{% endif %}
+					{% if table %}
+						<p><strong> Table: </strong> {{ table }} <p>
+					{% endif %}
+					{% if DateFrom %}
+						<p><strong> Date From: </strong> {{ DateFrom }} <p>
+					{% endif %}
+					{% if DateTo %}
+						<p><strong> Date To: </strong> {{ DateTo }} <p>
+					{% endif %}
+				</div>
+				<div id='reportWrapper'>
+					{% if auditReport %}
+						<div id='auditReportWrapper' style='text-align:center;'>
+								{{ auditReport|safe }}
+						</div>
+					{% endif %}
+				</div>
 			</div>
 		</div>
-		
-		<form action="/renderAsPDF/" method="post">{% csrf_token %}
-			{{ form.as_p }}
-			<h2> Rendering options </h2>
-			<div id="renderAsPDF"> <input class="renderButton" id="GetPDFAudit" name="SaveAsPDf" type="button" value="Get PDF"> </div>	
-		</form>
-			<form action="/renderAsCSV/" method="post">{% csrf_token %}
-			{{ form.as_p }}
-			<h2> Rendering options </h2>
-			<div id="renderAsCSV"> <input class="renderButton" id="GetCSVAudit" name="SaveAsCSV" type="button" value="Get CSV"></div>
-		</form>
 	</div>
-</div>
 {% endblock %}

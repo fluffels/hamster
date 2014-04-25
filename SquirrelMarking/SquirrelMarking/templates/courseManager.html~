@@ -16,9 +16,8 @@
 			par = $(this).parent();
 			assess_id = par.attr('id');
 			assess_weight = par.children('.weight').val();
-			assess_type = par.children('.type').val();			
+			assess_type = par.children('.type').val();
 			$('#assessmentFrom :input').each(function(index, elm) {
-				alert(index);
 				if ($(elm).attr('name')=='assessmentID')
 					$(elm).val(assess_id);
 				if ($(elm).attr('name')==('assessmentName'))
@@ -48,12 +47,12 @@
 
   {% if Assessments %}
     <h3>Create or edit an assessment:</h3>
+    {{ msg }}<br/>
     <form id="assessmentFrom" action="" method="post">{% csrf_token %}
 	<input hidden name='assessmentID' Value="">
 	{{ form.as_p }}	
 	<input type="submit" name='func' Value="Add">
 	<input type="submit" name='func' Value="Update">
-	{{ msg }}
     </form>
     <div id='CourseAssessments'>
       {% if Assessments|length > 0 %}
@@ -62,7 +61,7 @@
 	      <div id="{{ Assessment.id }}">
 		  <input hidden value='{{ Assessment.assessment_weight }}' class='weight' />
 		  <input hidden value='{{ Assessment.assessment_type }}' class='type' />
-		  <button class="assessment">{{ Assessment.assessment_name }}</button><a href="/lecturer/{{ C }}/{{ Assessment.id }}/" >manage</a>	     
+		  <button class="assessment">{{ Assessment.assessment_name }}</button><a href="/lecturer/manage/{{ C }}/{{ Assessment.id }}/" >manage</a>	     
 	      </div><br />
 	      
       {% endfor %}
