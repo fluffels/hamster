@@ -2,6 +2,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 import SquirrelMarking.businessLogicAPI as BL
 import json
+import datetime as datetime
 	
 def saveMarks(request):
 	data = [
@@ -21,9 +22,16 @@ def saveMarks(request):
 			#course = json_data['courseCode']
 			#leafAssessmentID = json_data['leafAssessmentID']
 			#mark = json_data['mark']
-			markAlloc =BL.getMarkAllocationFromID(leafAssessmentID)
-			BL.updateMarkAllocation(request, markAlloc.id, mark)
+			print student
+			markerID = BL.getSessionPerson(request).upId[0]
+			sess = BL.getSessionForStudentForAssessmentOfModule(student,leafAssessmentID,course)
 			
+			print "E"
+			if not(BL.checkMarkAllocationExists(sess,student,BL.getLeafAssessmentFromID(leafAssessmentID))):
+				BL.createMarkAllocation(request, leafAssessmentID,sess.id,markerID,student,datetime.datetime.now())
+			markAlloc = BL.getMarkAllocationForLeafOfStudent(student,BL.getLeafAssessmentFromID(leafAssessmentID),sess)	
+			BL.updateMarkAllocation(request, markAlloc.id, mark)
+
 			data = [
 			{
 				'type':1,
@@ -50,18 +58,34 @@ def getStudents(request):
 			print request.session['user']
 			marker =BL.getSessionPerson(request)
 			openSessions = BL.getOpenSessionsForMarker(assessmentID,marker.upId[0])
+			
 			students = []
+			stuNames = []
+			stuSurnames = []
+			stuIds = []
 
 			for s in openSessions:
 				st =BL.getStudentsForASession(s)
 				for stu in st:
 					students.append(stu)
 
+			studentPersonList = BL.getPersonListFromArrayList(students)
+
+			for studentItem in studentPersonList:
+				stuIds.append(studentItem.upId) #should be stuIds.append(studentItem.getupId()) instead. But getupId return incorrect data
+				stuNames.append(studentItem.firstName) #should be stuIds.append(studentItem.getfirstName()) instead. But studentItem.getfirstName() return incorrect data
+				stuSurnames.append(studentItem.surname) #should be stuIds.append(studentItem.getsurname()) instead. But studentItem.getupsurname() return incorrect data
+			print(stuIds)
+			print(stuNames)
+			print(stuSurnames)
 			data = [
 			{
 				'type':1,
-				'message':'Mark saved',
-				'students':students
+				'message':'Retrieving student details',
+				#'students':students,
+				'uid':stuIds,
+				'name':stuNames,
+				'surname':stuSurnames
 			}]
 			return HttpResponse(json.dumps(data))
 		except Exception, e:

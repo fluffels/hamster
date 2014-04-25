@@ -428,7 +428,8 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
             marks = MarkAllocation.objects.get(leaf_id=x,student=uid)
 
             list.append(marks.getMark())
-        except:
+        except Exception, e:
+            print e
             list.append(-2)
         list.append(x.id)
         listMark.append(list)
@@ -547,8 +548,14 @@ def getSessionByName(mod_code, name):
 # Parameter: timestamp : DateTime
 # Return: Integer (The created objects id)
 def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
-    leaf = LeafAssessment.objects.get(id=leaf_id)
-    session = Sessions.objects.get(id=session_id)
+    print "Leaf"
+
+    leaf = getLeafAssessmentFromID(leaf_id)
+    print leaf
+    print "Session"
+    session = getSessionsFromID(session_id)
+    print session
+    
     obj = insertMarkAllocation(leaf,0,session,marker,student,timestamp)
     logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
     return obj.id
@@ -563,9 +570,12 @@ def updateMarkAllocation(request, markAlloc_id, mark):
     try:
         markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
         old = markAlloc.mark
-        markAlloc.setMark(mark)
+        print int(float(mark))       
+        markAlloc.setMark(int(float(mark)))
+       
         logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.mark,markAlloc.id)
     except Exception, e:
+        print e
         raise e
 
 # Name: removeMarkAlloccation(markAlloc_id)
@@ -710,6 +720,28 @@ def removeStudentFromSession(uid, sess_id_):
 		deleteStudentSessions(stsess)
 	except Exception, e:
 		raise e
+def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_, sess):
+    try:
+        return MarkAllocation.objects.get(student = student_id_, leaf_id = leaf_id_, session_id =sess)
+    except Exception, e:
+        print e
+        raise e
+
+def getSessionForStudentForAssessmentOfModule(student_id_, leaf_id, mod_code):
+    try:
+        
+        
+        leaf = getLeafAssessmentFromID(leaf_id)
+        sess = Sessions.objects.filter(assessment_id_id = leaf.assessment_id)
+        
+        for x in sess:
+            j = StudentSessions.objects.filter(sess_id_id = x, student_id = student_id_)
+            if (j):
+                return x
+        return []
+    except Exception, e:
+        print e
+        raise e
 # Name:
 # Description:
 # Parameter: 
