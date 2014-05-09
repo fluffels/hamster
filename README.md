@@ -5,6 +5,11 @@ This is a web-based marking system that was created to ease the marking of proje
 
 The system is currently being maintained by the DEV_OID COS 301 group.
 
+Workflow
+--------
+
+The workflow is detailed [here](doc/Workflow.md).
+
 Joining the Project
 -------------------
 
