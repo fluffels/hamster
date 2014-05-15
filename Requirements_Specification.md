@@ -1,4 +1,4 @@
-##Project Background
+#Project Background
 --------------------------------
 
 Lecturers make use of assistant lecturers and higher-level students to mark assessments like practi-
@@ -10,7 +10,7 @@ fellow students.
 The above inefficiencies and other problems have led Jan Kroeze to propose a marks management
 system which can be accessed from mobile devices and web browsers.
 
-## Project Vision and Scope
+# Project Vision and Scope
 -------------------------------
 The proposed system is a mark collection, aggregation and publication system which will allow
 lecturers to
@@ -44,7 +44,7 @@ subsequent importing into a spreadsheet or a database.
 either onto the screen, onto a PDF document or onto a CSV file for subsequent importing
 into a spreadsheet or a database.
 
-## Stakeholders
+# Stakeholders
 -------------------------------
 The stakeholders for the system include the following:
 
@@ -66,7 +66,7 @@ system into production and maintain the system.
 **WebTeam** will be responsible for integrating the system into the web front end of the CS systems
 and for maintaining the web front end.
 
-## Architecture Requirements
+# Architecture Requirements
 -----------------------------------
 This section discusses the software architecture requirements | that is the requirements around the
 software infrastructure within which the application functionality is to be developed. The purpose
@@ -77,7 +77,7 @@ requirements specify
 * the quality requirements, and
 * the architecture constraints specied by the client.
 
-# 1. Access and integration requirements
+## 1. Access and integration requirements
 
 This section discusses
 ..1. the requirements for the dierent channels through which the system can be accessed by
@@ -109,7 +109,7 @@ files. In particular, the system will support
 ** Quality requirements for access and integration channels**
 All communication of sensitive data must be done securely using HTTPS.
 
-# 2. Architectural Responsibilities
+## 2. Architectural Responsibilities
 
 The architectural responsibilities include the responsibilities of providing an infrastructure for
 1. a web access channel,
@@ -119,7 +119,7 @@ The architectural responsibilities include the responsibilities of providing an 
 5. providing an infrastructure for specifying and executing reports, and
 6. integrating with an LDAP repository.
 
-# 3. Quality Requirements
+## 3. Quality Requirements
 
 The quality requirements are the requirements around the quality attributes of the systems and the
 services it provides. This includes requirements like performance, scalability, security, auditabilty,
@@ -186,7 +186,7 @@ The system does not have particularly stringent performance requirements.
 ..1. All non-reporting operations should respond within less than 1 second.
 ..2. Report queries should be processed in no more than 10 seconds.
 
-# 4. Architecture Constraints
+## 4. Architecture Constraints
 The following architecture constraints have been introduced largely for maintainability reasons:
 
 ..1. The system must be developed using the following technologies
@@ -203,14 +203,14 @@ database.
 have any application functionality within the presentation layer.
 ..6. Web services must be published as either SOAP-based or RESTful web services
 
-## Requirements for the development process used
+# Requirements for the development process used
 -----------------------------------------------------
 
 * All changes to produced artifacts must be made through the git repositories assigned to the
 project.
 * All functionality must be unit-tested.
 
-## Application (functional) requirements
+# Application (functional) requirements
 -------------------------------------------
 This section discusses the functional requirements for the Hamster Marking System. 
 Section 6.1 which discusses the domain objects introduces the core domain concepts and relationships between
@@ -218,7 +218,7 @@ this concepts.
 This is followed by the functional requirements specification for the concrete use cases of the
 system.
 
-# 1. Domain objects
+## 1. Domain objects
 This section introduces core domain concepts and aspects of the requirements which cross-cut across
 different use cases. These concepts are relevant for the understanding of the detailed
 use case requirements.
@@ -289,7 +289,7 @@ Any marker assigned to an assessment session for an aggregate assessment may mar
 components. Any markers assigned to additional assessment session for specific components are in
 addition to the markers assigned at the higher level of aggregation.
 
-# 2. Login
+## 2. Login
 All system functionalities are only accessible to users who have been able to log into the system.
 
 ..2.1 Service contract
@@ -310,7 +310,7 @@ graphics as well as the designated lecturer, teaching-assistant, tutor and stude
 of different modules is sourced from the LDAP repository and the person details are constructed
 as required by the services contract specied in section 2.1.
 
-# 3. Assessment use cases
+## 3. Assessment use cases
 
 The system will allow lecturers to create, modify and remove aggregate and leaf assessments. An
 assessment is by default not published implying that students cannot, by default, query their marks
@@ -341,7 +341,7 @@ When creating aggregate assessments, lecturers need to specify
 * an aggregator which determines how the marks of the component assessments are aggregated
 into a mark for the aggregate assessment.
 
-# 4. Marks management
+## 4. Marks management
 
 Lecturers can open and close assessment sessions for marking. A person may only assign a mark
 for a leaf assessment for a specific student if
@@ -353,7 +353,7 @@ assessment with such an assessment session.
 The system will prevent a marker from assigning a mark which is either negative or exceeds the
 fullMarks for the leaf assessment.
 
-# 5. Reporting
+## 5. Reporting
 The reporting use cases purely provide raw and processed information from the system without
 altering any information within the system (except adding some audit log entries for the report
 generation itself). This includes the generation of assessment reports, student marks reports and
@@ -406,16 +406,16 @@ The audit events will include
 * any requests to publish marks,
 * any requests for any reports including assessment reports, students marks reports and audit reports.
 
-## Architecture Design
+# Architecture Design
 --------------------------------
 
-# 1. Overview
+## 1. Overview
 layered architecture: - presentation layer - access layer - services layer - domain objects layer -
 infrastructure layer (ORM, integration channels, ...)
 presentation layer - django web app - android app - restful web services access for other systems
 layers: presentation business logic domain objects infrastructure backend
 
-# 2. Layers
+## 2. Layers
 The architectural pattern used at the high-level will be layering. This results in good high-level
 responsibility separation and allows the reuse of lower level layer components across components
 in higher level layers (e.g. the business logic layer components are reused across the web front-end,
@@ -445,7 +445,7 @@ and
 databse.
 ..5. All other communication is in the form of local Python calls.
 
-# 3. Frameworks and Technologies
+## 3. Frameworks and Technologies
 This section lists the various frameworks used by the system.
 
 ..3.1 Persistence
@@ -489,7 +489,7 @@ objects instead of mock objects).
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
 
-# 4. Architectural tactics addressing quality requirements
+## 4. Architectural tactics addressing quality requirements
 
 This section discusses the architectural tactics which are used to concretely address the quality
 requirements for the application. Most of these are provided be the selected frameworks.
