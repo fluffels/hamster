@@ -3,7 +3,17 @@ from django.shortcuts import render
 import SquirrelMarking.businessLogicAPI as BL
 import json
 import datetime as datetime
-	
+
+'''
+Function: saveMarks
+Description: the function saves the mark of the leaf assessment of a certain module
+
+@type: String
+@param: A http request that contains the student number, the course code, the leafAssessment ID and the mark that is to be saved
+
+@type: String
+@return: A http responce confirming if the mark was saved or not 
+'''
 def saveMarks(request):
 	data = [
 	{
@@ -50,6 +60,16 @@ def saveMarks(request):
 	else:
 		return HttpResponse(json.dumps(data))
 
+'''
+Function: getStudents
+Description: Gets all the student that the user(marker) is supposed to mark fo a certain session
+
+@type: String
+@param: A http request containing the assessmentId and the marker's ID(employee number)
+
+@type: String
+@return: A http responce containing the students data for that session and an error message if not successful
+'''
 def getStudents(request):
 	if request.method == 'GET':
 		try:
@@ -97,7 +117,16 @@ def getStudents(request):
 			return HttpResponse(json.dumps(data))
 	else:
 		raise Http404()
+'''
+Function: getTaskListByAssessment
+Description: Gets all the leaf Assessment of an assessment for a specific module
 
+@type: String
+@param: A http request containing the module, assessment and  student number for the leafAssessment required
+
+@type: String
+@return: A http responce containing the leaf Assessment and its marks and an error message of not successful
+'''
 def getTaskListByAssessment(request):
 	data =[{
 		'type' :-1,
@@ -119,7 +148,6 @@ def getTaskListByAssessment(request):
 			currentMark =[]
 			leafID =[]
 			for lAssessment in LeafAssessments:
-				
 				
 				leafName.append(lAssessment[0])
 				maxMark.append(lAssessment[1])
@@ -145,6 +173,17 @@ def getTaskListByAssessment(request):
 	else:
 		return HttpResponse(json.dumps(data))
 		
+
+'''
+Function: getActiveAssessments
+Description: The function gets all the assessment of a certain module
+
+@type: String
+@param: A http request containing the module whose assessment are to be retrieved
+
+@type:String 
+@return: A http responce containing the module's assessment and an error if it was unsuccessful 
+'''
 def getActiveAssessments(request):
 	data =[{
 		'type' :-1,

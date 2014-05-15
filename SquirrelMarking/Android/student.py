@@ -3,6 +3,16 @@ from django.shortcuts import render
 import SquirrelMarking.businessLogicAPI as BL
 import json
 
+'''
+Function: getAllMarksForModule
+Description: This function gets all the marks of a student for a specific module
+
+@type: String
+@param: The http request containing the user ID and module for which marks are to be retireved
+
+@type: String
+@return: The http responce containing all the modules mark
+'''
 def getAllMarksForModule(request):
 	#json_data =json.loads(request.body)
 	studentNumber = request.GET['uid']
@@ -29,6 +39,18 @@ def getAllMarksForModule(request):
 	ret = HttpResponse(json.dumps(data))
 	return ret
 	
+	
+'''
+Function: getModules
+Description: Gets all the modules that the student is registered for
+
+@type: String
+@param: A http Get Request containing the student number
+
+@type: String
+@return: A http Responce containing the modules or a http error "page not found" if there student 
+	     is not enrolled for any module
+'''
 def getModules(request):
 	if request.method == 'GET':
 		#json_data = json.loads(request.body)
@@ -50,7 +72,12 @@ def getModules(request):
 	else:
 		raise Http404()
 
+'''
+Function: getMark
+Description: 
+'''
 def getMark(request):
+	# this fucntion does not make any sence for me.....
 	if request.method == 'GET':
 		#json_data = json.loads(request.body)
 		student = request.GET['uid']
@@ -87,8 +114,12 @@ def getMark(request):
 		#ass nom
 		#ass mark
 		#total
-
+'''
+Function: getModuleMarks
+Description: 
+'''
 def getModuleMarks(request):
+	#this is hard coded and there's already a function that does this
 	if request.method == 'GET':
 		#json_data = json.loads(request.body)
 		student = request.GET['uid']
