@@ -1,9 +1,0 @@
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 1",20,"Semester","COS301");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 2",25,"Semester","COS301");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 3",10,"Semester","COS301");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 4",15,"Semester","COS301");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 5",40,"Semester","COS301");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 1",10,"Semester","COS332");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Prac 2",20,"Semester","COS332");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Test 1",12,"Semester","COS110");
-insert into dbModels_assessment (assessment_name,assessment_weight,assessment_type,module_id_id) values("Test 4",5,"Semester","COS110");
