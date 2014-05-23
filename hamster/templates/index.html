@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Home page{% endblock %}
+
+{% block includes %}
+	<script type = "text/javascript">
+	$(document).ready(function () {
+	  modClick = function(){	    
+		  $module = $(this);
+		  code = $module.text().trim();
+		  $.ajax({
+			type: 'POST',
+			url: '/getCourseAssessments/',
+			data: {mod_code : code},			
+			}).success(function(response) {
+				$("#"+code).replaceWith(response);
+				$("#"+code).find('a').button();
+				$('button').button();
+				$module.unbind('click', modClick);
+				$('.assessment').click(function(){
+					assess = $(this).text().trim();
+					role = $(this)
+					$.ajax({
+						type: 'POST',
+						url: '/assessmentView/',
+						data: {mod_code : code, assessment : assess},    
+						}).success(function(response) {
+							$(this).append("hi");					    
+						});
+					});		
+				});
+		};
+	  $('.module').on('click',modClick);
+	  $('.accordianCourse').accordion({ active: false, collapsible: true, heightStyle: "content"});  
+	});
+	</script>
+{% endblock %}
+
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+
+{% block content_title %}<h1 align="center">Welcome to Hamster</h1>{% endblock %}
+
+{% block content %}
+	<h2>{{ person.firstName.0 }} {{ person.surname.0 }}</h2>
+	{% if person.studentOf %}
+		<h3>Student Courses</h3>
+		<div class="accordianCourse">
+		{% for module in person.studentOf %}
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
+		{% endfor %}
+		</div>
+		<br />
+	{% endif %}
+	
+	{% if person.tutorOf %}
+		<h3>Tutor Courses</h3>
+		<div class="accordianCourse">
+		{% for module in person.tutorOf %}
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
+		{% endfor %}
+		</div>
+		<br />
+	{% endif %}
+	{% if person.teachingAssistantOf %}
+		<h3>Teaching Assistant Courses</h3>.
+		<div class="accordianCourse">
+		{% for module in person.teachingAssistantOf %}
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
+		{% endfor %}
+		</div>
+		<br />
+	{% endif %}
+	{% if person.lectureOf %}
+		<h3>Lecturer Courses</h3>
+		<div class="accordianCourse">
+		{% for module in person.lectureOf %}
+			<h3 class="module">{{ module }}</h3>
+			<div><div id="{{ module }}"></div></div>
+		{% endfor %}
+		</div>
+		<br />
+	{% endif %}
+{% endblock %}

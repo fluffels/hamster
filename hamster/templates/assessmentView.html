@@ -1,0 +1,38 @@
+<!--Add javascript at menu bar -->
+{% extends "base.html" %}
+
+{% block title %}Squirrel Marking - Assessment View{% endblock %}
+
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+
+{% block content_title %}
+	<h1 id="content_title">Assessment View</h1>
+{% endblock %}
+{% block includes %}
+	 <!--<link href="{{ STATIC_URL }}css/assessmentView.css" rel="stylesheet" type="text/css" />-->
+	 <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.mobile-1.4.2.min.js"></script>
+	<script src="{{ STATIC_URL }}js/assessmentView.js"></script>
+{% endblock %}
+{% block content %}
+    <div role="main" class="ui-content">
+    <table>
+    {% if StudentAssessments %}
+    <tr>
+      <th>Name</th>
+      <th>Mark</th>
+      <th>Total</th>
+    </tr>
+        {% for Assessment in StudentAssessments %}
+        <tr>
+	    <td>{{ Assessment[0] }}</td>
+	    <td>{{ Assessment[2] }}</td>
+	    <td>{{ Assessment[1] }}</td>
+	</tr>
+	{% endfor %}
+    {% endif %}
+    </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
+		<link href="{{ STATIC_URL }}css/menubar.css" rel="stylesheet" type="text/css" />
+		<!--<script src="{{ STATIC_URL }}js/jquery.js"></script>-->
+		<script src="{{ STATIC_URL }}jquery-ui/js/jquery.js"></script>
+		<script src="{{ STATIC_URL }}jquery-ui/js/jquery-ui.js"></script>
+		<link href="{{ STATIC_URL }}jquery-ui/css/cs_v1/jquery-ui.css" rel="stylesheet" type="text/css" />
+		
+		<script type = "text/javascript">
+		  function getCookie(name)
+		  {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie != '')
+		    {
+		      var cookies = document.cookie.split(';');
+		      for (var i =0; i < cookies.length; i++)
+		      {
+			var cookie = $.trim(cookies[i]);
+			if (cookie.substring(0, name.length + 1) == (name + "="))
+			{
+			  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+			  break;
+			}
+		      }
+		    }
+		    return cookieValue;
+		  }
+		  
+		  $.ajaxSetup(
+		  {
+		    beforeSend: function(xhr, settings)
+		    {
+		      if (!(/^http:.*/.test(settings.url)))
+		      {
+			xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+		      }
+		    }
+		   });
+		</script>
+		{% block includes %}{% endblock %}
+		<meta http-equiv="cache-control" content="max-age=0" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+	</head>
+	<body>
+		<div id="header">
+			<div id="logo">
+				<img id="logo_img" src="{{ STATIC_URL }}img/logo.jpg" height="98px" alt="Hamster Marking Logo">
+			</div>
+			<div id="menu_shortcuts">
+				{% block menu_shortcuts %}{% endblock %}
+			</div>
+		</div>
+		<div id="nav">
+			<div id="content_title">
+				{% block content_title %}{% endblock %}
+			</div>
+		</div>
+		<div id="section">
+			<div id="content">
+				{% block content %}{% endblock %}
+			</div>
+		</div>
+	</body>
+</html>

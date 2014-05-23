@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Reporting{% endblock %}
+
+{% block includes %}
+		
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css">		
+		<script>
+			$(document).ready(function(){
+				
+				$('#containerDisplay').load('assessmentReport.html');
+				
+				$('#renderingOptions').hide();
+				
+				$('.ReportingOptions a').on('click',  function(){
+					return false;
+				});
+				
+				$('#assessReport').on('click',  function(){
+					$('#renderingOptions').hide();
+					$('#containerDisplay').load('/assessmentReport/');
+				});
+				
+				$('#studentReport').on('click',  function(){
+					$('#containerDisplay').load('/studentReport/');
+					$('#renderingOptions').show();
+				});
+				
+				$('#auditReport').on('click',  function(){
+					$('#containerDisplay').load('/auditReport/');
+					$('#renderingOptions').show();
+				});
+				
+				$('#searchBtn').on('click',  function(){
+					$('#list').load('/studentChosen/');
+				});
+				
+				$('#allRequest').on('click',  function(){
+					if(this.checked) { 
+						$('.allradio').each(function() { 
+							this.checked = false;             
+						});
+					}else{
+						$('.allradio').each(function() { 
+							this.checked = true;                      
+						});        
+					}
+				});
+				
+				$('#submitRequestButton').on('click',  function(){
+					$('#containerDisplay').load('/Statistics/');
+				});
+			});
+		</script>
+		
+		 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/theme.css"> 
+	{% endblock %}
+	
+	{% block menu_shortcuts %}
+		<table id="navigation-bar" style="color:white;">
+		<tr ><th><a href="/Reporting_Main/"> Reporting </a></th>
+		<th><a href="/marks-management/">Marks Management</a></th>
+		<th><a href="/assessmentManager/">Create/Edit Assessment</a></th>
+		</tr>
+		</table  >
+	{% endblock %}
+	{% block content_title %} <h1 align="center"> Reporting </h1> {% endblock %}
+	{% block content %}
+		<div class="reports" id="reportingContainer">
+			<div id="reportingMenu">
+				<h2> Reporting Types </h2>
+				<div id="options" class='ReportingOptions'>
+					<a href='/assessmentReport/'><input class="menuButtons" type="button" value="Assessment Report" name="AssessmentReport" id="assessReport"></a> <br><br>
+					<a href='/studentReport/'><input class="menuButtons" type="button" value="Student Report" name="StudentReport" id="studentReport"></a><br><br>
+					<a href='/audit_report/'><input class="menuButtons" type="button" value="Audit Report" name="AuditReport" id="auditReport"></a><br>
+					<a href='/Statistics/'><input class="menuButtons" type="button" value="Statistics" name="Statistics" id="statistics"></a><br>
+				</div>
+				<div id="renderingOptions">
+					<h3> Rendering options </h3>
+					<div id="renderAsPDF"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsPDf" type="button" value="Save as PDF"> </div><br>
+					<div id="renderAsCSV"> <input class="renderButton" id="SaveAsPDFBtn" name="SaveAsCSV" type="button" value="Save as CSV"> </div>
+				</div>
+			</div>
+		</div>
+		<div id='containerDisplay' class="displayContainerClass">
+		
+		</div>
+{% endblock %}

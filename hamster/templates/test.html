@@ -1,0 +1,6 @@
+{% extends "marks-management.html" %}
+{% block courses %}
+{% for course in modules %}
+	<option value="{{ course.id }}">{{ course.code }}</option>
+{% endfor %}
+{% endblock %}

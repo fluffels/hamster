@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Marks Management{% endblock %}
+
+{% block includes %}
+	<link href="{{ STATIC_URL }}css/marks.css" rel="stylesheet" type="text/css" />
+	<script src="{{ STATIC_URL }}js/marks.js" type="text/javascript"></script>
+	<script type="text/javascript"> 
+		$(function()
+		{
+			$('#sheetSearch').keyup(function(){
+			var val = $(this).val().toLowerCase();
+			$("#marksheetTable .student").hide();
+			$("#marksheetTable .student").each(function()
+				{
+					var text = $(this).text().toLowerCase();
+					if(text.indexOf(val) != -1)
+					{
+						$(this).show();
+					}
+				});
+			});
+		});
+	</script> 
+	
+	
+	<script type = "text/javascript">
+		code ='';
+		assess = '';
+		sess = '';
+		student = ''
+	
+		function showLeaves (code, assess, stud)
+		{
+			student = stud
+			$('#all').fadeOut(300);
+			studentid = $(student).children('td').eq(1).text();
+			$.ajax({
+				type: 'POST',
+				url: '/getLeafAssessmentStudentMarks/',
+				data: {mod_code : code, assess_id : assess, student_uid : studentid},
+				}).success(function(response) {
+					$('#specific h3').text('Student: '+studentid);
+					$('#studentmarksheetTable').replaceWith(response);
+					$('#specific').fadeIn(500);
+					$('.button').button();
+					$('.saveMark').on('click', function saveMark() 
+					{
+						id = $(this).attr('id');
+						var $name = $('#leafName'+id).val();
+						var $mark = $('#mark'+id).val();
+						var $leafid = $('#leafid'+id).val();
+						alert ($name +'|'+$mark+'|'+$leafid+'|'+sess+'|'+student);
+						$.ajax({
+							type: 'POST',
+							url: '/submit-leaf/',
+							data: {name : $name, mark_id:id, mark : $mark, leaf_id : $leafid, session_id : $sessionid, student_uid : $studentID, timestamp : $timestamp},
+							}).success(function(response) {
+							      alert(response);
+							      });
+					});
+				});
+		};
+		
+		function gerardAssessments(code)
+		{	
+			if (code !== '')
+			{
+				$.ajax({
+					type: 'POST',
+					url: '/getAssessmentsOptions/',
+					data: {mod_code : code},
+					}).success(function(response){
+						$('#assesments').replaceWith(response);
+						$('#assesments').on('change', function() {
+							assess = $(this).find(':selected').val();
+							gerardSessions(code, assess, true);
+						});
+					});
+			}
+		};
+		
+		function gerardSessions(code, assess, display)
+		{
+			if (display)
+			{
+				$.ajax({
+					type: 'POST',
+					url: '/getAssessmentStudentMarks/',
+					data: {mod_code : code, assess_id : assess},
+					}).success(function(response) {
+						updateMarkSheet(response);
+					});
+			}
+			$.ajax({
+				type: 'POST',
+				url: '/getAssessmentSessionsOptions/',
+				data: {mod_code : code, assess_id : assess},
+				}).success(function(response) {
+						$('#sessions').replaceWith(response);
+						$('#sessions').on('change', function() {
+							sess = $(this).find(':selected').val();
+							gerardMarks(code, assess, sess);
+						});
+					});
+		};
+		
+		function gerardMarks(code, assess, sess)
+		{
+			$.ajax({
+				type: 'POST',
+				url: '/getSessionStudentMarks/',
+				data: {mod_code : code, assess_id : assess, sess_id : sess},
+				}).success(function(response) {
+					updateMarkSheet(response, code, assess);
+				});
+		};
+		
+		function updateMarkSheet(response, code, assess)
+		{
+			$('#specific').fadeOut(300);
+			$('#marksheetTable').replaceWith(response);
+			$('#marksheetTable button').on('click', function()
+			{
+				showLeaves(code, assess, $(this).parent().parent());
+			});
+			$('#all').fadeIn(500);		
+			$('button').button();
+		};	
+		
+		$(document).ready(function () {	 
+			
+			$('#modules').on('change', function() {
+				code = $(this).find(':selected').val();
+				gerardAssessments(code);
+			});
+			//$('select').selectmenu();
+			{% if C %}
+				$('#modules').val('{{ C }}');
+				gerardAssessments('{{ C }}');
+				{% if A %}
+					gerardSessions('{{ C }}', '{{ A }}', false);
+					{% if S %}
+						gerardMarks('{{ C }}', '{{ A }}', '{{ S }}');
+						$('sessions').val('{{ S }}');
+					{% else %}
+						gerardSessions('{{ C }}', '{{ A }}', true);	
+					{% endif %}
+					$('assesments').val('{{ A }}'); 
+				{% endif %}
+			{% endif %}	
+			
+			
+		});
+	</script>		
+	
+{% endblock %}
+
+{% block menu_shortcuts %}
+{% include "menu.html" %}
+{% endblock %}
+
+{% block content_title %}<h1 align="center">Marks Management</h1>{% endblock %}
+
+{% block content %}
+	<div id="main-menu">
+			
+		<div id="menu-pane">
+			<div id="filter">
+					Modules : 
+					<select id="modules">
+						<option value="">Select a Module</option>
+						{% for course in modules %}
+							<option value="{{ course }}"> {{ course }}</option>
+						{% endfor%}
+					</select>
+
+					<!-- Our assesments for a group selection (empty on default) -->
+					Assessments : 
+					<select id="assesments">
+					</select>
+					
+					Sessions : 
+					<select id="sessions">
+					</select>
+				
+					
+			</div>
+			<br>
+			<div id="specific">	
+				<button onclick='$("#specific").fadeOut(); $("#all").fadeIn();' >Back</button>
+				<h3>Student:</h3>
+				<div id="studentmarksheetTable"></div>
+				
+			</div>
+			
+			<div id="all">
+				<input type="text" id="sheetSearch" placeholder="Search Elements" />
+				<table id="marksheetTable" >
+						<tr id="thead"><th>Surname, Initials</th><th>Student #</th><th>Weight</th><th>Mark</th><th>Edit</th></tr>
+						{% for student in students %}
+							<tr class='student'>
+								<td>{{student.surname}}, {{student.firstName}}</td>
+								<td>{{student.upId}}</td>
+								<td>{{student.Weight}}</td>
+								<td>{{student.Mark}}</td>
+								<td> <a href='/studentMarks/'><span>edit</span></a>
+								</td>
+							</tr>
+						{% endfor%}
+				</table>
+			</div>
+		</div>
+	
+	</div>
+{% endblock %}
