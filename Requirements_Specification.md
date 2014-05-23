@@ -292,14 +292,18 @@ of lower level assessments which can themselves be aggregate assessments or leaf
 example,
 
        * the marks of the questions for a test are aggregated into a test mark,
+       
        * the marks across the tests and practicals could be aggregated into a semester mark, and
+       
        * the semester and exam marks could be aggregated into a course mark.
 
 The default aggregator is the simple sum aggregation (i.e. the marks for the lower level assessment
 components are simply added up). But the lecturer may assign a different aggregator to an aggregate
 assessment. For now, the aggregators which need to be supported are
+
        * a WeightedSumAggregator which assigns different weights to the components of the aggregate
        component, and
+       
        * a BestOfAggregator which selects only the best n components of the aggregate component
        and returns the sum of their allocated marks.
 
