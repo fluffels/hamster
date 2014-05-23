@@ -20,8 +20,7 @@ lecturers to
 * reporting
 
 In particular the system will allow:
-* adminisrators to
-
+* administrators to
         *downloading and updating of information around courses from the CS systems
         * including the lecturers, teaching assistants and students for a course,
 
