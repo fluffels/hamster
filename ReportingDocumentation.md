@@ -2,9 +2,9 @@
 =========================================
 
 Reporting is concerned with providing reports for assessments at different levels of granularity. The type of reports that can be requested are:
-..*Audit reports
-..*Assessment reports
-..*Student reports
+* Audit reports
+* Assessment reports
+* Student reports
 
 Reports are in the format of either a csv file or a pdf document. The way in which the classes arestructured suggests that the Factory Method design pattern was used to generate the different types of reports.
 
