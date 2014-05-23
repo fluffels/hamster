@@ -1,7 +1,7 @@
 LDAP Documentation
 ==================
 
-#### LDAP API, including what the functions do and what the are called
+LDAP API, specifying API functions, what they do, their parameters and return values.
 
 
 |Function                   | Description                 | Params                | Return                |
