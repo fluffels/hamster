@@ -1,7 +1,7 @@
 #Project Background
 
-Lecturers make use of assistant lecturers and higher-level students to mark assessments like practi-
-cals, assignments, tests and exams. The management of marking sheets, collection, aggregation and
+Lecturers make use of assistant lecturers and higher-level students to mark assessments like practicals, assignments, tests and exams.
+The management of marking sheets, collection, aggregation and
 publication of marks results currently in a lot of manual labour. This is not only very inecient,
 but may also result in integrity issues with lost marks and in errors being introduced during the
 collection and importing of marks as well as privacy issues with marks being, at times, visible to
