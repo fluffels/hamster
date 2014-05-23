@@ -378,7 +378,7 @@ and aggregation of all assessment components, the calculation of statistics, the
 report data object and ultimately the rendering of the report onto either a user interface, a PDF
 document or a CSV file. The latter is done by appropriate report renderers.
 
-..5.2 Generate student marks report
+5.2 Generate student marks report
 
 Students can use the system to generate themselves marks reports at any level of granularity. The
 marks report will contain, in a tree structure, all leaf and aggregated marks up to the level of
@@ -388,10 +388,9 @@ based UIs as well as PDF and CSV files.
 The student marks report request has sufficient information to identify both, the student and
 the assessment for which a marks report is required.
 The response object has a date/time stamp and the marks tree which contains the assessment
-name and allocated mark as well as all published contributing (aggregated) assessments and their
-marks.
+name 
 
-..5.3 Generate audit report
+5.3 Generate audit report
 
 Lecturers may request audit reports for any assessment which will contain for any audit event
 * A date/time stamp.
@@ -410,12 +409,14 @@ The audit events will include
 --------------------------------
 
 ## 1. Overview
+
 layered architecture: - presentation layer - access layer - services layer - domain objects layer -
 infrastructure layer (ORM, integration channels, ...)
 presentation layer - django web app - android app - restful web services access for other systems
 layers: presentation business logic domain objects infrastructure backend
 
 ## 2. Layers
+
 The architectural pattern used at the high-level will be layering. This results in good high-level
 responsibility separation and allows the reuse of lower level layer components across components
 in higher level layers (e.g. the business logic layer components are reused across the web front-end,
@@ -423,78 +424,88 @@ Android client application and web services portal).
 
 The responsibility allocation around the layers is as follows:
 
-..1. Provide access to humans -> Client Layer
-..2. Provide access to system functionality to human access layer and other systems (including
+1. Provide access to humans -> Client Layer
+2. Provide access to system functionality to human access layer and other systems (including
 decoding of client messaghes) -> Access Layer
-..3. Encapsulate business logic -> Business Processes Layer
-..4. Provide domain objects -> Domain Objects Layer
-..5. Provide accessibility to backend components -> Infrastructure Layer
-..6. Host databases -> Backend Layer
+3. Encapsulate business logic -> Business Processes Layer
+4. Provide domain objects -> Domain Objects Layer
+5. Provide accessibility to backend components -> Infrastructure Layer
+6. Host databases -> Backend Layer
 
 All system components except for the components in the client and backend layers are deployed
 within the Django application container.
 
 The communication protocols include:
-..1. HTTP/HTTPS from the browser to the web module
-..2. JSON/REST/HTTP/HTTPS for the web services between the Android application and the
+1. HTTP/HTTPS from the browser to the web module
+2. JSON/REST/HTTP/HTTPS for the web services between the Android application and the
 Django-based web services wrapper4. JSON is used for the data encoding and teh REST
 protocol for the light-weight web services.
-..3. The LDAP protocol is used by the LDAP adapter to communicate with the LDAP database,
+3. The LDAP protocol is used by the LDAP adapter to communicate with the LDAP database,
 and
-..4. SQL is used by the Django Object-Relational mapper to communicate with the relational
+4. SQL is used by the Django Object-Relational mapper to communicate with the relational
 databse.
-..5. All other communication is in the form of local Python calls.
+5. All other communication is in the form of local Python calls.
 
 ## 3. Frameworks and Technologies
 This section lists the various frameworks used by the system.
 
-..3.1 Persistence
+3.1 Persistence
+
 Persistence will be done using Oobject-Relational mapping django ORM (db.models) with caching
 for persistence
 
-..3.2 Web framework
+3.2 Web framework
+
 The Django AngularJS web framework will be used to implement the web application for the
 marking system. This is a powerful framework which enables one to implement rich dynamic web
 front-ends.
 
-..3.3 LDAP integration
+3.3 LDAP integration
+
 Django python-ldap from python-ldap.org will be used to query LDAP DB.
 
-..3.4 Reporting
+3.4 Reporting
+
 For the reporting the application uses Django-report | a simple reporting framework which is able
 to generate both, HTML and PDF reports.
 
-..3.5 REST frameworks
+3.5 REST frameworks
+
 For the Django REST Framework together with the Django JSON Serializer will be used for devel-
 oping a RESTful seb services wrapper around the server API in order for the Android application
 to make use of the backend services and in order to provide general integarbility.
 
-..3.6 Data import and export
+3.6 Data import and export
+
 Data import and export is available through the web interface. The requirements are that the
 system must support importing from and exporting to CSV (Comma-Separated-Values) file. This
 will be done using the Python CSV library.
 
-..3.7 Logging
+3.7 Logging
+
 Django logging provides a simple, exible logging framework. It will be used to log all requests and
 all responses as well as all changes to any of the entities.
 
-..3.8 Testing
+3.8 Testing
+
 Unit testing is done across levels of granularity using Python's unittest and mocking (with mock
 objects) using unittest.mock.
 
 Integration testing is done using unittest without mocking (i.e. using the real lower level
 objects instead of mock objects).
 
-..3.9 Extract, build and deploy
+3.9 Extract, build and deploy
+
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
 
 ## 4. Architectural tactics addressing quality requirements
 
 This section discusses the architectural tactics which are used to concretely address the quality
-requirements for the application. Most of these are provided be the selected frameworks.
+requirements for the application. Most of these are provided by the selected frameworks.
 
-..1. Security
+1. Security
+
 Security is very important. At the business logic layer, the application will make use of
 * authentication against the CS LDAP repository using Django-Auth-LDAP. and
 * role based authorization at services level using RBAC (Django Role Based Access Control).
@@ -505,17 +516,20 @@ fucntionality accessible to users through the user interface using the Django Gr
 Finally, at the communications side, the application will make use of secure (encrypted) communication over SSL/HTTPS,
 following the security vulnerability guidelines in https://docs.djangoproject.com/en/dev/topics/security/.
 
-..2. Auditability
+2. Auditability
+
 The application will provide exible/maintainable logging using the Django logging framework with formatters, 
 filters and handlers.
 
-..3. Usability
+3. Usability
+
 Usability is addressed through
 * user workflow design for effcient processes,
 * multi-language support using the Django internationalization framework, and
 * providing a table interface for entering marks.
 
-..4. Maintainability
+4. Maintainability
+
 The following architectural decisions have been made in order to improve maintainability:
 * Separating the application into access, business logic, domain objects and infrastructure layers.
 * Using JSON and REST for web services.
@@ -523,13 +537,15 @@ The following architectural decisions have been made in order to improve maintai
 * API documnentation will be done using pdoc makes the source code maintainable for the maintenance team. It supports 
 exible and easy code documentation and allows for the generation of API documentation in HTML or plain text.
 
-..5 Integrability
+5 Integrability
+
 In order to make the system integrable so that the functionality can be accessed by other software
 systems, all services are published as RESTful web services with the request and result objects
 encoded in JSON. This will enable other systems to extract marks from the system, provide marks
 to the system and even submit assessments to the system5.
 
-..6 Scalability and Performance
+6 Scalability and Performance
+
 Scalability and performance are improved by using
 * Django's page caching (instead of everytime re-rendering dynamically generated pages,
 * Django's thread pooling,
@@ -542,7 +558,8 @@ In future scalability can be further improved by adding support for
 * clustering with load balancing using _Celery_, and
 * setting up a _memcache_ which is shared across the cluster.
 
-...7 Reliability
+7 Reliability
+
 Reliability will initially be improved by using transactions around services which should be com-
 leted either in their entirity or not at all (e.g. the service of creating an assessment with the various
 database additions made for the assessment). To this end transaction boundaries will be on ser-
