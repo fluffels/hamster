@@ -21,26 +21,26 @@ lecturers to
 
 In particular the system will allow:
 * adminisrators to
-..-downloading and updating of information around courses from the CS systems
-.. + including the lecturers, teaching assistants and students for a course,
+        *downloading and updating of information around courses from the CS systems
+        * including the lecturers, teaching assistants and students for a course,
 
 * lecturers to 
-..- specify atomic leaf assessments (assessments which are given a single, atomic mark, like a
-question for a test or a practical which is assigned a single atomic mark in the assessment
-system) and how these assessments are to be aggregated into higher level assessments
-(e.g. how the questions are aggregated into a test mark and how the test and practical
-marks are aggregated into a semester mark),
-..- create assessment sessions with students and markers assigned to these sessions,
-..- publish leaf and aggregated marks,
-..- and generate assessment reports at any level of aggregation as well as audit reports and
-have these rendered either onto the screen, onto a PDF document or onto a CSV file for
-subsequent importing into a spreadsheet or a database.
+        * specify atomic leaf assessments (assessments which are given a single, atomic mark, like a
+          question for a test or a practical which is assigned a single atomic mark in the assessment
+          system) and how these assessments are to be aggregated into higher level assessments
+          (e.g. how the questions are aggregated into a test mark and how the test and practical
+          marks are aggregated into a semester mark),
+        * create assessment sessions with students and markers assigned to these sessions,
+        * publish leaf and aggregated marks,
+        * and generate assessment reports at any level of aggregation as well as audit reports and
+          have these rendered either onto the screen, onto a PDF document or onto a CSV file for
+          subsequent importing into a spreadsheet or a database.
 
 * markers who have been assigned to mark leaf assessments of certain students
-..- to submit, modify or remove marks
+        * to submit, modify or remove marks
 
 * and students
-..- retrieve their marks for an assessment at any level of aggregation and have these rendered
+        * retrieve their marks for an assessment at any level of aggregation and have these rendered
 either onto the screen, onto a PDF document or onto a CSV file for subsequent importing
 into a spreadsheet or a database.
 
