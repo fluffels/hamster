@@ -1,5 +1,4 @@
 #Project Background
---------------------------------
 
 Lecturers make use of assistant lecturers and higher-level students to mark assessments like practi-
 cals, assignments, tests and exams. The management of marking sheets, collection, aggregation and
@@ -11,7 +10,7 @@ The above inefficiencies and other problems have led Jan Kroeze to propose a mar
 system which can be accessed from mobile devices and web browsers.
 
 # Project Vision and Scope
--------------------------------
+
 The proposed system is a mark collection, aggregation and publication system which will allow
 lecturers to
 * maintain course information
@@ -53,7 +52,7 @@ either onto the screen, onto a PDF document or onto a CSV file for subsequent im
 into a spreadsheet or a database.
 
 # Stakeholders
--------------------------------
+
 The stakeholders for the system include the following:
 
  **The Client** is Jan Kroeze who originated the idea for the mini-project and who is the main
@@ -75,7 +74,7 @@ system into production and maintain the system.
 and for maintaining the web front end.
 
 # Architecture Requirements
------------------------------------
+
 This section discusses the software architecture requirements | that is the requirements around the
 software infrastructure within which the application functionality is to be developed. The purpose
 of this infrastructure is to address the non-functional requirements. In particular, the architecture
@@ -244,7 +243,7 @@ have any application functionality within the presentation layer.
 6. Web services must be published as either SOAP-based or RESTful web services
 
 # Requirements for the development process used
------------------------------------------------------
+
 
 * All changes to produced artifacts must be made through the git repositories assigned to the
 project.
@@ -252,7 +251,7 @@ project.
 * All functionality must be unit-tested.
 
 # Application (functional) requirements
--------------------------------------------
+
 This section discusses the functional requirements for the Hamster Marking System. 
 Section 6.1 which discusses the domain objects introduces the core domain concepts and relationships between
 this concepts.
@@ -461,7 +460,7 @@ The audit events will include
        * any requests for any reports including assessment reports, students marks reports and audit reports.
 
 # Architecture Design
---------------------------------
+
 
 ## 1. Overview
 
