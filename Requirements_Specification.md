@@ -21,6 +21,7 @@ lecturers to
 
 In particular the system will allow:
 * administrators to
+
         *downloading and updating of information around courses from the CS systems
         * including the lecturers, teaching assistants and students for a course,
 
@@ -83,11 +84,11 @@ requirements specify
 ## 1. Access and integration requirements
 
 This section discusses
-..1. the requirements for the dierent channels through which the system can be accessed by
+1. the requirements for the dierent channels through which the system can be accessed by
 people and systems, and
-..2. the integration channels which must be supported by this system.
+2. the integration channels which must be supported by this system.
 
-** Access channels**
+**Access channels**
 The system will be accessible by human users through the following channels:
 1. From a web browser through a rich web interface. The system must be accessible from any of
 the widely used web browsers including all recent versions of Mozilla Firefox, Google Chrome,
@@ -96,7 +97,7 @@ Apple Safari and Microsoft Internet Explorer.
 Other systems should be able to access the services oered by the system through either RESTful
 or SOAP-based web services.
 
-** Integration channels ** 
+**Integration channels** 
 This system will be able to access
 * the CS LDAP server in order to retrieve person details and class lists.
 * the CS MySQL database to access course/module information.
@@ -109,7 +110,7 @@ files. In particular, the system will support
 * Importing of assessment entries from CSV files.
 * Exporting of mark sheets to CSV files.
 
-** Quality requirements for access and integration channels**
+**Quality requirements for access and integration channels**
 All communication of sensitive data must be done securely using HTTPS.
 
 ## 2. Architectural Responsibilities
@@ -131,24 +132,23 @@ usability, and testability requirements.
 1. Security
 
 General security considerations:
-..1. All system functionality is only accessible to users who can be authenticated through the
+* All system functionality is only accessible to users who can be authenticated through the
 LDAP system used by the department of Computer Science.
 
-..2. The system must make certain that any operation on any data is only allowed if the user may
+* The system must make certain that any operation on any data is only allowed if the user may
 use the requested operation on the requested data object. Some services only require role
 based authorization for the service itself. However, the system must be able to constrain who
 is allowed to do what with which entity. For example, a student may see his or her results,
 but not those of any other students.
 
 In particular
-
-..1. One or more persons may be assigned as marker for any assessment at any level of granularity.
+* One or more persons may be assigned as marker for any assessment at any level of granularity.
 If the assessment is a leaf assessment, the marker may assign a mark to that assessment. If the
 assessment is an aggregate assessment, the marker may assign a mark to any leaf assessment
 of the aggregate assessment. Only markers and assessment owners may change the marks for
 an assessment.
 
-..2. The person creating an assessment is the assessment owner. Only the assessment owner may
+* The person creating an assessment is the assessment owner. Only the assessment owner may
 modify any aspects of the assessment itself including adding, changing or removing assessment
 components or the marks assigned to assessment components.
 
@@ -169,42 +169,41 @@ if one of the pre-conditions for the service is not met), and
 * that all post-conditions hold true once the service has been provided.
 
 4. Usability
-..1. 98% of users (e.g. students or lecturers) should be able to use the system without prior
+* 98% of users (e.g. students or lecturers) should be able to use the system without prior
 training.
-..2. The system must be developed using internationalization in order to support multiple lan-
+* The system must be developed using internationalization in order to support multiple lan-
 guages. Initially only English needs to be supported, but it must allow for translations to the
 other official languages of the University to be added at a later stage.
 
 5. Scalability
-..1. The deployed system must be able to scale to handle all assessments of all modules of the
+* The deployed system must be able to scale to handle all assessments of all modules of the
 department of Computer Science.
-..2. The deployed system must be able to operate eectively under the load of 500 concurrent
+* The deployed system must be able to operate eectively under the load of 500 concurrent
 users.
-..3. The software architecture should be such that it can, in future, be easily modied to scale
+* The software architecture should be such that it can, in future, be easily modied to scale
 to Massive Open Online Courses (MOOC) by porting the system onto clustered and cloud-
 computing based architectures.
 
 6. Performance requirements
 The system does not have particularly stringent performance requirements.
-..1. All non-reporting operations should respond within less than 1 second.
-..2. Report queries should be processed in no more than 10 seconds.
+* All non-reporting operations should respond within less than 1 second.
+* Report queries should be processed in no more than 10 seconds.
 
 ## 4. Architecture Constraints
 The following architecture constraints have been introduced largely for maintainability reasons:
-
-..1. The system must be developed using the following technologies
-..* The system must be developed using the Django web framework.
-..* Persistence to a relational database must be done using the Object-Relational Mapper
-bundled with Django.
-..* The unit tests should be developed using the Django unittest module.
-..2. The system must ultimately be deployed onto a Django application server running within the
-cs.up.ac.za Apache web server.
-..3. The mobile client must be running on an Android application
-..4. The system must be decoupled from the choice of database. The system will use the MySQL
+1. The system must be developed using the following technologies
+       * The system must be developed using the Django web framework.
+       * Persistence to a relational database must be done using the Object-Relational Mapper
+       bundled with Django.
+       * The unit tests should be developed using the Django unittest module.
+2. The system must ultimately be deployed onto a Django application server running within the
+cs.up.ac.za Apache web server
+3. The mobile client must be running on an Android application
+4. The system must be decoupled from the choice of database. The system will use the MySQL
 database.
-..5. The system must expose all system functionality as restful web services and hence may not
+5. The system must expose all system functionality as restful web services and hence may not
 have any application functionality within the presentation layer.
-..6. Web services must be published as either SOAP-based or RESTful web services
+6. Web services must be published as either SOAP-based or RESTful web services
 
 # Requirements for the development process used
 -----------------------------------------------------
@@ -226,65 +225,55 @@ This section introduces core domain concepts and aspects of the requirements whi
 different use cases. These concepts are relevant for the understanding of the detailed
 use case requirements.
 
-..1.1 Overview
+1. Overview
 The main domain objects are
-* persons which may be assigned lecturer, marker or student roles with respect to different
-courses and assessments,
-* assessments which can be aggregated which are aggregated into higher level assessments
-(meaning marks are aggregated into higher level marks), and for which different assessment
-sessions may be created, and
-* mark allocations.
-
-..1.2 Persons
+       * persons which may be assigned lecturer, marker or student roles with respect to different
+       courses and assessments,
+       * assessments which can be aggregated which are aggregated into higher level assessments
+       (meaning marks are aggregated into higher level marks), and for which different assessment
+       sessions may be created, and
+       * mark allocations.
+2 Persons
 All persons known to the system must be persons which are registered users of the Computer Science
 LDAP registry and will have to be authenticated against this registry. The person information their
 demographic details (name, student/personal no, . . . ) including the courses assigned to lecturers
 and students is obtained from the CS-LDAP repository.
-
 The system should not have separate classes for students, markers and lecturers, but these are
 simply different roles people could play in the context of a course or an assessment session. A person
 who is a lecturer of one course could be assigned to be a marker of an assessment for another course
 and could register to be a student of a third course.
-
-..1.3 Assessment, assessment sessions and markers
-
+3 Assessment, assessment sessions and markers
 Assessments are either leaf assessments or aggregate assessments. a leaf assessment is an assessment
 for which an atomic mark is allocated to and for which the full marks have been specifed. Examples
 include a question in a test or exam and a mark for a practical component or for the entire practical
 (if only the full practical marks captured by the system). An aggregate assessment is an aggregation
 of lower level assessments which can themselves be aggregate assessments or leaf assessments. For
 example,
-* the marks of the questions for a test are aggregated into a test mark,
-* the marks across the tests and practicals could be aggregated into a semester mark, and
-* the semester and exam marks could be aggregated into a course mark.
-
+       * the marks of the questions for a test are aggregated into a test mark,
+       * the marks across the tests and practicals could be aggregated into a semester mark, and
+       * the semester and exam marks could be aggregated into a course mark.
 The default aggregator is the simple sum aggregation (i.e. the marks for the lower level assessment
 components are simply added up). But the lecturer may assign a different aggregator to an aggregate
 assessment. For now, the aggregators which need to be supported are
-* a WeightedSumAggregator which assigns different weights to the components of the aggregate
+       * a WeightedSumAggregator which assigns different weights to the components of the aggregate
 component, and
-* a BestOfAggregator which selects only the best n components of the aggregate component
+       * a BestOfAggregator which selects only the best n components of the aggregate component
 and returns the sum of their allocated marks.
-
 A leaf assessment (i.e. an assessment for which a mark is allocated by markers) has one or more
 assessment sessions. Each assessment session is assigned a number of markers and a subset of the
 students enrolled for the module. The associated markers may mark the assessment (including all
 its assessment components recursively) of those students allocated to that particular assessment
 session.
-
-..1.4 Assessment sessions, markers and mark allocations
-
+4 Assessment sessions, markers and mark allocations
 By default any assessment associated with a module may only be marked by the persons who are
 assigned lecturers for that module. Thus by default an assessment has a single assessment session
 which contains all registered students for the course and only the lecturers as markers.
 A lecturer can assign any person within the CS-LDAP system as an additional marker. Alter-
 natively, a lecturer may create multiple assessments, each with a subset of the students and each
 with its assigned markers.
-
 Markers may be assigned to be able to mark an assessment for a set of students. The marker
 will be able to supply marks for the allocated students for all the leaf assessments contained within
 any of the assessments assigned to him or her.
-
 Assessment sessions can be opened and closed for marking. By default, assessment sessions are
 closed and need to be opened for marking by one of the lecturers of the course. Marks can only be
 allocated by assigned markers and only whilst the assessment session is open.
@@ -294,19 +283,18 @@ addition to the markers assigned at the higher level of aggregation.
 
 ## 2. Login
 All system functionalities are only accessible to users who have been able to log into the system.
-
-..2.1 Service contract
+1. Service contract
 The service request for the login use case contains the authentication credentials (username and
 password). If the LDAP system is available and if the user could be authenticated, the response
 contains the user's name and uid (student or staff number) as well as the information of the different
 roles the user has been assigned on different modules.
 
-..2.2 Functional requirements
+2. Functional requirements
 The functional requirements for the login use case include the authentication against LDAP and
 the sourcing of required information from the LDAP repository as well as the ultimate construction
 of the result object.
 
-..2.3 Process specification
+3. Process specification
 The provided user authentication credentials are used to authenticate the user against the LDAP
 repository. If this is unsuccessful, a corresponding exception is raised. Otherwise the person's demo-
 graphics as well as the designated lecturer, teaching-assistant, tutor and student roles with respect
@@ -325,24 +313,22 @@ component assessments. How these are aggregated depends on the type of aggregato
 the aggregate assessment. Examples are simple summation aggregators, weighted sum aggregators
 or best-of aggregators.
 
-..3.1 Create leaf assessment
+1. Create leaf assessment
 Creating a leaf assessment requires the lecturer to specify
+              * the course for which this is an assessment,
+              * a name for the assessment,
+              * and the full marks for the assessment (e.g. a practical which counts out of 20), and
+              * one or more assessment sessions which have a name and is either open or closed for marking
+              and which have a subset of the enrolled students as well as potentially a set of markers assigned
+              for the assessment session.
 
-* the course for which this is an assessment,
-* a name for the assessment,
-* and the full marks for the assessment (e.g. a practical which counts out of 20), and
-* one or more assessment sessions which have a name and is either open or closed for marking
-and which have a subset of the enrolled students as well as potentially a set of markers assigned
-for the assessment session.
-
-..3.2 Create aggregate assessment
+2. Create aggregate assessment
 When creating aggregate assessments, lecturers need to specify
-
-* the course for which this is an assessment,
-* the assessment name,
-* the asssessments which are to be the components of the aggregate assessment, and
-* an aggregator which determines how the marks of the component assessments are aggregated
-into a mark for the aggregate assessment.
+              * the course for which this is an assessment,
+              * the assessment name,
+              * the asssessments which are to be the components of the aggregate assessment, and
+              * an aggregator which determines how the marks of the component assessments are aggregated
+              into a mark for the aggregate assessment.
 
 ## 4. Marks management
 
@@ -362,9 +348,7 @@ altering any information within the system (except adding some audit log entries
 generation itself). This includes the generation of assessment reports, student marks reports and
 audit reports. All reports can be rendered either onto an Android device, a web interface, a PDF
 document or a CSV le for later importing into a database or spreadsheet.
-
-..5.1 Generate assessment report
-
+1. Generate assessment report
 Assessment reports can be generated at any level of aggregation. All marks are aggregated to the
 level at which the assessment report is requested. In addition a statistical analysis of the marks is
 done which includes the calculation of the class average as well as a frequency analysis.
@@ -380,9 +364,7 @@ The functional requirements for the generateAssessmentReport use case include th
 and aggregation of all assessment components, the calculation of statistics, the construction of the
 report data object and ultimately the rendering of the report onto either a user interface, a PDF
 document or a CSV file. The latter is done by appropriate report renderers.
-
-5.2 Generate student marks report
-
+2. Generate student marks report
 Students can use the system to generate themselves marks reports at any level of granularity. The
 marks report will contain, in a tree structure, all leaf and aggregated marks up to the level of
 aggregation for which the report was requested.
@@ -392,21 +374,18 @@ The student marks report request has sufficient information to identify both, th
 the assessment for which a marks report is required.
 The response object has a date/time stamp and the marks tree which contains the assessment
 name 
-
-5.3 Generate audit report
-
+3. Generate audit report
 Lecturers may request audit reports for any assessment which will contain for any audit event
-* A date/time stamp.
-* The userId for the session within which the event occured.
-* The action which was performed by the user.
-
+       * A date/time stamp.
+       * The userId for the session within which the event occured.
+       * The action which was performed by the user.
 The audit events will include
-* all assessment creations, modications and removals,
-* all assessment session creations, modications and removals,
-* all mark submissions, modications and removals,
-* any requests to open/close assessment sessions,
-* any requests to publish marks,
-* any requests for any reports including assessment reports, students marks reports and audit reports.
+       * all assessment creations, modications and removals,
+       * all assessment session creations, modications and removals,
+       * all mark submissions, modications and removals,
+       * any requests to open/close assessment sessions,
+       * any requests to publish marks,
+       * any requests for any reports including assessment reports, students marks reports and audit reports.
 
 # Architecture Design
 --------------------------------
@@ -451,54 +430,35 @@ databse.
 
 ## 3. Frameworks and Technologies
 This section lists the various frameworks used by the system.
-
-3.1 Persistence
-
+1. Persistence
 Persistence will be done using Oobject-Relational mapping django ORM (db.models) with caching
 for persistence
-
-3.2 Web framework
-
+2. Web framework
 The Django AngularJS web framework will be used to implement the web application for the
 marking system. This is a powerful framework which enables one to implement rich dynamic web
 front-ends.
-
-3.3 LDAP integration
-
+3. LDAP integration
 Django python-ldap from python-ldap.org will be used to query LDAP DB.
-
-3.4 Reporting
-
+4. Reporting
 For the reporting the application uses Django-report | a simple reporting framework which is able
 to generate both, HTML and PDF reports.
-
-3.5 REST frameworks
-
+5. REST frameworks
 For the Django REST Framework together with the Django JSON Serializer will be used for devel-
 oping a RESTful seb services wrapper around the server API in order for the Android application
 to make use of the backend services and in order to provide general integarbility.
-
-3.6 Data import and export
-
+6. Data import and export
 Data import and export is available through the web interface. The requirements are that the
 system must support importing from and exporting to CSV (Comma-Separated-Values) file. This
 will be done using the Python CSV library.
-
-3.7 Logging
-
+7. Logging
 Django logging provides a simple, exible logging framework. It will be used to log all requests and
 all responses as well as all changes to any of the entities.
-
-3.8 Testing
-
+8. Testing
 Unit testing is done across levels of granularity using Python's unittest and mocking (with mock
 objects) using unittest.mock.
-
 Integration testing is done using unittest without mocking (i.e. using the real lower level
 objects instead of mock objects).
-
 3.9 Extract, build and deploy
-
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
 
