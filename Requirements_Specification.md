@@ -23,6 +23,7 @@ In particular the system will allow:
 * administrators to
 
         *downloading and updating of information around courses from the CS systems
+
         * including the lecturers, teaching assistants and students for a course,
 
 * lecturers to 
@@ -32,8 +33,11 @@ In particular the system will allow:
           system) and how these assessments are to be aggregated into higher level assessments
           (e.g. how the questions are aggregated into a test mark and how the test and practical
           marks are aggregated into a semester mark),
+        
         * create assessment sessions with students and markers assigned to these sessions,
+        
         * publish leaf and aggregated marks,
+        
         * and generate assessment reports at any level of aggregation as well as audit reports and
           have these rendered either onto the screen, onto a PDF document or onto a CSV file for
           subsequent importing into a spreadsheet or a database.
