@@ -118,7 +118,7 @@ The quality requirements are the requirements around the quality attributes of t
 services it provides. This includes requirements like performance, scalability, security, auditabilty,
 usability, and testability requirements.
 
-* Security
+* _Security_
 
 General security considerations:
 
@@ -143,7 +143,7 @@ The person creating an assessment is the assessment owner. Only the assessment o
 modify any aspects of the assessment itself including adding, changing or removing assessment
 components or the marks assigned to assessment components.
 
-* Auditability
+* _Auditability_
 
 One should be able to query for any entity, any changes made to that entity or any of its components.
 The information provided must include by whom the change was made; when the change was made as well as the new and old value of the field(s) which were changed.
@@ -152,18 +152,18 @@ The information provided must include by whom the change was made; when the chan
 The system will provide only services to extract information from the audit log and will not
 allow the audit log to be modified.
 
-* Testability
+* _Testability_
 
 All services offered by the system must be testable through unit tests which test that the service is provided if all pre-conditions are met (i.e. that no exception is raised except if one of the pre-conditions for the service is not met), and that all post-conditions hold true once the service has been provided.
 
-* Usability
+* _Usability_
 
 98% of users (e.g. students or lecturers) should be able to use the system without prior
 training; the system must be developed using internationalization in order to support multiple lan-
 guages. Initially only English needs to be supported, but it must allow for translations to the
 other official languages of the University to be added at a later stage.
 
-* Scalability
+* _Scalability_
 
 The deployed system must be able to scale to handle all assessments of all modules of the
 department of Computer Science as well as operate effectively under the load of 500 concurrent users.
@@ -172,7 +172,7 @@ The software architecture should be such that it can, in future, be easily modif
 to Massive Open Online Courses (MOOC) by porting the system onto clustered and cloud-
 computing based architectures.
 
-* Performance requirements
+* _Performance requirements_
 
 The important requirements in terms of performance is that the system should ensure that all non-reporting operations should respond within less than 1 second and reporting queries should be processed in no more than 10 seconds.
 
@@ -215,12 +215,12 @@ This section introduces core domain concepts and aspects of the requirements whi
 different use cases. These concepts are relevant for the understanding of the detailed
 use case requirements.
 
-* Overview
+* _Overview_
 
 The main domain objects are persons which may be assigned lecturer, marker or student roles with respect to different courses and assessments; assessments which can be aggregated which are aggregated into higher level assessments
 (meaning marks are aggregated into higher level marks), and for which different assessment sessions may be created and mark allocations.
 
-* Persons
+* _Persons_
 
 All persons known to the system must be persons which are registered users of the Computer Science
 LDAP registry and will have to be authenticated against this registry. The person information their
@@ -232,7 +232,7 @@ simply different roles people could play in the context of a course or an assess
 who is a lecturer of one course could be assigned to be a marker of an assessment for another course
 and could register to be a student of a third course.
 
-* Assessment, assessment sessions and markers
+* _Assessment, assessment sessions and markers_
 
 Assessments are either leaf assessments or aggregate assessments. a leaf assessment is an assessment
 for which an atomic mark is allocated to and for which the full marks have been specifed. Examples
@@ -256,7 +256,7 @@ students enrolled for the module. The associated markers may mark the assessment
 its assessment components recursively) of those students allocated to that particular assessment
 session.
 
-* Assessment sessions, markers and mark allocations
+* _Assessment sessions, markers and mark allocations_
 
 By default any assessment associated with a module may only be marked by the persons who are
 assigned lecturers for that module. Thus by default an assessment has a single assessment session
@@ -279,20 +279,20 @@ addition to the markers assigned at the higher level of aggregation.
 ## 2. Login
 All system functionalities are only accessible to users who have been able to log into the system.
 
-* Service contract
+* _Service contract_
 
 The service request for the login use case contains the authentication credentials (username and
 password). If the LDAP system is available and if the user could be authenticated, the response
 contains the user's name and uid (student or staff number) as well as the information of the different
 roles the user has been assigned on different modules.
 
-* Functional requirements
+* _Functional requirements_
 
 The functional requirements for the login use case include the authentication against LDAP and
 the sourcing of required information from the LDAP repository as well as the ultimate construction
 of the result object.
 
-* Process specification
+* _Process specification_
 
 The provided user authentication credentials are used to authenticate the user against the LDAP
 repository. If this is unsuccessful, a corresponding exception is raised. Otherwise the person's demo-
@@ -313,11 +313,11 @@ component assessments. How these are aggregated depends on the type of aggregato
 the aggregate assessment. Examples are simple summation aggregators, weighted sum aggregators
 or best-of aggregators.
 
-* Create leaf assessment
+* _Create leaf assessment_
 
 Creating a leaf assessment requires the lecturer to specify the course for which this is an assessment; a name for the assessment; the full marks for the assessment (e.g. a practical which counts out of 20) and one or more assessment sessions which have a name and is either open or closed for marking and which have a subset of the enrolled students as well as potentially a set of markers assigned for the assessment session.
 
-* Create aggregate assessment
+* _Create aggregate assessment_
 
 When creating aggregate assessments, lecturers need to specify the course for which this is an assessment; the assessment name; the asssessments which are to be the components of the aggregate assessment and an aggregator which determines how the marks of the component assessments are aggregated into a mark for the aggregate assessment.
 
@@ -341,7 +341,7 @@ generation itself). This includes the generation of assessment reports, student 
 audit reports. All reports can be rendered either onto an Android device, a web interface, a PDF
 document or a CSV file for later importing into a database or spreadsheet.
 
-* Generate assessment report
+* _Generate assessment report_
 
 Assessment reports can be generated at any level of aggregation. All marks are aggregated to the
 level at which the assessment report is requested. In addition a statistical analysis of the marks is
@@ -360,7 +360,7 @@ and aggregation of all assessment components, the calculation of statistics, the
 report data object and ultimately the rendering of the report onto either a user interface, a PDF
 document or a CSV file. The latter is done by appropriate report renderers.
 
-* Generate student marks report
+* _Generate student marks report_
 
 Students can use the system to generate themselves marks reports at any level of granularity. The
 marks report will contain, in a tree structure, all leaf and aggregated marks up to the level of
@@ -374,7 +374,7 @@ the assessment for which a marks report is required.
 The response object has a date/time stamp and the marks tree which contains the assessment
 name 
 
-* Generate audit report
+* _Generate audit report_
 
 Lecturers may request audit reports for any assessment which will contain for any audit event:
 A date/time stamp.
@@ -441,42 +441,51 @@ databse.
 This section lists the various frameworks used by the system.
 
 1. Persistence
+
 Persistence will be done using Oobject-Relational mapping django ORM (db.models) with caching
 for persistence
 
 2. Web framework
+
 The Django AngularJS web framework will be used to implement the web application for the
 marking system. This is a powerful framework which enables one to implement rich dynamic web
 front-ends.
 
 3. LDAP integration
+
 Django python-ldap from python-ldap.org will be used to query LDAP DB.
 
 4. Reporting
+
 For the reporting the application uses Django-report | a simple reporting framework which is able
 to generate both, HTML and PDF reports.
 
 5. REST frameworks
+
 For the Django REST Framework together with the Django JSON Serializer will be used for devel-
 oping a RESTful seb services wrapper around the server API in order for the Android application
 to make use of the backend services and in order to provide general integarbility.
 
 6. Data import and export
+
 Data import and export is available through the web interface. The requirements are that the
 system must support importing from and exporting to CSV (Comma-Separated-Values) file. This
 will be done using the Python CSV library.
 
 7. Logging
+
 Django logging provides a simple, exible logging framework. It will be used to log all requests and
 all responses as well as all changes to any of the entities.
 
 8. Testing
+
 Unit testing is done across levels of granularity using Python's unittest and mocking (with mock
 objects) using unittest.mock.
 Integration testing is done using unittest without mocking (i.e. using the real lower level
 objects instead of mock objects).
 
 9. Extract, build and deploy
+
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
 
@@ -485,7 +494,7 @@ the deployable artifacts and deploy the application.
 This section discusses the architectural tactics which are used to concretely address the quality
 requirements for the application. Most of these are provided by the selected frameworks.
 
-* Security
+* _Security_
 
 Security is very important. At the business logic layer, the application will make use of authentication against the CS LDAP repository using Django-Auth-LDAP and role based authorization at services level using RBAC (Django Role Based Access Control).
 
@@ -495,16 +504,16 @@ fucntionality accessible to users through the user interface using the Django Gr
 Finally, at the communications side, the application will make use of secure (encrypted) communication over SSL/HTTPS,
 following the security vulnerability guidelines in https://docs.djangoproject.com/en/dev/topics/security/.
 
-* Auditability
+* _Auditability_
 
 The application will provide exible/maintainable logging using the Django logging framework with formatters, 
 filters and handlers.
 
-* Usability
+* _Usability_
 
 Usability is addressed through user workflow design for effcient processes; multi-language support using the Django internationalization framework, and providing a table interface for entering marks.
 
-* Maintainability
+* _Maintainability_
 
 The following architectural decisions have been made in order to improve maintainability:
 
@@ -517,20 +526,20 @@ Using an Object-Relational Mapper (ORM) instead of directly using SQL.
 API documnentation will be done using pdoc makes the source code maintainable for the maintenance team. It supports 
 exible and easy code documentation and allows for the generation of API documentation in HTML or plain text.
 
-* Integrability
+* _Integrability_
 
 In order to make the system integrable so that the functionality can be accessed by other software
 systems, all services are published as RESTful web services with the request and result objects
 encoded in JSON. This will enable other systems to extract marks from the system, provide marks
 to the system and even submit assessments to the system5.
 
-* Scalability and Performance
+* _Scalability and Performance_
 
 Scalability and performance are improved by using Django's page caching (instead of everytime re-rendering dynamically generated pages; thread pooling; Django's persistent database connections in order to avoid the overheads of continuously creating and destroying connections (i.e. in order to reuse connections); the caching done by the ORM which can be further improved by using QuerySet; performing computation intensive tasks in the background using the Celery framework, and database indices.
 
 In future scalability can be further improved by adding support for clustering with load balancing using _Celery_ and setting up a _memcache_ which is shared across the cluster.
 
-* Reliability
+* _Reliability_
 
 Reliability will initially be improved by using transactions around services which should be com-
 leted either in their entirity or not at all (e.g. the service of creating an assessment with the various
