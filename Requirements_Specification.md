@@ -17,28 +17,25 @@ lecturers to
 
 In particular the system will allow:
 
-* lecturers to update information for courses from the CS systems;
-* lecturers to view audit trails for any change made to the system's data;
-* students to obtain information from the system;
+* lecturers to update information for courses from the CS systems
+* lecturers to view audit trails for any change made to the system's data
+* students to obtain information from the system
 * lecturers to specify atomic leaf assessments, assessments which are given a single, atomic mark, like a
-question for a test or a practical and also store how these assessments are to be aggregated into higher level assessments (e.g. how the questions are aggregated into a test mark and how the test and practical marks are aggregated into a semester mark);
-* lecturers to create assessment sessions with students and markers assigned to these sessions;
-* lecturers to publish leaf and aggregated marks;
-* lecturers to generate assessment reports at any level of aggregation as well as audit reports and have these rendered either onto the screen, onto a PDF document or onto a CSV file for subsequent importing into a spreadsheet or a database;
-* markers who have been assigned to mark leaf assessments of certain students to submit, modify or remove marks;
-* students to retrieve their marks for an assessment at any level of aggregation and have these rendered either onto the screen, onto a PDF document or onto a CSV file for subsequent importing into a spreadsheet or a database; and
+question for a test or a practical and also store how these assessments are to be aggregated into higher level assessments (e.g. how the questions are aggregated into a test mark and how the test and practical marks are aggregated into a semester mark)
+* lecturers to create assessment sessions with students and markers assigned to these sessions
+* lecturers to publish leaf and aggregated marks
+* lecturers to generate assessment reports at any level of aggregation as well as audit reports and have these rendered either onto the screen, onto a PDF document or onto a CSV file for subsequent importing into a spreadsheet or a database
+* markers who have been assigned to mark leaf assessments of certain students to submit, modify or remove marks
+* students to retrieve their marks for an assessment at any level of aggregation and have these rendered either onto the screen, onto a PDF document or onto a CSV file for subsequent importing into a spreadsheet or a database and
 * users to use the system from a mobile device or a computer.
 
 # Stakeholders
 
 The stakeholders for the system include the following:
 
- **The Client** is Jan Kroeze who originated the idea for the mini-project and who is the main
-source of the requirements information. Vreda Pieterse, who has been involved with teaching
-in the department for some time and has also signicantly contributed to the requirements
-and requirements validation.
+ **The Client** is Jan Kroeze who originated the idea for the mini-project and who is the main source of the requirements information. Vreda Pieterse, who has been involved with teaching in the department for some time and has also significantly contributed to the requirements and requirements validation.
 
-**Lecturers** use the system to dene assessments and aggregations of assessments and to retrieve
+**Lecturers** use the system to define assessments and aggregations of assessments and to retrieve
 marks.
 
 **Teaching asssistants** use the system to capture marks.
@@ -53,14 +50,14 @@ and for maintaining the web front end.
 
 # Architecture Requirements
 
-This section discusses the software architecture requirements | that is the requirements around the
+This section discusses the software architecture requirements, that is, the requirements around the
 software infrastructure within which the application functionality is to be developed. The purpose
 of this infrastructure is to address the non-functional requirements. In particular, the architecture
 requirements specify
 * the architectural responsibilities which need to be addressed,
 * the access and integration requirements for the system,
 * the quality requirements, and
-* the architecture constraints specied by the client.
+* the architecture constraints specified by the client.
 
 ## 1. Access and integration requirements
 
@@ -76,10 +73,6 @@ The system will be accessible by human users through the following channels:
 * From a web browser through a rich web interface. The system must be accessible from any of
 the widely used web browsers including all recent versions of Mozilla Firefox, Google Chrome,
 Apple Safari and Microsoft Internet Explorer.
-
-* From mobile Android devices.
-Other systems should be able to access the services oered by the system through either RESTful
-or SOAP-based web services.
 
 **Integration channels** 
 This system will be able to access
@@ -115,8 +108,8 @@ The architectural responsibilities include the responsibilities of providing an 
 ## 3. Quality Requirements
 
 The quality requirements are the requirements around the quality attributes of the systems and the
-services it provides. This includes requirements like performance, scalability, security, auditabilty,
-usability, and testability requirements.
+services it provides. This includes requirements like performance, scalability, security, auditability,
+usability, and testability.
 
 * _Security_
 
@@ -184,15 +177,13 @@ The following architecture constraints have been introduced largely for maintain
 2. The system must ultimately be deployed onto a Django application server running within the
 cs.up.ac.za Apache web server
 
-3. The mobile client must be running on an Android application
-
-4. The system must be decoupled from the choice of database. The system will use the MySQL
+3. The system must be decoupled from the choice of database. The system will use the MySQL
 database.
 
-5. The system must expose all system functionality as restful web services and hence may not
+4. The system must expose all system functionality as restful web services and hence may not
 have any application functionality within the presentation layer.
 
-6. Web services must be published as either SOAP-based or RESTful web services
+5. Web services must be published as either SOAP-based or RESTful web services
 
 # Requirements for the development process used
 
@@ -205,10 +196,8 @@ project.
 # Application (functional) requirements
 
 This section discusses the functional requirements for the Hamster Marking System. 
-Section 6.1 which discusses the domain objects introduces the core domain concepts and relationships between
-this concepts.
-This is followed by the functional requirements specification for the concrete use cases of the
-system.
+The domain objects introduce the core domain concepts and relationships between these concepts.
+This is followed by the functional requirements specification for the concrete use cases of the system.
 
 ## 1. Domain objects
 This section introduces core domain concepts and aspects of the requirements which cross-cut across
@@ -234,7 +223,7 @@ and could register to be a student of a third course.
 
 * _Assessment, assessment sessions and markers_
 
-Assessments are either leaf assessments or aggregate assessments. a leaf assessment is an assessment
+Assessments are either leaf assessments or aggregate assessments. A leaf assessment is an assessment
 for which an atomic mark is allocated to and for which the full marks have been specifed. Examples
 include a question in a test or exam and a mark for a practical component or for the entire practical
 (if only the full practical marks captured by the system). An aggregate assessment is an aggregation
@@ -338,7 +327,7 @@ fullMarks for the leaf assessment.
 The reporting use cases purely provide raw and processed information from the system without
 altering any information within the system (except adding some audit log entries for the report
 generation itself). This includes the generation of assessment reports, student marks reports and
-audit reports. All reports can be rendered either onto an Android device, a web interface, a PDF
+audit reports. All reports can be rendered either onto  a web interface, a PDF
 document or a CSV file for later importing into a database or spreadsheet.
 
 * _Generate assessment report_
@@ -366,8 +355,7 @@ Students can use the system to generate themselves marks reports at any level of
 marks report will contain, in a tree structure, all leaf and aggregated marks up to the level of
 aggregation for which the report was requested.
 
-Like all other reports, the student marks report can also be rendered onto web and Android
-based UIs as well as PDF and CSV files.
+Like all other reports, the student marks report can also be rendered onto web based UI as well as PDF and CSV files.
 
 The student marks report request has sufficient information to identify both, the student and
 the assessment for which a marks report is required.
@@ -440,51 +428,51 @@ databse.
 ## 3. Frameworks and Technologies
 This section lists the various frameworks used by the system.
 
-* Persistence
+1. Persistence
 
 Persistence will be done using Oobject-Relational mapping django ORM (db.models) with caching
 for persistence
 
-* Web framework
+2. Web framework
 
 The Django AngularJS web framework will be used to implement the web application for the
 marking system. This is a powerful framework which enables one to implement rich dynamic web
 front-ends.
 
-* LDAP integration
+3. LDAP integration
 
 Django python-ldap from python-ldap.org will be used to query LDAP DB.
 
-* Reporting
+4. Reporting
 
 For the reporting the application uses Django-report | a simple reporting framework which is able
 to generate both, HTML and PDF reports.
 
-* REST frameworks
+5. REST frameworks
 
 For the Django REST Framework together with the Django JSON Serializer will be used for devel-
 oping a RESTful seb services wrapper around the server API in order for the Android application
 to make use of the backend services and in order to provide general integarbility.
 
-* Data import and export
+6. Data import and export
 
 Data import and export is available through the web interface. The requirements are that the
 system must support importing from and exporting to CSV (Comma-Separated-Values) file. This
 will be done using the Python CSV library.
 
-* Logging
+7. Logging
 
 Django logging provides a simple, exible logging framework. It will be used to log all requests and
 all responses as well as all changes to any of the entities.
 
-* Testing
+8. Testing
 
 Unit testing is done across levels of granularity using Python's unittest and mocking (with mock
 objects) using unittest.mock.
 Integration testing is done using unittest without mocking (i.e. using the real lower level
 objects instead of mock objects).
 
-* Extract, build and deploy
+9. Extract, build and deploy
 
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
