@@ -440,51 +440,51 @@ databse.
 ## 3. Frameworks and Technologies
 This section lists the various frameworks used by the system.
 
-1. Persistence
+* Persistence
 
 Persistence will be done using Oobject-Relational mapping django ORM (db.models) with caching
 for persistence
 
-2. Web framework
+* Web framework
 
 The Django AngularJS web framework will be used to implement the web application for the
 marking system. This is a powerful framework which enables one to implement rich dynamic web
 front-ends.
 
-3. LDAP integration
+* LDAP integration
 
 Django python-ldap from python-ldap.org will be used to query LDAP DB.
 
-4. Reporting
+* Reporting
 
 For the reporting the application uses Django-report | a simple reporting framework which is able
 to generate both, HTML and PDF reports.
 
-5. REST frameworks
+* REST frameworks
 
 For the Django REST Framework together with the Django JSON Serializer will be used for devel-
 oping a RESTful seb services wrapper around the server API in order for the Android application
 to make use of the backend services and in order to provide general integarbility.
 
-6. Data import and export
+* Data import and export
 
 Data import and export is available through the web interface. The requirements are that the
 system must support importing from and exporting to CSV (Comma-Separated-Values) file. This
 will be done using the Python CSV library.
 
-7. Logging
+* Logging
 
 Django logging provides a simple, exible logging framework. It will be used to log all requests and
 all responses as well as all changes to any of the entities.
 
-8. Testing
+* Testing
 
 Unit testing is done across levels of granularity using Python's unittest and mocking (with mock
 objects) using unittest.mock.
 Integration testing is done using unittest without mocking (i.e. using the real lower level
 objects instead of mock objects).
 
-9. Extract, build and deploy
+* Extract, build and deploy
 
 The **_Django fabric_** framework will be used to extract the sources from the git repositories, construct
 the deployable artifacts and deploy the application.
