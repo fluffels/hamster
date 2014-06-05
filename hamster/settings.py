@@ -1,5 +1,5 @@
 """
-Django settings for SquirrelMarking project.
+Django settings for hamster project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -17,19 +17,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'bs$r_((5qvee*m+5kkwk5-t)7$%)%ha%%phcw!vk7%c8ik#5vt'
+SECRET_KEY = 'x4skkb0i85l+n-7uckfo^j=9+%l%#q9n45)e706(kv&ne^x*38'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 TEMPLATE_DEBUG = True
-
-TEMPLATE_DIRS = (
-	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT, 'templates').replace('\\','/'),
-)
 
 ALLOWED_HOSTS = []
 
@@ -43,16 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dbModels',
-    'android',
-    'rest_framework',
-    'ldap',
-    'dataIO',
-    'businessLogic',
-    'reporting',
-    'static',
-    'webApp',
-    'webServices'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,32 +47,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'SquirrelMarking.urls'
+ROOT_URLCONF = 'hamster.urls'
 
-WSGI_APPLICATION = 'SquirrelMarking.wsgi.application'
+WSGI_APPLICATION = 'hamster.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hamsterMarking',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -109,11 +80,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = ''
-STATICFILES_DIRS = (
-	"static",
-	)
-STATICFILES_FINDER = (
-	'django.contrib.staticfiles.finders.FileSystemFinder',
-	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-	)
