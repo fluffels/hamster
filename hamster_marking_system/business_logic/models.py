@@ -489,6 +489,69 @@ def authenticateUser(username,passwords):
         logAudit(1,'Login Failed','LOGIN')
         return False
     #LDAP
+    
+    
+    
+    
+class Sessions(models.Model):
+    session_name=models.CharField(max_length=100)
+    assessment_id = models.ForeignKey(Assessment)
+    opened = models.DateTimeField()
+    closed = models.DateTimeField()
+    status = models.IntegerField()
+    
+    def setAssessmentID(self,id):
+        self.assessment_id = id
+        self.save()
+
+    def setOpenedDate(self, date):
+        self.opened = date
+        self.save()
+
+    def setClosedDate(self, date):
+        self.closed = date
+        self.save()
+       
+    def setOpen(self):
+        self.status = 1
+        self.save()
+
+    def setClose(self):
+        self.status = 2
+        self.save()
+
+    def setName(self,name):
+        self.session_name = name
+        self.save()
+
+    #getters
+    def __unicode__(self):
+        return self.session_name
+    def getID(self):
+        return self.id
+    def getAssessmentID(self):
+        return self.assessment_id
+    def getClosedDate(self):
+        return self.closed
+    def getStatus(self):
+        return self.status
+    def getOpenedDate(self):
+        return self.opened
+    def getName(self):
+        return self.session_name
+
+    def deleteSessions(self):
+          Sessions.delete(self)
+
+    def insertSessions(session_name_, assessment_id_,opened_,closed_):
+            temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=0)
+            temp.save()
+            return temp
+
+    def getSessions():
+            temp=Sessions.objects.all()
+            return temp
+
 
 #This is to create the table shown in the master specification giving a
 #general idea of how their MySQL database table for courses looks like
