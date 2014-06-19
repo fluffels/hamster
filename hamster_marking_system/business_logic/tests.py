@@ -1,8 +1,8 @@
 from django.test import TestCase
-from unittest import TestCase
-from unittest.mock import MagicMock
+import unittest
+from mock import MagicMock
 
-from .models import Person, Person_data, Module
+from .models import Person, Person_data, Module, AggregateAssessment, Assessment
 from .api import *
 
 '''
@@ -10,98 +10,108 @@ from .api import *
 ======================================
 '''
 
-class PersonTestCase(TestCase):
+class PersonTestCase(unittest.TestCase):
     def setUp(self):
-        Person._init_(self, 'Cebo',
+        global foo
+        foo = Person()
+        Person._init_(foo, 'Cebo',
                               'Makeleni',
                               'u12345678')
         PersonTestCase.lectureOf = Person.lectureOf
+        PersonTestCase.tutorOf = Person.tutorOf
+        PersonTestCase.studentOf = Person.studentOf
+        PersonTestCase.teachingAssistantOf = Person.teachingAssistantOf
                 
     def test_getfirstName(self):
-        nm = Person.getfirstName(self)
+        nm = Person.getfirstName(foo)
         self.assertEqual(nm, 'Cebo')
         
     def test_getupId(self):
-        uid = Person.getupId(self)
+        uid = Person.getupId(foo)
         self.assertEqual(uid, 'u12345678')
         
     def test_getsurname(self):
-        sn = Person.getsurname(self)
+        sn = Person.getsurname(foo)
         self.assertEqual(sn, 'Makeleni')
         
     def test_lectureOfInsert(self):
         #Nothing added
-        li = PersonTestCase.lectureOf
+        Person.lectureOf = []
+        li = Person.lectureOf
         self.assertEqual(li, [])
         
         #Module added
-        Person.lectureOfInsert(self, 'COS 301')
+        Person.lectureOfInsert(foo, 'COS 301')
         self.assertEqual(li, ['COS 301'])
         
     def test_lectureOfDelete(self):
         #Adding modules
-        PersonTestCase.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = PersonTestCase.lectureOf
+        Person.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.lectureOf
         
         #Delete module
-        Person.lectureOfDelete(self, 'COS 301')
+        Person.lectureOfDelete(foo, 'COS 301')
+        li = Person.lectureOf
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_studentOfInsert(self):
         #Nothing added
-        PersonTestCase.lectureOf = []
-        li = PersonTestCase.lectureOf
+        Person.studentOf = []
+        li = Person.studentOf
         self.assertEqual(li, [])
         
         #Module added
-        Person.lectureOfInsert(self, 'COS 301')
+        Person.studentOfInsert(foo, 'COS 301')
         self.assertEqual(li, ['COS 301'])
         
     def test_studentOfDelete(self):
         #Adding modules
-        PersonTestCase.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = PersonTestCase.lectureOf
+        Person.studentOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.studentOf
         
         #Delete module
-        Person.lectureOfDelete(self, 'COS 301')
+        Person.studentOfDelete(foo, 'COS 301')
+        li = Person.studentOf
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_tutorOfInsert(self):
         #Nothing added
-        PersonTestCase.lectureOf = []
-        li = PersonTestCase.lectureOf
+        Person.tutorOf = []
+        li = Person.tutorOf
         self.assertEqual(li, [])
         
         #Module added
-        Person.lectureOfInsert(self, 'COS 301')
+        Person.tutorOfInsert(foo, 'COS 301')
         self.assertEqual(li, ['COS 301'])
         
     def test_tutorOfDelete(self):
         #Adding modules
-        PersonTestCase.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = PersonTestCase.lectureOf
+        Person.tutorOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.tutorOf
         
         #Delete module
-        Person.lectureOfDelete(self, 'COS 301')
+        Person.tutorOfDelete(foo, 'COS 301')
+        li = Person.tutorOf
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_teachingAssistantOfInsert(self):
         #Nothing added
-        PersonTestCase.lectureOf = []
-        li = PersonTestCase.lectureOf
+        Person.teachingAssistantOf = []
+        li = Person.teachingAssistantOf
         self.assertEqual(li, [])
         
         #Module added
-        Person.lectureOfInsert(self, 'COS 301')
+        Person.teachingAssistantOfInsert(foo, 'COS 301')
         self.assertEqual(li, ['COS 301'])
         
     def test_teachingAssistantOfDelete(self):
         #Adding modules
-        PersonTestCase.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = PersonTestCase.lectureOf
+        Person.teachingAssistantOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.teachingAssistantOf
         
         #Delete module
-        Person.lectureOfDelete(self, 'COS 301')
+        Person.teachingAssistantOfDelete(foo, 'COS 301')
+        li = Person.teachingAssistantOf
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
     
     
@@ -111,55 +121,109 @@ class PersonTestCase(TestCase):
     def tearDown(self):
         pass
     
-'''    
-class Person_dataTestCase(TestCase):
+   
+class Person_dataTestCase(unittest.TestCase):
     def setUp(self):
-        Person_data.setuid(self, 'u12345678')
-        Person_data.setData(self, 'SomeData')
-    
-    def test_getuid(self, ):
-        uid = Person_data.getuid(self)
-        self.assertEqual(uid, 'u10534505')
-    
-    def test_getData(self, ):
-        data= Person_data.getuid(self)
-        self.assertEqual(data, 'someData')
-    
-    def tearDownModule(self):
-        pass
+        global foo
+        foo = Person_data()
+        Person_data.setuid(foo, 'u12345678')
         
-    #Could not test because of the save() problem
-'''
+    def test_setuid(self):
+        mock = Person_data()
+        mock.setuid = MagicMock(name = 'setuid')
+        mock.setuid(foo, 'u87654321')
+        mock.setuid.assert_called_once_with(foo, 'u87654321')
+    
+    def test_getuid(self):
+        uid = Person_data.getuid(foo)
+        self.assertEqual(uid, 'u12345678')
+        
+    def test_setData(self):
+        mock = Person_data()
+        mock.setData = MagicMock(name = 'setData')
+        mock.setData(foo, 'SomeData')
+        mock.setData.assert_called_with(foo, 'SomeData')
+        
+    def test_getData(self):
+        mock = Person_data()
+        mock.setData = MagicMock(name = 'setData')
+        mock.setData('myData')
+        mock.getData = MagicMock(name = 'getData', return_value = 'myData')
+        self.assertEqual(mock.getData(), 'myData')
+        
+    
+    
+    
+    
+    def tearDown(self):
+        pass
 
-class ModuleTestCase(TestCase):
+class ModuleTestCase(unittest.TestCase):
     #Test get and set module code
-    thing = Module()
-    thing.setmoduleCode = MagicMock()
-    thing.setmoduleCode('COS 301')
-    thing.setmoduleCode.assert_called_once_with('COS 301')
+    def test_setModule(self):
+        thing = Module()
+        thing.setmoduleCode = MagicMock()
+        thing.setmoduleCode('COS 301')
+        thing.setmoduleCode.assert_called_once_with('COS 301')
     
-    mock = Module()
-    mock.getmoduleCode = MagicMock(name = 'getModule', return_value = 'COS 301')
-    mock.getmoduleCode.assert_return_value_is('COS 301')
-    
-    mock.setmoduleCode('COS 332')
-    mock.getmoduleCode.assert_return_value_is('COS 332')
+    def test_getModuleCode(self):
+        mock = Module()
+        mock.getmoduleCode = MagicMock(name = 'getModule', return_value = 'COS 301')
+        mock.getmoduleCode.assert_return_value_is('COS 301')
+        
+        mock.setmoduleCode('COS 332')
+        mock.getmoduleCode.assert_return_value_is('COS 332')
     
     #Test get, insert and remove marker
-    marker = Module()
-    marker.insertMarkers = MagicMock(name = 'insertMaker')
-    marker.insertMarkers('Cebolenkosi')
-    marker.insertMarkers.assert_called_once_with('Cebolenkosi')
+    def test_insertMarkers(self):
+        marker = Module()
+        marker.insertMarkers = MagicMock(name = 'insertMaker')
+        marker.insertMarkers('Cebolenkosi')
+        marker.insertMarkers.assert_called_once_with('Cebolenkosi')
     
-    marker.getMarkers = MagicMock(name = 'getModule')
-    marker.getMarkers.assert_return_value_is('Cebolenkosi')
+    def test_getMarkers(self):
+        #setUp
+        marker = Module()
+        marker.insertMarkers = MagicMock(name = 'insertMaker')
+        marker.insertMarkers('Cebolenkosi')
+        marker.insertMarkers.assert_called_once_with('Cebolenkosi')
+        
+        #Testing
+        marker.getMarkers = MagicMock(name = 'getModule')
+        marker.getMarkers.assert_return_value_is('Cebolenkosi')
     
-    marker.removeMakers = MagicMock(name = 'delMarkers')
-    marker.removeMakers('Cebo')
-    marker.removeMakers.assert_called_once_with('Cebo')
+    def test_removeMarkers(self):
+        marker = Module()
+        marker.removeMakers = MagicMock(name = 'delMarkers')
+        marker.removeMakers('Cebo')
+        marker.removeMakers.assert_called_once_with('Cebo')
     
     #Add test for wrong marker once error handling for removing marker is added.
     
+class AggregateAssessmentTestCase(unittest.TestCase):
+    def setUp(self):
+        global mock
+        mock = AggregateAssessment()
+        mock = MagicMock(name = 'AggregateAssessment')
+    
+    def test_setaggregator(self):
+        mock.setaggregator('aggregator')
+        mock.setaggregator.assert_called_once_with('aggregator')
+        
+    def test_getaggregator(self):
+        mock.getaggregator.assert_return_value_is('aggregator')
+        
+    def test_insertassessList(self):
+        mock.insertassessList('Ass1')
+        mock.insertassessList.assert_called_once_with('Ass1')
+        
+        mock.insertassessList()
+        mock.insertassessList.assert_called_with()
+        
+    def test_deleteassessList(self):
+        mock.deleteassessList('Ass1')
+        mock.deleteassessList.assert_called_once_with('Ass1')
+        mock.assessList.assert_return_value_is([])
 
 
 
@@ -203,3 +267,6 @@ def test_getAllLecturesOfModule():
 =============End views=============
 ===================================
 '''
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,4 +1,4 @@
-from dbModels.models import *
+from .models import *
 from ldap.views import *
 import datetime
 
