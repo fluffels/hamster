@@ -5,7 +5,7 @@ import json
 from django.db import models
 from django.http import HttpResponse
 
-#from ldap.interface.views import *
+#from ldap.ldap import *
 
 def login(request, username, password) :
   personInfo = authenticateUser(username, password)
@@ -87,11 +87,10 @@ class SimpleSumAggregator(Aggregator):
         return "SimpleSumAggregator"
 
 class Assessment(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=65)
     published = models.BooleanField()
-    head = False
-    def setHead(self):
-        self.head = True
+    mod_id = models.ForeignKey('Module')
+    
     def getname(self):
         return self.name
     def setname(self,value):
@@ -102,8 +101,9 @@ class Assessment(models.Model):
     def setpublished(self,value):
         self.published=value
         self.save()
+        
     def __unicode__(self):
-        return self.getname()
+        return self.name
 #Assessment Function===============================================================
 def insertAssessment(name_,published_):
     asses = Assessment(name=name_,published=published_)
@@ -120,9 +120,10 @@ def deleteAssessment(self):
 #Assessment Function===============================================================
 
 class Module(models.Model):
-    moduleCode = models.CharField(max_length=6)
-    markersArr = []
-    markers = models.TextField();
+    module_code = models.CharField(max_length=6)
+    id = models.Charfield(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
+    presentation_year = models.DateField()
+    module_name = models.Charfield(max_length = 255) #i.e Artificial Intelligence
     
     def getmoduleCode(self):
         return self.moduleCode
@@ -142,8 +143,12 @@ class Module(models.Model):
         self.markersArr.remove(value)
         markers = json.dumps(markersArr)
         self.save()
+        
+    def getModuleCode(self):
+      return self.module_name
+    
     def __unicode__(self):
-        return self.moduleName
+        return u's% s%' %(self.module_name, self.module_code)
       
 #Module Function===============================================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
@@ -160,19 +165,24 @@ def deleteModule(self):
     Module.delete(self)
 
 class AggregateAssessment(Assessment):
-    assessList =[]
     aggregator = models.ForeignKey(Aggregator)
+    name = models.Charfield(max_length = 65)
+    session = models.ForeignKey('AssessmentSession')
+    
+    def setname(self, value):
+      self.name = value
+      self.save()
+    def getname(self):
+      return self.name
+    
     def getaggregator(self):
         return self.aggregator
     def setaggregator(self,value):
         self.aggregator=value
         self.save()
-    def insertassessList(self,value):
-        self.assessList.append(value)
-    def deleteassessList(self,value):
-        self.assessList.remove(value)
+
     def __unicode__(self):
-        return self.getname()
+        return self.name
 
 
 
@@ -298,6 +308,8 @@ class Person(models.Model):
     def __unicode__(self):
             return self.getfirstName()+" "+self.getsurname()+" "+self.getupId()
 #Person Function===============================================================
+
+
 class Person_data(models.Model):
     uid = models.CharField(max_length = 9)
     data = models.TextField()
@@ -380,7 +392,12 @@ class AssessmentSession(models.Model):
     Assessmentname = models.CharField(max_length=10)
     sessionStatus = models.ForeignKey(SessionStatus)
     markallocationList =[] #person
-
+    assessment_id = models.ForeignKey('AggregateAssessment')
+    open_time = models.DateTimeField()
+    close_time = models.DateTimeField()
+    session_name = models.CharField(max_length = 65)
+    
+    
     def markallocationListinsert(self,value):
         self.markallocationList.append(value)
     def markallocationListdelete(self,value):
@@ -557,7 +574,6 @@ class Sessions(models.Model):
 #general idea of how their MySQL database table for courses looks like
 
 class Course(models.Model):
-    id = models.IntegerField(max_length = 11, primary_key = True, auto_created = True, null = False)
     code = models.CharField(max_length = 20, null = False)
     name = models.CharField(max_length = 255, null = False)
     lecturer = models.CharField(max_length = 255, null = False, default = 0)
