@@ -121,9 +121,9 @@ def deleteAssessment(self):
 
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
-    id = models.Charfield(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
+    id = models.CharField(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
     presentation_year = models.DateField()
-    module_name = models.Charfield(max_length = 255) #i.e Artificial Intelligence
+    module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
     def getmoduleCode(self):
         return self.moduleCode
@@ -166,14 +166,14 @@ def deleteModule(self):
 
 class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
-    name = models.Charfield(max_length = 65)
+    aggregator_name = models.CharField(max_length = 65)
     session = models.ForeignKey('AssessmentSession')
     
     def setname(self, value):
-      self.name = value
+      self.aggregator_name = value
       self.save()
     def getname(self):
-      return self.name
+      return self.aggregator_name
     
     def getaggregator(self):
         return self.aggregator
@@ -182,7 +182,7 @@ class AggregateAssessment(Assessment):
         self.save()
 
     def __unicode__(self):
-        return self.name
+        return self.aggregator_name
 
 
 
@@ -397,6 +397,11 @@ class AssessmentSession(models.Model):
     close_time = models.DateTimeField()
     session_name = models.CharField(max_length = 65)
     
+    def setsessionName(self, value):
+      self.session_name = value
+      self.save()
+    def getsessionName(self):
+      return self.session_name
     
     def markallocationListinsert(self,value):
         self.markallocationList.append(value)
@@ -419,6 +424,9 @@ class AssessmentSession(models.Model):
             self.markallocation.settimeStamp(self,datetime.datetime.now())
         else:
             self.markallocation=value
+            
+    def __unicode__(self):
+      return self.session_name
 
     #AssessmentSession Function===============================================================
 
@@ -443,16 +451,28 @@ def deleteAssessmentSession(self):
 class AuditAction(models.Model):
     auditAction = models.IntegerField()
     auditDesc = models.CharField(max_length=15)
+    
+    def __unicode__(self):
+      return self.auditDesc
+    
 
 class AuditTable(models.Model):
     tableId = models.IntegerField()
     tableName = models.CharField(max_length=50)
+    
+    def __unicode__(self):
+      return self.tableName
+    
 
 
 class AuditTableColumn(models.Model):
     auditTableId = models.ForeignKey(AuditTable)
     columnId = models.IntegerField()
     columnName = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+      return self.columnName
+    
 
 
 class AuditLog(models.Model):
@@ -465,6 +485,10 @@ class AuditLog(models.Model):
     old_value = models.CharField(max_length=255,null=True)
     new_value = models.CharField(max_length=255,null=True)
     affected_table_id = models.IntegerField(null=True)
+    
+    def __unicode__(self):
+      return self.person_id
+    
 
 #AuditLog functions=======================================================================
 
@@ -477,6 +501,7 @@ def logAudit(person,desc,act,table,column,old,new):
         old = str(old)
         new = str(new)
     AuditLog(person_id=p,description=desc,action=act,time=ti,audit_table_id=t,audit_table_column_id=c,old_value=old,new_value=new).save()
+    
 
 
 def logAuditDetail(person,desc,act,table,column,old,new,table_id):
@@ -542,8 +567,6 @@ class Sessions(models.Model):
         self.save()
 
     #getters
-    def __unicode__(self):
-        return self.session_name
     def getID(self):
         return self.id
     def getAssessmentID(self):
@@ -568,6 +591,9 @@ class Sessions(models.Model):
     def getSessions():
             temp=Sessions.objects.all()
             return temp
+          
+    def __unicode__(self):
+        return self.session_name
 
 
 #This is to create the table shown in the master specification giving a
