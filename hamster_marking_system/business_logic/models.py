@@ -10,7 +10,7 @@ from polymorphic import PolymorphicModel
 
 #from ldap.ldap import *
 
-def login(request, username, password) :
+def login(request, username, password):
   personInfo = authenticateUser(username, password)
   
 def getSessionPerson(request) :
@@ -110,7 +110,8 @@ class Assessment(PolymorphicModel):
         
     def __unicode__(self):
         return self.name
-#Assessment Function===============================================================
+      
+#================================Additional Assessment Function===============================
 def insertAssessment(name_,published_):
     asses = Assessment(name=name_,published=published_)
     asses.save()
@@ -123,7 +124,7 @@ def getAssessment(): #returns all the assessments stored in the database
 def deleteAssessment(self):
     Assessment.delete(self)
 
-#Assessment Function===============================================================
+#===================================End of Assessment Function============================
 
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
@@ -156,7 +157,7 @@ class Module(models.Model):
     def __unicode__(self):
         return u's% s%' %(self.module_name, self.module_code)
       
-#Module Function===============================================================
+#===============================Module Function================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
 def insertModule(code,name,year,assessments_):
     module = Module(moduleCode=code,moduleName=name,presentationYear=year,assessments=assessments_)
@@ -164,12 +165,14 @@ def insertModule(code,name,year,assessments_):
     return module
 
 def getModule():
-    module = Module.objects.all()
-    return module
+    modules = Module.objects.all()
+    return modules
 
 def deleteModule(self):
     Module.delete(self)
-
+    
+#===============================End of Module Function================================
+#Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
@@ -196,21 +199,19 @@ class AggregateAssessment(Assessment):
     def __unicode__(self):
       return self.aggregator_name
 
-
-
-#AggregateAssessment Function===============================================================
-def createAggregateAssessment(name_, published_,aggregator_):#----------------------------------------------------------------------------
+#================================AggregateAssessment Function============================
+def createAggregateAssessment(name_, published_,aggregator_):
     a = AggregateAssessment(name = name_, published = published_,aggregator=aggregator_)
     a.save()
-    return a
 
 def getAggregateAssessment(): #gets all aggregate assessments
-    agassess = AggregateAssessment.objects.all()
-    return agassess
+    aggregate_assessments = AggregateAssessment.objects.all()
+    return aggregate_assessments
 
 def deleteAggregateAssessment(self):
     AggregateAssessment.delete(self)
 
+#================================End of AggregateAssessment Function============================
 
 class LeafAssessment(Assessment):
     assess_sessionlist =[]#assessmentsession
@@ -227,20 +228,18 @@ class LeafAssessment(Assessment):
     def __unicode__(self):
         return self.getname()
 
-#LeafAssessment Function===============================================================
+#=================================LeafAssessment Function==============================
 def createLeafAssessment(name_, published_,fullMarks_):
     a = LeafAssessment(name = name_, published = published_,fullMarks=fullMarks_ )
     a.save()
-    return a
 
 def deleteLeafAssessment(self):
     LeafAssessment.delete(self)
 
 def getLeafAssessment():
-    leaf = LeafAssessment.objects.all()
-    return leaf
-#LeafAssessment Function===============================================================
-
+    leaf_assessments = LeafAssessment.objects.all()
+    return leaf_assessments
+#=================================End of LeafAssessment Function==============================
 
 class SessionStatus(models.Model):
     open = models.DateTimeField()
@@ -258,7 +257,7 @@ class SessionStatus(models.Model):
     def __unicode__(self):
         return self.getopen()+":"+self.getclosed()
 
-#SessionStatus Function===============================================================
+#===============================SessionStatus Function================================
 def insertSessionStatus(open_,close_,):
     session = SessionStatus(open=open_,close=close_)
     session.save()
@@ -271,7 +270,7 @@ def getSessionStatus(name_):
 def deleteSessionStatus(self):
     SessionStatus.delete(self)
 
-#SessionStatus Function===============================================================
+#===============================End of SessionStatus Function================================
 
 class Person(models.Model):
     firstName = models.CharField(max_length = 20, null = False)
@@ -286,12 +285,14 @@ class Person(models.Model):
             self.firstName = fn
             self.upId = uid
             self.surname = sn
+            
     def getfirstName(self):
             return self.firstName
     def getupId(self):
             return self.upId
     def getsurname(self):
             return self.surname
+          
     def setfirstName(self,value):
             self.firstName=value
             self.save()
@@ -301,26 +302,30 @@ class Person(models.Model):
     def setsurname(self,value):
             self.surname=value
             self.save()
+            
     def lectureOfInsert(self,value):
             self.lectureOf.append(value)
     def lectureOfDelete(self,value):
             self.lectureOf.remove(value)
+            
     def studentOfInsert(self,value):
             self.studentOf.append(value)
     def studentOfDelete(self,value):
             self.studentOf.remove(value)
+            
     def tutorOfInsert(self,value):
             self.tutorOf.append(value)
     def tutorOfDelete(self,value):
             self.tutorOf.remove(value)
+            
     def teachingAssistantOfInsert(self,value):
             self.teachingAssistantOf.append(value)
     def teachingAssistantOfDelete(self,value):
             self.teachingAssistantOf.remove(value)
+            
+            
     def __unicode__(self):
-            return self.getfirstName()+" "+self.getsurname()+" "+self.getupId()
-#Person Function===============================================================
-
+            return u'%s %s %s' %(self.firstName, self.surname, self.UpId)
 
 class Person_data(models.Model):
     uid = models.CharField(max_length = 9)
@@ -336,6 +341,7 @@ class Person_data(models.Model):
     def getData(self):
       return self.data
 
+#==========================Person_data===============================
 def insertPerson_data(upId_,data_):
     session = Person_data(uid=upId_,data=data_)
     session.save()
@@ -348,14 +354,15 @@ def getPerson_data():
 def deletePerson_data(self):
     Person.delete(self)
 
-#Person Function===============================================================
+#==========================Person_data===============================
 
 class MarkAllocation(models.Model):
-    mark =models.IntegerField()
-    comment =models.CharField(max_length=100)
+    mark = models.IntegerField()
+    comment = models.CharField(max_length=100)
     student = models.ForeignKey(Person)
-    marker=models.CharField(max_length=100)
+    marker = models.CharField(max_length=100)
     timeStamp = models.DateTimeField()
+    
     def setmark(self,value):
         self.mark=value
         self.save()
@@ -385,23 +392,21 @@ class MarkAllocation(models.Model):
     def __unicode__(self):
       return self.marker
 
-#MarkAllocation Function===============================================================
+#===============================MarkAllocation Function================================
 
 def insertMarkAllocation(mark_,comment_,marker_,timeStamp_,student_):
     markAlloc = MarkAllocation(mark=mark_,comment=comment_,marker=marker_,timeStamp=timeStamp_,student=student_)
     markAlloc.save()
-    return markAlloc
-
 
 def getMarkAllocation():
-    markAlloc = MarkAllocation.objects.all()
-    return markAlloc
+    mark_allocation = MarkAllocation.objects.all()
+    return mark_allocation
 
 def deleteMarkAllocation(self):
     MarkAllocation.delete(self)
 
 
-#MarkAllocation Function===============================================================
+#===============================End of MarkAllocation Function================================
 
 class AssessmentSession(models.Model):
     Assessmentname = models.CharField(max_length=10)
@@ -443,12 +448,11 @@ class AssessmentSession(models.Model):
     def __unicode__(self):
       return self.session_name
 
-    #AssessmentSession Function===============================================================
+#===============================AssessmentSession Function================================
 
 def insertAssessmentSession(Assessmentname_,sessionStatus_):
     assesssess = AssessmentSession(Assessmentname=Assessmentname_,sessionStatus=sessionStatus_,)
     assesssess.save()
-    return assesssess
 
 def getAssessmentSession():
     assesssess = AssessmentSession.objects.all()
@@ -457,10 +461,10 @@ def getAssessmentSession():
 def deleteAssessmentSession(self):
     AssessmentSession.delete(self)
 
-#AssessmentSession Function===============================================================
+#===============================End of AssessmentSession Function================================
 
 #----------------------------------------------------------
-#---- Audit tables ----------------------------------------
+#-------------------- Audit tables ------------------------
 #----------------------------------------------------------
 
 class AuditAction(models.Model):
@@ -487,8 +491,6 @@ class AuditTableColumn(models.Model):
     
     def __unicode__(self):
       return self.columnName
-    
-
 
 class AuditLog(models.Model):
     person_id = models.ForeignKey(Person)
@@ -505,7 +507,7 @@ class AuditLog(models.Model):
       return self.person_id
     
 
-#AuditLog functions=======================================================================
+#===================================AuditLog functions====================================
 
 def logAudit(person,desc,act,table,column,old,new):
     p = Person.objects.get(id=person)
@@ -536,17 +538,11 @@ def getAuditlog():
     return auditlog
 
 
-#AuditLog functions=======================================================================
+#===================================End of AuditLog functions====================================
 
 def authenticateUser(username,passwords):
-    if passwords=="123":
-        logAudit(1,'Login Success','LOGIN')
-        return True
-    else:
-        logAudit(1,'Login Failed','LOGIN')
-        return False
+    pass
     #LDAP
-    
     
     
     
