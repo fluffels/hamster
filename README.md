@@ -13,3 +13,16 @@ As such, no outside contributions are accepted.
 Once the project is over (near the end of the year), contributions will be welcome.
 In the meantime, feel free to report issues using the project's GitHub issue tracker.
 
+Information about the project
+-----------------------------
+Here are links to information about the project.
+
+[Workflow!](docs/Workflow.md)
+
+[Business logic documentation!](docs/BusinessLogicDocumentation.md)
+
+[LDAP documentation!](docs/LDAPDocumentation.md)
+
+[Vision and scope!](docs/VisionAndScope.md)
+
+[Requiements specification!](docs/Requirements_Specification.md)
