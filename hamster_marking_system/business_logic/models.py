@@ -128,7 +128,7 @@ def deleteAssessment(self):
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
     id = models.CharField(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
-    presentation_year = models.DateField(auto_now = True)
+    presentation_year = models.DateField()
     module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
     def getmoduleCode(self):
@@ -174,7 +174,7 @@ class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
     session = models.ForeignKey(AssessmentSession)
-    children = models.ForeignKey(Assessments)
+    #children = models.ForeignKey(Assessments)
     
     def setname(self, value):
       self.aggregator_name = value
@@ -183,8 +183,8 @@ class AggregateAssessment(Assessment):
     def getname(self):
       return self.aggregator_name
     
-    def getsubassessment(self)
-      return self.
+    '''def getsubassessment(self)
+      return self.'''
     
     def getaggregator(self):
       return self.aggregator
@@ -274,9 +274,9 @@ def deleteSessionStatus(self):
 #SessionStatus Function===============================================================
 
 class Person(models.Model):
-    firstName = models.CharField(max_length = 20, null = False)
-    upId = models.CharField(max_length = 9, null = False)
-    surname = models.CharField(max_length = 30, null = False)
+    firstName = ""
+    upId = ""
+    surname = ""
     studentOf  = [] #module
     tutorOf  = [] #module
     teachingAssistantOf  = [] #module
@@ -381,10 +381,6 @@ class MarkAllocation(models.Model):
         return self.marker
     def gettimeStamp(self):
         return self.timeStamp
-      
-    def __unicode__(self):
-      return self.marker
-    
 
 #MarkAllocation Function===============================================================
 
