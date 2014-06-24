@@ -32,7 +32,7 @@ class SessionsAdmin(admin.ModelAdmin):
     class Meta:
         model = Sessions
         
-admin.site.register(Sessions, SessionAdmin)
+admin.site.register(Sessions, SessionsAdmin)
 
 
 class SessionStatusAdmin(admin.ModelAdmin):
