@@ -5,6 +5,8 @@ import json
 from django.db import models
 from django.http import HttpResponse
 
+from polymorphic import polymorphicModel
+
 #from ldap.ldap import *
 
 def login(request, username, password) :

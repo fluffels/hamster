@@ -38,6 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'business_logic',
     'web_interface',
+    'polymorphic',
+    'django.contrib.contenttypes',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,3 +1,5 @@
 *.pyc
 *.pdf
 *.csv
+*kpf
+*.komodoproject
