@@ -17,12 +17,16 @@ Information about the project
 -----------------------------
 Here are links to information about the project.
 
-[Workflow!](docs/Workflow.md)
+[Workflow](docs/Workflow.md)
 
-[Business logic documentation!](docs/BusinessLogicDocumentation.md)
+[Business logic documentation](docs/BusinessLogicDocumentation.md)
 
-[LDAP documentation!](docs/LDAPDocumentation.md)
+[LDAP documentation](docs/LDAPDocumentation.md)
 
-[Vision and scope!](docs/VisionAndScope.md)
+[Vision and scope](docs/VisionAndScope.md)
 
-[Requiements specification!](docs/Requirements_Specification.md)
+[Requiements specification](docs/Requirements_Specification.md)
+
+[Web application document](docs/WebApplicationDocumentation.md)
+
+[Web services document](docs/WebServisesDocumentation.md)
