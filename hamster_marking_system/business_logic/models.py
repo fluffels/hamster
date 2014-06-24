@@ -128,7 +128,7 @@ def deleteAssessment(self):
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
     id = models.CharField(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
-    presentation_year = models.DateField()
+    presentation_year = models.DateField(auto_now = True)
     module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
     def getmoduleCode(self):
@@ -274,9 +274,9 @@ def deleteSessionStatus(self):
 #SessionStatus Function===============================================================
 
 class Person(models.Model):
-    firstName = ""
-    upId = ""
-    surname = ""
+    firstName = models.CharField(max_length = 20, null = False)
+    upId = models.CharField(max_length = 9, null = False)
+    surname = models.CharField(max_length = 30, null = False)
     studentOf  = [] #module
     tutorOf  = [] #module
     teachingAssistantOf  = [] #module
@@ -381,6 +381,9 @@ class MarkAllocation(models.Model):
         return self.marker
     def gettimeStamp(self):
         return self.timeStamp
+      
+    def __unicode__(self):
+      return self.marker
 
 #MarkAllocation Function===============================================================
 
