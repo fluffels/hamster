@@ -30,3 +30,5 @@ Here are links to information about the project.
 [Web application document](docs/WebApplicationDocumentation.md)
 
 [Web services document](docs/WebServisesDocumentation.md)
+
+[Mapped Use Cases for business Logic](docs/BL_mappedUseCases.md)
