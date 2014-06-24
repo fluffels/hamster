@@ -1,5 +1,14 @@
+# Python
 *.pyc
+
+# Documents
 *.pdf
 *.csv
+
+# Development environments
 *.kpf
 *.komodoproject
+
+# Databases
+*.sqlite
+*.sqlite3
