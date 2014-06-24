@@ -5,7 +5,7 @@ import json
 from django.db import models
 from django.http import HttpResponse
 
-from polymorphic import polymorphicModel
+from polymorphic import polymorphic_model
 
 #from ldap.ldap import *
 
