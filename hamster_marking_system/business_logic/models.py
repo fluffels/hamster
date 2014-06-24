@@ -5,7 +5,7 @@ import json
 from django.db import models
 from django.http import HttpResponse
 
-from polymorphic import polymorphicModel
+from polymorphic import PolymorphicModel
 
 #from ldap.ldap import *
 
@@ -88,7 +88,7 @@ class SimpleSumAggregator(Aggregator):
     def __unicode__(self):
         return "SimpleSumAggregator"
 
-class Assessment(models.Model):
+class Assessment(PolymorphicModel):
     name = models.CharField(max_length=65)
     published = models.BooleanField()
     mod_id = models.ForeignKey('Module')
@@ -100,9 +100,12 @@ class Assessment(models.Model):
         self.save()
     def getpublished(self):
         return self.published
-    def setpublished(self,value):
+    def setpublished(self,value): #Shouldn't value be autehnticated to see if it is indeed a boolean
         self.published=value
         self.save()
+    def get_mod_id(self ):
+        return self.mod_id
+    
         
     def __unicode__(self):
         return self.name
@@ -112,7 +115,7 @@ def insertAssessment(name_,published_):
     asses.save()
     return asses
 
-def getAssessment():
+def getAssessment(): #returns all the assessments stored in the database
     asses = Assessment.objects.all()
     return asses
 
@@ -169,7 +172,7 @@ def deleteModule(self):
 class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
-    session = models.ForeignKey('AssessmentSession')
+    session = models.ForeignKey(AssessmentSession)
     
     def setname(self, value):
       self.aggregator_name = value
@@ -194,7 +197,7 @@ def createAggregateAssessment(name_, published_,aggregator_):#------------------
     a.save()
     return a
 
-def getAggregateAssessment():
+def getAggregateAssessment(): #gets all aggregate assessments
     agassess = AggregateAssessment.objects.all()
     return agassess
 
@@ -203,7 +206,7 @@ def deleteAggregateAssessment(self):
 
 
 class LeafAssessment(Assessment):
-    assesssessionlist =[]#assessmentsession
+    assess_sessionlist =[]#assessmentsession
     fullMarks = models.IntegerField()
     def getfullMarks(self):
         return self.fullMarks
@@ -211,9 +214,9 @@ class LeafAssessment(Assessment):
         self.fullMarks=value
         self.save()
     def assesssessionlistinsert(self,value):
-        self.assesssessionlist.append(value)
+        self.assess_sessionlist.append(value)
     def assesssessionlistdelete(self,value):
-        self.assesssessionlist.remove(value)
+        self.assess_sessionlist.remove(value)
     def __unicode__(self):
         return self.getname()
 

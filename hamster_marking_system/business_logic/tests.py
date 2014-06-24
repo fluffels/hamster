@@ -2,7 +2,7 @@ from django.test import TestCase
 import unittest
 from mock import MagicMock
 
-from .models import Person, Person_data, Module, AggregateAssessment, Assessment, Sessions
+from .models import Person, Person_data, Module, AggregateAssessment, Assessment, Sessions, LeafAssessment
 from .api import *
 
 '''
