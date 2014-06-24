@@ -5,11 +5,8 @@ import json
 from django.db import models
 from django.http import HttpResponse
 
-<<<<<<< HEAD
 from polymorphic import PolymorphicModel
-=======
-from polymorphic import polymorphic_model
->>>>>>> 2e78207a37d66ed4557b0e0815911799242acbbe
+
 
 #from ldap.ldap import *
 
@@ -177,21 +174,27 @@ class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
     session = models.ForeignKey(AssessmentSession)
+    children = models.ForeignKey(Assessments)
     
     def setname(self, value):
       self.aggregator_name = value
       self.save()
+      
     def getname(self):
       return self.aggregator_name
     
+    def getsubassessment(self)
+      return self.
+    
     def getaggregator(self):
-        return self.aggregator
+      return self.aggregator
+    
     def setaggregator(self,value):
-        self.aggregator=value
-        self.save()
+      self.aggregator=value
+      self.save()
 
     def __unicode__(self):
-        return self.aggregator_name
+      return self.aggregator_name
 
 
 
