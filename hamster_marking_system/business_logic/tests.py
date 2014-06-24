@@ -224,7 +224,7 @@ class AggregateAssessmentTestCase(unittest.TestCase):
         
 
 
-class SessionTestCase(unittest.TestCase):
+class Test(unittest.TestCase):
 	
 	def test_setAssessmentID(self):
 		session = Sessions()

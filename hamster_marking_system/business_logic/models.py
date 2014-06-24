@@ -173,7 +173,7 @@ def deleteModule(self):
 class AggregateAssessment(Assessment):
     aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
-    session = models.ForeignKey(AssessmentSession)
+    session = models.ForeignKey('AssessmentSession')
     #children = models.ForeignKey(Assessments)
     
     def setname(self, value):
