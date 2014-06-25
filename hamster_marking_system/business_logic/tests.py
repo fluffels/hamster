@@ -17,10 +17,10 @@ class PersonTestCase(unittest.TestCase):
         Person._init_(foo, 'Cebo',
                               'Makeleni',
                               'u12345678')
-        PersonTestCase.lectureOf = Person.lectureOf
-        PersonTestCase.tutorOf = Person.tutorOf
-        PersonTestCase.studentOf = Person.studentOf
-        PersonTestCase.teachingAssistantOf = Person.teachingAssistantOf
+        PersonTestCase.lectureOf_module = Person.lectureOf_module
+        PersonTestCase.tutorOf_module = Person.tutorOf_module
+        PersonTestCase.studentOf_module = Person.studentOf_module
+        PersonTestCase.teachingAssistantOf_module = Person.teachingAssistantOf_module
                 
     def test_getfirstName(self):
         nm = Person.getfirstName(foo)
@@ -36,8 +36,8 @@ class PersonTestCase(unittest.TestCase):
         
     def test_lectureOfInsert(self):
         #Nothing added
-        Person.lectureOf = []
-        li = Person.lectureOf
+        Person.lectureOf_module = []
+        li = Person.lectureOf_module
         self.assertEqual(li, [])
         
         #Module added
@@ -46,18 +46,18 @@ class PersonTestCase(unittest.TestCase):
         
     def test_lectureOfDelete(self):
         #Adding modules
-        Person.lectureOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = Person.lectureOf
+        Person.lectureOf_module = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.lectureOf_module
         
         #Delete module
         Person.lectureOfDelete(foo, 'COS 301')
-        li = Person.lectureOf
+        li = Person.lectureOf_module
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_studentOfInsert(self):
         #Nothing added
-        Person.studentOf = []
-        li = Person.studentOf
+        Person.studentOf_module = []
+        li = Person.studentOf_module
         self.assertEqual(li, [])
         
         #Module added
@@ -66,18 +66,18 @@ class PersonTestCase(unittest.TestCase):
         
     def test_studentOfDelete(self):
         #Adding modules
-        Person.studentOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = Person.studentOf
+        Person.studentOf_module = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.studentOf_module
         
         #Delete module
         Person.studentOfDelete(foo, 'COS 301')
-        li = Person.studentOf
+        li = Person.studentOf_module
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_tutorOfInsert(self):
         #Nothing added
-        Person.tutorOf = []
-        li = Person.tutorOf
+        Person.tutorOf_module = []
+        li = Person.tutorOf_module
         self.assertEqual(li, [])
         
         #Module added
@@ -86,18 +86,18 @@ class PersonTestCase(unittest.TestCase):
         
     def test_tutorOfDelete(self):
         #Adding modules
-        Person.tutorOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = Person.tutorOf
+        Person.tutorOf_module = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.tutorOf_module
         
         #Delete module
         Person.tutorOfDelete(foo, 'COS 301')
-        li = Person.tutorOf
+        li = Person.tutorOf_module
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
         
     def test_teachingAssistantOfInsert(self):
         #Nothing added
-        Person.teachingAssistantOf = []
-        li = Person.teachingAssistantOf
+        Person.teachingAssistantOf_module = []
+        li = Person.teachingAssistantOf_module
         self.assertEqual(li, [])
         
         #Module added
@@ -106,16 +106,16 @@ class PersonTestCase(unittest.TestCase):
         
     def test_teachingAssistantOfDelete(self):
         #Adding modules
-        Person.teachingAssistantOf = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
-        li = Person.teachingAssistantOf
+        Person.teachingAssistantOf_module = ['COS 301', 'COS 344', 'COS 332', 'COS 341']
+        li = Person.teachingAssistantOf_module
         
         #Delete module
         Person.teachingAssistantOfDelete(foo, 'COS 301')
-        li = Person.teachingAssistantOf
+        li = Person.teachingAssistantOf_module
         self.assertEqual(li, ['COS 344', 'COS 332', 'COS 341'])
     
     
-    #Need to test getters for tutorOf, teachingAssistantOf, lecturerOf, and studentOf, but these are not added yet.
+    #Need to test getters for tutorOf_module, teachingAssistantOf_module, lecturerOf, and studentOf_module, but these are not added yet.
     #In addition, we need to test the inserts and deletes, but these are easily tested using the getters mensioned above.
     
     def tearDown(self):

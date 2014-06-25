@@ -37,6 +37,7 @@ def getPersonFromArr(data) :
   return objPerson
 
 class Aggregator(models.Model):
+    aggregator_type = models.CharField(max_length = 65, null = False, blank = False, default = 'Weighted_sum')
     def aggregateMarks(self,assessment=[]):
         total = 0.0
         for x in range(len(assessment)):
@@ -155,7 +156,7 @@ class Module(models.Model):
       return self.module_name
     
     def __unicode__(self):
-        return u's% s%' %(self.module_name, self.module_code)
+        return u's%' % (self.module_code)
       
 #===============================Module Function================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
@@ -255,7 +256,7 @@ class SessionStatus(models.Model):
         self.closed=value
         self.save()
     def __unicode__(self):
-        return self.getopen()+":"+self.getclosed()
+        return u's%:s%' %(self.open, self.closed)
 
 #===============================SessionStatus Function================================
 def insertSessionStatus(open_,close_,):
@@ -274,12 +275,12 @@ def deleteSessionStatus(self):
 
 class Person(models.Model):
     firstName = models.CharField(max_length = 20, null = False)
-    upId = models.CharField(max_length = 9, null = False)
+    upId = models.CharField(max_length = 9, null = False, unique=True)
     surname = models.CharField(max_length = 30, null = False)
-    studentOf  = [] #module
-    tutorOf  = [] #module
-    teachingAssistantOf  = [] #module
-    lectureOf = [] #module
+    studentOf_module  = models.ManyToManyField(Module, related_name = 'studentOf_module')
+    tutorOf_module  = models.ManyToManyField(Module, related_name = 'tutorOf_module')
+    teachingAssistantOf_module  = models.ManyToManyField(Module, related_name = 'teachingAssistantOf_module')
+    lectureOf_module = models.ManyToManyField(Module, related_name = 'lectureOf_module')
     
     def _init_(self,fn, sn, uid):
             self.firstName = fn
@@ -304,31 +305,32 @@ class Person(models.Model):
             self.save()
             
     def lectureOfInsert(self,value):
-            self.lectureOf.append(value)
+            self.lectureOf_module.append(value)
     def lectureOfDelete(self,value):
-            self.lectureOf.remove(value)
+            self.lectureOf_module.remove(value)
             
     def studentOfInsert(self,value):
-            self.studentOf.append(value)
+            self.studentOf_module.append(value)
     def studentOfDelete(self,value):
-            self.studentOf.remove(value)
+            self.studentOf_module.remove(value)
             
     def tutorOfInsert(self,value):
-            self.tutorOf.append(value)
+            self.tutorOf_module.append(value)
     def tutorOfDelete(self,value):
-            self.tutorOf.remove(value)
+            self.tutorOf_module.remove(value)
             
     def teachingAssistantOfInsert(self,value):
-            self.teachingAssistantOf.append(value)
+            self.teachingAssistantOf_module.append(value)
     def teachingAssistantOfDelete(self,value):
-            self.teachingAssistantOf.remove(value)
+            self.teachingAssistantOf_module.remove(value)
             
             
     def __unicode__(self):
-            return u'%s %s %s' %(self.firstName, self.surname, self.UpId)
+            return u'%s %s %s' % (self.firstName, self.surname, self.UpId)
+
 
 class Person_data(models.Model):
-    uid = models.CharField(max_length = 9)
+    uid = models.CharField(max_length = 9,unique = True)
     data = models.TextField()
     
     def setuid(self, value):
@@ -473,22 +475,22 @@ class AuditAction(models.Model):
     
     def __unicode__(self):
       return self.auditDesc
-    
+
 
 class AuditTable(models.Model):
     tableId = models.IntegerField()
     tableName = models.CharField(max_length=50)
-    
+
     def __unicode__(self):
       return self.tableName
-    
+
 
 
 class AuditTableColumn(models.Model):
     auditTableId = models.ForeignKey(AuditTable)
     columnId = models.IntegerField()
     columnName = models.CharField(max_length=30)
-    
+
     def __unicode__(self):
       return self.columnName
 
@@ -611,7 +613,7 @@ class Sessions(models.Model):
 #general idea of how their MySQL database table for courses looks like
 
 class Course(models.Model):
-    code = models.CharField(max_length = 20, null = False)
+    course_code = models.CharField(max_length = 20, null = False)
     name = models.CharField(max_length = 255, null = False)
     lecturer = models.CharField(max_length = 255, null = False, default = 0)
     description = models.TextField(null = True)
