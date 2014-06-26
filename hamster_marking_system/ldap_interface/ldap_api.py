@@ -4,7 +4,8 @@ import re
 from django.http import HttpResponse
 
 global ldapURI
-ldapURI = "ldap://137.215.40.94"
+#ldapURI = "ldap://137.215.40.94"
+ldapURI = "ldap://127.0.0.1"
 global basedn
 basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
 # Create your views here.
