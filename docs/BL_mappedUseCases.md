@@ -19,4 +19,4 @@ classes used to accomplish them.
 * The AggregateAssessment class is used to create, modify and delete an aggregate assessment and the aggregator, SimpleSumAggregator, WeightedSumAggregator, BestOfAggregator classes are used to set how the aggregate assessment mark should be aggregated and keeps track of all its leaf assessment.
 
 ####7. Marks Management Use Case:
-* The leafAssessment class is use to create , modify and delete marks for an assessment.
+* The leafAssessment class manages the marks for an assessment.
