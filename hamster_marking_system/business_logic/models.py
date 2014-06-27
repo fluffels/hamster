@@ -39,8 +39,6 @@ def getPersonFromArr(data) :
 class Aggregator(object):
     def aggregateMarks(self,assessment=[]):
         pass
-    def __unicode__(self):
-        return "Aggregator"
 
 #pass the numContributer as the constructor's parameter
 class BestOfAggregator(Aggregator):
@@ -54,9 +52,6 @@ class BestOfAggregator(Aggregator):
         for x in range(0,self.numContributors ):
             total += assessment[x]
         return (total/self.numContributors)
-        
-    def __unicode__(self):
-        return "BestOfAggregator"
 
 #pass the array of weights as the constructure's parameter
 class WeightedSumAggregator(Aggregator):
@@ -70,17 +65,13 @@ class WeightedSumAggregator(Aggregator):
         for x in assessment:
             total += assessment[x] * self.weights[x]
         return total/len(assessment)
-    def __unicode__(self):
-        return "WeightedSumAggregator"
 
 class SimpleSumAggregator(Aggregator):
     def aggregateMarks(self,assessment=[]):
-        total = 0.0
+        total = 1.0     #Was 0 initially, there is a chance of division by Zero
         for x in range(len(assessment)):
             total += assessment[x]
-        return total/len(assessment)
-    def __unicode__(self):
-        return "SimpleSumAggregator"
+        return u'%d' % (total/len(assessment))
 
 class Assessment(PolymorphicModel):
     assess_name = models.CharField(max_length=65)
@@ -108,9 +99,10 @@ class Assessment(PolymorphicModel):
     
     def get_parent():
       return self.parent
-        
+
+
     def __unicode__(self):
-        return self.name
+        return self.assess_name
       
 #================================Additional Assessment Function===============================
 def insertAssessment(name_,published_):
@@ -133,17 +125,21 @@ class Module(models.Model):
     presentation_year = models.DateField(auto_now = True)
     module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
-    def getmoduleCode(self):
+    def getModuleCode(self):
         return self.moduleCode
-    def setmoduleCode(self,value):
+    def setModuleCode(self,value):
         self.moduleCode=value
         self.save()
         
-    def getModuleCode(self):
+    def setModuleName(self, value):
+      self.module_name = value
+      self.save()
+    
+    def getModuleName(self):
       return self.module_name
     
     def __unicode__(self):
-        return u's% s%' %(self.module_name, self.module_code)
+        return u'%s %s' %(self.module_name, self.module_code)
       
 #===============================Module Function================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
@@ -152,7 +148,7 @@ def insertModule(code,name,year,assessments_):
     module.save()
     return module
 
-def getModule():
+def getAllModules():
     modules = Module.objects.all()
     return modules
 
@@ -272,7 +268,7 @@ class LeafAssessment(Assessment):
       return self.mark_obtained
     
     def __unicode__(self):
-      return self.get_name()
+      return 'Mark'
 
 #=================================LeafAssessment Function==============================
 def createLeafAssessment(name_, published_,fullMarks_):
@@ -302,20 +298,20 @@ class Person(models.Model):
             self.upId = uid
             self.surname = sn
             
-    def getfirstName(self):
+    def getFirstName(self):
             return self.firstName
     def getupId(self):
             return self.upId
-    def getsurname(self):
+    def getSurname(self):
             return self.surname
           
-    def setfirstName(self,value):
+    def setFirstName(self,value):
             self.firstName=value
             self.save()
     def setupId(self,value):
             self.upId=value
             self.save()
-    def setsurname(self,value):
+    def setSurname(self,value):
             self.surname=value
             self.save()
             
@@ -341,7 +337,7 @@ class Person(models.Model):
             
             
     def __unicode__(self):
-            return u'%s %s %s' % (self.firstName, self.surname, self.UpId)
+            return u'%s %s %s' % (self.firstName, self.surname, self.upId)
 
 
 class Person_data(models.Model):
@@ -357,6 +353,10 @@ class Person_data(models.Model):
       self.save()
     def getData(self):
       return self.data
+    
+    def __unicode__(self):
+      return self.uid
+    
 
 #==========================Person_data===============================
 def insertPerson_data(upId_,data_):
@@ -364,7 +364,7 @@ def insertPerson_data(upId_,data_):
     session.save()
     return session
 
-def getPerson_data():
+def getAllPerson_data():
     person = Person_data.objects.all()
     return person
 
@@ -375,8 +375,8 @@ def deletePerson_data(self):
 
 class MarkAllocation(models.Model):
     comment =models.TextField()
-    student = models.ForeignKey(Person)
-    assessment =models.ForeignKey(LeafAssessment) 
+    student = models.ForeignKey('Person')
+    assessment =models.ForeignKey('LeafAssessment') 
     marker = models.CharField(max_length=100)
     timeStamp = models.DateTimeField()
     
@@ -427,12 +427,12 @@ def deleteMarkAllocation(self):
 #===============================End of MarkAllocation Function================================
 
 class Sessions(models.Model):
-    Assessmentname = models.CharField(max_length=10)
-    session_name=models.CharField(max_length=100)
-    assessment_id = models.ForeignKey(Assessment)
+    assessmentname = models.CharField(max_length=100, null=False)
+    session_name = models.CharField(max_length=100, null=False)
+    assessment_id = models.ForeignKey('Assessment')
     open_time = models.DateTimeField()
     close_time = models.DateTimeField()
-    status = models.IntegerField()
+    status = models.IntegerField(default = 0)
     
     def checkStatus(self):
         if open_time < datetime.now() & close_time >= datetime.now():
@@ -440,17 +440,21 @@ class Sessions(models.Model):
                 return status
         else:
                 return status
-                
+
+    def setAssessmentName(self, name):
+      self.assessmentname = name
+      self.save()
+
     def setAssessmentID(self,id):
         self.assessment_id = id
         self.save()
 
     def setOpenedDate(self, date):
-        self.opened = date
+        self.open_time = date
         self.save()
     
     def setClosedDate(self, date):
-        self.closed = date
+        self.close_time = date
         self.save()
        
     def setOpen(self):
@@ -496,14 +500,14 @@ class Sessions(models.Model):
         deleteAllocatedPerson(value)
         
     def getAssessmentname(self):
-        return self.Assessmentname
+        return self.assessmentname
     def setAssessmentname(self,value):
-        self.Assessmentname=value
+        self.assessmentname=value
         self.save()
     def getsessionStatus(self):
-        return self.sessionStatus
+        return self.status
     def setsessionStatus(self,value):
-        self.sessionStatus=value
+        self.status=value
         self.save()
     """
     def awardMark(self,value):
@@ -514,6 +518,9 @@ class Sessions(models.Model):
         else:
             self.markallocation=value
      """
+     
+    def __unicode__(self):
+          return u'%s' % (self.assessmentname)
 
 def deleteSessions(self):
 	Sessions.delete(self)
@@ -529,15 +536,13 @@ def getSessions():
 
 def getSessions(Id):
 	return Sessions.object.get(id= Id)
-	
-def __unicode__(self):
-        return self.session_name
+
 
 
 
 class AllocatePerson(models.Model):
-	person_id = models.ForeignKey(Person)
-	session_id = models.ForeignKey(Sessions)
+	person_id = models.ForeignKey('Person')
+	session_id = models.ForeignKey('Sessions')
 	isStudent = models.BooleanField(default=0)
 	isMarker = models.BooleanField(default=0)
 	
@@ -571,6 +576,9 @@ class AllocatePerson(models.Model):
 	def set_sessionID(self, id):
 		session_id = id
 		self.save()
+
+	def __unicode__(self):
+		return self.person_id
 
 #==============================AllocatePerson Function==============================
 def insertPersonToSession(personID,sessionID,student,Marker):
@@ -609,7 +617,7 @@ class AuditTable(models.Model):
 
 
 class AuditTableColumn(models.Model):
-    auditTableId = models.ForeignKey(AuditTable)
+    auditTableId = models.ForeignKey('AuditTable')
     columnId = models.IntegerField()
     columnName = models.CharField(max_length=30)
 
@@ -617,12 +625,12 @@ class AuditTableColumn(models.Model):
       return self.columnName
 
 class AuditLog(models.Model):
-    person_id = models.ForeignKey(Person)
+    person_id = models.ForeignKey('Person')
     description = models.CharField(max_length=50)
-    action = models.ForeignKey(AuditAction)
+    action = models.ForeignKey('AuditAction')
     time = models.DateTimeField()
-    audit_table_id = models.ForeignKey(AuditTable,null=True)
-    audit_table_column_id = models.ForeignKey(AuditTableColumn,null=True)
+    audit_table_id = models.ForeignKey('AuditTable',null=True)
+    audit_table_column_id = models.ForeignKey('AuditTableColumn',null=True)
     old_value = models.CharField(max_length=255,null=True)
     new_value = models.CharField(max_length=255,null=True)
     affected_table_id = models.IntegerField(null=True)
@@ -685,5 +693,5 @@ class Course(models.Model):
     tutors_allowed = models.SmallIntegerField(max_length = 2, null = True)
     
     def __unicode__(self):
-        return self.code
+        return self.course_code
     

@@ -2,7 +2,7 @@ from django.test import TestCase
 import unittest
 from mock import MagicMock
 
-from .models import Person, Person_data, Module, AggregateAssessment, Assessment, Sessions, LeafAssessment
+from .models import *
 from .api import *
 
 '''
@@ -12,8 +12,10 @@ from .api import *
 
 class PersonTestCase(unittest.TestCase):
     def setUp(self):
-        global foo
+        global foo, mock
         foo = Person()
+        mock = Person()
+        mock = MagicMock()
         Person._init_(foo, 'Cebo',
                               'Makeleni',
                               'u12345678')
@@ -22,17 +24,29 @@ class PersonTestCase(unittest.TestCase):
         PersonTestCase.studentOf_module = Person.studentOf_module
         PersonTestCase.teachingAssistantOf_module = Person.teachingAssistantOf_module
                 
-    def test_getfirstName(self):
-        nm = Person.getfirstName(foo)
+    def test_getFirstName(self):
+        nm = Person.getFirstName(foo)
         self.assertEqual(nm, 'Cebo')
         
     def test_getupId(self):
         uid = Person.getupId(foo)
         self.assertEqual(uid, 'u12345678')
         
-    def test_getsurname(self):
-        sn = Person.getsurname(foo)
+    def test_getSurname(self):
+        sn = Person.getSurname(foo)
         self.assertEqual(sn, 'Makeleni')
+        
+    def test_setFirstName(self):
+        mock.setFirstName('Mabhebeza')
+        mock.getFirstName.assert_return_value_is('Mabhebeza')
+        
+    def test_setupId(self):
+        mock.setupId('uxxxxxxxx')
+        mock.getupId.assert_return_value_is('uxxxxxxxx')
+        
+    def test_setSurname(self):
+        mock.setSurname('Mamiki')
+        mock.getSurname.assert_return_value_is('Mamiki')
         
     def test_lectureOfInsert(self):
         #Nothing added
@@ -154,48 +168,79 @@ class Person_dataTestCase(unittest.TestCase):
     
     def tearDown(self):
         pass
+    
+    
+class Person_dataOuterFunctionsTestCase(unittest.TestCase):
+    def setUp(self):
+        global mockInsert, mockGet, mockDelete
+        mockInsert = MagicMock()
+        mockGet = MagicMock()
+        mockDelete = MagicMock()
+
+    def test_insertPerson_data(self):
+        mockInsert.insertPerson_data('u12345678', 'Some data')
+        mockInsert.insertPerson_data.assert_called_once()
+        
+    def test_getAllPerson_data(self):
+        mockGet.getAllPerson_data.assert_return_value_is('u12345678')
+        
+    def test_deletePerson_data(self):
+        mockDelete.deletePerson_data()
+        mockDelete.deletePerson_data.assert_called_once()
+    
+    
+    
 
 class ModuleTestCase(unittest.TestCase):
     #Test get and set module code
-    def test_setModule(self):
+    def test_setModuleCode(self):
         thing = Module()
-        thing.setmoduleCode = MagicMock()
-        thing.setmoduleCode('COS 301')
-        thing.setmoduleCode.assert_called_once_with('COS 301')
+        thing.setModuleCode = MagicMock()
+        thing.setModuleCode('COS 301')
+        thing.setModuleCode.assert_called_once_with('COS 301')
     
     def test_getModuleCode(self):
         mock = Module()
-        mock.getmoduleCode = MagicMock(name = 'getModule', return_value = 'COS 301')
-        mock.getmoduleCode.assert_return_value_is('COS 301')
+        mock.getModuleCode = MagicMock(name = 'getModule', return_value = 'COS 301')
+        mock.getModuleCode.assert_return_value_is('COS 301')
         
-        mock.setmoduleCode('COS 332')
-        mock.getmoduleCode.assert_return_value_is('COS 332')
+        mock.setModuleCode('COS 332')
+        mock.getModuleCode.assert_return_value_is('COS 332')
     
-    #Test get, insert and remove marker
-    def test_insertMarkers(self):
-        marker = Module()
-        marker.insertMarkers = MagicMock(name = 'insertMaker')
-        marker.insertMarkers('Cebolenkosi')
-        marker.insertMarkers.assert_called_once_with('Cebolenkosi')
+    def test_setModuleName(self):
+        thing = Module()
+        thing.setModuleName = MagicMock()
+        thing.setModuleName('COS 301')
+        thing.setModuleName.assert_called_once_with('COS 301')
     
-    def test_getMarkers(self):
-        #setUp
-        marker = Module()
-        marker.insertMarkers = MagicMock(name = 'insertMaker')
-        marker.insertMarkers('Cebolenkosi')
-        marker.insertMarkers.assert_called_once_with('Cebolenkosi')
+    def test_getModuleName(self):
+        mock = Module()
+        mock.getModuleName = MagicMock(name = 'getModuleName', return_value = 'COS 301')
+        mock.getModuleName.assert_return_value_is('COS 301')
         
-        #Testing
-        marker.getMarkers = MagicMock(name = 'getModule')
-        marker.getMarkers.assert_return_value_is('Cebolenkosi')
+        mock.setModuleName('COS 332')
+        mock.getModuleName.assert_return_value_is('COS 332')
+
+class ModuleOuterFunctionsTestCase(unittest.TestCase):
+    def setUp(self):
+        global mockInsert, mockGet, mockDelete, assessment
+        mockInsert = MagicMock(return_value = 'Insterted')
+        mockGet = MagicMock()
+        mockDelete = MagicMock()
+        assessment = MagicMock(return_value = 'Class test')
+
+    def test_insertModule(self):
+        mockInsert.insertModule('COS332', 'Netw', '2014', assessment)
+        mockInsert.insertModule.assert_return_value_is('Insterted')
+        
+    def test_getAllModules(self):
+        mockGet.getAllModules.assert_return_value_is('COS332')
+        
+    def test_deleteModule(self):
+        mockDelete.deleteModule('COS332')
+        mockDelete.deleteModule.assert_called_once_with('COS332')
     
-    def test_removeMarkers(self):
-        marker = Module()
-        marker.removeMakers = MagicMock(name = 'delMarkers')
-        marker.removeMakers('Cebo')
-        marker.removeMakers.assert_called_once_with('Cebo')
-    
-    #Add test for wrong marker once error handling for removing marker is added.
+
     
 class AggregateAssessmentTestCase(unittest.TestCase):
     '''
@@ -203,7 +248,7 @@ class AggregateAssessmentTestCase(unittest.TestCase):
         global mock
         mock = AggregateAssessment(1) #null is possible parent id
         mock = MagicMock(name = 'AggregateAssessment')
-    '''
+        
     def test_add_child(self, id_child):
         pass
     
@@ -231,6 +276,7 @@ class AggregateAssessmentTestCase(unittest.TestCase):
     
     def test_choose_aggregator(self, agg_key):
         pass
+    '''
     
 
 
