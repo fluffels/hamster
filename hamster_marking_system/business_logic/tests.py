@@ -198,30 +198,40 @@ class ModuleTestCase(unittest.TestCase):
     #Add test for wrong marker once error handling for removing marker is added.
     
 class AggregateAssessmentTestCase(unittest.TestCase):
+    '''
     def setUp(self):
         global mock
-        mock = AggregateAssessment()
+        mock = AggregateAssessment(1) #null is possible parent id
         mock = MagicMock(name = 'AggregateAssessment')
+    '''
+    def test_add_child(self, id_child):
+        pass
     
-    def test_setaggregator(self):
-        mock.setaggregator('aggregator')
-        mock.setaggregator.assert_called_once_with('aggregator')
-        
+    def test_get_current_assessment():
+        pass
+    
+    def test_get_mark():
+        pass
+    
+    def test_get_subassessment(self, subName ):
+        pass
+    
+    def test_get_children(self ):
+        pass
+    
+    def test_get_aggregator_name():
+        pass
+    
+    def test_is_root(self):
+        pass
+    
     def test_getaggregator(self):
-        mock.getaggregator.assert_return_value_is('aggregator')
-        
-    def test_insertassessList(self):
-        mock.insertassessList('Ass1')
-        mock.insertassessList.assert_called_once_with('Ass1')
-        
-        mock.insertassessList()
-        mock.insertassessList.assert_called_with()
-        
-    def test_deleteassessList(self):
-        mock.deleteassessList('Ass1')
-        mock.deleteassessList.assert_called_once_with('Ass1')
-        mock.assessList.assert_return_value_is([])
-        
+        #mock.getaggregator.assert_return_value_is('aggregator')
+        pass
+    
+    def test_choose_aggregator(self, agg_key):
+        pass
+    
 
 
 class SessionTestCase(unittest.TestCase):
