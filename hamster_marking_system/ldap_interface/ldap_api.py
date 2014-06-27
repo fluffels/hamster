@@ -15,7 +15,7 @@ def initialize_ldap():
     except NameError:
         try:
             global ldapConnection
-            ldapConnection = ldap.initialize(ldapURI)
+            ldapConnection = ldap.initialize(AUTH_LDAP_SERVER_URI)
             ldapConnection.simple_bind_s()
             return ldapConnection
         except Exception, e:
@@ -26,16 +26,18 @@ def initialize_ldap():
 def authenticateUser(request, username, password):
     try:
         ldapConnectionLocal = initialize_ldap()
+        print 'LDAP initialized...'
         results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"uid="+username)
         for dn,entry in results:
             dn = dn
         try:
             dn
         except NameError:
-            raise Exception(ldap.INVALID_CREDENTIALS)
+            #raise Exception(ldap.INVALID_CREDENTIALS)
+            print "Incorrect information used in authenticating user."
         else:
             newUsername = dn
-            ldapConnectionTemp = ldap.initialize(ldapURI)
+            ldapConnectionTemp = ldap.initialize(AUTH_LDAP_SERVER_URI)
             ldapConnectionTemp.simple_bind_s(newUsername,password)
             if 'user' in request.session:
                 del request.session['user']
@@ -43,7 +45,8 @@ def authenticateUser(request, username, password):
             return request.session['user']
 
     except ldap.INVALID_CREDENTIALS, e:
-        raise e
+        #raise e
+        print "Incorrect information used in authenticating user."
 
 def getGroups(username, filterv):
     ldapConnectionLocal = initialize_ldap()

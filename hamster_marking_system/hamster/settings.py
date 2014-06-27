@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import ldap
+from django_auth_ldap.config import LDAPSearch
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -22,7 +24,15 @@ SECRET_KEY = '(a2#03%*j5l10&ik9%&&xsdaijn%0n!e*ky-fj7nfve%ww2fj!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+AUTH_LDAP_BIND_DN = "ou=Computer Science,o=University of Pretoria,c=ZA"
+AUTH_LDAP_BIND_PASSWORD = ""
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Computer Science,o=University of Pretoria,c=ZA",ldap.SCOPE_SUBTREE, "(uid=%(user)s")
+
+AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
+#AUTH_LDAP_SERVER_URI = "ldap://137.215.40.94"
+AUTH_LDAP_ALWAYS_UPDATE_USER = False
 
 ALLOWED_HOSTS = []
 
@@ -36,10 +46,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.contenttypes',
     'business_logic',
     'web_interface',
+    'ldap_interface',
     'polymorphic',
-    'django.contrib.contenttypes',
     'mptt',
     'south',
 )
@@ -57,6 +68,12 @@ ROOT_URLCONF = 'hamster.urls'
 
 WSGI_APPLICATION = 'hamster.wsgi.application'
 
+# Keep ModelBackend around for per-user permissions and maybe a local
+# superuser.
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -64,7 +81,7 @@ WSGI_APPLICATION = 'hamster.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'NAME': 'hamster',
         'USER': 'postgres',
         'PASSWORD': 'GothamCyborgDark009',
         'HOST': 'localhost',
@@ -72,12 +89,6 @@ DATABASES = {
     }
 }
 
-# Keep ModelBackend around for per-user permissions and maybe a local
-# superuser.
-AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

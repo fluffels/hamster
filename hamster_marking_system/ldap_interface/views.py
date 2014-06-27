@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response, RequestContext
 from django.http import HttpResponse
 from .ldap_api import *
 
 # Create your views here.
 # The intergartion team only needs to replace this file with one of their own
 # to be able to integrate with ldap.
+
+
+def ldap_view_test(request):
+  return HttpResponse("Authenticate User Object" + str(sourceLecturerDesignations("BWingfield")))
 
 
 
@@ -250,6 +254,6 @@ def index(request):
     
     
   except Exception as e:
-    raise e
+    #raise e
     print e
   return HttpResponse("Go away")

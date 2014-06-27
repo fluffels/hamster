@@ -1,8 +1,7 @@
 from django.contrib import admin
 
-from .models import Course, Person, Assessment, Module, Sessions, Aggregator, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, AssessmentSession, MarkAllocation, SessionStatus
+from .models import Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson
 
-#Contains 14 tables
 
 class CourseAdmin(admin.ModelAdmin):
     class Meta:
@@ -35,12 +34,6 @@ class SessionsAdmin(admin.ModelAdmin):
 admin.site.register(Sessions, SessionsAdmin)
 
 
-class SessionStatusAdmin(admin.ModelAdmin):
-    class Meta:
-        model = SessionStatus
-
-admin.site.register(SessionStatus, SessionStatusAdmin)
-
 
 class MarkAllocationAdmin(admin.ModelAdmin):
     class Meta:
@@ -48,12 +41,6 @@ class MarkAllocationAdmin(admin.ModelAdmin):
 
 admin.site.register(MarkAllocation, MarkAllocationAdmin)
 
-
-class AssessmentSessionAdmin(admin.ModelAdmin):
-    class Meta:
-        model = AssessmentSession
-
-admin.site.register(AssessmentSession, AssessmentSessionAdmin)
 
 
 class AuditActionAdmin(admin.ModelAdmin):
@@ -84,15 +71,16 @@ class AuditLogAdmin(admin.ModelAdmin):
 admin.site.register(AuditLog, AuditLogAdmin)
 
 
-class AggregatorAdmin(admin.ModelAdmin):
-    class Meta:
-        model = Aggregator
-
-admin.site.register(Aggregator, AggregatorAdmin)
-
-
 class Person_dataAdmin(admin.ModelAdmin):
     class Meta:
         model = Person_data
 
 admin.site.register(Person_data, Person_dataAdmin)
+
+
+class AllocatePersonAdmin(admin.ModelAdmin):
+    class Meta:
+        model = AllocatePerson
+        
+admin.site.register(AllocatePerson, AllocatePersonAdmin)
+    
