@@ -1,5 +1,5 @@
 from .models import *
-from ldap_interface.views import *
+from ldap.views import *
 import datetime
 
 from django.db.models import get_model

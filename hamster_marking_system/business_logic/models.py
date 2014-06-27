@@ -36,35 +36,43 @@ def getPersonFromArr(data) :
   
   return objPerson
 
-class Aggregator(object):
+class Aggregator(models.Model):
+    aggregator_type = models.CharField(max_length = 65, null = False, blank = False, default = 'Weighted_sum')
     def aggregateMarks(self,assessment=[]):
-        pass
+        total = 0.0
+        for x in range(len(assessment)):
+            total += assessment[x]
+        return total/len(assessment)
     def __unicode__(self):
         return "Aggregator"
 
-#pass the numContributer as the constructor's parameter
 class BestOfAggregator(Aggregator):
-    numContributors = 0
-    def __init__(value):
-            numContributors = value
-            
+    numContributors = models.IntegerField()
     def aggregateMarks(self,assessment=[]):
         assessment.sort(reversed)
         total = 0.0
         for x in range(0,self.numContributors ):
             total += assessment[x]
         return (total/self.numContributors)
-        
+    def getnumContributors(self):
+        return self.numContributors
+    def setnumContributors(self,value):
+        self.numContributors=value
+        self.save()
     def __unicode__(self):
         return "BestOfAggregator"
+def createBestOfAggregator(numContributors_):
+    coA= BestOfAggregator(numContributors=numContributors_)
+    coA.save()
+    return coA
 
-#pass the array of weights as the constructure's parameter
 class WeightedSumAggregator(Aggregator):
     weights = []
-    
-    def __init__(value):
-            weights = value
-            
+    def weightsInsert(self,value):
+        self.weights.append(value)
+        self.save()
+    def weightsDelete(self,value):
+        self.weights.remove(value)
     def aggregateMarks(self,assessment=[]):
         total = 0.0
         for x in assessment:
@@ -83,15 +91,14 @@ class SimpleSumAggregator(Aggregator):
         return "SimpleSumAggregator"
 
 class Assessment(PolymorphicModel):
-    assess_name = models.CharField(max_length=65)
+    name = models.CharField(max_length=65)
     published = models.BooleanField()
     mod_id = models.ForeignKey('Module')
-    parent = models.IntegerField() #the assess_id of the parent will be passed
     
     def getname(self):
-        return self.assess_name
+        return self.name
     def setname(self,value):
-        self.assess_name=value
+        self.name=value
         self.save()
     def getpublished(self):
         return self.published
@@ -101,13 +108,6 @@ class Assessment(PolymorphicModel):
     def get_mod_id(self ):
         return self.mod_id
     
-    def set_parent(self, parent_id):
-      self.parent = parent_id
-      self.save()
-      return true
-    
-    def get_parent():
-      return self.parent
         
     def __unicode__(self):
         return self.name
@@ -138,12 +138,25 @@ class Module(models.Model):
     def setmoduleCode(self,value):
         self.moduleCode=value
         self.save()
+    def getMarkers(self):
+        markersArr = json.loads(self.markerArr)
+        return markersArr
+    def insertMarkers(self,value):
+        markersArr = json.loads(self.markerArr)
+        self.markersArr.append(value)
+        markers = json.dumps(markersArr)
+        self.save()
+    def removeMarkers(self,value):
+        markersArr = json.loads(self.markerArr)
+        self.markersArr.remove(value)
+        markers = json.dumps(markersArr)
+        self.save()
         
     def getModuleCode(self):
       return self.module_name
     
     def __unicode__(self):
-        return u's% s%' %(self.module_name, self.module_code)
+        return u's%' % (self.module_code)
       
 #===============================Module Function================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
@@ -162,81 +175,28 @@ def deleteModule(self):
 #===============================End of Module Function================================
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
+    aggregator = models.ForeignKey(Aggregator)
     aggregator_name = models.CharField(max_length = 65)
-    session = models.ForeignKey('Sessions')
-    isroot = models.BooleanField()
-   
+    session = models.ForeignKey('AssessmentSession')
+    #children = models.ForeignKey(Assessments)
     
-    def __init__(self, possible_parent):
-      if possible_parent==null:
-        isroot=true
-      else:
-        isroot=false
-        self.set_parent(possible_parent)
-        possible_parent.add_child(self.id)
-        
+    def setname(self, value):
+      self.aggregator_name = value
       self.save()
-    
-    def add_child(self, child_id):
-      child_assess = Assessment.objects.filter(Q(Assessment_id=child_id))
-      child_assess.set_parent(self.id)
-      return true
-    
-    def get_current_assessment():
-      assess = Assessment.objects.filter(Q(Assessment__name=self.assess_name))
-      return assess
-    
-    def get_mark(): #here we will use an aggregator and retrieve a mark from that agregator
-      mark = aggregator.aggregateMarks(self.get_current_assessment())
-      return mark
-    
-    def get_subassessment(self, nameofSub):
-      # This traverses through the tree and tries find the object
-      sub = Assessment.objects.filter(Q(Assessment__name=nameofSub))
-      if sub != null:
-        return sub
-      else:
-        #We can change this to throw an exception if that is what we decide on 
-        return 'Assessment does not exist'
       
-    def get_children(self):
-      #make a list of all the children of this assessment and returns that list
-      list_ = Assessment.objects.filter(Q(Assessment_parent=self.id))
-      return list_
-      
-    def get_aggregator_name(self):
-      #get the name from the database
+    def getname(self):
       return self.aggregator_name
     
-    def is_root(self):
-      return self.isroot #determined in the constructor 
+    '''def getsubassessment(self)
+      return self.'''
     
     def getaggregator(self):
       return self.aggregator
     
-    def choose_aggregator(self, agg_key):
-      statement = 'Aggregator changed to: '
-      if agg_key == 1:
-        self.aggregator = SimpleSumAggregator()
-        self.aggregator_name = 'S' #fetch name from database... exact format
-        statement += 'Simple Sum Aggregator'
-        
-      elif agg_key == 2:
-        self.aggregator = BestOfAggregator()
-        self.aggregator_name = 'B' #fetch name from database... exact format
-        statement += 'Best of Aggrgator'
-        
-      elif agg_key == 3:
-        self.aggregator = WeightedSumAggregator()
-        self.aggregator_name = 'W' #fetch name from database... exact format
-        statement += 'Weighted Sum Aggregator'
-        
-      else:
-        statement = 'Throw Exception'
-       
-      self.save() 
-      return statement
-    
+    def setaggregator(self,value):
+      self.aggregator=value
+      self.save()
+
     def __unicode__(self):
       return self.aggregator_name
 
@@ -255,38 +215,63 @@ def deleteAggregateAssessment(self):
 #================================End of AggregateAssessment Function============================
 
 class LeafAssessment(Assessment):
-    full_marks = models.IntegerField()
-    mark_obtained = models.IntegerField()
-    
-    def get_full_marks(self):
-      return self.full_marks
-    def set_full_marks(self,value):
-      self.full_marks=value
-      self.save()
-      
-    def award_mark(self, mark_):
-      self.mark_obtained = mark_
-      self.save()
-    
-    def get_awarded_mark(self):
-      return self.mark_obtained
-    
+    assess_sessionlist =[]#assessmentsession
+    fullMarks = models.IntegerField()
+    def getfullMarks(self):
+        return self.fullMarks
+    def setfullMarks(self,value):
+        self.fullMarks=value
+        self.save()
+    def assesssessionlistinsert(self,value):
+        self.assess_sessionlist.append(value)
+    def assesssessionlistdelete(self,value):
+        self.assess_sessionlist.remove(value)
     def __unicode__(self):
-      return self.get_name()
+        return self.getname()
 
 #=================================LeafAssessment Function==============================
 def createLeafAssessment(name_, published_,fullMarks_):
-    a = LeafAssessment(name = name_, published = published_,full_marks=fullMarks_ )
+    a = LeafAssessment(name = name_, published = published_,fullMarks=fullMarks_ )
     a.save()
-    return a
 
 def deleteLeafAssessment(self):
     LeafAssessment.delete(self)
 
 def getLeafAssessment():
-    leaf = LeafAssessment.objects.all()
-    return leaf
+    leaf_assessments = LeafAssessment.objects.all()
+    return leaf_assessments
 #=================================End of LeafAssessment Function==============================
+
+class SessionStatus(models.Model):
+    open = models.DateTimeField()
+    closed = models.DateTimeField()
+    def getopen(self):
+        return self.open
+    def setopen(self,value):
+        self.open=value
+        self.save()
+    def getclosed(self):
+        return self.closed
+    def setclosed(self,value):
+        self.closed=value
+        self.save()
+    def __unicode__(self):
+        return u's%:s%' %(self.open, self.closed)
+
+#===============================SessionStatus Function================================
+def insertSessionStatus(open_,close_,):
+    session = SessionStatus(open=open_,close=close_)
+    session.save()
+    return session
+
+def getSessionStatus(name_):
+    session = AssessmentSession.objects.all(name=name_).object.all()
+    return session
+
+def deleteSessionStatus(self):
+    SessionStatus.delete(self)
+
+#===============================End of SessionStatus Function================================
 
 class Person(models.Model):
     firstName = models.CharField(max_length = 20, null = False)
@@ -374,17 +359,17 @@ def deletePerson_data(self):
 #==========================Person_data===============================
 
 class MarkAllocation(models.Model):
-    comment =models.TextField()
+    mark = models.IntegerField()
+    comment = models.CharField(max_length=100)
     student = models.ForeignKey(Person)
-    assessment =models.ForeignKey(LeafAssessment) 
     marker = models.CharField(max_length=100)
     timeStamp = models.DateTimeField()
     
+    def setmark(self,value):
+        self.mark=value
+        self.save()
     def setcomment(self,value):
         self.comment=value
-        self.save()
-    def setLAssessment(self,value):
-        self.assessment = value
         self.save()
     def setmarker(self,value):
         self.marker=value
@@ -392,13 +377,13 @@ class MarkAllocation(models.Model):
     def setstudent(self,value):
         self.student=value
         self.save()
-    def getLAssessment(self):
-        return self.assessment
     def getstudent(self):
         return self.student
     def settimeStamp(self,value):
         self.timeStamp=value
         self.save()
+    def getmark(self):
+        return self.mark
     def getcomment(self):
         return self.comment
     def getmarker(self):
@@ -410,91 +395,40 @@ class MarkAllocation(models.Model):
       return self.marker
 
 #===============================MarkAllocation Function================================
-def insertMarkAllocation(comment_,marker_,timeStamp_,student_,L_assessment):
-    markAlloc = MarkAllocation(comment=comment_,marker=marker_,timeStamp=timeStamp_,student=student_,assessment = L_assessment)
+
+def insertMarkAllocation(mark_,comment_,marker_,timeStamp_,student_):
+    markAlloc = MarkAllocation(mark=mark_,comment=comment_,marker=marker_,timeStamp=timeStamp_,student=student_)
     markAlloc.save()
 
 def getMarkAllocation():
     mark_allocation = MarkAllocation.objects.all()
     return mark_allocation
-    
-def getMarkAllocation(id):
-	return MarkAllocation.object.get(assessment = id)
 
 def deleteMarkAllocation(self):
     MarkAllocation.delete(self)
 
+
 #===============================End of MarkAllocation Function================================
 
-class Sessions(models.Model):
+class AssessmentSession(models.Model):
     Assessmentname = models.CharField(max_length=10)
-    session_name=models.CharField(max_length=100)
-    assessment_id = models.ForeignKey(Assessment)
+    sessionStatus = models.ForeignKey(SessionStatus)
+    markallocationList =[] #person
+    assessment_id = models.ForeignKey('AggregateAssessment')
     open_time = models.DateTimeField()
     close_time = models.DateTimeField()
-    status = models.IntegerField()
+    session_name = models.CharField(max_length = 65)
     
-    def checkStatus(self):
-        if open_time < datetime.now() & close_time >= datetime.now():
-                status = 1
-                return status
-        else:
-                return status
-                
-    def setAssessmentID(self,id):
-        self.assessment_id = id
-        self.save()
-
-    def setOpenedDate(self, date):
-        self.opened = date
-        self.save()
+    def setsessionName(self, value):
+      self.session_name = value
+      self.save()
+    def getsessionName(self):
+      return self.session_name
     
-    def setClosedDate(self, date):
-        self.closed = date
-        self.save()
-       
-    def setOpen(self):
-        self.status = 1
-        self.save()
-    
-    def setClose(self):
-        self.status = 2
-        self.save()
-    
-    def setName(self,name):
-        self.session_name = name
-        self.save()
-    
-    #getters
-    def getID(self):
-        return self.id
-    def getClosedDate(self):
-        return self.close_time
-    def getOpenedDate(self):
-        return self.open_time
-    def getAssessmentID(self):
-        return self.assessment_id
-    def getClosedDate(self):
-        return self.closed
-    def getStatus(self):
-        return self.status
-    def getOpenedDate(self):
-        return self.opened
-    def getName(self):
-        return self.session_name
-    
-    def addStudent(self,studentID):
-        insertPersonToSession(studentID,self.ID,1,0)
-    
-    def deleteStudent(self,value):
-        deleteAllocatedPerson(value)
-    
-    def addMarker(self,markerID):
-        insertPersonToSession(markerID,self.ID,0,1)
-        
-    def deleteMarker(self,vaule):
-        deleteAllocatedPerson(value)
-        
+    def markallocationListinsert(self,value):
+        self.markallocationList.append(value)
+    def markallocationListdelete(self,value):
+        self.markallocationList.remove(value)
     def getAssessmentname(self):
         return self.Assessmentname
     def setAssessmentname(self,value):
@@ -505,7 +439,6 @@ class Sessions(models.Model):
     def setsessionStatus(self,value):
         self.sessionStatus=value
         self.save()
-    """
     def awardMark(self,value):
         if datetime.datetime.now() >= self.getsessionStatus().getClosed(self):
             self.markallocation.setmark(self,0)
@@ -513,79 +446,24 @@ class Sessions(models.Model):
             self.markallocation.settimeStamp(self,datetime.datetime.now())
         else:
             self.markallocation=value
-     """
+            
+    def __unicode__(self):
+      return self.session_name
 
-def deleteSessions(self):
-	Sessions.delete(self)
+#===============================AssessmentSession Function================================
 
-def insertSessions(session_name_, assessment_id_,opened_,closed_):
-	temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=0)
-	temp.save()
-	return temp
+def insertAssessmentSession(Assessmentname_,sessionStatus_):
+    assesssess = AssessmentSession(Assessmentname=Assessmentname_,sessionStatus=sessionStatus_,)
+    assesssess.save()
 
-def getSessions():
-	temp=Sessions.objects.all()
-	return temp
+def getAssessmentSession():
+    assesssess = AssessmentSession.objects.all()
+    return assesssess
 
-def getSessions(Id):
-	return Sessions.object.get(id= Id)
-	
-def __unicode__(self):
-        return self.session_name
+def deleteAssessmentSession(self):
+    AssessmentSession.delete(self)
 
-
-
-class AllocatePerson(models.Model):
-	person_id = models.ForeignKey(Person)
-	session_id = models.ForeignKey(Sessions)
-	isStudent = models.BooleanField(default=0)
-	isMarker = models.BooleanField(default=0)
-	
-	def is_Student(self):
-		return isStudent
-		
-	def is_Marker(self):
-		return isMarker
-		
-	def getID(self):
-		return self.ID
-		
-	def getSessionID(self):
-		return session_id
-		
-	def getPersonID(self):
-		return person_id
-		
-	def set_isStudent(self,bool):
-		isStudent = bool
-		self.save()
-		
-	def set_isMarker(self, bool):
-		isMarker = bool
-		self.save()
-		
-	def set_personID(self, id):
-		person_id = id
-		self.save()
-		
-	def set_sessionID(self, id):
-		session_id = id
-		self.save()
-
-#==============================AllocatePerson Function==============================
-def insertPersonToSession(personID,sessionID,student,Marker):
-	temp = AllocatePerson(person_id = personID, session_id = sessionID,isStudent = student, isMarker = Marker)
-	temp.save()
-	
-def getAllocatedPerson():
-	return AllocatePerson.object.all()
-	
-def getAllocatedPerson(sessionID):
-	return AllocatePerson.object.filter(session_id = id)
-	
-def deleteAllocatedPerson(id):
-	AllocatePerson.delete(ID = id)
-#==============================End of AllocatePerson Function==============================
+#===============================End of AssessmentSession Function================================
 
 #----------------------------------------------------------
 #-------------------- Audit tables ------------------------
@@ -667,6 +545,69 @@ def getAuditlog():
 def authenticateUser(username,passwords):
     pass
     #LDAP
+    
+    
+    
+class Sessions(models.Model):
+    session_name=models.CharField(max_length=100)
+    assessment_id = models.ForeignKey(Assessment)
+    opened = models.DateTimeField()
+    closed = models.DateTimeField()
+    status = models.IntegerField()
+    
+    def setAssessmentID(self,id):
+        self.assessment_id = id
+        self.save()
+
+    def setOpenedDate(self, date):
+        self.opened = date
+        self.save()
+
+    def setClosedDate(self, date):
+        self.closed = date
+        self.save()
+       
+    def setOpen(self):
+        self.status = 1
+        self.save()
+
+    def setClose(self):
+        self.status = 2
+        self.save()
+
+    def setName(self,name):
+        self.session_name = name
+        self.save()
+
+    #getters
+    def getID(self):
+        return self.id
+    def getAssessmentID(self):
+        return self.assessment_id
+    def getClosedDate(self):
+        return self.closed
+    def getStatus(self):
+        return self.status
+    def getOpenedDate(self):
+        return self.opened
+    def getName(self):
+        return self.session_name
+
+    def deleteSessions(self):
+          Sessions.delete(self)
+
+    def insertSessions(session_name_, assessment_id_,opened_,closed_):
+            temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=0)
+            temp.save()
+            return temp
+
+    def getSessions():
+            temp=Sessions.objects.all()
+            return temp
+          
+    def __unicode__(self):
+        return self.session_name
+
 
 #This is to create the table shown in the master specification giving a
 #general idea of how their MySQL database table for courses looks like
