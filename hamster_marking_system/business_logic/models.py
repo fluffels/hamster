@@ -641,8 +641,8 @@ class AuditLog(models.Model):
 
 #===================================AuditLog functions====================================
 
-def logAudit(person,desc,act,table,column,old,new):
-    p = Person.objects.get(id=person)
+def logAudit(request,desc,act,table,column,old,new):
+    p = Person.objects.get(id=request.REQUEST["upId"])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     ti = time.strftime("%Y-%m-%d %H:%M:%S")

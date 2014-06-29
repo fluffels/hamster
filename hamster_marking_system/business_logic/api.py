@@ -1,9 +1,8 @@
-from .models import *
-from ldap_interface.views import *
 import datetime
-
 from django.db.models import get_model
 
+from .models import *
+from ldap_interface.views import *
 
 #general retrival functions
 
@@ -691,7 +690,7 @@ def getAuditLogFromTimeRange(fromTime, toTime):
 def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
 	auditObjects = AuditLog.objects.filter(time__lte=toTime,time__gte=fromTime)
 	return auditObjects.filter(person_id=username)
-  
+
 # Name: getStudentsForASession
 # Description:
 # Parameter: sess_id_:session Object

@@ -4,6 +4,7 @@ from mock import MagicMock
 
 from .models import *
 from .api import *
+from business_logic import api
 
 '''
 =============Testing models===========
@@ -188,8 +189,6 @@ class Person_dataOuterFunctionsTestCase(unittest.TestCase):
         mockDelete.deletePerson_data()
         mockDelete.deletePerson_data.assert_called_once()
     
-    
-    
 
 class ModuleTestCase(unittest.TestCase):
     #Test get and set module code
@@ -358,33 +357,79 @@ class SessionTestCase(unittest.TestCase):
 		do = session1.getName()
 		self.assertEqual(do, "Pract1Session1")
 		
-	
-	def test_deleteSessions(self):
+	def test_checkStatus(self):
 		session = Sessions()
-		session.deleteSessions = MagicMock()
-		session.deleteSessions()
-		session.deleteSessions.assert_called_once_with()
+		session.checkStatus = MagicMock(return_value = 1)
+		session.checkStatus()
+		session.checkStatus.assert_return_value(1)
+		
+	def test_addStudent(self):
+		session = Sessions()
+		session.addStudent = MagicMock()
+		session.addStudent("12094847")
+		session.addStudent.assert_called_once_with("12094847")
+		
+	def test_deleteStudent(self):
+		session = Sessions()
+		session.addStudent = MagicMock()
+		session.addStudent("12345678")
+		session.addStudent.assert_called_once_with("12345678")
+		
+	def test_addMarker(self):
+		session = Sessions()
+		session.addMarker = MagicMock()
+		session.addMarker("12345678")
+		session.addMarker.assert_called_once_with("12345678")
+		
+	def test_deleteMarker(self):
+		session = Sessions()
+		session.deleteMarker = MagicMock()
+		session.deleteMarker("12345678")
+		session.deleteMarker.assert_called_once_with("12345678")
+		
+	def test_getAssessmentname(self):
+		session = Sessions()
+		session.getAssessmentname = MagicMock(return_value = "Practical 1")
+		session.getAssessmentname()
+		session.getAssessmentname.assert_return_value("Practical 1")
+		
+	def test_setAssessmentname(self):
+		session = Sessions()
+		session.setAssessmentname = MagicMock()
+		session.setAssessmentname("Practical2")
+		session.setAssessmentname.assert_called_once_with("Practical2")
+		
+	def test_deleteSessions(self):
+		models.deleteSessions = MagicMock()
+		models.deleteSessions()
+		models.deleteSessions.assert_called_once_with()
 		
 	def test_insertSessions(self):
 		#insertSession = MagicMock()
-		session = Sessions()
 		assessment = Assessment()
 		module = Module()
 		
 		module.insertModule = MagicMock()
 		assessment.insertAssessment = MagicMock()
-		session.insertSessions = MagicMock()
+		models.insertSessions = MagicMock()
 		
 		module.insertModule("COS 301")
 		assessment.insertAssessment("practical1", "30", "type",module)
-		session.insertSessions("Pract1Session1",assessment,"2014-06-06 12:00:00","2014-06-07 12:04:00")
-		session.insertSessions.assert_called_once_with("Pract1Session1",assessment,"2014-06-06 12:00:00","2014-06-07 12:04:00")
+		models.insertSessions("Pract1Session1",assessment,"2014-06-06 12:00:00","2014-06-07 12:04:00")
+		models.insertSessions.assert_called_once_with("Pract1Session1",assessment,"2014-06-06 12:00:00","2014-06-07 12:04:00")
 		
 	def test_getSessions(self):
+		models.getSessions = MagicMock()
+		models.getSessions()
+		models.getSessions.assert_called_once_with()
+		
+	def test_getSessionsbyID(self):
+		assessment = Assessment()
 		session = Sessions()
-		session.getSessions = MagicMock()
-		session.getSessions()
-		session.getSessions.assert_called_once_with()
+		models.getSessions = MagicMock(return_value = session)
+		models.getSessions(assessment)
+		models.getSessions.assert_called_once_with(assessment)
+		models.getSessions.assert_return_value(session)
 
 
 class AssessmentTestCase(TestCase):
@@ -460,6 +505,221 @@ class AssessmentTestCase(TestCase):
 
 		ass.getModule.assertEqual(ass.getModule(), 'COS212')
 
+
+class TestMarkAllocation(unittest.TestCase):
+	def test_setcomment(self):
+		mark = MarkAllocation()
+		mark.setcomment = MagicMock()
+		mark.setcomment("mark added")
+		mark.setcomment.assert_called_once_with("mark added")
+		
+	def test_setLAssessment(self):
+		mark = MarkAllocation()
+		assessment = LeafAssessment()
+		mark.setLAssessment = MagicMock()
+		mark.setLAssessment(assessment)
+		mark.setLAssessment.assert_called_once_with(assessment)
+		
+	def test_setmarker(self):
+		mark = MarkAllocation()
+		mark.setmarker = MagicMock()
+		mark.setmarker("mamelo")
+		mark.setmarker.assert_called_once_with("mamelo")
+		
+	def test_setstudent(self):
+		mark = MarkAllocation()
+		person = Person()
+		mark.setstudent = MagicMock()
+		mark.setstudent(person)
+		mark.setstudent.assert_called_once_with(person)
+		
+	def test_getLAssessment(self):
+		mark = MarkAllocation()
+		assessment = Assessment()
+		mark.getLAssessment = MagicMock(return_value = assessment)
+		mark.getLAssessment()
+		mark.getLAssessment.assert_return_value(assessment)
+		
+	def test_getstudent(self):
+		mark = MarkAllocation()
+		person = Person()
+		mark.getstudent = MagicMock(return_value = person)
+		mark.getstudent()
+		mark.getstudent.assert_return_value(person)
+		
+	def test_settimeStamp(self):
+		mark = MarkAllocation()
+		mark.settimeStamp = MagicMock()
+		mark.settimeStamp("2014-06-06 12:00:00")
+		mark.settimeStamp.assert_called_once_with("2014-06-06 12:00:00")
+		
+	def test_getcomment(self):
+		mark = MarkAllocation()
+		mark.getcomment = MagicMock(return_value = "mark addad")
+		mark.getcomment()
+		mark.getcomment.assert_return_value("mark addad")
+		
+	def test_getmarker(self):
+		mark = MarkAllocation()
+		mark.getmarker = MagicMock(return_value = "mamelo")
+		mark.getmarker()
+		mark.getmarker.assert_return_value("mamelo")
+		
+	def test_gettimeStamp(self):
+		mark = MarkAllocation()
+		mark.gettimeStamp = MagicMock(return_value = "2014-06-06 12:00:00")
+		mark.gettimeStamp()
+		mark.gettimeStamp.assert_return_value("2014-06-06 12:00:00")
+		
+	def test_insertMarkerAllocation(self):
+		assessment = LeafAssessment()
+		models.insertMarkAllocation = MagicMock()
+		models.insertMarkAllocation("mark entered", "2014-06-06 12:00:00",assessment)
+		models.insertMarkAllocation.assert_called_once_with("mark entered", "2014-06-06 12:00:00",assessment)
+		
+	def test_getMarkAllocation(self):
+		models.getMarkAllocation = MagicMock()
+		models.getMarkAllocation()
+		models.getMarkAllocation.assert_called_once_with()
+		
+	def test_getMarkAllocation(self):
+		mark = MarkAllocation()
+		models.getMarkAllocation = MagicMock(return_value = mark)
+		models.getMarkAllocation(1)
+		models.getMarkAllocation.assert_called_once_with(1)
+		models.getMarkAllocation.assert_return_value(mark)
+		
+	def test_deleteMarkAllocation(self):
+		models.deleteMarkAllocation = MagicMock()
+		models.deleteMarkAllocation()
+		models.deleteMarkAllocation.assert_called_once_with()
+		
+class TestAllocatePerson():
+	def test_is_Student(slef):
+		alloc = AllocatePerson()
+		alloc.is_Student = MagicMock(return_value = 1)
+		alloc.is_Student()
+		alloc.is_Student.assert_return_value(1)
+		
+	def test_is_Marker(self):
+		alloc = AllocatePerson()
+		alloc.is_Marker = MagicMock(return_value = 1)
+		alloc.is_Marker()
+		alloc.is_Marker.assert_return_value(1)
+		
+	def test_getID(self):
+		alloc = AllocatePerson()
+		alloc.getID = MagicMock()
+		alloc.getID()
+		alloc.getID.assert_called_once_with()
+		
+	def test_getSessionID(self):
+		alloc = AllocatePerson()
+		sess = Sessions()
+		
+		alloc.getSessionID = MagicMock(return_value = sess)
+		alloc.getSessionID()
+		alloc.getSessionID.assert_return_value(sess)
+		
+	def test_getPersonId(self):
+		alloc = AllocatePerson()
+		person = Person()
+		
+		alloc.getPersonID = MagicMock(return_value = person)
+		alloc.getPersonID()
+		alloc.getPersonID.assert_return_value(person)
+		
+	def test_set_isStudent(self):
+		alloc = AllocatePerson()
+		alloc.set_isStudent = MagicMock()
+		alloc.ste_isStudent(1)
+		alloc.set_isStudent.assert_called_once_with(1)
+		
+	def test_set_isMarker(self):
+		alloc = AllocatePerson()
+		alloc.set_isMarker = MagicMock()
+		alloc.ste_isMarker(1)
+		alloc.set_isMarker.assert_called_once_with(1)
+		
+	def test_set_personID(self):
+		alloc = AllocatePerson()
+		person = Person()
+		
+		alloc.set_personID = MagicMock()
+		alloc.set_personID(person)
+		alloc.set_personID.assert_called_once_with(person)
+		
+	def test_set_sessionID(self):
+		alloc = AllocatePerson()
+		session = session()
+		alloc.set_sessionID = MagicMock()
+		alloc.set_sessionID(session)
+		alloc.set_sessionID.assert_called_once_with(session)
+		
+	def test_insertPersonToSession(self):
+		person = Person()
+		session = Sessions()
+		models.insertPersonToSession = MagicMock()
+		models.insertPersonToSession(person,session,1,0)
+		models.insertPersonToSession.assert_called_once_with(person,session,1,0)
+		
+	def test_getAllocatedPersonbyID(self):
+		alloc = AllocatedPerson()
+		models.getAllocatedPerson = MagicMock(return_value = alloc)
+		models.getAllocatedPerson(1)
+		models.getAllocatedPerson.assert_called_once_with(alloc)
+		
+	def test_getAllocatedPerson(self):
+		models.getAllocatedPerson = MagicMock()
+		models.getAllocatedPerson()
+		models.getAllocatedperson.assert_called_once_with()
+		
+	def test_deleteAllcoatedPerson(self):
+		models.deleteAllocatedPerson = MagicMock()
+		models.delelteAllocatedPerson(1)
+		models.deleteAllocatedPerson.assert_called_once_with(1)
+		
+class TestLeafAssessment(unittest.TestCase):
+	def test_get_full_marks(self):
+		leaf = LeafAssessment()
+		leaf.get_full_marks = MagicMock(return_value= 20)
+		leaf.get_full_marks()
+		leaf.get_full_marks.assert_return_value(20)
+		
+	def test_set_full_marks(self):
+		leaf = LeafAssessment()
+		leaf.set_full_marks = MagicMock()
+		leaf.set_full_marks(15)
+		leaf.set_full_marks.assert_called_once_with(15)
+		
+	def test_award_mark(self):
+		leaf = LeafAssessment()
+		leaf.award_mark = MagicMock()
+		leaf.award_mark(10)
+		leaf.award_mark.assert_called_once_with(10)
+		
+	def test_get_awarded_mark(self):
+		leaf = LeafAssessment()
+		leaf.get_awarded_mark = MagicMock(return_value = 10)
+		leaf.get_awarded_mark()
+		leaf.get_awarded_mark.assert_return_value(10)
+		
+	def test_createLeafAssessment(self):
+		models.createLeafAssessment = MagicMock()
+		models.createLeafAssessment("task 1",0,20)
+		models.createLeafAssessment.assert_called_once_with("task 1",0,20)
+		
+	def test_deleteLeafAssessment(self):
+		models.deleteLeafAssessment = MagicMock()
+		models.deleteLeafAssessment()
+		models.deleteLeafAssessment.assert_called_once_with()
+		
+	def test_getLeafAssessment(self):
+		models.getLeafAssessment = MagicMock()
+		models.getLeafAssessment()
+		models.getLeafAssessment.assert_called_once_with()
+
+
 '''
 =============End models===========
 ======================================
@@ -470,27 +730,106 @@ class AssessmentTestCase(TestCase):
 =============Testing api===========
 ===================================
 '''
+class APIModuleTestCase(unittest.TestCase):
+    def test_getAllModules(self):
+        mock = MagicMock()
+        modules = mock.getAllModules()
+        mock.getAllModules.assert_called_once()
+        
+    def test_getPersonListFromArrayList(self):
+        pass
+    
 
-def test_getAllLecturesOfModule():
-    '''
-    mock.getAllLecturesOfModule = MagicMock(name = 'getAllLec')
-    mock.getPersonListFromArrayList = MagicMock(name = 'getPerLi')
-    mock.getAllLecturesOfModule('Some module')
-    mock.getAllLecturesOfModule.assert_called_with('Some module')
-    '''
-    pass #need to remove this once api code has no more bugs that prevent testing
-
+class ApiTest(unittest.TestCase):
+	
+	def test_getAllModules(self):
+		api.getAllModules = MagicMock(return_value = "Modules")
+		api.getAllModules()
+		api.getAllModules.assert_return_value("Modules")
+		
+	def test_getpersonListFromArrayList(self):
+		list = ["12345678", "13245678"]
+		person1 = Person()
+		person2 = Person()
+		person = [person1,person2]
+		api.getpersonListFromArrayList = MagicMock(return_value=person)
+		api.getpersonListFromArrayList(list)
+		api.getpersonListFromArrayList.assert_called_once_with(list)
+		api.getpersonListFromArrayList.assert_return_value(person)
+		
+	def test_getAllLecturesOfModule(self):
+		person1 = Person()
+		person2 = Person()
+		person = [person1,person2]
+		api.getAllLecturesOfModule = MagicMock(return_value = person)
+		api.getAllLecturesOfModule("cos 301")
+		api.getAllLecturesOfModule.assert_called_once_with("cos 301")
+		api.getAllLecturesOfModule.assert_return_value(person)
+		
+	def test_getAllStudentsOfModule(self):
+		person1 = Person()
+		person2 = Person()
+		person = [person1,person2]
+		api.getAllStudentsOfModule = MagicMock(return_value=person)
+		api.getAllStudentsOfModule("cos 212")
+		api.getAllStudentsOfModule.assert_called_once_with("cos 212")
+		api.getAllStudentsOfModule.assert_return_value(person)
+		
+	def test_getAllTAsOfModule(self):
+		person1 = Person()
+		person2 = Person()
+		person = [person1,person2]
+		api.getAllTAsOfModule = MagicMock(return_value=person)
+		api.getAllTAsOfModule("cos 212")
+		api.getAllTAsOfModule.assert_called_once_with("cos 212")
+		api.getAllTAsOfModule.assert_return_value(person)
+		
+	def test_getAllNamesOf(self):
+		person1 = Person()
+		person2 = Person()
+		person = [person1,person2]
+		name = ["mamelo", "koketso"]
+		api.getAllNamesOf = MagicMock(return_value = name)
+		api.getAllNamesOf(person)
+		api.getAllNamesOf.assert_called_once_with(person)
+		api.getAllNamesOf.assert_return_value(name)
+		
+	def test_getAllMarkersOfModule(self):
+		list = ["12435687", "13456782"]
+		api.getAllMarkerOfModule = MagicMock(return_value = list)
+		api.getAllMarkerOfModule("cos 332")
+		api.getAllMarkerOfModule.assert_called_once_with("cos 332")
+		api.getAllMarkerOfModule.assert_return_value(list)
+		
+	def test_createAssessment(self):
+		pass
+		
+	def test_getAssessment(self):
+		assessment = Assessment()
+		api.getAssessment = MagicMock(return_value = assessment)
+		api.getAssessment()
+		api.getAssessment.assert_return_value(assessment)
+		
+	def test_createLeafAssessment(self):
+		pass
+		
+	def test_getAssessmentForModuleByName(self):
+		assessment = Assessment()
+		api.getAssessmentForModuleByName = MagicMock(return_value = assessment)
+		api.getAssessmentForModuleByName("cos 301", "practical 1")
+		api.getAssessmentForModuleByName.assert_called_once_with("cos 301", "practical 1")
+		api.getAssessmentForModuleByName.assert_return_value(assessment)
 
 
 '''
-=============End api===========
-===============================
+=============End api tests===========
+=====================================
 '''
 
 
 '''
-=============Testing view==========
-===================================
+=============Testing views==========
+====================================
 '''
 
 
