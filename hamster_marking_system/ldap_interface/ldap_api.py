@@ -1,11 +1,11 @@
-from django.shortcuts import render
-import ldap
+import ldap, sys
 import re
 from django.http import HttpResponse
+from django.shortcuts import render
 
 global ldapURI
-#ldapURI = "ldap://137.215.40.94"
-ldapURI = "ldap://127.0.0.1"
+#ldapURI = "ldap://196.249.15.94"
+#ldapURI = 'ldap://127.0.0.1'
 global basedn
 basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
 # Create your views here.
@@ -27,14 +27,14 @@ def authenticateUser(request, username, password):
     try:
         ldapConnectionLocal = initialize_ldap()
         print 'LDAP initialized...'
-        results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"uid="+username)
+        results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"uid="+username)
         for dn,entry in results:
             dn = dn
         try:
             dn
         except NameError:
-            #raise Exception(ldap.INVALID_CREDENTIALS)
-            print "Incorrect information used in authenticating user."
+            raise Exception(ldap.INVALID_CREDENTIALS)
+            #print "Incorrect information used in authenticating user."
         else:
             newUsername = dn
             ldapConnectionTemp = ldap.initialize(AUTH_LDAP_SERVER_URI)
@@ -44,13 +44,13 @@ def authenticateUser(request, username, password):
             request.session['user'] = constructPersonDetails(username)
             return request.session['user']
 
-    except ldap.INVALID_CREDENTIALS, e:
-        #raise e
-        print "Incorrect information used in authenticating user."
+    except NameError:
+        raise Exception(ldap.INVALID_CREDENTIALS)
+        #print "Incorrect information used in authenticating user."
 
 def getGroups(username, filterv):
     ldapConnectionLocal = initialize_ldap()
-    results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"(&(memberuid="+username+")(cn=" + filterv + "*))",["cn"])
+    results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"(&(memberuid="+username+")(cn=" + filterv + "*))",["cn"])
     resultArray = []
     for dn,cn in results:
         tmp = str(cn['cn'])[2:-2]
@@ -76,7 +76,7 @@ def sourceLecturerDesignations(username):
 
 def sourceDemographics(username):
     ldapConnectionLocal = initialize_ldap()
-    results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"uid="+username,["uid","title","initials","cn","sn","mail"])
+    results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"uid="+username,["uid","title","initials","cn","sn","mail"])
     for dn,attributes in results:
         return attributes
 
@@ -93,7 +93,7 @@ def constructPersonDetails(username):
 
 def getAllModuleCodes():
     ldapConnectionLocal = initialize_ldap()
-    results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"cn=stud_*",["cn"])
+    results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"cn=stud_*",["cn"])
     resultArray = []
     for dn,cn in results:
         tmp = str(cn['cn'])[2:-2]
@@ -107,7 +107,7 @@ def getAllModuleCodes():
 
 def getMembers(groupName):
     ldapConnectionLocal = initialize_ldap()
-    results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,"cn=" + groupName,["memberUid"])
+    results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"cn=" + groupName,["memberUid"])
     resultArray = []
     for dn,memberUid in results:
         if "memberUid" in memberUid:
@@ -143,7 +143,7 @@ def findPerson(filterName, filterValue):
         filterValue.index('*')
     except:
         ldapConnectionLocal = initialize_ldap()
-        results = ldapConnectionLocal.search_s(basedn,ldap.SCOPE_SUBTREE,filterName + "=" + filterValue,["uid"])
+        results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,filterName + "=" + filterValue,["uid"])
         resultArray = {}
         for dn,uid in results:
             resultArray[str(uid['uid'])[2:-2]] = constructPersonDetails(str(uid['uid'])[2:-2])

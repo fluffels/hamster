@@ -182,10 +182,6 @@ class AggregateAssessment(Assessment):
       assess = Assessment.objects.filter(Q(Assessment__name=self.assess_name))
       return assess
     
-    def get_mark(): #here we will use an aggregator and retrieve a mark from that agregator
-      mark = aggregator.aggregateMarks(self.get_current_assessment())
-      return mark
-    
     def get_subassessment(self, nameofSub):
       # This traverses through the tree and tries find the object
       sub = Assessment.objects.filter(Q(Assessment__name=nameofSub))
@@ -252,20 +248,12 @@ def deleteAggregateAssessment(self):
 
 class LeafAssessment(Assessment):
     full_marks = models.IntegerField()
-    mark_obtained = models.IntegerField()
     
     def get_full_marks(self):
       return self.full_marks
     def set_full_marks(self,value):
       self.full_marks=value
       self.save()
-      
-    def award_mark(self, mark_):
-      self.mark_obtained = mark_
-      self.save()
-    
-    def get_awarded_mark(self):
-      return self.mark_obtained
     
     def __unicode__(self):
       return 'Mark'
@@ -288,10 +276,10 @@ class Person(models.Model):
     firstName = models.CharField(max_length = 20, null = False)
     upId = models.CharField(max_length = 9, null = False, unique=True)
     surname = models.CharField(max_length = 30, null = False)
-    studentOf_module  = models.ManyToManyField(Module, related_name = 'studentOf_module')
-    tutorOf_module  = models.ManyToManyField(Module, related_name = 'tutorOf_module')
-    teachingAssistantOf_module  = models.ManyToManyField(Module, related_name = 'teachingAssistantOf_module')
-    lectureOf_module = models.ManyToManyField(Module, related_name = 'lectureOf_module')
+    studentOf_module  = models.ManyToManyField(Module, related_name = 'studentOf_module', blank = True)
+    tutorOf_module  = models.ManyToManyField(Module, related_name = 'tutorOf_module', blank = True)
+    teachingAssistantOf_module  = models.ManyToManyField(Module, related_name = 'teachingAssistantOf_module', blank = True)
+    lectureOf_module = models.ManyToManyField(Module, related_name = 'lectureOf_module', blank = True)
     
     def _init_(self,fn, sn, uid):
             self.firstName = fn
@@ -379,6 +367,13 @@ class MarkAllocation(models.Model):
     assessment =models.ForeignKey('LeafAssessment') 
     marker = models.CharField(max_length=100)
     timeStamp = models.DateTimeField()
+    mark = models.IntegerField(max_length=3)
+    
+    def setMark(self,value):
+      self.mark = value
+      self.save()
+    def getMark(self):
+      return self.mark
     
     def setcomment(self,value):
         self.comment=value
@@ -578,7 +573,7 @@ class AllocatePerson(models.Model):
 		self.save()
 
 	def __unicode__(self):
-		return self.person_id
+		return 'Allocated person'
 
 #==============================AllocatePerson Function==============================
 def insertPersonToSession(personID,sessionID,student,Marker):
@@ -591,8 +586,8 @@ def getAllocatedPerson():
 def getAllocatedPerson(sessionID):
 	return AllocatePerson.object.filter(session_id = id)
 	
-def deleteAllocatedPerson(id):
-	AllocatePerson.delete(ID = id)
+def deleteAllocatedPerson(self):
+	AllocatePerson.delete(self)
 #==============================End of AllocatePerson Function==============================
 
 #----------------------------------------------------------
@@ -654,7 +649,7 @@ def logAudit(request,desc,act,table,column,old,new):
 
 
 def logAuditDetail(person,desc,act,table,column,old,new,table_id):
-    p = Person.objects.get(id=person)
+    p = Person.objects.get(id=request.REQUEST["id"])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     aa = AuditAction.objects.get(auditDesc=act)
@@ -672,9 +667,6 @@ def getAuditlog():
 
 #===================================End of AuditLog functions====================================
 
-def authenticateUser(username,passwords):
-    pass
-    #LDAP
 
 #This is to create the table shown in the master specification giving a
 #general idea of how their MySQL database table for courses looks like

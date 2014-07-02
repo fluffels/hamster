@@ -1,7 +1,9 @@
 import datetime
+import ldap
 from django.db.models import get_model
 
 from .models import *
+from ldap_interface.ldap_api import *
 from ldap_interface.views import *
 
 #general retrival functions
@@ -230,7 +232,7 @@ def getAllSessionsForAssessment(assess_id):
 # Parameter: opentime : DateTime
 # Parameter: closetime : DateTime
 # Return: Nothing
-def createSession(session_name,assess_id, opentime, closetime ):
+def createSession(request,session_name,assess_id, opentime, closetime ):
     obj = insertSessions(session_name,assess_id,opentime,closetime)
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
 
