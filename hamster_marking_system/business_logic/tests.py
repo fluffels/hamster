@@ -238,46 +238,98 @@ class ModuleOuterFunctionsTestCase(unittest.TestCase):
     def test_deleteModule(self):
         mockDelete.deleteModule('COS332')
         mockDelete.deleteModule.assert_called_once_with('COS332')
-    
-
-    
+      
 class AggregateAssessmentTestCase(unittest.TestCase):
-    '''
-    def setUp(self):
-        global mock
-        mock = AggregateAssessment(1) #null is possible parent id
-        mock = MagicMock(name = 'AggregateAssessment')
-        
-    def test_add_child(self, id_child):
-        pass
-    
-    def test_get_current_assessment():
-        pass
-    
-    def test_get_mark():
-        pass
-    
-    def test_get_subassessment(self, subName ):
-        pass
-    
-    def test_get_children(self ):
-        pass
-    
-    def test_get_aggregator_name():
-        pass
-    
-    def test_is_root(self):
-        pass
-    
-    def test_getaggregator(self):
-        #mock.getaggregator.assert_return_value_is('aggregator')
-        pass
-    
-    def test_choose_aggregator(self, agg_key):
-        pass
-    '''
-    
+	
+	def test_add_child( child_id):
+		assess_child = Assessment()
+		assess_child = MagicMock()
+		assess_parent = AggregateAssessment()
+		assess_parent = MagicMock()
+		assess_parent.add_child(assess_child.id)
+		assess_parent.add_child.assert_called_once_with(assess_child.id) 
+		
+	def test_get_current_assessment(self):
+		assess = AggregateAssessment()
+		assess = MagicMock()
 
+		assess2 = assess.get_current_assessment()
+		assess.get_current_assessment.assertEqual(assess2.id, assess.id)
+		
+	def test_get_mark(self):
+		assess = AggregateAssessment()
+		assess = MagicMock()
+		assess.mark = 5
+		x = assess.get_mark()
+		assess.get_mark.assertEqual(assess.get_mark, x)
+		
+	def test_get_subassessment( sub_name):
+		assess = AggregateAssessment()
+		subAssess = AggregateAssessment(assess.id)
+		
+		assess = MagicMock()
+		subAssess = MagicMock()
+		
+		x = assess.get_subassessment(subAssess)
+		
+		assess.get_subassessment.assertEqual(x.id, subAssess.id)
+		
+	def test_get_children(self):
+		assess = AggregateAssessment()
+		subAssess = AggregateAssessment(assess.id)
+		
+		assess = MagicMock()
+		subAssess = MagicMock()
+		
+		x = assess.get_subassessment(subAssess)
+		
+		assess.get_subassessment.assertEqual(x.id, subAssess.id)
+		
+	def test_get_aggregator_name(self):
+		assess = AggregateAssessment()
+		assess = MagicMock()
+		assess.choose_aggregator(1)
+		
+		name_=assess.get_aggregator_name()
+		
+		assess.get_aggregator_name.assertEqual(name_, 'S')
+		
+		
+	def test_is_root(self):
+		assess = AggregateAssessment()
+		non_rootAssess = AggregateAssessment(assess.id)
+		
+		assess = MagicMock()
+		non_rootAssess = MagicMock()
+		not_root = non_rootAssess.is_root() #false
+		def_root = assess.is_root() #true
+		
+		assess.is_root.assertNotEqual(not_root, def_root)
+		
+	def test_get_aggregator(self):
+		assess = AggregateAssessment()
+		assess = MagicMock()
+		
+		assess.choose_aggregator(1)
+		copy = assess.get_aggregator()
+		
+		assess.get_aggregator.assertEqual(assess, copy)
+		
+		
+	def test_choose_aggregator(self):
+		assess = AggregateAssessment()
+		assess2 = AggregateAssessment()
+		
+		assess = MagicMock()
+		assess2 = MagicMock()
+		
+		assess.choose_aggregator(1)
+		assess2.choose_aggregator(2)
+		
+		first = assess.get_aggregator_name()
+		second = assess2.get_aggregator_name()
+		
+		assess.choose_aggregator.assertNOtEqual(first, second)
 
 class SessionTestCase(unittest.TestCase):
 	

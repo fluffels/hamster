@@ -85,12 +85,14 @@ def getAllMarkersOfModule(mod_code):
 # Parameter: assessment_weight_ : Integer?
 # Parameter: assessment_type_ : String
 # Parameter: module_code_ : Object
-# Return: Nothing
-def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
-    obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
+# Return: Boolean
+def createAssessment(request, assessment_name_,assessment_type_,module_code_, parent=None):
+    obj = insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
+    if obj: return True
+    return False
 
-def getAssessment():
+def getAllAssessments():
 	return Assessment.objects.all()
 # Name: createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_)
 # Description: Creates a leaf assessment object and saves it to tge database
@@ -99,8 +101,8 @@ def getAssessment():
 # Parameter: assessment_id_ : ?
 # Parameter: max_mark_ : Integer
 # Return: 
-def createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_):
-    obj = insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
+def createLeafAssessment(request, leaf_name_,max_mark_, parent=None):
+    obj = insertLeafAssessment(leaf_name_,max_mark_,parent=None)
     logAudit(request,"Inserted new leaf assessment","insert","dbModels_leafassessment","id",None,obj.id)
 
 # Name: getAssessmentForModuleByName(mod_code, name)
@@ -121,9 +123,9 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_nam
     temp = getAssessmentForModuleByName(mod_code, assess_name)
     list = []
     if(temp):
-        temp2 = LeafAssessment.objects.filter(assessment_id=temp[0], leaf_name=leaf_name_)
+        temp2 = LeafAssessment.objects.filter(assessment_id=temp.id, leaf_name=leaf_name_)
         if(temp2):
-            list.append(temp2[0])
+            list.append(temp2)
     return list
 
 # Name: getAllAssessmentsForModule(mod_code):
@@ -178,9 +180,19 @@ def getAllModulesForLecturer(uid):
 # Description: Returns all the LeafAssessments that belong to a specific Assessment
 # Parameter: assess_code
 # Return: LeafAssessment[]
-def getAllLeafAssessmentsForAssessment(assess_code):
-  temp = LeafAssessment.objects.filter(assessment_id=assess_code)
-  return temp
+def getAllLeafAssessmentsForAssessment(assess_code): #Recursively going through tree from passed in assessment
+    the_assess = Assessment.objects.filter(id=assess_code)
+    if the_assess.assessment_type == 'Leaf':
+        return the_assess
+    else:
+        childrenList = []
+        children = LeafAssessment.objects.filter(parent=assess_code)
+        for child in children:
+            if child.assessment_type == 'Aggregate':
+                childrenList.append(child.getAllLeafAssessmentsForAssessment(child.id)) #recursive
+            else:
+                childrenList.append(child)
+        return childrenList
 
 # Name: getAllAssementsForStudent(empl_no,mod_code)
 # Description: Returns all Assessments that a student has been marked for
@@ -188,24 +200,14 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssementsForStudent(empl_no,mod_code):
-    temp = MarkAllocation.objects.filter(student=empl_no)
-    list = []
-    alreadyScanned = []
     
-    for x in temp:
-        temp2 = LeafAssessment.objects.filter(id=x.leaf_id_id)
-        found  = False
-        for m in alreadyScanned:
-            if(temp2[0].assessment_id_id == m.assessment_id_id):
-                found = True
-        if (found == False):
-            alreadyScanned.append(temp2[0])
-
-    for x in alreadyScanned:
-        temp3 = Assessment.objects.filter(id=x.assessment_id_id)
-        if (str(temp3[0].getModule()) == str(mod_code)):
-            list.append(temp3[0])
-    return list
+    person = Person.objects.filter(upId=empl_no)
+    try:
+        if person.isEnrolled(mod_code):
+            assess = Assessments.objects.filter(mod_id = mod_code)
+    except Exception as e:
+        print e
+    return assess
 
 # Name: getAllSessionsForModule(mod_code)
 # Description: Returns all the sessions for a module
@@ -428,13 +430,11 @@ def getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
         list.append(x.getName())
         list.append(x.getMax_mark())
         try:
-            marks = MarkAllocation.objects.filter(leaf_id=x,student=uid)
+            marks = MarkAllocation.objects.filter(leaf_id=x.id,student=uid)
             list.append(marks.getMark())
             list.append(marks.getID())
         except Exception as e:
             print e
-            list.append(-2)
-            list.append(-2)
         list.append(x.id)
         listMark.append(list)
     return listMark
@@ -457,7 +457,7 @@ def getAllAssessmentTotalsForStudent(uid, mod_code):
         for m in leafMarks:
             counter = counter + 1
             if (counter % 2 == 0):
-                total = total + m[3]
+                total = total + m[3] #might have to b m[2]
             else:
                 mark = mark + m[3]
         list = []
@@ -492,7 +492,6 @@ def getAssessmentTotalForStudent(uid, mod_code, assess_id):
         list.append(total)
         list.append(mark)
         totals.append(list)
-    
     return totals
 
 # Name: populateModules()
@@ -599,7 +598,7 @@ def removeLeafAssessment(request,leaf_id):
     deleteLeafAssessment(leaf_id)
       
 def removeAssessment(request,assess_id):
-    #try:
+    try:
         assess = getAssessmentFromID(assess_id)
         sessions = Sessions.objects.filter(assessment_id_id = assess)
         for x in sessions:
@@ -608,8 +607,10 @@ def removeAssessment(request,assess_id):
         for x in leafs:
             removeLeafAssessment(request,x)
         deleteAssessment(assess)
-    #except Exception as e:
-        #raise e
+    except Exception as e:
+        raise e
+    return True
+
 # Name: getAssessmentFromID(row_id)
 # Description: Returns an Assessment object from a specific ID
 # Parameter: row_id = Integer
@@ -729,9 +730,7 @@ def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_, sess):
         raise e
 
 def getSessionForStudentForAssessmentOfModule(student_id_, leaf_id, mod_code):
-    try:
-        
-        
+    try: 
         leaf = getLeafAssessmentFromID(leaf_id)
         sess = Sessions.objects.filter(assessment_id_id = leaf.assessment_id)
         

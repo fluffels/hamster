@@ -78,6 +78,7 @@ class Assessment(PolymorphicModel):
     published = models.BooleanField()
     mod_id = models.ForeignKey('Module')
     parent = models.IntegerField() #the assess_id of the parent will be passed
+    assessment_type = models.CharField(max_length=65)
     
     def getname(self):
         return self.assess_name
@@ -91,22 +92,23 @@ class Assessment(PolymorphicModel):
         self.save()
     def get_mod_id(self ):
         return self.mod_id
-    
-    def set_parent(self, parent_id):
-      self.parent = parent_id
-      self.save()
-      return true
-    
     def get_parent():
       return self.parent
-
-
+    def is_root(self):
+      if self.parent is None:
+        return True
+      return False
+    
     def __unicode__(self):
         return self.assess_name
       
 #================================Additional Assessment Function===============================
-def insertAssessment(name_,published_):
-    asses = Assessment(name=name_,published=published_)
+def insertAssessment(name_,assess_type, mod_code,_parent=None):
+#  insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
+    if parent is None:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=None) 
+    else:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=_parent)
     asses.save()
     return asses
 
@@ -162,29 +164,18 @@ class AggregateAssessment(Assessment):
     session = models.ForeignKey('Sessions')
     isroot = models.BooleanField()
    
-    
-    def __init__(self, possible_parent):
-      if possible_parent==null:
-        isroot=true
-      else:
-        isroot=false
-        self.set_parent(possible_parent)
-        possible_parent.add_child(self.id)
-        
-      self.save()
-    
     def add_child(self, child_id):
-      child_assess = Assessment.objects.filter(Q(Assessment_id=child_id))
-      child_assess.set_parent(self.id)
+      childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
+      childAssess.set_parent(self.id)
       return true
     
     def get_current_assessment():
-      assess = Assessment.objects.filter(Q(Assessment__name=self.assess_name))
+      assess = Assessment.objects.filter(Q(Assessment__id=self.id))
       return assess
     
-    def get_subassessment(self, nameofSub):
+    def get_subassessment(self, sub_id):
       # This traverses through the tree and tries find the object
-      sub = Assessment.objects.filter(Q(Assessment__name=nameofSub))
+      sub = Assessment.objects.filter(Q(Assessment__id=sub_id))
       if sub != null:
         return sub
       else:
@@ -201,7 +192,7 @@ class AggregateAssessment(Assessment):
       return self.aggregator_name
     
     def is_root(self):
-      return self.isroot #determined in the constructor 
+      return self.isroot #find a way to determine the root 
     
     def getaggregator(self):
       return self.aggregator
@@ -259,8 +250,12 @@ class LeafAssessment(Assessment):
       return 'Mark'
 
 #=================================LeafAssessment Function==============================
-def createLeafAssessment(name_, published_,fullMarks_):
-    a = LeafAssessment(name = name_, published = published_,full_marks=fullMarks_ )
+def insertLeafAssessment(name_,fullMarks_, parent=None):
+    if parent is None:
+      a = LeafAssessment(name = name_,full_marks=fullMarks_) 
+    else:
+      a = LeafAssessment(name = name_,full_marks=fullMarks_ )
+      a.set_parent(parent)
     a.save()
     return a
 
@@ -285,7 +280,6 @@ class Person(models.Model):
             self.firstName = fn
             self.upId = uid
             self.surname = sn
-            
     def getFirstName(self):
             return self.firstName
     def getupId(self):
@@ -322,7 +316,12 @@ class Person(models.Model):
             self.teachingAssistantOf_module.append(value)
     def teachingAssistantOfDelete(self,value):
             self.teachingAssistantOf_module.remove(value)
-            
+    
+    def isEnrolled(self, mod_code):
+            is_true = studentOf_module.objects.filter(module_id=mod_code)
+            if is_true is None:
+              return False
+            return True
             
     def __unicode__(self):
             return u'%s %s %s' % (self.firstName, self.surname, self.upId)
