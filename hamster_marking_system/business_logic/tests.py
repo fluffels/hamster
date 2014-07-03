@@ -792,7 +792,7 @@ class APIModuleTestCase(unittest.TestCase):
         pass
     
 
-class ApiTest(unittest.TestCase):
+class ApiTestCase(unittest.TestCase):
 	
 	def test_getAllModules(self):
 		api.getAllModules = MagicMock(return_value = "Modules")
@@ -871,8 +871,40 @@ class ApiTest(unittest.TestCase):
 		api.getAssessmentForModuleByName("cos 301", "practical 1")
 		api.getAssessmentForModuleByName.assert_called_once_with("cos 301", "practical 1")
 		api.getAssessmentForModuleByName.assert_return_value(assessment)
-
-
+	
+	def test_getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_):
+	    assessment = Assessment()
+	    assessment = MagicMock()
+	    leaf = LeafAssessment()
+	    leaf = MagicMock()
+	    leaf.parent = assessment
+	    
+	
+	def test_getAllAssessmentsForModule(mod_code):
+	    assess = Assessment()
+	    assess = MagicMock()
+	def test_getAllOpenAssessmentsForModule(mod_code):
+	    pass
+	def test_getAllLeafAssessmentsForAssessment(assess_code):
+	    pass
+	def test_getAllAssementsForStudent(empl_no,mod_code):
+	    pass
+	def test_getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
+	    pass
+	def test_getAllAssessmentTotalsForStudent(uid, mod_code):
+	    pass
+	def test_getAssessmentTotalForStudent(uid, mod_code, assess_id):
+	    pass
+	def test_removeLeafAssessment(request,leaf_id):
+	    pass
+	def test_removeAssessment(request,assess_id):
+	    pass
+	def test_getAssessmentFromID(row_id):
+	    pass
+	def test_getLeafAssessmentFromID(row_id):
+	    pass
+	def test_checkLeafAssessmentExists(leafAssessmentID):
+	    pass
 '''
 =============End api tests===========
 =====================================

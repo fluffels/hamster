@@ -242,7 +242,7 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
 # Description: Closes a session therefore no more marking can be done
 # Parameter: request : HTTPRequest
 # Parameter:  sess_id : Integer
-# Return: Nothing
+# Return: Boolean
 def closeSession(request, sess_id):
     try:
         sess = Sessions.objects.get(id=sess_id)
@@ -251,6 +251,8 @@ def closeSession(request, sess_id):
         logAuditDetail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
     except Exception as e:
         raise e
+    
+    return True
 
 # Name: openSession(request, sess_id)
 # Description: Opens a session for marking
@@ -343,14 +345,6 @@ def removeMarkerFromModule(request, mod_code, uid):
     except Exception as e:
         raise e	
 
-# Name:
-# Description:
-# Parameter: 
-# Return: 
-def getAllAggregatedResultsForStudentOfModule(empl_no, mod_code, level):
-  
-  return
-
 # Name: login(request, username, password)
 # Description: Authenticates a user for login purposes
 # Parameter: request : HTTPRequest
@@ -384,11 +378,11 @@ def setMarkerForModule(request, uid, mod_code):
 # Parameter: request : HTTPRequest
 # Parameter: uid : String
 # Parameter: session_id : Integer
-# Return: Nothing
+# Return: Boolean
 def setMarkerForSession(request, uid, session_id):
     obj = insertMarkSession(uid, session_id)
     logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.id)
-
+    return True
 # Name: getOpenSessions(assessment_id_)
 # Description: Returns all the sessions that are open for marking
 # Parameter: assessment_id : Assessment
@@ -549,7 +543,7 @@ def getSessionByName(mod_code, name):
 # Parameter: student : String
 # Parameter: timestamp : DateTime
 # Return: Integer (The created objects id)
-def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
+def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp, awarded_mark):
     print "Leaf"
 
     leaf = getLeafAssessmentFromID(leaf_id)
@@ -558,7 +552,7 @@ def createMarkAllocation(request, leaf_id, session_id, marker, student, timestam
     session = getSessionsFromID(session_id)
     print session
     
-    obj = insertMarkAllocation(leaf,0,session,marker,student,timestamp)
+    obj = insertMarkAllocation(leaf,awarded_mark,session,marker,student,timestamp)
     logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
     return obj.id
 
@@ -594,7 +588,12 @@ def removeMarkAlloccation(markAlloc_id):
     except Exception as e:
         raise e
 
-def removeLeafAssessment(request,leaf_id):    
+def removeLeafAssessment(request,leaf_id):
+    markAlloc = MarkAllocation.objects.filter(assessment=leaf_id)
+    
+    for single in markAlloc:
+        removeMarkAllocation(single.id)
+    
     deleteLeafAssessment(leaf_id)
       
 def removeAssessment(request,assess_id):
