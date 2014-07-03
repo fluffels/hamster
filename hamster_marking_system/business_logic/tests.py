@@ -880,31 +880,7 @@ class ApiTestCase(unittest.TestCase):
 	    leaf.parent = assessment
 	    
 	
-	def test_getAllAssessmentsForModule(mod_code):
-	    assess = Assessment()
-	    assess = MagicMock()
-	def test_getAllOpenAssessmentsForModule(mod_code):
-	    pass
-	def test_getAllLeafAssessmentsForAssessment(assess_code):
-	    pass
-	def test_getAllAssementsForStudent(empl_no,mod_code):
-	    pass
-	def test_getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
-	    pass
-	def test_getAllAssessmentTotalsForStudent(uid, mod_code):
-	    pass
-	def test_getAssessmentTotalForStudent(uid, mod_code, assess_id):
-	    pass
-	def test_removeLeafAssessment(request,leaf_id):
-	    pass
-	def test_removeAssessment(request,assess_id):
-	    pass
-	def test_getAssessmentFromID(row_id):
-	    pass
-	def test_getLeafAssessmentFromID(row_id):
-	    pass
-	def test_checkLeafAssessmentExists(leafAssessmentID):
-	    pass
+	
 '''
 =============End api tests===========
 =====================================
@@ -915,10 +891,42 @@ class ApiTestCase(unittest.TestCase):
 =============Testing views==========
 ====================================
 '''
+class ViewsTestCase(unittest.TestCase):
+    
+    def test_createAssessments(request):
+        assessment_name = 'Prac8'
+        assessment_type = 'Aggregate'
+        mod_code = 'COS212'
+        response = createAssessment(request, assessment_name, assessment_type, mod_code)
+        self.assertEqual(response.status_code, 200)
+        
+    def test_assignMarkerInSession(request):
+        markers = 'Susan'
+        session = '4'
+        response = setMarkerToSession(request, markers, session)
+        self.assertEqual(response.status_code, 200)
+        
+    def test_awardMark(request):
+        student = '12064115'
+        marker = 'Mamelo'
+        mark_awarded = '100'
+        session = '4'
+        assessment = 'Prac8'
+        timestamp = 'null'
+    
+        response = creatMarkAllocation(request, assessment, session, marker, student, timestamp, mark_awarded)
+        self.assertEqual(response.status_code, 200)
 
-
-
-
+    def test_viewAllSessions(request):
+        assessment = '4' #id
+        response = getOpenSessions(assessment)
+        self.assertEqual(response.status_code, 200)
+    
+    def test_closeSession(request):
+        session = '3'
+        
+        response = closeSession(session)
+        self.assertEqual(rsponse.status_code, 200)
 '''
 =============End views=============
 ===================================

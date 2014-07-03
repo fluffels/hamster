@@ -7,11 +7,10 @@ def createAssessments(request):
     assess_type = request.POST['assessment_type']
     mod_code = request.POST['module_code']
     parent_assess = request.POST['parent_assessment']
-    
     assessment_object = createAssessment(request,assess_name, assess_type, mod_code, parent_assess)
-    
     if assessment_object is None:
-        message = 'Assessment not created successfully'   
+        message = 'Assessment not created successfully'
+        raise Http404  
     else:
         message = 'Assessment created successfully'
     HttpResponse(message)
@@ -25,8 +24,7 @@ def assignMarkerInSession(request):
             success = setMarkerToSession(request, marker, session) #why are we sending the request with each marker?
             message = 'Markers assigned to session successfully'
     except Exception as e:
-        pass
-        
+        raise Http404
     HttpResponse(message)
     
 def awardMark(request):
@@ -40,6 +38,7 @@ def awardMark(request):
     markAlloc = creatMarkAllocation(request, assessment, session, marker, student, timestamp, mark_awarded)
     if markAlloc is None:
         message ='Error. Could not award mark.'
+        raise Http404
     else:
         message = 'Mark awarded successfully'
     HttpResponse(message)
