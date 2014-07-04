@@ -2,6 +2,54 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, Http404 
 from business_logic.api import *
 
+def Login(request):
+	username = request.POST['username']
+	password = request.POST['password']
+	array = login(request,username,password)
+	if array:
+		return HttpResponse(json.dumps(array), content_type = 'application/json')
+	else:
+		return HttpResponse(status = 201)
+	
+def CreateSession(request):
+	name = request.POST['session_name']
+	assess_id = request.POST['assessment_id']
+	open = request.POST['open_time']
+	close = request.POST['close_time']
+	
+	bool = createSession(request,name,assess_id,open,close)
+	if bool:
+		jsonObject = {'session_name':name, 'assessment_id': assess_id, 'open_time': open, 'close_time':close}
+		return HttpResponse(json.dumps(jsonObject), mimetype='application/json')
+	else:
+		return HttpResponse(status= 201)
+		
+def AssignStudent(request):
+	list = request.POST['students']
+	session_id = request.POST['session_id']
+	
+	for x in list:
+		addStudentToSession(x,session_id)
+	return HttpResponse(json.dumps(list))
+	
+def UpdateMArk(request):
+	mark_id = request.POST['markAllocation_id']
+	mark = request.POST['mark']
+	
+	bool = updateMarkAllocation(request,mark_id,mark)
+	if bool:
+		return HttpResponse(json.dumps(mark))
+	else:
+		return HttpResponse(status=201)
+	
+def viewStudentForSession(request):
+	session_id = request.POST['session_id']
+	list = addStudentsForASession(session_id)
+	if list:
+		return HttpResponce(json(list))
+	else:
+		return HttpResponce(status=200)
+
 def createAssessments(request):
     assess_name = request.POST['asssessment_name']
     assess_type = request.POST['assessment_type']

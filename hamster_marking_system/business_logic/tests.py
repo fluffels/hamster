@@ -880,7 +880,31 @@ class ApiTestCase(unittest.TestCase):
 	    leaf.parent = assessment
 	    
 	
-	
+	def test_getAllAssessmentsForModule(mod_code):
+	    assess = Assessment()
+	    assess = MagicMock()
+	def test_getAllOpenAssessmentsForModule(mod_code):
+	    pass
+	def test_getAllLeafAssessmentsForAssessment(assess_code):
+	    pass
+	def test_getAllAssementsForStudent(empl_no,mod_code):
+	    pass
+	def test_getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
+	    pass
+	def test_getAllAssessmentTotalsForStudent(uid, mod_code):
+	    pass
+	def test_getAssessmentTotalForStudent(uid, mod_code, assess_id):
+	    pass
+	def test_removeLeafAssessment(request,leaf_id):
+	    pass
+	def test_removeAssessment(request,assess_id):
+	    pass
+	def test_getAssessmentFromID(row_id):
+	    pass
+	def test_getLeafAssessmentFromID(row_id):
+	    pass
+	def test_checkLeafAssessmentExists(leafAssessmentID):
+	    pass
 '''
 =============End api tests===========
 =====================================
@@ -927,6 +951,36 @@ class ViewsTestCase(unittest.TestCase):
         
         response = closeSession(session)
         self.assertEqual(rsponse.status_code, 200)
+    
+    def test_login(self):
+        views.Login = MagicMock(return_value = 200)
+        views.Login("https://www.hamster.com/login")
+        views.Login.assert_called_once_with("https://www.hamster.com/login")
+        views.Login.assert_return_value(200)
+    
+    def test_CreateSession(self):
+        views.CreateSession = MagicMock(return_value = 200)
+        views.CreateSession("https://www.hamster.com/createSession")
+        views.CreateSession.assert_called_once_with("https://www.hamster.com/createSession")
+        views.CreateSession.assert_return_value(200)
+    
+    def test_AssignStudent(self):
+        views.AssignStudent = MagicMock(return_value = 200)
+        views.AssignStudent("https://www.hamster.com/AssignStudent")
+        views.AssignStudent.assert_called_once_with("https://www.hamster.com/AssignStudent")
+        views.AssignStudent.assert_return_value(200)
+    
+    def test_UpdateMArk(self):
+        views.UpdateMArk = MagicMock(return_value = 200)
+        views.UpdateMArk("https://www.hamster.com/updateMark")
+        views.UpdateMArk.assert_called_once_with("https://www.hamster.com/updateMark")
+        views.UpdateMArk.assert_return_value(200)
+    
+    def test_viewStudentForSession(self):
+        views.viewStudentForSession = MagicMock(return_value = 200)
+        views.viewStudentForSession("http://www.hamster.com/viewStudentForSession")
+        views.viewStudentForSession.assert_called_once_with("http://www.hamster.com/viewStudentForSession")
+        views.viewStudentForSession.assert_return_value(200)
 '''
 =============End views=============
 ===================================
