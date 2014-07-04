@@ -41,11 +41,11 @@ def getAllStudentsOfModule(mod_code):
     list = getStudentsOf(mod_code)
     return getPersonListFromArrayList(list)
 
-# Name: getAllTAsOfModule(mod_code)
+# Name: getAllTeachingAssistanceOfModule(mod_code)
 # Description: Returns all the TA's assigned to a module
 # Parameter: mod_code : String
 # Return: Person[]
-def getAllTAsOfModule(mod_code):
+def getAllTeachingAssistanceOfModule(mod_code):
     list = getTAsOf(mod_code)
     return getPersonListFromArrayList(list)
 
