@@ -1391,7 +1391,7 @@ class ApiTestCase(unittest.TestCase):
 	    agg.assertEqual(val, assess)
 =======
 	    pass'''
->>>>>>> 110a40f4c86aa441b8bdb9d086680040eeca8ff2
+
 '''
 =============End api tests===========
 =====================================
