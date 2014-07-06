@@ -2,7 +2,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, Http404 
 from business_logic.api import *
 
-def Login(request):
+def login(request):
 	username = request.POST['username']
 	password = request.POST['password']
 	array = login(request,username,password)
@@ -11,7 +11,7 @@ def Login(request):
 	else:
 		return HttpResponse(status = 201)
 	
-def CreateSession(request):
+def createSessions(request):
 	name = request.POST['session_name']
 	assess_id = request.POST['assessment_id']
 	open = request.POST['open_time']
@@ -24,7 +24,7 @@ def CreateSession(request):
 	else:
 		return HttpResponse(status= 201)
 		
-def AssignStudent(request):
+def assignStudent(request):
 	list = request.POST['students']
 	session_id = request.POST['session_id']
 	
@@ -32,7 +32,7 @@ def AssignStudent(request):
 		addStudentToSession(x,session_id)
 	return HttpResponse(json.dumps(list))
 	
-def UpdateMArk(request):
+def updateMArk(request):
 	mark_id = request.POST['markAllocation_id']
 	mark = request.POST['mark']
 	

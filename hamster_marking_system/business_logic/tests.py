@@ -1435,28 +1435,28 @@ class ViewsTestCase(unittest.TestCase):
         views.closeSession.assert_return_value(200)
 
     def test_login(self):
-        views.Login = MagicMock(return_value = 200)
-        views.Login("https://www.hamster.com/login")
-        views.Login.assert_called_once_with("https://www.hamster.com/login")
-        views.Login.assert_return_value(200)
+        views.login = MagicMock(return_value = 200)
+        views.login("https://www.hamster.com/login")
+        views.login.assert_called_once_with("https://www.hamster.com/login")
+        views.login.assert_return_value(200)
     
     def test_CreateSession(self):
-        views.CreateSession = MagicMock(return_value = 200)
-        views.CreateSession("https://www.hamster.com/createSession")
-        views.CreateSession.assert_called_once_with("https://www.hamster.com/createSession")
-        views.CreateSession.assert_return_value(200)
+        views.createSessions = MagicMock(return_value = 200)
+        views.createSessions("https://www.hamster.com/createSession")
+        views.createSessions.assert_called_once_with("https://www.hamster.com/createSession")
+        views.createSessions.assert_return_value(200)
     
     def test_AssignStudent(self):
-        views.AssignStudent = MagicMock(return_value = 200)
-        views.AssignStudent("https://www.hamster.com/AssignStudent")
-        views.AssignStudent.assert_called_once_with("https://www.hamster.com/AssignStudent")
-        views.AssignStudent.assert_return_value(200)
+        views.assignStudent = MagicMock(return_value = 200)
+        views.assignStudent("https://www.hamster.com/AssignStudent")
+        views.assignStudent.assert_called_once_with("https://www.hamster.com/AssignStudent")
+        views.assignStudent.assert_return_value(200)
     
     def test_UpdateMArk(self):
-        views.UpdateMArk = MagicMock(return_value = 200)
-        views.UpdateMArk("https://www.hamster.com/updateMark")
-        views.UpdateMArk.assert_called_once_with("https://www.hamster.com/updateMark")
-        views.UpdateMArk.assert_return_value(200)
+        views.apdateMArk = MagicMock(return_value = 200)
+        views.apdateMArk("https://www.hamster.com/updateMark")
+        views.apdateMArk.assert_called_once_with("https://www.hamster.com/updateMark")
+        views.apdateMArk.assert_return_value(200)
     
     def test_viewStudentForSession(self):
         views.viewStudentForSession = MagicMock(return_value = 200)
