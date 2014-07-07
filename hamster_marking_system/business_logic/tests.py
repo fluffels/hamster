@@ -1382,14 +1382,12 @@ class ApiTestCase(unittest.TestCase):
 	    assess.assertEqual(store, '2')
 	    
 	def test_checkLeafAssessmentExists(leafAssessmentID):
-<<<<<<< HEAD
 	    assess = LeafAssessment()
 	    assess = MagicMock(return_value = '1')
 	    agg = AggregateAssessment()
 	    agg.checkLeafAssessmentExists = MagicMock(return_value = assess)
 	    val =agg.checkLeafAssessmntExists()
 	    agg.assertEqual(val, assess)
-=======
 	    pass'''
 
 '''

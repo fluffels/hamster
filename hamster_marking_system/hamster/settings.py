@@ -35,7 +35,7 @@ AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
 AUTH_LDAP_ALWAYS_UPDATE_USER = False
 
 ALLOWED_HOSTS = ['http://hxvm1.cs.up.ac.za/']
-
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -62,6 +62,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sslify.middleware.SSLifyMiddleware',
 )
 
 ROOT_URLCONF = 'hamster.urls'
