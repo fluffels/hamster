@@ -3,12 +3,7 @@ from django.db.models import get_model
 from .models import *
 from ldap_interface.ldap_api import *
 
-
-
-
-
 #general retrival functions
-
 # Name: getAllModules()
 # Description: Returns all the module objects
 # Parameter: 
@@ -68,6 +63,25 @@ def getAllNamesOf(listy):
         list.append(x.getFirstName())
     return list
 
+# Name: getAllSurnameOf(list)
+# Description: Returns a list of the surname of the Person objects 
+# Parameter: list : Person[]
+# Return: String[]
+def getAllSurnameOf(list):
+	surname = []
+	for x in list:
+		surname.append(x.getSurname())
+	return surname
+	
+# Name: getAllUidOf(list)
+# Description: Returns a list of the surname of the Person objects 
+# Parameter: list : Person[]
+# Return: String[]
+def getAllUidOf(list):
+	uid = []
+	for x in list:
+		uid.append(x.getgetupId())
+	return uid
 # Name: getAllMarkersOfModule(mod_code)
 # Description: Returns an array of marker id's that are markers for a specific module
 # Parameter: mod_code : String
@@ -137,6 +151,11 @@ def getAllAssessmentsForModule(mod_code):
     temp= getAssessments(mod_code) 
     return temp
 
+def getAssessmentDetails(assess):
+	list = []
+	list.append(assess.id)
+	list.append(assess.getname())
+	return list
 # Name: getAllOpenSessionsForModule(mod_code)
 # Description: Returns all the Assessments that have an open session
 # Parameter: mod_code : String
@@ -226,6 +245,12 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
     obj = insertSessions(session_name,assess_id,opentime,closetime)
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
     return True
+    
+def getSessionIdFromObject(session):
+	return session.getID()
+
+def getSessionNameFromObject(session)
+	return session.getName()
 
 # Name: closeSession(request, sess_id)
 # Description: Closes a session therefore no more marking can be done
@@ -418,7 +443,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 	list = getOpenSessions(assessment_id_)
 	listy = []
 	for x in list:
-		markerS =AllocatePerson.objects.filter(person_id=marker_id_, session_id =x)
+		markerS =AllocatePerson.objects.filter(person_id=marker_id_,isMarker=1,session_id =x)
 		for m in markerS:
 		        sess = m.getSessionID()
 		        session = Sessions.object.get(id = sess)
