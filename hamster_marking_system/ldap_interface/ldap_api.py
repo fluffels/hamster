@@ -16,11 +16,8 @@ def initialize_ldap():
     except NameError:
         try:
             global ldapConnection
-            print "HELO,"
             ldapConnection = ldap.initialize(AUTH_LDAP_SERVER_URI)
-            print "IS IT ME YOU'RE"
             ldapConnection.simple_bind_s()
-            print "LOOKING FOR..."
             return ldapConnection
         except Exception, e:
             raise e
@@ -32,13 +29,15 @@ def authenticateUser(request, username, password):
         ldapConnectionLocal = initialize_ldap()
         print 'LDAP initialized...'
         results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"uid="+username)
+        print results
         for dn,entry in results:
             dn = dn
         try:
             dn
+            print dn
         except NameError:
             raise Exception(ldap.INVALID_CREDENTIALS)
-            #print "Incorrect information used in authenticating user."
+            print "Incorrect information used in authenticating user."
         else:
             newUsername = dn
             ldapConnectionTemp = ldap.initialize(AUTH_LDAP_SERVER_URI)

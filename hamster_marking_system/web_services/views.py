@@ -3,46 +3,47 @@ import datetime
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from business_logic import api 
+from django.core.context_processors import csrf
 
 
-def login(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		username =json_data['uid']
-		password =json_data['pwd']
+def login(request,jsonObj):
+	#if request.method == 'POST':
+	json_data = json.loads(jsonObj)
+	username =json_data['username']
+	password =json_data['password']
 
-		try:
-			usr = api.login(request,username,password)
-			data = [{
-				"type":1,
-				"message":"User logged in",
-				"cn": usr.get('cn'), 
-				"uid": usr.get('uid'),
-				"title": usr.get('title'), 
-				"lecturerOf": usr.get('lecturerOf'), 
-				"teachingAssistantOf": usr.get('teachingAssistantOf'), 
-				"sn": usr.get('sn'), 
-				"tutorFor": usr.get('tutorFor'), 
-				"studentOf": usr.get('studentOf'),
-				"initials": usr.get('initials')
-			}]
-			return HttpResponse(json.dumps(data), content_type="application/json")
-		except Exception, e:
-			data =[
-				{
-					'type':-1,
-					'message':'login failed. Server exception'
-				}
-			]
-			return HttpResponse(json.dumps(data)) 
-	else:
+	try:
+		usr = api.login(request,username,password)
+		data = [{
+			"type":1,
+			"message":"User logged in",
+			"cn": usr.get('cn'), 
+			"uid": usr.get('uid'),
+			"title": usr.get('title'), 
+			"lecturerOf": usr.get('lecturerOf'), 
+			"teachingAssistantOf": usr.get('teachingAssistantOf'), 
+			"sn": usr.get('sn'), 
+			"tutorFor": usr.get('tutorFor'), 
+			"studentOf": usr.get('studentOf'),
+			"initials": usr.get('initials')
+		}]
+		return HttpResponse(json.dumps(data), content_type="application/json")
+	except Exception, e:
+		data =[
+			{
+				'type':-1,
+				'message':'login failed. Server exception'
+			}
+		]
+		return HttpResponse(json.dumps(data)) 
+	'''else:
 		data =[
 			{
 				'type':-1,
 				'message': 'Login failed. Request invalid'
 			}
 		]
-		return HttpResponse(json.dumps(data))
+		return HttpResponse(json.dumps(data))'''
 		
 def logout(request):
 	if request.method == 'POST':
@@ -329,13 +330,13 @@ def createSessionForAssessment(request):
 		bool = createSession(request,name,assID,open,close)
 		if bool:
 			data=[{
-				'type':1
+				'type':1,
 				'message':'session created'
 			}]
 			return HttpResponse(json.dumps(data))
 		else:
 			data = [{
-				'type':-1
+				'type':-1,
 				'message':'session not created'
 			}]
 			return HttpResponse(json.dumps(data))

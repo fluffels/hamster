@@ -249,7 +249,7 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
 def getSessionIdFromObject(session):
 	return session.getID()
 
-def getSessionNameFromObject(session)
+def getSessionNameFromObject(session):
 	return session.getName()
 
 # Name: closeSession(request, sess_id)
