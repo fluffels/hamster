@@ -2,6 +2,7 @@ import ldap, sys
 import re
 from django.http import HttpResponse
 from django.shortcuts import render
+from hamster.settings import *
 
 global ldapURI
 #ldapURI = "ldap://196.249.15.94"
@@ -15,8 +16,11 @@ def initialize_ldap():
     except NameError:
         try:
             global ldapConnection
+            print "HELO,"
             ldapConnection = ldap.initialize(AUTH_LDAP_SERVER_URI)
+            print "IS IT ME YOU'RE"
             ldapConnection.simple_bind_s()
+            print "LOOKING FOR..."
             return ldapConnection
         except Exception, e:
             raise e

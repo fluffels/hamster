@@ -12,8 +12,7 @@ def login(request):
 		password =json_data['pwd']
 
 		try:
-			api.login(request,username,password)
-			usr =request.session['user']
+			usr = api.login(request,username,password)
 			data = [{
 				"type":1,
 				"message":"User logged in",
@@ -348,10 +347,140 @@ def addMarkersToSession(request):
 	
 def addSessionToMarker(request):
 	pass
+
+def removeMarkerFromSession(request):
+	pass
+	
+def removeStudentFromSession(request):
+	pass
 	
 def deleteSessionFromAssessment(request):
 	if request.method == 'POST':
 		json_data = json.loads(request.body)
+		sessionID = json_data['sessionID']
+		bool = api.removeSession(request,sessionID)
+		if bool:
+			data=[{
+				'type':1,
+				'message': 'session deleted'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data=[{
+				
+			'type':-1,
+			'message': 'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Http404()
+
+def openSession(request):
+	if request.method == 'POST':
+		json_data = json.loads(request.body)
+		sessionID = json_data['sessionID']
+		bool = api.closeSession(sessionID)
+		if bool:
+			data = [{
+				'type':1,
+				'message': 'session opened'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'typr':-1,
+				'message': 'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Http404()
 		
+def closeSession(request):
+	if request.method =='POST':
+		json_data = json.loads(request.body)
+		sess = json_data['sessionID']
+		bool = api.closeSession(sess)
+		if bool:
+			data = [{
+				'type':1,
+				'message':'session closed'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data=[{
+				'type':-1,
+				'message':'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Htpp404()
 		
+def removeMarkerFromModule(request):
+	if request.method == 'POST':
+		json_data = json.loads(request.body)
+		marker = json_data['uid']
+		mod_code = json_data['mod_code']
+		bool = api.removeMarkerFromModule(request,mod_code,marker)
+		if bool:
+			data =[{
+				'type':1,
+				'message': 'marker removed'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data =[{
+				'type':-1,
+				'message':'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Http404()
+
+def setTAforModule(request):
+	if request.method =='POST':
+		json_data = json.loads(request.body)
+		mod_code= json_data['mod_code']
+		uid = json_data['uid']
+		ta = api.setTeachingAssistantForModule(request,uid,mod_code)
+		if ta:
+			data =[{
+				'type':1,
+				'message':'ta inserted'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data =[{
+				'type':-1,
+				'message':'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Http404()
+		
+def setTutorForModule(request):
+	if request.method == 'POST':
+		json_data = json.loads(request.body)
+		mod = json_data['mode_code']
+		uid = json_data['uid']
+		ta = api.setTutorForModule(request,uid,mod)
+		if ta:
+			data = [{
+				'type':1,
+				'message':'tutor inserted'
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':-1,
+				'message':'request failed'
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		return Http404()
+
+def createAssessment(request):
+	pass
+
+
+
 # Create your views here.
