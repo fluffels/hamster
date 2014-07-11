@@ -85,6 +85,7 @@ def getAllUidOf(list):
 	for x in list:
 		uid.append(x.getgetupId())
 	return uid
+
 # Name: getAllMarkersOfModule(mod_code)
 # Description: Returns an array of marker id's that are markers for a specific module
 # Parameter: mod_code : String
@@ -166,6 +167,7 @@ def getAssessmentDetails(assess):
 	list.append(assess.id)
 	list.append(assess.getname())
 	return list
+
 # Name: getAllOpenSessionsForModule(mod_code)
 # Description: Returns all the Assessments that have an open session
 # Parameter: mod_code : String

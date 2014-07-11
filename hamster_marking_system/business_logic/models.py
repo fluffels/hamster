@@ -97,6 +97,7 @@ class Assessment(PolymorphicModel):
         return self.mod_id
     def get_parent():
       return self.parent
+
     def is_root(self):
       if self.parent is None:
         return True
@@ -522,7 +523,6 @@ class Sessions(models.Model):
     class Meta:
       verbose_name_plural = "Sessions"
      
-     
     def __unicode__(self):
           return u'%s' % (self.assessmentname)
 
@@ -583,6 +583,7 @@ class AllocatePerson(models.Model):
 
 	def __unicode__(self):
 		return 'Allocated person'
+
 
 #==============================AllocatePerson Function==============================
 def insertPersonToSession(personID,sessionID,student,Marker):

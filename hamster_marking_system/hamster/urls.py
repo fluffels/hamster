@@ -12,6 +12,7 @@ urlpatterns = patterns('',
      url(r'^view_assessment$','web_interface.views.getAllAssessmentOfModule', name='view_assessment'),
      url(r'^person_details$','web_interface.views.personDetails', name='person_details'),
      url(r'^view_session$','web_interface.views.getAllSessionsForAssessment', name='view_sessions'),    
+
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
