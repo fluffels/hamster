@@ -189,7 +189,6 @@ class Person_dataOuterFunctionsTestCase(unittest.TestCase):
     def test_deletePerson_data(self):
         mockDelete.deletePerson_data()
         mockDelete.deletePerson_data.assert_called_once()
-    
 
 class ModuleTestCase(unittest.TestCase):
     #Test get and set module code
@@ -486,10 +485,7 @@ class SessionTestCase(unittest.TestCase):
 
 
 class AssessmentTestCase(TestCase):
-	#def setUp(self):
-		#Module.objects.create(code='COS212')
-		#Assessment.objects.create(assessment_name='Practical8', assessment_weight='20', assessment_type='Aggregate', module_id=)
-
+	
 	def test_setModule(self):
 		ass = Assessment()
 		mod = Module()
@@ -1300,7 +1296,7 @@ class ApiTestCase(unittest.TestCase):
 		api.checkMarkAllocationExists.assert_called_once_with(per,ass)
 		api.checkMarkAllocationExists.assert_return_value(True)
 
-	'''def test_getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_):
+	def test_getLeafAssessmentOfAssessmentForModuleByName(self):
 	    assessment = Assessment()
 	    assessment = MagicMock()
 	    leaf = LeafAssessment()
@@ -1320,37 +1316,37 @@ class ApiTestCase(unittest.TestCase):
 	    assess.getAllOpenAssessmentsForModule()
 	    assess.getAllOpenAssessmentsForModule.assert_return_value('foo')
 	    
-	def test_getAllLeafAssessmentsForAssessment(assess_code):
+	def test_getAllLeafAssessmentsForAssessment(self):
 	    assess = Assessment()
 	    assess.getAllLeafAssessmentsForAssessment = MagicMock(return_value = "foo")
-	    assess.getAllLeafAssessmentsForAssessment()
-	    assess.assertEqual(getAllLeafAssessmentsForAssessment(), 'foo')
+	    mock =assess.getAllLeafAssessmentsForAssessment()
+	    assess.getAllLeafAssessmentsForAssessment.assertEqual(mock, 'foo')
 	    
-	def test_getAllAssessmentsForStudent(empl_no,mod_code):
+	def test_getAllAssessmentsForStudent(self):
 	    assess = Assessment()
 	    assess.getAllAssessmentsForStudent = MagicMock(return_value = 'foo')
-	    assess.getAllAssessmentsForStudent()
-	    assess.assertEqual(getAllAssessmentsForStudent(), 'foo')
+	    mock =assess.getAllAssessmentsForStudent()
+	    assess.getAllAssessmentsForStudent.assertEqual(mock, 'foo')
 	    
-	def test_getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id):
+	def test_getLeafAssessmentMarksOfAsssessmentForStudent(self):
 	    assess = Assessment()
 	    assess.getLeafAssessmentMarksOfAssessmentForStudent = MagicMock(return_value = 'foo')
-	    assess.getLeafAssessmentMarksOfAssessmentForStudent()
-	    assess.assertEqual(getLeafAssessmentMarksOfAssessmentForStudent(), 'foo')
+	    mock =assess.getLeafAssessmentMarksOfAssessmentForStudent()
+	    assess.getLeafAssessmentMarksOfAssessmentForStudent.assertEqual(mock, 'foo')
 	    
-	def test_getAllAssessmentTotalsForStudent(uid, mod_code):
+	def test_getAllAssessmentTotalsForStudent(self):
 	    assess = Assessment()
 	    assess.getAllAssessmentTotalsForStudent = MagicMock(return_value = 'foo')
-	    assess.getAllAssessmentTotalsForStudent()
-	    assess.assertEqual(getAllAssessmentTotalsForStudent(), 'foo')
+	    mock =assess.getAllAssessmentTotalsForStudent()
+	    assess.getAllAssessmentTotalsForStudent.assertEqual(mock, 'foo')
 	    
-	def test_getAssessmentTotalForStudent(uid, mod_code, assess_id):
+	def test_getAllAssessmentsForModule(self):
 	    assess = Assessment()
-	    assess.getAssessmentTotalForStudent = MagicMock(return_value ="foo")
+	    assess.getAllAssessmentsForModule = MagicMock(return_value ="foo")
 	    assess.getAllAssessmentsForModule()
 	    assess.getAllAssessmentsForModule.assert_return_value('foo')
 	    
-	def test_removeLeafAssessment(request,leaf_id):
+	def test_removeLeafAssessment(self):
 	    leaf = LeafAssessment()
 	    parent = AggregateAssessment()
 	    leaf = MagicMock(return_value ='50')
@@ -1360,7 +1356,7 @@ class ApiTestCase(unittest.TestCase):
 	    parent.removeLeafAssessment.assert_called_once_with(leaf)
 	    parent.removeLeafAssessment.assert_return_value('50')
 	       
-	def test_removeAssessment(request,assess_id):
+	def test_removeAssessment(self):
 	    assess = AggregateAssessment()
 	    assess.removeAssessment = MagicMock()
 	    child_assess = LeafAssessment()
@@ -1369,26 +1365,26 @@ class ApiTestCase(unittest.TestCase):
 	    assess.removeAssessment(child_assess)
 	    assess.removeAssessment.assert_called_once_with(child_assess)
 	   
-	def test_getAssessmentFromID(row_id):
+	def test_getAssessmentFromID(self):
 	    assess = Assessment()
 	    assess.getAssessmentFromID = MagicMock(return_value ="2")
 	    store =assess.getAssessmentFromID()
-	    assess.assertEqual(store, '2')
+	    assess.getAssessmentFromID.assertEqual(store, '2')
 	    
-	def test_getLeafAssessmentFromID(row_id):
+	def test_getLeafAssessmentFromID(self):
 	    assess = Assessment()
 	    assess.getLeafAssessmentFromID = MagicMock(return_value ="2")
 	    store =assess.getLeafAssessmentFromID()
-	    assess.assertEqual(store, '2')
+	    assess.getLeafAssessmentFromID.assertEqual(store, '2')
 	    
-	def test_checkLeafAssessmentExists(leafAssessmentID):
+	def test_checkLeafAssessmentExists(self):
 	    assess = LeafAssessment()
 	    assess = MagicMock(return_value = '1')
 	    agg = AggregateAssessment()
 	    agg.checkLeafAssessmentExists = MagicMock(return_value = assess)
-	    val =agg.checkLeafAssessmntExists()
-	    agg.assertEqual(val, assess)
-	    pass'''
+	    val =agg.checkLeafAssessmentExists()
+	    agg.checkLeafAssessmentExists.assertEqual(val, assess)
+	    pass
 
 '''
 =============End api tests===========
