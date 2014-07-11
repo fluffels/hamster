@@ -11,6 +11,9 @@ from ldap_interface.ldap_api import *
 def getAllModules():
     return Module.objects.all()
 
+def getPersonDetails(username):
+    return getPersonFromArr(username)
+
 # Name: getPersonObjectListFromArrayList(list)
 # Description: Returns a list of Person objects constructed from a list of Person id's
 # Parameter: list: UP_ID[]
@@ -148,8 +151,15 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leafName
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssessmentsForModule(mod_code):
-    temp= getAssessments(mod_code) 
-    return temp
+    #temp= getAssessments(mod_code)
+    print "am in"
+    temp = Assessment.objects.filter(mod_id = mod_code)
+    print temp
+    assessment = []
+    for x in temp:
+        assessment.append(x)
+    print assessment
+    return assessment
 
 def getAssessmentDetails(assess):
 	list = []
@@ -246,11 +256,11 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
     return True
     
-def getSessionIdFromObject(session):
-	return session.getID()
-
-def getSessionNameFromObject(session):
-	return session.getName()
+def getSessionDetails(session):
+    list = []
+    list.append(session.getID())
+    list.append(session.getName())
+    return list
 
 # Name: closeSession(request, sess_id)
 # Description: Closes a session therefore no more marking can be done

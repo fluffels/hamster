@@ -46,7 +46,7 @@ def login(request,jsonObj):
 		return HttpResponse(json.dumps(data))'''
 		
 def logout(request):
-	if request.method == 'POST':
+	#if request.method == 'POST':
 		try:
 			api.logout(request)
 			data =[
@@ -293,12 +293,17 @@ def getAllMarkerOfModule(request):
 		}]
 		return HttpResponse(json.dumps(data))
 		
-def getAllAssessmentOfModule(request):
-	if request.method == 'POST':
+def getAllAssessmentOfModule(request,jsonData):
+#	if request.method == 'POST':
+		print "web service views"
 		try:
-			json_data = json.loads(request.body)
-			mod_code = json_data['mode_code']
-			ass=api.getAllAssessmentsForModule(mode_code)
+			json_data = json.loads(jsonData)
+			print json_data
+			mod_code = json_data[0]['mod_code']
+			print mod_code
+			print "web service views1"
+			ass=api.getAllAssessmentsForModule(mod_code)
+			print "web service views2"
 			assessment = []
 			for x in ass:
 				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
@@ -311,7 +316,15 @@ def getAllAssessmentOfModule(request):
 			}]
 			return HttpResponse(json.dumps(data))
 		except Exception, e:
-			return Http404()
+			data = [{
+				'type':-1,
+				'message': 'assessment could not be retrieved'
+			}]
+			print "What happened Mamelo?"
+			print json.dumps(data)
+			return HttpResponse(json.dumps(data))
+
+			'''
 	else:
 		data = [{
 			'type':-1,
@@ -319,6 +332,7 @@ def getAllAssessmentOfModule(request):
 			
 		}]
 		return HttpResponse(json.dumps(data))
+	'''
 
 def createSessionForAssessment(request):
 	if request.method == 'POST':
@@ -342,7 +356,8 @@ def createSessionForAssessment(request):
 			return HttpResponse(json.dumps(data))
 	else:
 		return Http404()
-		
+
+	
 def addMarkersToSession(request):
 	pass
 	
@@ -482,6 +497,64 @@ def setTutorForModule(request):
 def createAssessment(request):
 	pass
 
+def personDetails(request):
+#	json_data = json.loads(jsonObject)
+	try:
+	     per = request.session['user']['uid']
+	     person = api.getPersonDetails(per[0])
+	     cn = person['cn'][0]
+	     title = person['title'][0]
+	     sn = person['sn'][0]
+	     initials = person['initials'][0]
+	     
+	     if person:
+	              data = [{
+	                      'type':1,
+	                      'message':'person data retrieved',
+	                      'name':cn,
+	                      'title':title,
+	                      'surname':sn,
+	                      'initials':initials
+	                }]
+	              return HttpResponse(json.dumps(data))
+	     else:
+	        data = [{
+	                      'type':-1,
+	                      'message':'person data retrieved'
+	                }]
+	        return HttpResponse(json.dumps(data))
+	except Exception, e:
+		data = [{
+			      'type':-1,
+			      'message':'person data retrieved'
+			}]
+		return HttpResponse(json.dumps(data))
 
-
+def getAllSessionsForAssessment(request,jsonObject):
+	json_data = json.loads(jsonObject)
+	assessID = json_data['assessmentID']
+	print assessID
+	info = api.getAllSessionsForAssessment(assessID)
+	print "passed"
+	print info
+	session =[]
+	if len(info) != 0:
+		print info
+		for x in info:
+			
+			list = api.getSessionDetails(x)
+			session.append(list)
+		data = [{
+			'type':1,
+			'message':'session retrieved',
+			'sessions':session
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		print "error"
+		data = [{
+			'type':-1,
+			'message':'error occured'
+		}]
+		return HttpResponse(json.dumps(data))
 # Create your views here.

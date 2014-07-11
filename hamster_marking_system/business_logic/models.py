@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from polymorphic import PolymorphicModel
 
 
-#from ldap.ldap import *
+from ldap_interface.ldap_api import *
 
 def login(request, username, password):
   personInfo = authenticateUser(username, password)
@@ -16,7 +16,11 @@ def getSessionPerson(request) :
   information = request.session["user"]
   return getPersonFromArr(information)
 
-def getPersonFromArr(data) :
+def getPersonFromArr(uid) :
+  person = sourceDemographics(uid)
+  print person
+  
+  '''
   information = request.session["user"]
   
   objPerson = Person(data["cn"],data["sn"],data["uid"])
@@ -32,8 +36,8 @@ def getPersonFromArr(data) :
   
   for x in data["lectureOf"] :
     sessionPerson.lectureOfInsert(x)
-  
-  return objPerson
+  '''
+  return person
 
 class Aggregator(object):
     def aggregateMarks(self,assessment=[]):
@@ -340,6 +344,9 @@ class Person_data(models.Model):
     def getData(self):
       return self.data
     
+    class Meta:
+      verbose_name_plural = "Person_data"
+    
     def __unicode__(self):
       return self.uid
     
@@ -511,6 +518,10 @@ class Sessions(models.Model):
         else:
             self.markallocation=value
      """
+     
+    class Meta:
+      verbose_name_plural = "Sessions"
+     
      
     def __unicode__(self):
           return u'%s' % (self.assessmentname)
