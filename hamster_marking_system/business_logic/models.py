@@ -4,11 +4,10 @@ import json
 
 from django.db import models
 from django.http import HttpResponse
-
 from polymorphic import PolymorphicModel
 
 
-#from ldap.ldap import *
+from ldap_interface.ldap_api import *
 
 def login(request, username, password):
   personInfo = authenticateUser(username, password)
@@ -17,7 +16,11 @@ def getSessionPerson(request) :
   information = request.session["user"]
   return getPersonFromArr(information)
 
-def getPersonFromArr(data) :
+def getPersonFromArr(uid) :
+  person = sourceDemographics(uid)
+  print person
+  
+  '''
   information = request.session["user"]
   
   objPerson = Person(data["cn"],data["sn"],data["uid"])
@@ -33,51 +36,166 @@ def getPersonFromArr(data) :
   
   for x in data["lectureOf"] :
     sessionPerson.lectureOfInsert(x)
-  
-  return objPerson
+  '''
+  return person
 
 class Aggregator(object):
     def aggregateMarks(self,assessment=[]):
         pass
 
+'''
+        BEST-OF AGGREGATOR
+'''
+class BestOfAggregator(Aggregator):
+  numContributors = models.IntegerField()
+  
+  def aggregateMarks(self, assess_id, contributors):
+    numContributors = contributors
+    main_parent = Assessment.objects.filter(id=assess_id)
+    list_of_children_marks = []
+    children = Assessment.objects.filter(parent=assess_id)
+    for child in children:
+      child_mark = helperBestOf(child.id)
+      list_of_children_marks.append(child_mark)
+    
+    try:
+      numChildren = len(children)
+      if numChildren >= numContributors:
+        summation =0.0
+        #sort
+        list_of_children_marks.sort(reversed)
+        
+        for i in range(numContributors):
+          item = list_of_children_marks[i]
+          summation += item
+        
+        aggregate = summation/numContributors
+        return aggregate
+    except Exception as e:
+      e = 'ERROR'
+    
+  def helperBestOf(child_id, sumOfMarks):
+    child_obj = Assessment.objects.filter(id=child_id)
+    if child_obj.getType() == 'Leaf':
+      markAlloc = MarkAllocation.objects.filter(assessment=child_id)
+      markGiven = markAlloc.getMark()
+      sumOfMarks += markGiven
+     
+    elif child_obj.getType() == 'Aggregate':
+      children = Assessment.objects.filter(parent = child_id)
+      for child in children:
+        sumOfMarks+= helperBestOf(child.id, sumOfMarks)
+      
+    return sumOfMarks
+    '''
 #pass the numContributer as the constructor's parameter
 class BestOfAggregator(Aggregator):
     numContributors = 0
     def __init__(value):
-            numContributors = value
-            
+            numContributors = value      
+          
     def aggregateMarks(self,assessment=[]):
         assessment.sort(reversed)
         total = 0.0
         for x in range(0,self.numContributors ):
             total += assessment[x]
         return (total/self.numContributors)
+    '''
 
 #pass the array of weights as the constructure's parameter
-class WeightedSumAggregator(Aggregator):
-    weights = []
-    
-    def __init__(value):
-            weights = value
-            
-    def aggregateMarks(self,assessment=[]):
-        total = 0.0
-        for x in assessment:
-            total += assessment[x] * self.weights[x]
-        return total/len(assessment)
+'''
+          WEIGHTED-SUM AGGGREGATOR
+'''
+class WeightedSumAggregator(Aggregator):        
+    def aggregateMarks(self,assessment_id):
+      root_assess = Assessment.objects.filter(id=assessment_id)
+      weight = root_assess.getWeight()
+      total = getTotals(assessment_id) #recursive function to get full marks of all leaves
+      agg_mark = self.getAggMark(assessment_id) #recursive function to get the aggregated marks of subassessments
+      
+      calculation = (agg_mark) * (weight/100)
+      return calculation
 
+    def getTotals(self, assess_id):
+      children = Assessment.objects.filter(parent=assess_id)
+      sumTotals = 0.0
+      for child in children:
+        if child.getType() == 'Aggregate':
+          sumTotals += getTotals(child.id)
+        elif child.getType() == 'Leaf':
+          sumTotals += child.getFullMarks()
+          
+      return sumTotals
+          
+      
+    def getAggMark(self, assess_id):
+      currAssessment = Assessment.objects.filter(id=assess_id)
+      children = Assessment.objects.filter(parent=assess_id)
+      sumAgg = 0.0
+      for child in children:
+        if child.getType() == 'Leaf':
+          sumAgg += child.get_mark_obtained()
+        elif child.getType() =='Aggregate':
+          subSum = getAggMark(child.id)
+          subTotal = getTotals(child.id)
+          weight = currAssessment.getWeight()
+          sumAgg += (subSum/sumTotal) * (weight/100)
+      
+      return sumAgg
+      
+  
+
+'''
+          SIMPLE-SUM AGGREGATOR
+'''
 class SimpleSumAggregator(Aggregator):
-    def aggregateMarks(self,assessment=[]):
-        total = 1.0     #Was 0 initially, there is a chance of division by Zero
-        for x in range(len(assessment)):
-            total += assessment[x]
-        return u'%d' % (total/len(assessment))
+  def aggregateMarks(self, assess_id):
+    root = Assessment.objects.filter(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_of_children =0.0
+    
+    for child in children:
+      if child.getType() == 'Leaf':
+        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
+        mark = markAlloc.getMark()
+        sum_of_children += mark
+      
+      elif child.getType() == 'Aggregate':
+        sum_of_children += helperSimpleSum(child.id, sum_of_children)
+        
+      num_children = len(children)
+      aggregate = sum_of_children/num_children
+    
+    return aggregate
+  
+  def helperSimpleSum(child_id, summation):
+    parent = Assessment.objects.filter(id=child_id)
+    children = Assessment.objects.filter(parent=child_id)
+    
+    for child in children:
+      if child.getType() == 'Leaf':
+        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
+        mark = markAlloc.getMark()
+        summation += mark
+      
+      elif child.getType() == 'Aggregate':
+        summation += helperSimpleSum(child.id, summation)
+        
+    return summation 
+  '''
+    def aggregateMarks(self,assessmentMarks):
+        total = 0.0
+        for x in range(len(assessmentMarks)):
+            total += assessmentMarks[x]
+        return u'%d' % (total/len(assessmentMarks))
+  '''
 
 class Assessment(PolymorphicModel):
     assess_name = models.CharField(max_length=65)
     published = models.BooleanField()
     mod_id = models.ForeignKey('Module')
     parent = models.IntegerField() #the assess_id of the parent will be passed
+    assessment_type = models.CharField(max_length=65)
     
     def getname(self):
         return self.assess_name
@@ -91,22 +209,24 @@ class Assessment(PolymorphicModel):
         self.save()
     def get_mod_id(self ):
         return self.mod_id
-    
-    def set_parent(self, parent_id):
-      self.parent = parent_id
-      self.save()
-      return true
-    
     def get_parent():
       return self.parent
 
-
+    def is_root(self):
+      if self.parent is None:
+        return True
+      return False
+    
     def __unicode__(self):
         return self.assess_name
       
 #================================Additional Assessment Function===============================
-def insertAssessment(name_,published_):
-    asses = Assessment(name=name_,published=published_)
+def insertAssessment(name_,assess_type, mod_code,_parent=None):
+#  insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
+    if parent is None:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=None) 
+    else:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=_parent)
     asses.save()
     return asses
 
@@ -125,13 +245,17 @@ class Module(models.Model):
     presentation_year = models.DateField(auto_now = True)
     module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
-    def getmoduleCode(self):
+    def getModuleCode(self):
         return self.moduleCode
-    def setmoduleCode(self,value):
+    def setModuleCode(self,value):
         self.moduleCode=value
         self.save()
         
-    def getModuleCode(self):
+    def setModuleName(self, value):
+      self.module_name = value
+      self.save()
+    
+    def getModuleName(self):
       return self.module_name
     
     def __unicode__(self):
@@ -144,7 +268,7 @@ def insertModule(code,name,year,assessments_):
     module.save()
     return module
 
-def getModule():
+def getAllModules():
     modules = Module.objects.all()
     return modules
 
@@ -158,33 +282,18 @@ class AggregateAssessment(Assessment):
     session = models.ForeignKey('Sessions')
     isroot = models.BooleanField()
    
-    
-    def __init__(self, possible_parent):
-      if possible_parent==null:
-        isroot=true
-      else:
-        isroot=false
-        self.set_parent(possible_parent)
-        possible_parent.add_child(self.id)
-        
-      self.save()
-    
     def add_child(self, child_id):
-      child_assess = Assessment.objects.filter(Q(Assessment_id=child_id))
-      child_assess.set_parent(self.id)
+      childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
+      childAssess.set_parent(self.id)
       return true
     
     def get_current_assessment():
-      assess = Assessment.objects.filter(Q(Assessment__name=self.assess_name))
+      assess = Assessment.objects.filter(Q(Assessment__id=self.id))
       return assess
     
-    def get_mark(): #here we will use an aggregator and retrieve a mark from that agregator
-      mark = aggregator.aggregateMarks(self.get_current_assessment())
-      return mark
-    
-    def get_subassessment(self, nameofSub):
+    def get_subassessment(self, sub_id):
       # This traverses through the tree and tries find the object
-      sub = Assessment.objects.filter(Q(Assessment__name=nameofSub))
+      sub = Assessment.objects.filter(Q(Assessment__id=sub_id))
       if sub != null:
         return sub
       else:
@@ -201,7 +310,7 @@ class AggregateAssessment(Assessment):
       return self.aggregator_name
     
     def is_root(self):
-      return self.isroot #determined in the constructor 
+      return self.isroot #find a way to determine the root 
     
     def getaggregator(self):
       return self.aggregator
@@ -248,27 +357,23 @@ def deleteAggregateAssessment(self):
 
 class LeafAssessment(Assessment):
     full_marks = models.IntegerField()
-    mark_obtained = models.IntegerField()
     
     def get_full_marks(self):
       return self.full_marks
     def set_full_marks(self,value):
       self.full_marks=value
       self.save()
-      
-    def award_mark(self, mark_):
-      self.mark_obtained = mark_
-      self.save()
-    
-    def get_awarded_mark(self):
-      return self.mark_obtained
     
     def __unicode__(self):
       return 'Mark'
 
 #=================================LeafAssessment Function==============================
-def createLeafAssessment(name_, published_,fullMarks_):
-    a = LeafAssessment(name = name_, published = published_,full_marks=fullMarks_ )
+def insertLeafAssessment(name_,fullMarks_, parent=None):
+    if parent is None:
+      a = LeafAssessment(name = name_,full_marks=fullMarks_) 
+    else:
+      a = LeafAssessment(name = name_,full_marks=fullMarks_ )
+      a.set_parent(parent)
     a.save()
     return a
 
@@ -284,30 +389,29 @@ class Person(models.Model):
     firstName = models.CharField(max_length = 20, null = False)
     upId = models.CharField(max_length = 9, null = False, unique=True)
     surname = models.CharField(max_length = 30, null = False)
-    studentOf_module  = models.ManyToManyField(Module, related_name = 'studentOf_module')
-    tutorOf_module  = models.ManyToManyField(Module, related_name = 'tutorOf_module')
-    teachingAssistantOf_module  = models.ManyToManyField(Module, related_name = 'teachingAssistantOf_module')
-    lectureOf_module = models.ManyToManyField(Module, related_name = 'lectureOf_module')
+    studentOf_module  = models.ManyToManyField(Module, related_name = 'studentOf_module', blank = True)
+    tutorOf_module  = models.ManyToManyField(Module, related_name = 'tutorOf_module', blank = True)
+    teachingAssistantOf_module  = models.ManyToManyField(Module, related_name = 'teachingAssistantOf_module', blank = True)
+    lectureOf_module = models.ManyToManyField(Module, related_name = 'lectureOf_module', blank = True)
     
     def _init_(self,fn, sn, uid):
             self.firstName = fn
             self.upId = uid
             self.surname = sn
-            
-    def getfirstName(self):
+    def getFirstName(self):
             return self.firstName
     def getupId(self):
             return self.upId
-    def getsurname(self):
+    def getSurname(self):
             return self.surname
           
-    def setfirstName(self,value):
+    def setFirstName(self,value):
             self.firstName=value
             self.save()
     def setupId(self,value):
             self.upId=value
             self.save()
-    def setsurname(self,value):
+    def setSurname(self,value):
             self.surname=value
             self.save()
             
@@ -330,7 +434,12 @@ class Person(models.Model):
             self.teachingAssistantOf_module.append(value)
     def teachingAssistantOfDelete(self,value):
             self.teachingAssistantOf_module.remove(value)
-            
+    
+    def isEnrolled(self, mod_code):
+            is_true = studentOf_module.objects.filter(module_id=mod_code)
+            if is_true is None:
+              return False
+            return True
             
     def __unicode__(self):
             return u'%s %s %s' % (self.firstName, self.surname, self.upId)
@@ -350,6 +459,9 @@ class Person_data(models.Model):
     def getData(self):
       return self.data
     
+    class Meta:
+      verbose_name_plural = "Person_data"
+    
     def __unicode__(self):
       return self.uid
     
@@ -360,7 +472,7 @@ def insertPerson_data(upId_,data_):
     session.save()
     return session
 
-def getPerson_data():
+def getAllPerson_data():
     person = Person_data.objects.all()
     return person
 
@@ -375,6 +487,13 @@ class MarkAllocation(models.Model):
     assessment =models.ForeignKey('LeafAssessment') 
     marker = models.CharField(max_length=100)
     timeStamp = models.DateTimeField()
+    mark = models.IntegerField(max_length=3)
+    
+    def setMark(self,value):
+      self.mark = value
+      self.save()
+    def getMark(self):
+      return self.mark
     
     def setcomment(self,value):
         self.comment=value
@@ -515,6 +634,9 @@ class Sessions(models.Model):
             self.markallocation=value
      """
      
+    class Meta:
+      verbose_name_plural = "Sessions"
+     
     def __unicode__(self):
           return u'%s' % (self.assessmentname)
 
@@ -574,7 +696,8 @@ class AllocatePerson(models.Model):
 		self.save()
 
 	def __unicode__(self):
-		return self.person_id
+		return 'Allocated person'
+
 
 #==============================AllocatePerson Function==============================
 def insertPersonToSession(personID,sessionID,student,Marker):
@@ -587,8 +710,8 @@ def getAllocatedPerson():
 def getAllocatedPerson(sessionID):
 	return AllocatePerson.object.filter(session_id = id)
 	
-def deleteAllocatedPerson(id):
-	AllocatePerson.delete(ID = id)
+def deleteAllocatedPerson(self):
+	AllocatePerson.delete(self)
 #==============================End of AllocatePerson Function==============================
 
 #----------------------------------------------------------
@@ -637,8 +760,8 @@ class AuditLog(models.Model):
 
 #===================================AuditLog functions====================================
 
-def logAudit(person,desc,act,table,column,old,new):
-    p = Person.objects.get(id=person)
+def logAudit(request,desc,act,table,column,old,new):
+    p = Person.objects.get(id=request.REQUEST["upId"])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     ti = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -650,7 +773,7 @@ def logAudit(person,desc,act,table,column,old,new):
 
 
 def logAuditDetail(person,desc,act,table,column,old,new,table_id):
-    p = Person.objects.get(id=person)
+    p = Person.objects.get(id=request.REQUEST["id"])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     aa = AuditAction.objects.get(auditDesc=act)
@@ -668,9 +791,6 @@ def getAuditlog():
 
 #===================================End of AuditLog functions====================================
 
-def authenticateUser(username,passwords):
-    pass
-    #LDAP
 
 #This is to create the table shown in the master specification giving a
 #general idea of how their MySQL database table for courses looks like

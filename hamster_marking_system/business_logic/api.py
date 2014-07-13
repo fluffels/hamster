@@ -3,18 +3,16 @@ from django.db.models import get_model
 from .models import *
 from ldap_interface.ldap_api import *
 
-
-
-
-
 #general retrival functions
-
 # Name: getAllModules()
 # Description: Returns all the module objects
 # Parameter: 
 # Return: Module[]
 def getAllModules():
     return Module.objects.all()
+
+def getPersonDetails(username):
+    return getPersonFromArr(username)
 
 # Name: getPersonObjectListFromArrayList(list)
 # Description: Returns a list of Person objects constructed from a list of Person id's
@@ -67,6 +65,26 @@ def getAllNamesOf(listy):
     for x in listy:
         list.append(x.getFirstName())
     return list
+
+# Name: getAllSurnameOf(list)
+# Description: Returns a list of the surname of the Person objects 
+# Parameter: list : Person[]
+# Return: String[]
+def getAllSurnameOf(list):
+	surname = []
+	for x in list:
+		surname.append(x.getSurname())
+	return surname
+	
+# Name: getAllUidOf(list)
+# Description: Returns a list of the surname of the Person objects 
+# Parameter: list : Person[]
+# Return: String[]
+def getAllUidOf(list):
+	uid = []
+	for x in list:
+		uid.append(x.getgetupId())
+	return uid
 
 # Name: getAllMarkersOfModule(mod_code)
 # Description: Returns an array of marker id's that are markers for a specific module
@@ -134,8 +152,21 @@ def getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leafName
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssessmentsForModule(mod_code):
-    temp= getAssessments(mod_code) 
-    return temp
+    #temp= getAssessments(mod_code)
+    print "am in"
+    temp = Assessment.objects.filter(mod_id = mod_code)
+    print temp
+    assessment = []
+    for x in temp:
+        assessment.append(x)
+    print assessment
+    return assessment
+
+def getAssessmentDetails(assess):
+	list = []
+	list.append(assess.id)
+	list.append(assess.getname())
+	return list
 
 # Name: getAllOpenSessionsForModule(mod_code)
 # Description: Returns all the Assessments that have an open session
@@ -226,6 +257,12 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
     obj = insertSessions(session_name,assess_id,opentime,closetime)
     logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
     return True
+    
+def getSessionDetails(session):
+    list = []
+    list.append(session.getID())
+    list.append(session.getName())
+    return list
 
 # Name: closeSession(request, sess_id)
 # Description: Closes a session therefore no more marking can be done
@@ -418,7 +455,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 	list = getOpenSessions(assessment_id_)
 	listy = []
 	for x in list:
-		markerS =AllocatePerson.objects.filter(person_id=marker_id_, session_id =x)
+		markerS =AllocatePerson.objects.filter(person_id=marker_id_,isMarker=1,session_id =x)
 		for m in markerS:
 		        sess = m.getSessionID()
 		        session = Sessions.object.get(id = sess)

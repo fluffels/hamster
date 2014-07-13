@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson
+from .models import Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -34,7 +34,10 @@ class SessionsAdmin(admin.ModelAdmin):
 admin.site.register(Sessions, SessionsAdmin)
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> develop
 class MarkAllocationAdmin(admin.ModelAdmin):
     class Meta:
         model = MarkAllocation
@@ -42,7 +45,10 @@ class MarkAllocationAdmin(admin.ModelAdmin):
 admin.site.register(MarkAllocation, MarkAllocationAdmin)
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> develop
 class AuditActionAdmin(admin.ModelAdmin):
     class Meta:
         model = AuditAction
@@ -72,9 +78,35 @@ admin.site.register(AuditLog, AuditLogAdmin)
 
 
 class Person_dataAdmin(admin.ModelAdmin):
+<<<<<<< HEAD
     class Meta:
         model = Person_data
 
+admin.site.register(Person_data, Person_dataAdmin)
+
+class AllocatePersonAdmin(admin.ModelAdmin):
+    class Meta:
+        model = AllocatePerson
+        
+admin.site.register(AllocatePerson, AllocatePersonAdmin)
+
+class AggregateAssessmentAdmin(admin.ModelAdmin):
+=======
+>>>>>>> develop
+    class Meta:
+        model = AggregateAssessment
+        
+admin.site.register(AggregateAssessment, AggregateAssessmentAdmin)
+    
+class LeafAssessmentAdmin(admin.ModelAdmin):
+    class Meta:
+        model = LeafAssessment
+        
+admin.site.register(LeafAssessment, LeafAssessmentAdmin)
+    
+
+<<<<<<< HEAD
+=======
 admin.site.register(Person_data, Person_dataAdmin)
 
 
@@ -83,4 +115,5 @@ class AllocatePersonAdmin(admin.ModelAdmin):
         model = AllocatePerson
         
 admin.site.register(AllocatePerson, AllocatePersonAdmin)
+>>>>>>> develop
     

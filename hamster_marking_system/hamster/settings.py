@@ -30,12 +30,12 @@ AUTH_LDAP_BIND_DN = "ou=Computer Science,o=University of Pretoria,c=ZA"
 AUTH_LDAP_BIND_PASSWORD = ""
 AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Computer Science,o=University of Pretoria,c=ZA",ldap.SCOPE_SUBTREE, "(uid=%(user)s")
 
-AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1"
-#AUTH_LDAP_SERVER_URI = "ldap://137.215.40.94"
+AUTH_LDAP_SERVER_URI = "ldap://192.168.56.101:389/"
+#AUTH_LDAP_SERVER_URI = "ldap://196.249.15.94"
 AUTH_LDAP_ALWAYS_UPDATE_USER = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['http://hxvm1.cs.up.ac.za/']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hamster',
         'USER': 'postgres',
-        'PASSWORD': 'GothamCyborgDark009',
+        'PASSWORD': 'mamelo',
         'HOST': 'localhost',
         'PORT': '5432'
     }

@@ -1,6 +1,7 @@
 from django.shortcuts import render, render_to_response, RequestContext
 from django.http import HttpResponse
 from .ldap_api import *
+from hamster.settings import *
 
 # Create your views here.
 # The intergartion team only needs to replace this file with one of their own
@@ -17,7 +18,7 @@ def index(request):
     response = HttpResponse("<table border='1' style='width:1000px'>"+ 
                         "<tr>"+
                           "<td>Authenticate User Object</td>" +
-                          "<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
+#                          "<td>"+ str(authenticateUser(request,"u89000447","Herbert"))+"</td>" +
                         "</tr> "+ 
                         "<tr>"+
                           "<td>Enrollments of user</td>" +
