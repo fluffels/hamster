@@ -47,7 +47,7 @@ class Aggregator(object):
         BEST-OF AGGREGATOR
 '''
 class BestOfAggregator(Aggregator):
-  numContributors = models.IntegerField()
+  numContributors = 0.0
   
   def aggregateMarks(self, assess_id, contributors):
     numContributors = contributors
@@ -190,55 +190,6 @@ class SimpleSumAggregator(Aggregator):
         return u'%d' % (total/len(assessmentMarks))
   '''
 
-class Assessment(PolymorphicModel):
-    assess_name = models.CharField(max_length=65)
-    published = models.BooleanField()
-    mod_id = models.ForeignKey('Module')
-    parent = models.IntegerField() #the assess_id of the parent will be passed
-    assessment_type = models.CharField(max_length=65)
-    
-    def getname(self):
-        return self.assess_name
-    def setname(self,value):
-        self.assess_name=value
-        self.save()
-    def getpublished(self):
-        return self.published
-    def setpublished(self,value): #Shouldn't value be autehnticated to see if it is indeed a boolean
-        self.published=value
-        self.save()
-    def get_mod_id(self ):
-        return self.mod_id
-    def get_parent():
-      return self.parent
-
-    def is_root(self):
-      if self.parent is None:
-        return True
-      return False
-    
-    def __unicode__(self):
-        return self.assess_name
-      
-#================================Additional Assessment Function===============================
-def insertAssessment(name_,assess_type, mod_code,_parent=None):
-#  insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
-    if parent is None:
-      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=None) 
-    else:
-      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=_parent)
-    asses.save()
-    return asses
-
-def getAssessment(): #returns all the assessments stored in the database
-    asses = Assessment.objects.all()
-    return asses
-
-def deleteAssessment(self):
-    Assessment.delete(self)
-
-#===================================End of Assessment Function============================
-
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
     id = models.CharField(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
@@ -276,6 +227,58 @@ def deleteModule(self):
     Module.delete(self)
     
 #===============================End of Module Function================================
+
+
+class Assessment(PolymorphicModel):
+    assess_name = models.CharField(max_length=65)
+    published = models.BooleanField()
+    mod_id = models.ForeignKey(Module)
+    parent = models.IntegerField() #the assess_id of the parent will be passed
+    assessment_type = models.CharField(max_length=65)
+    
+    def getname(self):
+        return self.assess_name
+    def setname(self,value):
+        self.assess_name=value
+        self.save()
+    def getpublished(self):
+        return self.published
+    def setpublished(self,value): #Shouldn't value be autehnticated to see if it is indeed a boolean
+        self.published=value
+        self.save()
+    def get_mod_id(self):
+        return self.mod_id
+    def get_parent():
+      return self.parent
+
+    def is_root(self):
+      if self.parent is None:
+        return True
+      return False
+    
+    def __unicode__(self):
+        return self.assess_name
+      
+#================================Additional Assessment Function===============================
+def insertAssessment(name_,assess_type, mod_code,_parent=None):
+#  insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
+    if parent is None:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=None) 
+    else:
+      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=_parent)
+    asses.save()
+    return asses
+
+def getAssessment(): #returns all the assessments stored in the database
+    asses = Assessment.objects.all()
+    return asses
+
+def deleteAssessment(self):
+    Assessment.delete(self)
+
+#===================================End of Assessment Function============================
+
+
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator_name = models.CharField(max_length = 65)

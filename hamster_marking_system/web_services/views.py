@@ -544,10 +544,15 @@ def getAllSessionsForAssessment(request,jsonObject):
 			
 			list = api.getSessionDetails(x)
 			session.append(list)
+			
+		assess= api.getAssessmentFromID(assessID)
+		mod = api.getModuleNameForAssessment(assessID)
 		data = [{
 			'type':1,
 			'message':'session retrieved',
-			'sessions':session
+			'sessions':session,
+			'assessmentName': assess,
+			'moduleName':mod
 		}]
 		return HttpResponse(json.dumps(data))
 	else:

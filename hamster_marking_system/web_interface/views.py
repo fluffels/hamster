@@ -6,8 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import loader
 
 def home(request):
-    
-    return render_to_response("web_interface/base.htm",
+    return render_to_response("web_interface/login.htm",
                               locals(),
                               context_instance = RequestContext(request))
 @csrf_exempt
@@ -67,13 +66,13 @@ def login(request):
 								       'user_ta':user_ta,
 								    'user_roles':user_roles})
 	else:
-		return render_to_response("web_interface/base.htm",locals(),context_instance = RequestContext(request))
+		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 
 def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
 	if user[0]['type'] == 1:
-		 return render_to_response("web_interface/base.htm",locals(),context_instance = RequestContext(request))
+		 return render_to_response("web_interface/base_template.htm",locals(),context_instance = RequestContext(request))
 	else:
 		return render_to_response("web_interface/success.htm",locals(),context_instance = RequestContext(request))
 
@@ -172,7 +171,9 @@ def getAllSessionsForAssessment(request):
     print sess
     if sess[0]['type'] == 1:
         sessions = sess[0]['sessions']
-        return render_to_response("web_interface/view_session.htm",{'sessions':sessions})
+        assessmentName = sess[0]['assessmentName']
+        moduleName=sess[0]['moduleName']
+        return render_to_response("web_interface/view_session.htm",{'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName})
     else:
         list = []
         list.append('-1')

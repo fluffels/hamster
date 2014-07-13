@@ -1,5 +1,6 @@
 import datetime
 from django.db.models import get_model
+from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
 
@@ -100,6 +101,21 @@ def getAllMarkersOfModule(mod_code):
     markers.append(ta)
     return markers
 
+def getAssessmentName(assess_id):
+    assess = Assessment.objects.filter(id=assess_id)
+    name = assess.getname()
+    return name
+
+def getModuleNameForAssessment(assess_id):
+    assess = Assessment.objects.filter(id=assess_id)
+    print "------------------------------"
+    print assess.polymorphic_disabled
+    print "------------------------------"
+    mod_code = assess.mod_id
+    module = Module.objects.filter(id=mod_code)
+    name = module.getModuleName()
+    return name
+    
 # Name: createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_)
 # Description: Creates an assessment object and saves it to the database
 # Parameter: request : HTTPRequest

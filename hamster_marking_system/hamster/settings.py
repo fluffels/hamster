@@ -27,7 +27,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 AUTH_LDAP_BIND_DN = "ou=Computer Science,o=University of Pretoria,c=ZA"
-AUTH_LDAP_BIND_PASSWORD = ""
+#AUTH_LDAP_BIND_PASSWORD = ""
 AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Computer Science,o=University of Pretoria,c=ZA",ldap.SCOPE_SUBTREE, "(uid=%(user)s")
 
 AUTH_LDAP_SERVER_URI = "ldap://192.168.56.101:389/"
@@ -95,7 +95,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'CAT'
+TIME_ZONE = 'Africa/Johannesburg'
 
 USE_I18N = True
 
