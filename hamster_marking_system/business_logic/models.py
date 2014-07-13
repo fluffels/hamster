@@ -43,38 +43,152 @@ class Aggregator(object):
     def aggregateMarks(self,assessment=[]):
         pass
 
+'''
+        BEST-OF AGGREGATOR
+'''
+class BestOfAggregator(Aggregator):
+  numContributors = models.IntegerField()
+  
+  def aggregateMarks(self, assess_id, contributors):
+    numContributors = contributors
+    main_parent = Assessment.objects.filter(id=assess_id)
+    list_of_children_marks = []
+    children = Assessment.objects.filter(parent=assess_id)
+    for child in children:
+      child_mark = helperBestOf(child.id)
+      list_of_children_marks.append(child_mark)
+    
+    try:
+      numChildren = len(children)
+      if numChildren >= numContributors:
+        summation =0.0
+        #sort
+        list_of_children_marks.sort(reversed)
+        
+        for i in range(numContributors):
+          item = list_of_children_marks[i]
+          summation += item
+        
+        aggregate = summation/numContributors
+        return aggregate
+    except Exception as e:
+      e = 'ERROR'
+    
+  def helperBestOf(child_id, sumOfMarks):
+    child_obj = Assessment.objects.filter(id=child_id)
+    if child_obj.getType() == 'Leaf':
+      markAlloc = MarkAllocation.objects.filter(assessment=child_id)
+      markGiven = markAlloc.getMark()
+      sumOfMarks += markGiven
+     
+    elif child_obj.getType() == 'Aggregate':
+      children = Assessment.objects.filter(parent = child_id)
+      for child in children:
+        sumOfMarks+= helperBestOf(child.id, sumOfMarks)
+      
+    return sumOfMarks
+    '''
 #pass the numContributer as the constructor's parameter
 class BestOfAggregator(Aggregator):
     numContributors = 0
     def __init__(value):
-            numContributors = value
-            
+            numContributors = value      
+          
     def aggregateMarks(self,assessment=[]):
         assessment.sort(reversed)
         total = 0.0
         for x in range(0,self.numContributors ):
             total += assessment[x]
         return (total/self.numContributors)
+    '''
 
 #pass the array of weights as the constructure's parameter
-class WeightedSumAggregator(Aggregator):
-    weights = []
-    
-    def __init__(value):
-            weights = value
-            
-    def aggregateMarks(self,assessment=[]):
-        total = 0.0
-        for x in assessment:
-            total += assessment[x] * self.weights[x]
-        return total/len(assessment)
+'''
+          WEIGHTED-SUM AGGGREGATOR
+'''
+class WeightedSumAggregator(Aggregator):        
+    def aggregateMarks(self,assessment_id):
+      root_assess = Assessment.objects.filter(id=assessment_id)
+      weight = root_assess.getWeight()
+      total = getTotals(assessment_id) #recursive function to get full marks of all leaves
+      agg_mark = self.getAggMark(assessment_id) #recursive function to get the aggregated marks of subassessments
+      
+      calculation = (agg_mark) * (weight/100)
+      return calculation
 
+    def getTotals(self, assess_id):
+      children = Assessment.objects.filter(parent=assess_id)
+      sumTotals = 0.0
+      for child in children:
+        if child.getType() == 'Aggregate':
+          sumTotals += getTotals(child.id)
+        elif child.getType() == 'Leaf':
+          sumTotals += child.getFullMarks()
+          
+      return sumTotals
+          
+      
+    def getAggMark(self, assess_id):
+      currAssessment = Assessment.objects.filter(id=assess_id)
+      children = Assessment.objects.filter(parent=assess_id)
+      sumAgg = 0.0
+      for child in children:
+        if child.getType() == 'Leaf':
+          sumAgg += child.get_mark_obtained()
+        elif child.getType() =='Aggregate':
+          subSum = getAggMark(child.id)
+          subTotal = getTotals(child.id)
+          weight = currAssessment.getWeight()
+          sumAgg += (subSum/sumTotal) * (weight/100)
+      
+      return sumAgg
+      
+  
+
+'''
+          SIMPLE-SUM AGGREGATOR
+'''
 class SimpleSumAggregator(Aggregator):
-    def aggregateMarks(self,assessment=[]):
-        total = 1.0     #Was 0 initially, there is a chance of division by Zero
-        for x in range(len(assessment)):
-            total += assessment[x]
-        return u'%d' % (total/len(assessment))
+  def aggregateMarks(self, assess_id):
+    root = Assessment.objects.filter(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_of_children =0.0
+    
+    for child in children:
+      if child.getType() == 'Leaf':
+        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
+        mark = markAlloc.getMark()
+        sum_of_children += mark
+      
+      elif child.getType() == 'Aggregate':
+        sum_of_children += helperSimpleSum(child.id, sum_of_children)
+        
+      num_children = len(children)
+      aggregate = sum_of_children/num_children
+    
+    return aggregate
+  
+  def helperSimpleSum(child_id, summation):
+    parent = Assessment.objects.filter(id=child_id)
+    children = Assessment.objects.filter(parent=child_id)
+    
+    for child in children:
+      if child.getType() == 'Leaf':
+        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
+        mark = markAlloc.getMark()
+        summation += mark
+      
+      elif child.getType() == 'Aggregate':
+        summation += helperSimpleSum(child.id, summation)
+        
+    return summation 
+  '''
+    def aggregateMarks(self,assessmentMarks):
+        total = 0.0
+        for x in range(len(assessmentMarks)):
+            total += assessmentMarks[x]
+        return u'%d' % (total/len(assessmentMarks))
+  '''
 
 class Assessment(PolymorphicModel):
     assess_name = models.CharField(max_length=65)
