@@ -1,5 +1,6 @@
 import datetime
 from django.db.models import get_model
+from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
 
@@ -100,6 +101,24 @@ def getAllMarkersOfModule(mod_code):
     markers.append(ta)
     return markers
 
+def getAssessmentName(assess_id):
+    assess = Assessment.objects.all()
+    for ass in assess:
+        if(str(ass.id) == str(assess_id)):
+            result = ass.assess_name
+    
+    return result
+
+def getModuleNameForAssessment(assess_id):
+    assess = Assessment.objects.all()
+#    print "------------------------------"
+    for ass in assess:
+        if(str(ass.id) == str(assess_id)):
+            result = ass.mod_id
+#            print result.getModuleCode()
+#    print "------------------------------"
+    return result.getModuleCode()
+    
 # Name: createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_)
 # Description: Creates an assessment object and saves it to the database
 # Parameter: request : HTTPRequest
@@ -109,6 +128,12 @@ def getAllMarkersOfModule(mod_code):
 # Parameter: module_code_ : Object
 # Return: Nothing
 def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
+    '''
+    if assessment_type == 'Leaf':
+        obj = createLeafAssessment(...)
+    elif == 'Aggregate':
+    obj = createAggregateAssessment(...)
+    '''
     obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 

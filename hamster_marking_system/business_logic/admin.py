@@ -34,10 +34,6 @@ class SessionsAdmin(admin.ModelAdmin):
 admin.site.register(Sessions, SessionsAdmin)
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
 class MarkAllocationAdmin(admin.ModelAdmin):
     class Meta:
         model = MarkAllocation
@@ -45,10 +41,6 @@ class MarkAllocationAdmin(admin.ModelAdmin):
 admin.site.register(MarkAllocation, MarkAllocationAdmin)
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
 class AuditActionAdmin(admin.ModelAdmin):
     class Meta:
         model = AuditAction
@@ -78,7 +70,6 @@ admin.site.register(AuditLog, AuditLogAdmin)
 
 
 class Person_dataAdmin(admin.ModelAdmin):
-<<<<<<< HEAD
     class Meta:
         model = Person_data
 
@@ -91,8 +82,6 @@ class AllocatePersonAdmin(admin.ModelAdmin):
 admin.site.register(AllocatePerson, AllocatePersonAdmin)
 
 class AggregateAssessmentAdmin(admin.ModelAdmin):
-=======
->>>>>>> develop
     class Meta:
         model = AggregateAssessment
         
@@ -103,17 +92,5 @@ class LeafAssessmentAdmin(admin.ModelAdmin):
         model = LeafAssessment
         
 admin.site.register(LeafAssessment, LeafAssessmentAdmin)
-    
 
-<<<<<<< HEAD
-=======
-admin.site.register(Person_data, Person_dataAdmin)
-
-
-class AllocatePersonAdmin(admin.ModelAdmin):
-    class Meta:
-        model = AllocatePerson
-        
-admin.site.register(AllocatePerson, AllocatePersonAdmin)
->>>>>>> develop
     
