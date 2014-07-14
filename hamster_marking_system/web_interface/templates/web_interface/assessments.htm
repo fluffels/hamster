@@ -1,301 +1,72 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Assessments</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-	<!--<link rel="stylesheet" type="text/css" href="static/web_interface/css/style.css">-->
-</head>
-<body>
+{% extends "web_interface/base_template.htm" %}
 
-	<!--Navigation bar-->
-	<div class = "navbar navbar-inverse navbar-fixed-top">
+{% block title %} Assessments {% endblock %}
 
-		<div class="container">
-			
-			<a  href="#" class = "navbar-brand">Hamster marking system</a>
+<!--###########################  Nav bar settings ############################-->
 
-			<button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+{% endblock %}
 
-			<div class="collapse navbar-collapse navHeaderCollapse">
-				
-			<ul class="nav navbar-nav navbar-right">
-				
-				<li class="active"><a href="#">Home</a></li>
-				<li><a href="/">Logout</a></li>
-				<!--Courses dropdown-->
-				<li>
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% for role in user_lect.0.LC %}
-						<li><a id={{ role }} href="#"> {{ role }}</a></li>
-					{% endfor %}
-					
-					{% for role in user_stud.0.ST %}
-						<li><a id={{ role }} href="#"> {{ role }}</a></li>
-					{% endfor %}
-					
-					{% for role in user_tut.0.TT %}
-						<li><a id={{ role }} href="#"> {{ role }}</a></li>
-					{% endfor %}
-					
-					{% for role in user_ta.0.TA %}
-						<li><a id={{ role }} href="#"> {{ role }}</a></li>
-					{% endfor %}
+<!--###########################  End Nav bar settings ############################-->
 
-					<!--In cases like this, sever side will feed through modules student is registered in-->
-				</ul>
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+{% endfor %}
 
-				</li>
+{% for role in user_stud.0.ST %}
+	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+{% endfor %}
 
-				<!--User dropdown-->
-				<li>
-					
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% for role in user_roles %}
-						<li><a id={{ role }} href="#"> {{ role }}</a></li>
-					{% endfor %}
-					<!--
-					<li><a id="lect" href="#"> Lecture</a></li>
-					<li><a id="stu" href="#"> Student</a></li>
-					<li><a id="tut" href="#"> Tutor</a></li>
-					<li><a id="ta" href="#"> TeachingAssistant</a></li>
-						-->
+{% for role in user_tut.0.TT %}
+	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+{% endfor %}
 
-				</ul>
+{% for role in user_ta.0.TA %}
+	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
 
-				</li>
-				<li><a href="#query" data-toggle="modal">Query</a></li>
-				<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
 
-			</ul>
-
-			</div>
-		</div>
-
-	</div><!--End of Navigation bar-->
-
-	<!--Jumbotron for login-->
-	<div class="container">
-		<div class="jumbotron text-center">
-			<h1>Hamster marking system</h1>
-			
-			<!-- Python is used here to list all the assessments -->
-			{% for ass in assessmentName %}
-			<form action="/view_session" method="post">
-				<button type="submit" class="btn btn-default btn-lg btn-block" name='assessment' value={{ass.0}}>{{ ass.1 }}</button>
-			</form>
-			{% endfor %}
-			<!-- End python jQuery code -->
-		</div>
-	</div><!--End of jumbotron-->
-
-	<div class="container">
-		
-	<div class="row">
-		
-		<div class="col-md-6" id="test">
-			
-		</div>
-
-		<div class="col-md-6" id="work">
-			
-		</div>
-
-	</div>
-
-	</div>
-
-	<!--Footer bar-->
-	<div class="navbar navbar-inverse navbar-fixed-bottom">
-		
-		<div class="container">
-			
-			<p class="navbar-text pull-left">University of Preroria site</p>
-			<a class="navbar-btn btn-primary btn pull-right" href="http://www.cs.up.ac.za">Go to CS website</a>
-
-		</div>
-	</div><!--End of footer-->
-
-	<!--Modal for ContactUs-->
-	<div class="modal fade" id="contact" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form class="form-horizontal">
-					<div class="modal-header">
-						<h4>Contact Tech Team</h4>
-					</div>
-					<div class="modal-body">
-						
-						<div class="form-group">
-							
-							<label for="contact-name" class="col-lg-2 control-label">Name:</label>
-							<div class="col-lg-8">
-								<input type="text" class="form-control" id="contact-name" placeholder="Full name">
-
-							</div>
-
-						</div>
-
-						<div class="form-group">
-							
-							<label for="contact-email" class="col-lg-2 control-label">Email:</label>
-							<div class="col-lg-8">
-								<input type="email" class="form-control" id="contact-email" placeholder="you@example.com">
-
-							</div>
-
-						</div>
-
-						<div class="form-group">
-							
-							<label for="contact-msg" class="col-lg-2 control-label">Message:</label>
-							<div class="col-lg-8">
-							<textarea class="form-control" rows="6"></textarea>
+<!--###########################  End Courses dropdown ############################-->
 
 
-							</div>
+<!--###########################  jumbotron part ############################-->
+{% block jumbotron_header %} Assessments {% endblock %}
 
-						</div>
+{% block jumbotron_sub_header %} Module code here {% endblock %}
 
+<!-- jumbotron content -->
+{% block jumbotron_content %}
 
-					</div>
-					<div class="modal-footer">
-						<a class="btn btn-default" data-dismiss="modal">Close</a>
-						<button class="btn btn-primary" type="submit">Send message</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div><!--End of Modal for ContactUs-->
+<!-- Python is used here to list all the assessments -->
+{% for ass in assessmentName %}
+<form action="/view_session" method="post">
+	<button type="submit" class="btn btn-default btn-lg btn-block" name='assessment' value={{ass.0}}>{{ ass.1 }}</button>
+</form>
+{% endfor %}
+<!-- End python jQuery code -->
 
-	<!--Modal for Query-->
-	<div class="modal fade" id="query" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form class="form-horizontal">
-					<div class="modal-header">
-						<h4>Query system</h4>
-					</div>
-					<div class="modal-body">
-						
-						<div class="form-group">
-							
-							<label for="student-number" class="col-lg-2 control-label">Name:</label>
-							<div class="col-lg-8">
-								<input type="text" class="form-control" id="student-number" placeholder="Username">
-
-							</div>
-
-						</div>
-
-						<div class="form-group">
-							
-							<label for="contact-email" class="col-lg-2 control-label">Email:</label>
-							<div class="col-lg-8">
-								<input type="email" class="form-control" id="contact-email" placeholder="you@example.com">
-
-							</div>
-
-						</div>
-
-						<div class="form-group">
-
-							<label for="student-module" class="col-lg-2 control-label">Module:</label>
-							<div class="col-lg-8">
-								<div class="btn-group">
-								  <button type="button" class="btn btn-default">Modules</button>
-								  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								    <span class="caret"></span>
-								    <span class="sr-only">Toggle Dropdown</span>
-								  </button>
-								  <ul class="dropdown-menu">
-								    <li><a href="#"> COS 301</a></li>
-									<li><a href="#"> COS 332</a></li>
-									<li><a href="#"> COS 314</a></li>
-									<li><a href="#"> COS 341</a></li>
-								    <li><a href="#"> COS 344</a></li>
-								    <!--In cases like this, sever side will feed through modules student is registered in-->
-								  </ul>
-								</div>
-							</div>
-						</div>
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
 
 
-						<div class="form-group">
-							
-							<label for="student-query" class="col-lg-2 control-label">Query:</label>
-							<div class="col-lg-8">
-							<textarea class="form-control" rows="6" placeholder="Give a detailed description of assemsment, the question being addressed if applicable and your problem."></textarea>
-							</div>
-						</div>
+{% block left_under_jumbotron-col-6 %}{% endblock %}
 
-
-					</div>
-					<div class="modal-footer">
-						<a class="btn btn-default" data-dismiss="modal">Close</a>
-						<button class="btn btn-primary" type="submit">Send query</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div><!--Ebf of Modal for Query-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-
-<script>
-	$(document).ready(function(){
-		$('#Lecturer').click(function(){
-			$('#ST').hide();
-			$('#TT').hide();
-			$('#TA').hide();
-			$('#LC').show();
-		})
-		
-		$('#Student').click(function(){
-			$('#ST').show();
-			$('#TT').hide();
-			$('#TA').hide();
-			$('#LC').hide();
-		})
-		
-		$('#Tutor').click(function(){
-			$('#ST').hide();
-			$('#TT').show();
-			$('#TA').hide();
-			$('#LC').hide();
-		})
-		
-		$('#Teaching ass').click(function(){
-			$('#ST').hide();
-			$('#TT').hide();
-			$('#TA').show();
-			$('#LC').hide();
-		})
-		
-		/*$('button').click(function(){
-			alert("am in");
-			var code = $(this).attr('value');
-			alert(code);
-			$.post({
-				type:'POST',
-				url:'view_assessment',
-				data:code
-			});
-			
-			
-		})*/
-		
-	})
-</script>
-
-
-
-</body>
-</html>
+{% block right_under_jumbotron-col-6 %}{% endblock %}

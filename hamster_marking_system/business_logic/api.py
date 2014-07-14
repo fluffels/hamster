@@ -102,19 +102,22 @@ def getAllMarkersOfModule(mod_code):
     return markers
 
 def getAssessmentName(assess_id):
-    assess = Assessment.objects.filter(id=assess_id)
-    name = assess.getname()
-    return name
+    assess = Assessment.objects.all()
+    for ass in assess:
+        if(str(ass.id) == str(assess_id)):
+            result = ass.assess_name
+    
+    return result
 
 def getModuleNameForAssessment(assess_id):
-    assess = Assessment.objects.filter(id=assess_id)
-    print "------------------------------"
-    print assess.polymorphic_disabled
-    print "------------------------------"
-    mod_code = assess.mod_id
-    module = Module.objects.filter(id=mod_code)
-    name = module.getModuleName()
-    return name
+    assess = Assessment.objects.all()
+#    print "------------------------------"
+    for ass in assess:
+        if(str(ass.id) == str(assess_id)):
+            result = ass.mod_id
+#            print result.getModuleCode()
+#    print "------------------------------"
+    return result.getModuleCode()
     
 # Name: createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_)
 # Description: Creates an assessment object and saves it to the database
@@ -125,6 +128,12 @@ def getModuleNameForAssessment(assess_id):
 # Parameter: module_code_ : Object
 # Return: Nothing
 def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
+    '''
+    if assessment_type == 'Leaf':
+        obj = createLeafAssessment(...)
+    elif == 'Aggregate':
+    obj = createAggregateAssessment(...)
+    '''
     obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
     logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 

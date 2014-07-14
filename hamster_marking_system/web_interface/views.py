@@ -21,12 +21,18 @@ def login(request):
 	#user_info = urllib2.urlopen('/login',json.dumps(data))
 	user = json.loads(user_info.content)
 	user_type = ''
+	global default_user
 	default_user =''
+	global user_roles
 	user_roles = []
 	
+	global user_lect
 	user_lect = []
+	global user_stud
 	user_stud = []
+	global user_tut
 	user_tut = []
+	global user_ta
 	user_ta = []
 	if user[0]['type'] == 1:
 		if len(user[0]['lecturerOf']) != 0:
@@ -90,11 +96,21 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessments})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles, 'assessmentName':assessments})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessmentName, 'assessmentId':assessmentId})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
     elif request.POST.get('tutB'):
         print "IN TUTB"
         data=[{
@@ -107,11 +123,21 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessments})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessments})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessmentName, 'assessmentId':assessmentId})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
     elif request.POST.get('taB'):
         print "IN TAB"
         data=[{
@@ -124,11 +150,21 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessments})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessments})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessmentName, 'assessmentId':assessmentId})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
     elif request.POST.get('lectB'):
         print "IN LECTB"
         data=[{
@@ -141,11 +177,21 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessments})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessments})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'assessmentName':assessmentName, 'assessmentId':assessmentId})
+            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
 
 def personDetails(request):
     web = views.personDetails(request)
@@ -155,9 +201,19 @@ def personDetails(request):
         surname = results[0]['surname']
         title = results[0]['title']
         initials = results[0]['initials']
-        return render_to_response("web_interface/personDetails.htm",{'name':name,'surname':surname,'title':title,'initials':initials})
+        return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'name':name,'surname':surname,'title':title,'initials':initials})
     else:
-        return render_to_response("web_interface/personDetails.htm",{'name':'person data not found'})
+        return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'name':'person data not found'})
 
 @csrf_exempt
 def getAllSessionsForAssessment(request):
@@ -173,11 +229,21 @@ def getAllSessionsForAssessment(request):
         sessions = sess[0]['sessions']
         assessmentName = sess[0]['assessmentName']
         moduleName=sess[0]['moduleName']
-        return render_to_response("web_interface/view_session.htm",{'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName})
+        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName})
     else:
         list = []
         list.append('-1')
         list.append('session data not found')
         sessions.append(list)
-        return render_to_response("web_interface/view_session.htm",{'sessions':sessions})
+        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'sessions':sessions})
 

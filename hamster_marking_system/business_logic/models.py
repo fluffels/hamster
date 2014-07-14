@@ -197,9 +197,9 @@ class Module(models.Model):
     module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
     
     def getModuleCode(self):
-        return self.moduleCode
+        return self.module_code
     def setModuleCode(self,value):
-        self.moduleCode=value
+        self.module_code=value
         self.save()
         
     def setModuleName(self, value):
@@ -210,7 +210,7 @@ class Module(models.Model):
       return self.module_name
     
     def __unicode__(self):
-        return u'%s %s' %(self.module_name, self.module_code)
+        return u'%s %s' %(self.module_code, self.module_name)
       
 #===============================Module Function================================
 # [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
@@ -256,19 +256,14 @@ class Assessment(PolymorphicModel):
         return True
       return False
     
+#    class Meta:
+#      abstract = True #Assessment must be abstract
+    
+    
     def __unicode__(self):
         return self.assess_name
       
 #================================Additional Assessment Function===============================
-def insertAssessment(name_,assess_type, mod_code,_parent=None):
-#  insertAssessment(assessment_name_,assessment_type_,module_code_, parent=None)
-    if parent is None:
-      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=None) 
-    else:
-      asses = Assessment(name=name_,assessment_type = assess_type, mod_id=mod_code, parent=_parent)
-    asses.save()
-    return asses
-
 def getAssessment(): #returns all the assessments stored in the database
     asses = Assessment.objects.all()
     return asses
@@ -282,7 +277,6 @@ def deleteAssessment(self):
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator_name = models.CharField(max_length = 65)
-    session = models.ForeignKey('Sessions')
     isroot = models.BooleanField()
    
     def add_child(self, child_id):
@@ -342,12 +336,16 @@ class AggregateAssessment(Assessment):
       return statement
     
     def __unicode__(self):
-      return self.aggregator_name
+      return self.assess_name
 
 #================================AggregateAssessment Function============================
 def createAggregateAssessment(name_, published_,aggregator_):
     a = AggregateAssessment(name = name_, published = published_,aggregator=aggregator_)
     a.save()
+    '''
+     a = AggregateAssessment(name = name_, assessment_type =assess_type, mod_code=mod_code, published = published_,weight=assessment_weight,aggregator=aggregator_)
+     a.save()
+    '''
 
 def getAggregateAssessment(): #gets all aggregate assessments
     aggregate_assessments = AggregateAssessment.objects.all()
@@ -368,15 +366,24 @@ class LeafAssessment(Assessment):
       self.save()
     
     def __unicode__(self):
-      return 'Mark'
+      return self.assess_name
 
 #=================================LeafAssessment Function==============================
-def insertLeafAssessment(name_,fullMarks_, parent=None):
+def insertLeafAssessment(name_,assess_type, mod_code_, published, fullMarks_, parent=None):
+  #obj = insertAssessment(assessment_name_,assess_type, mod_code, published, full_marks, parent, assessment_weight_,aggretator_)
     if parent is None:
-      a = LeafAssessment(name = name_,full_marks=fullMarks_) 
+      a = LeafAssessment(name = name_,full_marks=fullMarks_)
+      '''
+      a = LeafAssessment(name=name_, assessment_type = assess_type, mod_code = mod_code_, published = published_, full_marks = fullMarks_)
+      '''
     else:
       a = LeafAssessment(name = name_,full_marks=fullMarks_ )
       a.set_parent(parent)
+      '''
+       a = LeafAssessment(name=name_, assessment_type = assess_type, mod_code = mod_code_, published = published_, full_marks = fullMarks_)
+       a.set_parent(parent)
+      '''
+      
     a.save()
     return a
 
@@ -641,7 +648,7 @@ class Sessions(models.Model):
       verbose_name_plural = "Sessions"
      
     def __unicode__(self):
-          return u'%s' % (self.assessmentname)
+          return u'%s' % (self.session_name)
 
 def deleteSessions(self):
 	Sessions.delete(self)

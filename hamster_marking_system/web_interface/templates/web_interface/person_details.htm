@@ -1,5 +1,7 @@
 {% extends "web_interface/base_template.htm" %}
 
+{% block title %}Person details{% endblock  %}
+
 <!--###########################  Nav bar settings ############################-->
 
 {% block logout_button %}
@@ -43,16 +45,31 @@
 
 <!--###########################  End Courses dropdown ############################-->
 
-{% block jumbotron_header %} {{ moduleName }} {% endblock %}
+{% block jumbotron_header %} Hamster Marking System {% endblock %}
 
-{% block jumbotron_sub_header %} {{ assessmentName }} {% endblock %}
+{% block jumbotron_sub_header %} User information {% endblock %}
+
 
 <!--###########################  jumbotron part ############################-->
 <!-- jumbotron content -->
 {% block jumbotron_content %}
-{% for x in sessions%}
-	<button type="button" class="btn btn-default btn-lg btn-block">{{x.1}}</button>
-{%endfor%}
+<div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<table class="table table-striped">
+			<tr>
+				<td><b> Name : {{ name }}</b></td>
+			</tr><tr>
+				<td><b> Surname : {{ surname }}</b></td>
+			</tr><tr>
+				<td><b> Title : {{ title }}</b></td>
+			</tr><tr>
+				<td><b> Initials : {{ initials }}</b></td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-md-3"></div>
+</div>
 
 {% endblock %}
 <!-- End of jumbotron content -->

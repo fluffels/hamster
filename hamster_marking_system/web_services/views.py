@@ -545,7 +545,7 @@ def getAllSessionsForAssessment(request,jsonObject):
 			list = api.getSessionDetails(x)
 			session.append(list)
 			
-		assess= api.getAssessmentFromID(assessID)
+		assess= api.getAssessmentName(assessID)
 		mod = api.getModuleNameForAssessment(assessID)
 		data = [{
 			'type':1,
