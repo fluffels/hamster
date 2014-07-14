@@ -119,35 +119,38 @@ def getModuleNameForAssessment(assess_id):
 #    print "------------------------------"
     return result.getModuleCode()
     
-# Name: createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_)
-# Description: Creates an assessment object and saves it to the database
-# Parameter: request : HTTPRequest
-# Parameter: assessment_name_ : String
-# Parameter: assessment_weight_ : Integer?
-# Parameter: assessment_type_ : String
-# Parameter: module_code_ : Object
-# Return: Nothing
-def createAssessment(request, assessment_name_,assessment_weight_,assessment_type_,module_code_):
-    '''
-    if assessment_type == 'Leaf':
-        obj = createLeafAssessment(...)
-    elif == 'Aggregate':
-    obj = createAggregateAssessment(...)
-    '''
-    obj = insertAssessment(assessment_name_,assessment_weight_,assessment_type_,module_code_)
-    logAudit(request,"Inserted new assessment","insert","dbModels_assessment","id",None,obj.id)
 
-# Name: createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_)
-# Description: Creates a leaf assessment object and saves it to tge database
+# Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)
+# Description: Creates a leaf assessment object by calling the function in models
 # Parameter: request : HTTPRequest
 # Parameter: leaf_name_ : String
-# Parameter: assessment_id_ : ?
-# Parameter: max_mark_ : Integer
-# Return: 
-def createLeafAssessment(request, leaf_name_,assessment_id_,max_mark_):
-    obj = insertLeafAssessment(leaf_name_,assessment_id_,max_mark_,False)
-    logAudit(request,"Inserted new leaf assessment","insert","dbModels_leafassessment","id",None,obj.id)
+# Parameter: assessment_type : String
+# Parameter: module_code: String
+#Parameter: published_: Boolean
+# Parameter: full_marks : Integer
+# Parameter: parent_id: Integer
+# Return: Boolean
+def createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id = None):
+	obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
+	logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
+	return True
 
+# Name: createAggregateAssessment(request,assessment_name, assessment_type, module_code,published_, aggregator, assessment_weight, parent_id)
+# Description: Creates an aggregate assessment object by calling the function in models.
+# Parameter: request : HTTPRequest
+# Parameter: assessment_name : String
+# Parameter: assessment_type : String
+# Parameter: module_code: String
+# Parameter: published_: Boolean
+# Parameter: aggregator : String
+# Parameter: assessment_weight: Integer
+# Parameter: parent_id: Integer
+# Return: Boolean
+def createAggregateAssessment(request, assessment_name, assessment_type, module_code, published_, aggregator, assessment_weight, parent_id = None):
+	obj = insertAggregateAssessment(assessment_name, assessment_type, module_code, published_, aggregator, assessment_weight, parent_id)
+	logAudit(request, "Inserted new aggregate assessment", "insert", "business_logic_aggregateassessment", "id", None, obj.id)
+	return True
+	
 # Name: getAssessmentForModuleByName(mod_code, name)
 # Description: Returns all Assessments according to their name and the module that they belong to
 # Parameter: mod_code : Module

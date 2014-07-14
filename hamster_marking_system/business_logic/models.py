@@ -226,7 +226,6 @@ def deleteModule(self):
     
 #===============================End of Module Function================================
 
-
 class Assessment(PolymorphicModel):
     assess_name = models.CharField(max_length=65)
     published = models.BooleanField()
@@ -236,16 +235,13 @@ class Assessment(PolymorphicModel):
     
     def getname(self):
         return self.assess_name
-    def setname(self,value):
-        self.assess_name=value
-        self.save()
+  
     def getpublished(self):
         return self.published
-    def setpublished(self,value): #Shouldn't value be autehnticated to see if it is indeed a boolean
-        self.published=value
-        self.save()
+   
     def get_mod_id(self):
         return self.mod_id
+
     def get_parent():
       return self.parent
 
@@ -253,10 +249,11 @@ class Assessment(PolymorphicModel):
       if self.parent is None:
         return True
       return False
-    
-#    class Meta:
-#      abstract = True #Assessment must be abstract
-    
+      
+'''
+	class Meta:
+		abstract = True 
+'''
     
     def __unicode__(self):
         return self.assess_name
@@ -271,44 +268,11 @@ def deleteAssessment(self):
 
 #===================================End of Assessment Function============================
 
-class Module(models.Model):
-    module_code = models.CharField(max_length=6)
-    id = models.CharField(max_length = 6, primary_key = True) #module code is used as primary. format COSXXX
-    presentation_year = models.DateField(auto_now = True)
-    module_name = models.CharField(max_length = 255) #i.e Artificial Intelligence
-    
-    def getModuleCode(self):
-        return self.moduleCode
-    def setModuleCode(self,value):
-        self.moduleCode=value
-        self.save()
-        
-    def setModuleName(self, value):
-      self.module_name = value
-      self.save()
-    
-    def getModuleName(self):
-      return self.module_name
-    
-    def __unicode__(self):
-        return u'%s %s' %(self.module_name, self.module_code)
-      
-#===============================Module Function================================
-# [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
-def insertModule(code,name,year,assessments_):
-    module = Module(moduleCode=code,moduleName=name,presentationYear=year,assessments=assessments_)
-    module.save()
-    return module
-
-def getAllModules():
-    modules = Module.objects.all()
-    return modules
-
-
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator_name = models.CharField(max_length = 65)
     isroot = models.BooleanField()
+    weight = models.IntegerField()
    
     def add_child(self, child_id):
       childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
@@ -370,13 +334,16 @@ class AggregateAssessment(Assessment):
       return self.assess_name
 
 #================================AggregateAssessment Function============================
-def createAggregateAssessment(name_, published_,aggregator_):
-    a = AggregateAssessment(name = name_, published = published_,aggregator=aggregator_)
-    a.save()
-    '''
-     a = AggregateAssessment(name = name_, assessment_type =assess_type, mod_code=mod_code, published = published_,weight=assessment_weight,aggregator=aggregator_)
-     a.save()
-    '''
+def insertAggregateAssessment(name_, assessment_type_, module_code, published_,aggregator_, assessment_weight, parent_id):
+	if parent_id is None:
+	a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator=aggregator_, weight=assessment_weight)
+	a.set_parent(None)
+
+	else:
+	a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = 			        published_,aggregator=aggregator_, weight=assessment_weight, parent=parent_id)
+
+	a.save()
+	return a
 
 def getAggregateAssessment(): #gets all aggregate assessments
     aggregate_assessments = AggregateAssessment.objects.all()
@@ -392,29 +359,19 @@ class LeafAssessment(Assessment):
     
     def get_full_marks(self):
       return self.full_marks
-    def set_full_marks(self,value):
-      self.full_marks=value
-      self.save()
     
     def __unicode__(self):
       return self.assess_name
 
 #=================================LeafAssessment Function==============================
-def insertLeafAssessment(name_,assess_type, mod_code_, published, fullMarks_, parent=None):
-  #obj = insertAssessment(assessment_name_,assess_type, mod_code, published, full_marks, parent, assessment_weight_,aggretator_)
-    if parent is None:
-      a = LeafAssessment(name = name_,full_marks=fullMarks_)
-      '''
-      a = LeafAssessment(name=name_, assessment_type = assess_type, mod_code = mod_code_, published = published_, full_marks = fullMarks_)
-      '''
-    else:
-      a = LeafAssessment(name = name_,full_marks=fullMarks_ )
-      a.set_parent(parent)
-      '''
-       a = LeafAssessment(name=name_, assessment_type = assess_type, mod_code = mod_code_, published = published_, full_marks = fullMarks_)
-       a.set_parent(parent)
-      '''
-      
+def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None):
+	 a = LeafAssessment(name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_) 
+	 
+	 if parent is None:
+	 a.set_parent(None)
+	 else:
+	 a.set_parent(parent)
+
     a.save()
     return a
 
