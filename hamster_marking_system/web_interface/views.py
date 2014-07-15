@@ -85,36 +85,40 @@ def logout(request):
 @csrf_exempt
 def getAllAssessmentOfModule(request):
     if request.POST.get('studB'):
+        module = request.POST.get('studB')
         print "IN STUDB"
         data=[{
-            'mod_code':request.POST.get('studB'),
+            'mod_code':module,
             'user_type':'tutor'
         }]
         data = views.getAllAssessmentOfModule(request, json.dumps(data))
+        print 'haaaaaaaaaaaaaaaaaaaaaaaaaaaahahahhahahahahahahhaahahhhhhhhhhhhhahahahah'
+        print data
         result = json.loads(data.content)
         assessmentName = []
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments})
+                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
     elif request.POST.get('tutB'):
         print "IN TUTB"
+        module = request.POST.get('tutB')
         data=[{
-            'mod_code':request.POST.get('tutB'),
+            'mod_code':module,
             'user_type':'tutor'
         }]
         data = views.getAllAssessmentOfModule(request, json.dumps(data))
@@ -123,25 +127,26 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments})
+                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
     elif request.POST.get('taB'):
         print "IN TAB"
+        module = request.POST.get('taB')
         data=[{
-            'mod_code':request.POST.get('taB'),
+            'mod_code':module,
             'user_type':'tutor'
         }]
         data = views.getAllAssessmentOfModule(request, json.dumps(data))
@@ -150,7 +155,7 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -159,16 +164,17 @@ def getAllAssessmentOfModule(request):
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
     elif request.POST.get('lectB'):
         print "IN LECTB"
+        module = request.POST.get('lectB')
         data=[{
-            'mod_code':request.POST.get('lectB'),
+            'mod_code':module,
             'user_type':'tutor'
         }]
         data = views.getAllAssessmentOfModule(request, json.dumps(data))
@@ -177,16 +183,16 @@ def getAllAssessmentOfModule(request):
         assessmentId = []
         if result[0]['type'] == 1:
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments})
+                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/assessments.htm",{'default_user':default_user,
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -247,3 +253,25 @@ def getAllSessionsForAssessment(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'sessions':sessions})
 
+@csrf_exempt
+def createAssessment(request):
+    assessName = request.POST['name']
+    mod = request.POST['mod']
+    fullmark = request.POST['fullmark']
+    
+    data = {
+        'name':assessName,
+        'mod':mod,
+        'fullmark':fullmark
+    }
+    results= views.createAssessment(request,json.dumps(data))
+    if results[0]['type'] == 1:
+        assess = results[0]['assessment']
+        return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                           'user_roles':user_roles,'assessments':assess,"module":mod})
+    
+    

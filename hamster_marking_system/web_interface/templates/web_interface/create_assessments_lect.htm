@@ -56,12 +56,23 @@
 
 <div class="row">
 	<div class="col-md-3"></div>
-	<div class="col-md-6">		
+	<div class="col-md-6">
+		<button class="btn btn-info btn-lg btn-block"  data-target="#create_ass" data-toggle="modal">Create Assessment</button><br>
+		
 		<!-- Python is used here to list all the assessments -->
 		{% for ass in assessmentName %}
-		<form action="/view_session" method="post">
-			<button type="submit" class="btn btn-default btn-lg btn-block" name='assessment' value={{ass.0}}>{{ ass.1 }}</button>
-		</form>
+			<button  class="dropdown-toggle btn btn-default btn-lg btn-block" data-toggle="dropdown"> {{ ass.1 }} <b class="caret"></b></button>
+			<ul class="dropdown-menu">
+				<form>
+					<button type="button" class="btn btn-info btn-md btn-block" data-target="#create_ass" data-toggle="modal">Create Leaf</button>
+				</form>
+				<form action="/view_session" method="post">
+					<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
+				</form>
+				<form action="/view_session" method="post">
+					<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
+				</form>
+			</ul>
 		{% endfor %}
 		<!-- End python jQuery code -->
 	</div>

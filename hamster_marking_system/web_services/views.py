@@ -563,3 +563,28 @@ def getAllSessionsForAssessment(request,jsonObject):
 		}]
 		return HttpResponse(json.dumps(data))
 # Create your views here.
+
+def createAssessment(request,jsonObject):
+	json_data = json.loads(jsonObject)
+	mod = json_data['mod']
+	assessmentName = json_data['name']
+	mark=json_data['fullmark']
+	info = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,None)
+	assess = api.getAllAssessmentsForModule(mod)
+	assessDetail = []
+	for ass in assess:
+		assessDetail.append(api.getAssessmentDetails(ass))
+	if info:
+		data = [{
+			'type':1,
+			'message': 'Assessment Created',
+			'assessment':assessDetail
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message': 'Assessment Not Created',
+		}]
+		return HttpResponse(json.dumps(data))
+	

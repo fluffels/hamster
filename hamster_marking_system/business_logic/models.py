@@ -249,14 +249,14 @@ class Assessment(PolymorphicModel):
       if self.parent is None:
         return True
       return False
-      
-'''
-	class Meta:
-		abstract = True 
-'''
-    
+
+    '''
+        class Meta:
+        abstract = True 
+    '''
+
     def __unicode__(self):
-        return self.assess_name
+      return self.assess_name
       
 #================================Additional Assessment Function===============================
 def getAssessment(): #returns all the assessments stored in the database
@@ -336,11 +336,11 @@ class AggregateAssessment(Assessment):
 #================================AggregateAssessment Function============================
 def insertAggregateAssessment(name_, assessment_type_, module_code, published_,aggregator_, assessment_weight, parent_id):
 	if parent_id is None:
-	a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator=aggregator_, weight=assessment_weight)
-	a.set_parent(None)
+	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator=aggregator_, weight=assessment_weight)
+	  a.set_parent(None)
 
 	else:
-	a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = 			        published_,aggregator=aggregator_, weight=assessment_weight, parent=parent_id)
+	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = 			        published_,aggregator=aggregator_, weight=assessment_weight, parent=parent_id)
 
 	a.save()
 	return a
@@ -368,12 +368,12 @@ def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMa
 	 a = LeafAssessment(name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_) 
 	 
 	 if parent is None:
-	 a.set_parent(None)
+	    a.set_parent(None)
 	 else:
-	 a.set_parent(parent)
+	    a.set_parent(parent)
 
-    a.save()
-    return a
+	 a.save()
+	 return a
 
 def deleteLeafAssessment(self):
     LeafAssessment.delete(self)
