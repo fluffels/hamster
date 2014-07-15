@@ -118,8 +118,59 @@ def getModuleNameForAssessment(assess_id):
 #            print result.getModuleCode()
 #    print "------------------------------"
     return result.getModuleCode()
-    
-
+	
+# Name: checkIfAssessmentIsLeaf(asssess_id)
+# Description: Checks if the assessment is a leaf assessment
+# Parameter: assess_id: String
+# Return: Boolean    
+def checkIfAssessmentIsLeaf(asssess_id):
+	assess_objs = Assessment.objects.all()
+	for ass in assess_objs:
+		if ass.id == assess_id:
+			type = obj.assessment_type
+			if type == 'Leaf':
+				return True
+	
+	return False
+# Name: makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id)
+# Description: Makes the old leaf an aggregate assessment and makes the new leaf its child (assumes that new leaf already exists)
+# Parameter: old_leaf_id: String
+# Parameter: new_leaf_id: String
+# Return: Boolean			
+def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
+	all_assessments = Assessments.objects.all()
+	
+	for assess in all_assessments:
+		if assess.id == old_leaf_id:
+			old_leaf_obj = assess
+		if assess.id = new_leaf_id:
+			new_leaf_obj = assess
+			
+	if old_leaf_obj.assessment_type == 'Leaf' && new_leaf_obj.assessment_type=='Leaf':
+		#can perform change
+		'''
+		1. add old leaf in aggregate table 
+		2. remove old leaf from leaf table
+		3. new leaf is already in table and parent is already specified 
+		'''
+		agg_name = old_leaf_obj.name
+		agg_type = 'Aggregate'
+		agg_mod_code = old_leaf_obj.mod_id
+		agg_published = old_leaf_obj.published
+		agg_aggregator = 'SimpleSum'
+		agg_weight = None
+		agg_parent = old_leaf_obj.parent
+		
+		new_agg_obj = createAggregateAssessment(agg_name, agg_type, agg_mod_code, agg_published, agg_aggregator, agg_weight, agg_parent) 
+		
+		new_leaf_obj.set_parent(new_agg_obj.id)
+		
+	return True
+		
+		
+	else:
+		#error cannot perform change because one or both of them is already an aggregate
+	
 # Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)
 # Description: Creates a leaf assessment object by calling the function in models
 # Parameter: request : HTTPRequest
@@ -131,9 +182,18 @@ def getModuleNameForAssessment(assess_id):
 # Parameter: parent_id: Integer
 # Return: Boolean
 def createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id = None):
-	obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
-	logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
-	return True
+	if parent_id is None:
+		obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
+		logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
+	else:
+		obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
+		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
+		if is_parent_leaf: #means its a leaf and must be changed
+			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
+			
+	if obj:
+		return True
+	else: return False
 
 # Name: createAggregateAssessment(request,assessment_name, assessment_type, module_code,published_, aggregator, assessment_weight, parent_id)
 # Description: Creates an aggregate assessment object by calling the function in models.
