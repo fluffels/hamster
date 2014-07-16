@@ -1,6 +1,6 @@
 {% extends "web_interface/base_template.htm" %}
 
-{% block title %} Add user {% endblock %}
+{% block title %} Added user {% endblock %}
 
 <!--###########################  Nav bar settings ############################-->
 
@@ -46,7 +46,7 @@
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block jumbotron_header %} Add user to Session {% endblock %}
+{% block jumbotron_header %} Users in session {% endblock %}
 
 {% block jumbotron_sub_header %} {{ sessionName }} {% endblock %}
 
@@ -54,14 +54,14 @@
 {% block jumbotron_content %}
 
 <div class="row">
-	<div class="col-md-6"><!--Left of jumbotron showing students in module -->
+	<div class="col-md-6">
 		<!-- Search bar -->
 		<div class="input-group">
 			<input type="text" class="form-control">
 			<div class="input-group-btn">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
 				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
+				<ul class="dropdown-menu dropdown-menu-right" role="menu">
 					<li><a href="#">Name</a></li>
 					<li><a href="#">Surname</a></li>
 				</ul>
@@ -69,32 +69,33 @@
 		</div>
 		<br><!--*********-->
 		<!-- End of Search bar -->
+		
+		
+		<div class="list-group">
+			<a href="#" class="list-group-item disabled"> Students in session </a>
+				{%for per in students%}
+					<a href="#" class="list-group-item" > {{ per.0 }},{{ per.1 }} {{per.2 }}</a>
+				{%endfor%}
+		</div>
+		
+		<form method="post" action="/add_user_to_session">
+			<button  type="submit" name="submit" class="btn btn-primary btn-lg btn-block">
+				<span class="glyphicon glyphicon-plus"></span> Add student to session
+			</button>
+			<input type="hidden" name="session" value={{session_id}}>
+			<input type="hidden" name="module" value={{ module }}>
+		</form>
 
 		
-		<h3><span class="label label-default">Select students to add</span></h3>
-		<form role="form" method="post" action="/added_user_to_session">
-			<div class="form-group">
-				<select multiple class="form-control" name="userS">
-					{%for per in students%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
-					{%endfor%}
-				</select>
-				<input type="hidden" name="session" value={{session_id}}><br>
-				<input type="hidden" name="userM" value=""/><br>
-			</div>
-			<button type="submit" name="submit" class="btn btn-success btn-block" value={{module}}>
-				<span class="glyphicon glyphicon-plus"></span> Add Student(s)</button>
-		</form>			
 	</div>
-	
-	<div class="col-md-6"><!-- Right of jumbotron showing markers for module -->
+	<div class="col-md-6">
 		<!-- Search bar -->
 		<div class="input-group">
-		<input type="text" class="form-control">
+			<input type="text" class="form-control">
 			<div class="input-group-btn">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
 				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
+				<ul class="dropdown-menu dropdown-menu-right" role="menu">
 					<li><a href="#">Name</a></li>
 					<li><a href="#">Surname</a></li>
 				</ul>
@@ -103,48 +104,22 @@
 		<br><!--*********-->
 		<!-- End of Search bar -->
 
-		<div class="list-group">			
-			<h3><span class="label label-default">Select markers to add</span></h3>
-			{%if tutor%}
-			<form role="form">
-				<div class="form-group">
-					<select multiple class="form-control">
-						{%for per in tutor%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
-							<span class="badge">Tu</span></option>
-						{%endfor%}
-						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
-							<span class="badge">Ta</span></option>
-						{%endfor%}
-					</select>
-				</div>
-				
-			</form>
-			{%else%}{%if teachingA%}
-			<form role="form">
-				<div class="form-group">
-					<label for="name">Select student's to add</label>
-					<select multiple class="form-control">
-						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
-							<span class="badge">Ta</span></option>
-						{%endfor%}
-					</select>
-					<input type="hidden" name="userS" value=""><br>
-					<input type="hidden" name="session" value={{session_id}}><br>
-					<button type="submit" name="submit" class="btn btn-success btn-block" value={{module}}>
-						<span class="glyphicon glyphicon-plus"></span>Add Marker(s)</button>
-				</div>
-			</form>
-			{%else%}
-				<div class="alert alert-info" role="alert">
-					<strong>There are currently no markers for this module<strong>
-				</div>
-				
-			{%endif%}
-			{%endif%}
+		<div class="list-group">
+			<a href="#" class="list-group-item disabled"> Markers in session </a>
+				{%for mar in marker%}
+					<a href="#" class="list-group-item" > {{ mar.0 }},{{ mar.1 }} {{mar.2 }}</a>
+				{%endfor%}
 		</div>
+		
+		<form method="post" action="/add_user_to_session">
+			<button type="submit" name="submit" class="btn btn-primary btn-lg btn-block">
+				<span class="glyphicon glyphicon-plus"></span> Add marker to session
+			</button>
+			<input type="hidden" name="session" value={{session_id}}>
+			<input type="hidden" name="module" value={{ module }}>
+		</form>
+
+
 	</div>
 </div>
 

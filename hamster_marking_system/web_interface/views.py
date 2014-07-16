@@ -246,12 +246,14 @@ def getAllSessionsForAssessment(request):
         list.append('-1')
         list.append('session data not found')
         sessions.append(list)
+        assessmentName = sess[0]['assessmentName']
+        moduleName=sess[0]['moduleName']
         return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessment_id':assess})
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
 
 @csrf_exempt
 def createAssessment(request):
@@ -373,6 +375,8 @@ def addStudentToSession(request):
     mod = request.POST['submit']
     session_id = request.POST['session']
     users = request.POST.lists()
+    print "]]]]]]]]]]]]]]]]]]"
+    print users
     # users[1][1][0]
     Studentarray = []
     MarkerArray = []
@@ -389,16 +393,20 @@ def addStudentToSession(request):
         'marker':Studentarray,
         'session':session_id	
     }
-    results = views.addUserToSession(request,json.loads(data))
+    results = views.addUserToSession(request,json.dumps(data))
     res = json.loads(results.content)
     if res[0]['type'] == 1:
         name = res[0]['name']
-        return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'sessionName':name})
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker})
 
 
 

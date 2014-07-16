@@ -145,7 +145,9 @@ def getAssessmentName(assess_id):
     for ass in assess:
         if(str(ass.id) == str(assess_id)):
             result = ass.assess_name
-    
+    print "********************"
+    print result
+    print "********************"
     return result
 
 def getModuleNameForAssessment(assess_id):
@@ -888,11 +890,11 @@ def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
 	return auditObjects.objects.filter(person_id_id=person.id)
 
 
-def getMarkerForSession(sess_id):
-    temp = AllocatePerson.objects.filter(sess_id=sess_id_,isMarker = 1)
+def getMarkerForSession(sess_id_):
+    temp = AllocatePerson.objects.filter(session_id=sess_id_,isMarker = 1)
     list = []
     for x in temp:
-        person = Person.objects.get(id=x.getPersonID())
+        person = Person.objects.get(id=x.getPersonID().id)
         uid = person.getupId()
         list.append(uid)
     return list
@@ -902,22 +904,35 @@ def getMarkerForSession(sess_id):
 # Parameter: sess_id_:session Object
 # Return:  list of uids e.g ["u1200000", "u12233423"]   
 def getStudentsForASession(sess_id_):
-	temp = AllocatePerson.objects.filter(sess_id=sess_id_,isStudent = 1)
+	temp = AllocatePerson.objects.filter(session_id=sess_id_,isStudent = 1)
 	list = []
 	for x in temp:
-	        person = Person.objects.get(id=x.getPersonID())
+	        person = Person.objects.get(id=x.getPersonID().id)
 	        uid = person.getupId()
 	        list.append(uid)
 	return list
 
+def getUserInformation(lists):
+   
+    user = []
+    for x in lists:
+        per = []
+        person = Person.objects.get(upId=x)
+        per.append(x)
+        per.append(person.getFirstName())
+        per.append(person.getSurname())
+        user.append(per)
+    return user
+        
 # Name: addStudentToSession
 # Description: Adds a student to the session
 # Parameter: uid:string, sess_id_:session Object
 # Return: None
 def addStudentToSession(uid, sess_id):
     try:
-        person = Person.objects.filter(upId = uid)
-        insertPersonToSession(person.id,sess_id,1,0)
+        sessObj = Sessions.objects.get(id=sess_id)
+        person = Person.objects.get(upId = uid)
+        insertPersonToSession(person,sessObj,1,0)
     except Exception as e:
         raise e
     return True

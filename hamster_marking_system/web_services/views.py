@@ -516,10 +516,14 @@ def getAllSessionsForAssessment(request,jsonObject):
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
+		assess= api.getAssessmentName(assessID)
+		mod = api.getModuleNameForAssessment(assessID)
 		print "error"
 		data = [{
 			'type':-1,
-			'message':'error occured'
+			'message':'error occured',
+			'assessmentName': assess,
+			'moduleName':mod
 		}]
 		return HttpResponse(json.dumps(data))
 # Create your views here.
@@ -655,36 +659,43 @@ def addUserToSession(request,jsonObj):
 	if students:
 		for n in students:
 			api.addStudentToSession(n,session)
+		
 		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
+		mark = api.getUserInformation(marker)
 		data = [{
 			'type':1,
 			'message':"user's added",
 			'name':name,
-			'students': students,
-			'marker':marker,
+			'students': stud,
+			'marker':mark,
 		}]
 	elif Markers:
 		for n in Markers:
 			api.setMarkerForSession(n,session)
 		
 		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
+		mark = api.getUserInformation(marker)
 		data = [{
 			'type':1,
 			'message':"user's added",
 			'name':name,
-			'students': students,
-			'marker':marker,
+			'students': stud,
+			'marker':mark,
 		}]
 	else:
 		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
+		mark = api.getUserInformation(marker)
 		data = [{
 			'type':-1,
 			'message':"user's not added",
 			'name':name,
-			'students': students,
-			'marker':marker,
+			'students': stud,
+			'marker':mark,
 		}]
 	return HttpResponse(json.dumps(data))

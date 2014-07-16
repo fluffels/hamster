@@ -660,10 +660,10 @@ class AllocatePerson(models.Model):
 		return self.ID
 		
 	def getSessionID(self):
-		return session_id
+		return self.session_id
 		
 	def getPersonID(self):
-		return person_id
+		return self.person_id
 		
 	def set_isStudent(self,bool):
 		isStudent = bool
