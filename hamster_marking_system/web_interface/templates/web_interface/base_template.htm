@@ -62,6 +62,7 @@
 	<!--Jumbotron-->
 	<div class="container">
 		<div class="jumbotron text-center">
+			{% block breadcrumbs %}{% endblock %}
 			<h2>{% block jumbotron_header %}{% endblock %}</h2>
 			<p>{% block jumbotron_sub_header %}{% endblock %}</p>
 			

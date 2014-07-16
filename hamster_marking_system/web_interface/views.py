@@ -421,7 +421,7 @@ def getAllPersonOfSession(request):
     res = json.loads(result.content)
     if res[0]['type'] == 1:
         sessionName = res[0]['name']
-        students = res[0]['student']
+        students = res[0]['students']
         marker = res[0]['marker']
         
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,

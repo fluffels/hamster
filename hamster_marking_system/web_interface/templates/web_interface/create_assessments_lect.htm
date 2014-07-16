@@ -47,6 +47,15 @@
 
 
 <!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a href="#">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
 {% block jumbotron_header %} Assessments {% endblock %}
 
 {% block jumbotron_sub_header %} {{ module }} {% endblock %}

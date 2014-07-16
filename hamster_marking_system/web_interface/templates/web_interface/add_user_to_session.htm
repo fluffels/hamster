@@ -46,6 +46,16 @@
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+	<ol class="breadcrumb">
+		<li><a href="#">Login</a></li>
+		<li ><a href="#">Home</a></li>
+		<li><a href="#">Assessments</a></li>
+		<li class="active"><a href="#">Sessions</a></li>
+	</ol>
+{% endblock %}
+
+
 {% block jumbotron_header %} Add user to Session {% endblock %}
 
 {% block jumbotron_sub_header %} {{ sessionName }} {% endblock %}
@@ -76,7 +86,7 @@
 			<div class="form-group">
 				<select multiple class="form-control" name="userS">
 					{%for per in students%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{session_id}}><br>
@@ -110,11 +120,11 @@
 				<div class="form-group">
 					<select multiple class="form-control">
 						{%for per in tutor%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
 							<span class="badge">Tu</span></option>
 						{%endfor%}
 						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
 							<span class="badge">Ta</span></option>
 						{%endfor%}
 					</select>
@@ -127,7 +137,7 @@
 					<label for="name">Select student's to add</label>
 					<select multiple class="form-control">
 						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
 							<span class="badge">Ta</span></option>
 						{%endfor%}
 					</select>

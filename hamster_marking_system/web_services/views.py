@@ -711,7 +711,7 @@ def getAllPersonOfSession(request,jsonObj):
 		marker = api.getMarkerForSession(sess)
 		mark = api.getUserInformation(marker)
 		data = [{
-			'type':-1,
+			'type':1,
 			'message':"user's not added",
 			'name':name,
 			'students': stud,
