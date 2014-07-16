@@ -698,4 +698,29 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':mark,
 		}]
-	return HttpResponse(json.dumps(data))
+		return HttpResponse(json.dumps(data))
+
+
+def getAllPersonOfSession(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	sess = json_data['session_id']
+	name = api.getSessionName(sess)
+	if sess:
+		student = api.getStudentsForASession(sess)
+		stud = api.getUserInformation(student)
+		marker = api.getMarkerForSession(sess)
+		mark = api.getUserInformation(marker)
+		data = [{
+			'type':-1,
+			'message':"user's not added",
+			'name':name,
+			'students': stud,
+			'marker':mark,
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+	        data = [{
+	                'type':-1,
+	                'message':'session not found'
+	        }]
+	        return HttpResponse(json.dumps(data))

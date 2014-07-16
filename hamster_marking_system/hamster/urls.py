@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^create_session$','web_interface.views.createSession', name='create_session'),
     url(r'^add_user_to_session$','web_interface.views.getAllStudentOfModule', name='add_user_to_session'),
     url(r'^added_user_to_session$','web_interface.views.addStudentToSession', name='added_user_to_session'),
+    url(r'^view_user_in_session$','web_interface.views.getAllPersonOfSession', name='view_user_in_session'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

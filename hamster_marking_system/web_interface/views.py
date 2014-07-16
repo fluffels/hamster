@@ -407,6 +407,40 @@ def addStudentToSession(request):
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':name,'marker':marker})
+@csrf_exempt
+def getAllPersonOfSession(request):
+    mod = request.POST['mod']
+    session_id = request.POST['session']
+    Studentarray = []
+    MarkerArray = []
+    
+    data ={
+        'session_id':session_id
+    }
+    result = views.getAllPersonOfSession(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        sessionName = res[0]['name']
+        students = res[0]['student']
+        marker = res[0]['marker']
+        
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':sessionName,'marker':marker})
+    else:
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':[],
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':'An error occurred, a session was not found!','marker':[]})
 
 
 

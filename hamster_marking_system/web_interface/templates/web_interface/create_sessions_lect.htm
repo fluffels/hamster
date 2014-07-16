@@ -70,8 +70,10 @@
 					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student({{ x.0 }})</button>
 					
 				</form>
-				<form action="/view_session" method="post">
-					<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{x.0}}>View Students</button>
+				<form action="/view_user_in_session" method="post">
+					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>View Students</button>
+					<input type="hidden" name="mod" value={{ moduleName }}>
+
 				</form>
 				<form action="/view_session" method="post">
 					<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{x.0}}>Remove Student</button>
