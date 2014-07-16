@@ -235,36 +235,39 @@ def getAllSessionsForAssessment(request):
         sessions = sess[0]['sessions']
         assessmentName = sess[0]['assessmentName']
         moduleName=sess[0]['moduleName']
-        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
+        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName})
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess})
     else:
         list = []
         list.append('-1')
         list.append('session data not found')
         sessions.append(list)
-        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
+        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions})
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessment_id':assess})
 
 @csrf_exempt
 def createAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['mod']
     fullmark = request.POST['fullmark']
+    assess_id = request.POST['leaf']
     
     data = {
         'name':assessName,
         'mod':mod,
-        'fullmark':fullmark
+        'fullmark':fullmark,
+        'assess_id': assess_id
     }
-    results= views.createAssessment(request,json.dumps(data))
+    res= views.createAssessment(request,json.dumps(data))
+    results = json.loads(res.content)
     if results[0]['type'] == 1:
         assess = results[0]['assessment']
         return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
@@ -272,6 +275,103 @@ def createAssessment(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                           'user_roles':user_roles,'assessments':assess,"module":mod})
+                                                                           'user_roles':user_roles,'assessmentName':assess,"module":mod})
+
+@csrf_exempt
+def createSession(request):
+    assess_id = request.POST['assess_id']
+    open_time = request.POST['open_time']
+    close_time = request.POST['close_time']
+    name = request.POST['name']
     
+    data ={
+        'assess_id':assess_id,
+        'name':name,
+        'open_time': open_time,
+        'close_time':close_time
+    }
+    res = views.createSessionForAssessment(request,json.dumps(data))
+    results = json.loads(res.content)
     
+    if results[0]['type'] == 1:
+        assess_name = results[0]['assessmentName']
+        sessions = results[0]['sessions']
+        mod = results[0]['mod']
+        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
+
+    else:
+        assess_name = results[0]['assessmentName']
+        sessions = results[0]['sessions']
+        mod = results[0]['mod']
+        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
+@csrf_exempt
+def searchForStudent(request):
+    user_query = request.POST['query']
+    
+    data ={
+        'query':user_query,
+
+    }
+    peopleWanted = views.searchForStudent(request,json.dumps(data))
+    peopleFound = json.loads(peopleWanted.content)
+    
+    if peopleFound[0]['type'] == 1:
+        list_of_people = peopleFound[0]['users']
+        return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'list_of_people':list_of_people})
+
+@csrf_exempt
+def getAllStudentOfModule(request):
+    mod = request.POST['module']
+    session = request.POST['session']
+
+    data = {
+        'module':mod,
+        'session':session
+    }
+    info = views.getAllStudentForModule(request,json.dumps(data))
+    res = json.loads(info.content)
+    
+    if res[0]['type'] == 1:
+        students = res[0]['students']
+        return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session})
+    else:
+        students = []
+        return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session})
+
+
+
+
+
+
+
+
+
+
+
+
+

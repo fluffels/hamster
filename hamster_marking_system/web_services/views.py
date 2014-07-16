@@ -552,7 +552,7 @@ def getAllSessionsForAssessment(request,jsonObject):
 			'message':'session retrieved',
 			'sessions':session,
 			'assessmentName': assess,
-			'moduleName':mod
+			'moduleName':mod,
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
@@ -569,12 +569,21 @@ def createAssessment(request,jsonObject):
 	mod = json_data['mod']
 	assessmentName = json_data['name']
 	mark=json_data['fullmark']
-	info = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,None)
+	assess_id=json_data['assess_id']
+	info = False
+	if assess_id == 'leaf':
+		print "am an aggregate"
+		info = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,None)
+	else:
+		print "am a leaf"
+		print assess_id
+		info = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,assess_id)
 	assess = api.getAllAssessmentsForModule(mod)
 	assessDetail = []
-	for ass in assess:
-		assessDetail.append(api.getAssessmentDetails(ass))
+	
 	if info:
+		for ass in assess:
+			assessDetail.append(api.getAssessmentDetails(ass))
 		data = [{
 			'type':1,
 			'message': 'Assessment Created',
@@ -587,4 +596,90 @@ def createAssessment(request,jsonObject):
 			'message': 'Assessment Not Created',
 		}]
 		return HttpResponse(json.dumps(data))
+
+def createSessionForAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	sessionName = json_data['name']
+	open_time = json_data['open_time']
+	close_time = json_data['close_time']
+	info = False
+	info = api.createSession(request,sessionName,assess_id,open_time,close_time)
+	session = api.getAllSessionsForAssessment(assess_id)
+	sessions = []
 	
+	for sess in session:
+		sessions.append(api.getSessionDetails(sess))
+	if info:
+		data =[{
+			'type':1,
+			'message': 'session created',
+			'sessions':sessions,
+			'assessmentName': api.getAssessmentName(assess_id),
+			'mod' :api.getModuleNameForAssessment(assess_id)
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data =[{
+			'type':-1,
+			'message': 'session not created',
+			'sessions':sessions,
+			'assessmentName': api.getAssessmentName(assess_id),
+			'mod' :api.getModuleNameForAssessment(assess_id)
+		}]
+		return HttpResponse(json.dumps(data))
+
+def searchForStudent(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	query = json_data['query']
+	
+	possible_names = api.searchByName(query)
+	possible_surnames = api.searchBySurname(query)
+	
+	if len(possible_names) !=0:
+		data =[{
+			'type':1,
+			'message': 'User(s) found',
+			'users':possible_names,
+		}]
+		return HttpResponse(json.dumps(data))
+	elif len(possible_surnames) != 0:
+		data =[{
+			'type':1,
+			'message': 'User(s) found',
+			'users':possible_surnames,
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data =[{
+			'type':-1,
+			'message': 'User(s) not found',
+			
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def getAllStudentForModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	mod = json_data['module']
+	session_id = json_data['session']
+	
+	person = api.getAllStudentsOfModule(mod)
+	lists = []
+	if person != []:
+		for n in person:
+			lists.append(api.getPersonInformation(n))
+		
+		data = [{
+			'type':1,
+			'message':'students retrieved',
+			'students':lists
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'students not retrieved',
+		}]
+		return HttpResponse(json.dumps(data))
+
+		

@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^person_details$','web_interface.views.personDetails', name='person_details'),
     url(r'^view_session$','web_interface.views.getAllSessionsForAssessment', name='view_sessions'),
     url(r'^create_assessment$','web_interface.views.createAssessment', name='create_assessment'),
+    url(r'^create_session$','web_interface.views.createSession', name='create_session'),
+    url(r'^add_user_to_session$','web_interface.views.getAllStudentOfModule', name='add_user_to_session'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

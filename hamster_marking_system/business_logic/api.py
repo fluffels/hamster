@@ -76,7 +76,13 @@ def getAllSurnameOf(list):
 	for x in list:
 		surname.append(x.getSurname())
 	return surname
-	
+
+def getPersonInformation(person):
+    students = []
+    students.append(person.getgetupId())
+    students.append(person.getFirstName())
+    students.append(person.getSurname())
+    return students
 # Name: getAllUidOf(list)
 # Description: Returns a list of the surname of the Person objects 
 # Parameter: list : Person[]
@@ -123,12 +129,16 @@ def getModuleNameForAssessment(assess_id):
 # Description: Checks if the assessment is a leaf assessment
 # Parameter: assess_id: String
 # Return: Boolean    
-def checkIfAssessmentIsLeaf(asssess_id):
+def checkIfAssessmentIsLeaf(assess_id):
+	print "++++++++++++++++++++"
+	print assess_id
 	assess_objs = Assessment.objects.all()
 	for ass in assess_objs:
-		if ass.id == assess_id:
-			type = obj.assessment_type
-			if type == 'Leaf':
+		if str(ass.id) == str(assess_id):
+			print "I do mamelo"
+			types = ass.assessment_type
+			if str(types) == 'Leaf':
+				print "I came, and I...became a leaf"
 				return True
 	
 	return False
@@ -138,39 +148,48 @@ def checkIfAssessmentIsLeaf(asssess_id):
 # Parameter: new_leaf_id: String
 # Return: Boolean			
 def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
-	all_assessments = Assessments.objects.all()
-	
+	print "I begin my journey"
+	all_assessments = Assessment.objects.all()
+	old_leaf_obj = None
+	new_leaf_obj = None
 	for assess in all_assessments:
-		if assess.id == old_leaf_id:
+		if str(assess.id) == str(old_leaf_id):
 			old_leaf_obj = assess
-		if assess.id = new_leaf_id:
+			print "Here she blows!!!!!"
+		if assess.id == new_leaf_id:
 			new_leaf_obj = assess
+			print "Nope, there she blows!!!"
 			
-	if old_leaf_obj.assessment_type == 'Leaf' && new_leaf_obj.assessment_type=='Leaf':
-		#can perform change
-		'''
-		1. add old leaf in aggregate table 
-		2. remove old leaf from leaf table
-		3. new leaf is already in table and parent is already specified 
-		'''
-		agg_name = old_leaf_obj.name
-		agg_type = 'Aggregate'
-		agg_mod_code = old_leaf_obj.mod_id
-		agg_published = old_leaf_obj.published
-		agg_aggregator = 'SimpleSum'
-		agg_weight = None
-		agg_parent = old_leaf_obj.parent
-		
-		new_agg_obj = createAggregateAssessment(agg_name, agg_type, agg_mod_code, agg_published, agg_aggregator, agg_weight, agg_parent) 
-		
-		new_leaf_obj.set_parent(new_agg_obj.id)
-		
-	return True
-		
-		
+	print "Old leaf obj:"
+	print old_leaf_obj
+	print "New leaf obj:"
+	print new_leaf_obj
+			
+	if str(old_leaf_obj.assessment_type) == 'Leaf':
+	    if str(new_leaf_obj.assessment_type)=='Leaf':
+	        #can perform change
+	        agg_name = old_leaf_obj.assess_name
+	        agg_type = 'Aggregate'
+	        agg_mod_code = old_leaf_obj.mod_id
+	        agg_published = old_leaf_obj.published
+	        agg_aggregator = 'SimpleSum'
+	        agg_weight = None
+	        agg_parent = old_leaf_obj.parent
+	        
+	        new_agg_obj = insertAggregateAssessment(agg_name, agg_type, agg_mod_code, agg_published, agg_aggregator, agg_weight, agg_parent) 
+	        print "Get ready for the new born..."
+	        print new_agg_obj.id
+	        new_leaf_obj.parent = new_agg_obj.id
+	        new_leaf_obj.save()
+	        print new_leaf_obj.parent
+	        new_leaf_obj.isroot = False
+	        new_leaf_obj.save()
+	        old_leaf_obj.delete()
+	        return True
 	else:
-		#error cannot perform change because one or both of them is already an aggregate
+		return False
 	
+
 # Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)
 # Description: Creates a leaf assessment object by calling the function in models
 # Parameter: request : HTTPRequest
@@ -181,16 +200,24 @@ def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
 # Parameter: full_marks : Integer
 # Parameter: parent_id: Integer
 # Return: Boolean
-def createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id = None):
+def createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id ):
+	modObj = Module.objects.get(module_code=module_code)
+	print "==============="
+	print modObj
+	print "==============="
 	if parent_id is None:
-		obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
-		logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
+		print "I am None"
+		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
+#		logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
 	else:
-		obj = insertLeafAssessment(leaf_name_, assessment_type, module_code, published_, full_marks, parent_id)
+		print "I am something"
+		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
 		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
 		if is_parent_leaf: #means its a leaf and must be changed
 			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
-			
+		else:
+		    obj.parent = parent_id
+		    obj.save()
 	if obj:
 		return True
 	else: return False
@@ -208,7 +235,7 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 # Return: Boolean
 def createAggregateAssessment(request, assessment_name, assessment_type, module_code, published_, aggregator, assessment_weight, parent_id = None):
 	obj = insertAggregateAssessment(assessment_name, assessment_type, module_code, published_, aggregator, assessment_weight, parent_id)
-	logAudit(request, "Inserted new aggregate assessment", "insert", "business_logic_aggregateassessment", "id", None, obj.id)
+#	logAudit(request, "Inserted new aggregate assessment", "insert", "business_logic_aggregateassessment", "id", None, obj.id)
 	return True
 	
 # Name: getAssessmentForModuleByName(mod_code, name)
@@ -342,8 +369,9 @@ def getAllSessionsForAssessment(assess_id):
 # Parameter: closetime : DateTime
 # Return: Boolean
 def createSession(request,session_name,assess_id, opentime, closetime ):
-    obj = insertSessions(session_name,assess_id,opentime,closetime)
-    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
+    sessionObj = Assessment.objects.get(id=assess_id)
+    obj = insertSessions(session_name,sessionObj,opentime,closetime)
+#    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
     return True
     
 def getSessionDetails(session):
@@ -362,7 +390,7 @@ def closeSession(request, sess_id):
     old = sess.getStatus()
     if old == 1:
         sess.setClose()
-        logAuditDetail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
+#        Detail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
     else:
         return False
     return True
@@ -377,7 +405,7 @@ def openSession(request, sess_id):
     old = sess.getStatus()
     if old == 2:
         sess.setOpen()
-        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
+#        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
         return True
     else:
         return False
@@ -392,7 +420,7 @@ def removeSession(request,sess_id):
         sess =  Sessions.objects.filter(id=sess_id)
         if sess:
             sess.deleteSessions() #exception may be thrown here
-            logAuditDetail(request,"Deleted session","delete","business_logic_sessions","id",str(oldid1) + "," + str(oldid2),None,sess.id)
+#            logAuditDetail(request,"Deleted session","delete","business_logic_sessions","id",str(oldid1) + "," + str(oldid2),None,sess.id)
             return True
     except Exception as e:
         raise e
@@ -409,7 +437,7 @@ def removeMarkerFromSession(request, sess_id, uid):
         MarkSess = AllocatePerson.objects.get(session_id_id=sess_id, person_id_id=uid)
         marker_id = MarkSess.getId()
         MarkSess.deleteAllocatedPerson()
-        logAuditDetail(request,"Deleted marker session","delete","business_logic_allocateperson","id",uid + "," + sess_id,None,marker_id)
+#        logAuditDetail(request,"Deleted marker session","delete","business_logic_allocateperson","id",uid + "," + sess_id,None,marker_id)
     except Exception as e:
         print "Cannot remove marker from session, person or session does not exist."
         raise e
@@ -432,7 +460,7 @@ def removeMarkerFromModule(request, mod_code, uid):
                 oldid1 = uid
                 oldid2 = m.session_id_id
                 m.delete()
-                logAuditDetail(request,"Deleted marker session","delete","dbModels_markersessions","id",str(oldid1) + "," + str(oldid2),None,oldid0)
+#                logAuditDetail(request,"Deleted marker session","delete","dbModels_markersessions","id",str(oldid1) + "," + str(oldid2),None,oldid0)
         markerTa = teachingAssistantOf_module.objects.filter(module_id=mod_code,person_id=uid)
         markerTut = teachingAssistantOf_module.objects.filter(module_id=mod_code,person_id=uid)
         for x in markerTa:
@@ -440,14 +468,14 @@ def removeMarkerFromModule(request, mod_code, uid):
             oldid1 = uid
             oldid2 = x.module_id
             x.delete()
-            logAuditDetail(request,"Deleted marker module","delete","dbModels_markermodule","id",str(oldid1) + "," + str(oldid2),None,oldid0)
+#            logAuditDetail(request,"Deleted marker module","delete","dbModels_markermodule","id",str(oldid1) + "," + str(oldid2),None,oldid0)
 
         for y in markerTut:
             oldid0 = y.id
             oldid1 = uid
             oldid2 = y.module_id
             y.delete()
-            logAuditDetail(request,"Deleted marker module","delete","dbModels_markermodule","id",str(oldid1) + "," + str(oldid2),None,oldid0)
+#            logAuditDetail(request,"Deleted marker module","delete","dbModels_markermodule","id",str(oldid1) + "," + str(oldid2),None,oldid0)
     except Exception as e:
         print 'Error removing marker from sessions or module, marker/module/session does not exist.'
         raise e
@@ -490,7 +518,7 @@ def setTeachingAssistantForModule(request, uid, mod_code):
         ta = teachingAssistantOf_module(person_id=uid, module_id=mod_code)
         per = Person.objects.filter(Q(upId=uid))
         has_been_set =  per.teachingAssistantOfInsert.add(ta) #should return a boolean
-        logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,per.id)
+#        logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,per.id)
     except Exception as e:
         print 'Error, user could not be assigned as teaching assistant.'
         raise e
@@ -507,7 +535,7 @@ def setTutorForModule(request, uid, mod_code):
         tut = tutorOf_module(person_id=uid, module_id=mod_code)
         per = Person.objects.filter(Q(upId=uid))
         per.tutorOf_module.add(tut) #should return a boolean
-        logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,per.id)
+#        logAudit(request,"Inserted new marker for module","insert","dbModels_markermodule","id",None,per.id)
     except Exception as e:
         print 'Error, user could not be assigned as tutor.'
         raise e
@@ -521,7 +549,7 @@ def setTutorForModule(request, uid, mod_code):
 # Return: Nothing
 def setMarkerForSession(request, uid, session_id):
     obj = insertPersonToSession(uid, session_id,0,1)
-    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.getId())
+#    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.getId())
 
 # Name: getOpenSessions(assessment_id_)
 # Description: Returns all the sessions that are open for marking
@@ -689,7 +717,7 @@ def getSessionByName(mod_code, name):
 def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
     
     obj = insertMarkAllocation(leaf_id,0,session_id,marker,student,timestamp)
-    logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
+#    logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
     return obj.id
 
 # Name: updateMarkAllocation(request, markAlloc_id, mark)
@@ -704,7 +732,7 @@ def updateMarkAllocation(request, markAlloc_id, mark):
         old = markAlloc.getMark()
         markAlloc.setMark(int(mark))
        
-        logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.getMark(),markAlloc_id)
+#        logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.getMark(),markAlloc_id)
     except Exception as e:
         print e.args
         raise e
@@ -720,7 +748,7 @@ def removeMarkAlloccation(markAlloc_id):
         old = markAlloc.getMark()
         oldid = markAlloc_id
         markAlloc.delete()
-        logAuditDetail(request,"Deleted Mark Allocation","delete","dbModels_markallocation","id",old,None,oldid)
+#        logAuditDetail(request,"Deleted Mark Allocation","delete","dbModels_markallocation","id",old,None,oldid)
     except Exception as e:
         raise e
     return True

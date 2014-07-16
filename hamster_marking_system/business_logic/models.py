@@ -230,8 +230,9 @@ class Assessment(PolymorphicModel):
     assess_name = models.CharField(max_length=65)
     published = models.BooleanField()
     mod_id = models.ForeignKey(Module)
-    parent = models.IntegerField() #the assess_id of the parent will be passed
+    parent = models.IntegerField(null=True, blank=True) #the assess_id of the parent will be passed
     assessment_type = models.CharField(max_length=65)
+    isroot = models.BooleanField( default= True)
     
     def getname(self):
         return self.assess_name
@@ -242,13 +243,15 @@ class Assessment(PolymorphicModel):
     def get_mod_id(self):
         return self.mod_id
 
-    def get_parent():
+    def get_parent(self):
       return self.parent
-
+    
+    def set_parent(self,ass_id):
+      self.parent = ass_id
+      return True
+    
     def is_root(self):
-      if self.parent is None:
-        return True
-      return False
+      return self.isroot
 
     '''
         class Meta:
@@ -271,8 +274,7 @@ def deleteAssessment(self):
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator_name = models.CharField(max_length = 65)
-    isroot = models.BooleanField()
-    weight = models.IntegerField()
+    weight = models.IntegerField(null=True, blank=True, default=100)
    
     def add_child(self, child_id):
       childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
@@ -301,8 +303,7 @@ class AggregateAssessment(Assessment):
       #get the name from the database
       return self.aggregator_name
     
-    def is_root(self):
-      return self.isroot #find a way to determine the root 
+     #find a way to determine the root 
     
     def getaggregator(self):
       return self.aggregator
@@ -336,11 +337,10 @@ class AggregateAssessment(Assessment):
 #================================AggregateAssessment Function============================
 def insertAggregateAssessment(name_, assessment_type_, module_code, published_,aggregator_, assessment_weight, parent_id):
 	if parent_id is None:
-	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator=aggregator_, weight=assessment_weight)
-	  a.set_parent(None)
+	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator_name=aggregator_, weight=assessment_weight)
 
 	else:
-	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = 			        published_,aggregator=aggregator_, weight=assessment_weight, parent=parent_id)
+	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator_name=aggregator_, weight=assessment_weight, parent=parent_id)
 
 	a.save()
 	return a
@@ -365,13 +365,8 @@ class LeafAssessment(Assessment):
 
 #=================================LeafAssessment Function==============================
 def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None):
-	 a = LeafAssessment(name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_) 
+	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_) 
 	 
-	 if parent is None:
-	    a.set_parent(None)
-	 else:
-	    a.set_parent(parent)
-
 	 a.save()
 	 return a
 
@@ -540,7 +535,6 @@ def deleteMarkAllocation(self):
 #===============================End of MarkAllocation Function================================
 
 class Sessions(models.Model):
-    assessmentname = models.CharField(max_length=100, null=False)
     session_name = models.CharField(max_length=100, null=False)
     assessment_id = models.ForeignKey('Assessment')
     open_time = models.DateTimeField()
@@ -553,10 +547,6 @@ class Sessions(models.Model):
                 return status
         else:
                 return status
-
-    def setAssessmentName(self, name):
-      self.assessmentname = name
-      self.save()
 
     def setAssessmentID(self,id):
         self.assessment_id = id
@@ -612,8 +602,6 @@ class Sessions(models.Model):
     def deleteMarker(self,vaule):
         deleteAllocatedPerson(value)
         
-    def getAssessmentname(self):
-        return self.assessmentname
     def setAssessmentname(self,value):
         self.assessmentname=value
         self.save()
@@ -642,7 +630,7 @@ def deleteSessions(self):
 	Sessions.delete(self)
 
 def insertSessions(session_name_, assessment_id_,opened_,closed_):
-	temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,opened=opened_,closed=closed_,status=0)
+	temp = Sessions(session_name=session_name_,assessment_id=assessment_id_,open_time=opened_,close_time=closed_,status=0)
 	temp.save()
 	return temp
 
@@ -759,7 +747,7 @@ class AuditLog(models.Model):
 #===================================AuditLog functions====================================
 
 def logAudit(request,desc,act,table,column,old,new):
-    p = Person.objects.get(id=request.REQUEST["upId"])
+    p = Person.objects.get(upId=request.session["user"]["uid"][0])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     ti = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -771,7 +759,7 @@ def logAudit(request,desc,act,table,column,old,new):
 
 
 def logAuditDetail(person,desc,act,table,column,old,new,table_id):
-    p = Person.objects.get(id=request.REQUEST["id"])
+    p = Person.objects.get(upId=request.session["user"]["uid"][0])
     t = AuditTable.objects.get(tableName=table)
     c = AuditTableColumn.objects.get(columnName=column)
     aa = AuditAction.objects.get(auditDesc=act)
