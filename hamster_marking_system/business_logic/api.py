@@ -22,8 +22,13 @@ def getPersonDetails(username):
 def getPersonObjectListFromArrayList(list):
     returnlist = []
     for item in list:
+        print "lololololololololololololololololololololo"
+        print sourceDemographics(item)
         returnlist.append(getPersonFromArr(constructPersonDetails(item))) #ldap_function
     return returnlist 
+
+#def getPersonObjectListFromArrayList(list):
+    
 
 # Name: getAllLecturesOfModule(mod_code)
 # Description: Returns the lecturers of a module
@@ -36,26 +41,54 @@ def getAllLecturesOfModule(mod_code):
 # Name: getAllStudentsOfModule(mod_code
 # Description: Returns all the students enrolled in a module
 # Parameter: mod_code : String
-# Return: Person[]
+# Return: Person[],their uid,cn and sn
 def getAllStudentsOfModule(mod_code):
     list = getStudentsOf(mod_code)
-    return getPersonObjectListFromArrayList(list)
-
+    #return getPersonObjectListFromArrayList(list)
+    returnList = []
+    for item in list:
+        person = []
+        array = sourceDemographics(item)
+        person.append(array['uid'])
+        person.append(array['cn'])
+        person.append(array['sn'])
+        returnList.append(person)
+    return returnList
+ 
 # Name: getAllTAsOfModule(mod_code)
 # Description: Returns all the TA's assigned to a module
 # Parameter: mod_code : String
-# Return: Person[]
+# Return: Person[],their uid,cn and sn
 def getAllTAsOfModule(mod_code):
     list = getTAsOf(mod_code)
-    return getPersonObjectListFromArrayList(list)
+   # return getPersonObjectListFromArrayList(list)
+    returnList = []
+    for item in list:
+        person = []
+        array = sourceDemographics(item)
+        person.append(array['uid'])
+        person.append(array['cn'])
+        person.append(array['sn'])
+        returnList.append(person)
+    return returnList
 
 # Name: getAllTutorsOfModule(mod_code)
 # Description: Returns all the Tutor's assigned to a module
 # Parameter: mod_code : String
-# Return: Person[]
+# Return: Person[],their uid,cn and sn
 def getAllTutorsOfModule(mod_code):
     list = getTutorsOf(mod_code)
-    return getPersonObjectListFromArrayList(list)
+    #return getPersonObjectListFromArrayList(list)
+    returnList = []
+    for item in list:
+        person = []
+        array = sourceDemographics(item)
+        person.append(array['uid'])
+        person.append(array['cn'])
+        person.append(array['sn'])
+        returnList.append(person)
+    
+    return returnList
 
 # Name: getAllNamesOf(listy)
 # Description: Returns a list of the first names of the Person objects 
@@ -380,6 +413,12 @@ def getSessionDetails(session):
     list.append(session.getName())
     return list
 
+def getSessionName(sess_id):
+    sess = Sessions.objects.get(id = sess_id)
+    if sess:
+        return sess.getName()
+    else:
+        return ''
 # Name: closeSession(request, sess_id)
 # Description: Closes a session therefore no more marking can be done
 # Parameter: request : HTTPRequest
@@ -760,11 +799,11 @@ def removeLeafAssessment(request,leaf_id):
 def removeAssessment(request,assess_id):
     try:
         #obtain all the children
-	root_ = Assessment.filter.objects(polymorphic_ctype_id=assess_id)
-	children_ = Assessment.filter.objects(parent=assess_id)
-	for child in children: #check if they are aggregates and if so call recursively
-	    pass
-	
+        root_ = Assessment.filter.objects(polymorphic_ctype_id=assess_id)
+        children_ = Assessment.filter.objects(parent=assess_id)
+        for child in children: #check if they are aggregates and if so call recursively
+            pass
+        
         assess = getAssessmentFromID(assess_id)
         sessions = Sessions.objects.filter(assessment_id_id = assess)
         for x in sessions:
@@ -848,6 +887,16 @@ def getAuditLogFromTimeRangeAndUser(username, fromTime, toTime):
 	person = Person.objects.filter(upId=username)
 	return auditObjects.objects.filter(person_id_id=person.id)
 
+
+def getMarkerForSession(sess_id):
+    temp = AllocatePerson.objects.filter(sess_id=sess_id_,isMarker = 1)
+    list = []
+    for x in temp:
+        person = Person.objects.get(id=x.getPersonID())
+        uid = person.getupId()
+        list.append(uid)
+    return list
+    
 # Name: getStudentsForASession
 # Description:
 # Parameter: sess_id_:session Object

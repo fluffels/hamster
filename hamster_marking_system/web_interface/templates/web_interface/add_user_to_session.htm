@@ -46,15 +46,14 @@
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block jumbotron_header %} Add user to {% endblock %}
+{% block jumbotron_header %} Add user to Session {% endblock %}
 
-{% block jumbotron_sub_header %} {{ assessmentName }} {% endblock %}
+{% block jumbotron_sub_header %} {{ sessionName }} {% endblock %}
 
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 
 <div class="row">
-	<div class="col-md-3"></div>
 	<div class="col-md-6">
 		<div class="input-group">
 			<span class="input-group-btn">
@@ -65,20 +64,66 @@
 		</div>
 		
 		<div class="list-group">
-			{% for per in students %}
-				<a href="#" class="list-group-item">{{ per.1 per.2 per.0 }}</a>
-			{% endfor %}
+			<!--{% for per in students %}
+				<a href="#" class="list-group-item">{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</a>
+			{% endfor %}-->
+			<h4>Add Student's<h4>
+			<form method="post" action="/added_user_to_session">
+				<select name="userS" size="12" multiple="multiple">
+					{%for per in students%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="session" value={{session_id}}/><br>
+				<input type="hidden" name="userM" value=""/><br>
+				<button type="submit" name="submit" class="btn btn-success" value={{module}}>Submit</button>
+			</form>
 		</div>
 		
-		
 	</div>
-	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<div class="list-group">
+			<!--{% for per in students %}
+				<a href="#" class="list-group-item">{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</a>
+			{% endfor %}-->
+			<h4>Add Marker's<h4>
+			{%if tutor%}
+			<form method="post" action="#">
+				<select name="userM" size="12" multiple>
+					{%for per in tutor%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
+					{%endfor%}
+					{%for per in teachingA%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="userS" value=""/><br>
+				<input type="hidden" name="session" value={{session_id}}/><br>
+				<button type="submit" name="submit" class="btn btn-success" value={{module}}>Submit</button>
+			</form>
+			{%else%}{%if teachingA%}
+			<form method="post" action="#">
+				<select name="userM" size="12" multiple>
+					{%for per in teachingA%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }},{{ per.1.0 }} {{per.2.0 }}</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="userS" value=""/><br>
+				<input type="hidden" name="session" value={{session_id}}/><br>
+				<button type="submit" name="submit" class="btn btn-success" value={{module}}>Submit</button>
+			</form>
+			{%else%}
+			<p><strong>There are no markers for this module<strong></p>
+			{%endif%}
+			{%endif%}
+		</div>
+	</div>
 </div><!--End of Modal for ContactUs-->
 
 
 {% endblock %}
 <!-- End of jumbotron content -->
-<!--###########################  End of jumbotron part ############################-->
+<!--###########################  End of jumbotron part ############################--> 
 
 
 {% block left_under_jumbotron-col-6 %}{% endblock %}

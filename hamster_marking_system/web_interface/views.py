@@ -348,26 +348,57 @@ def getAllStudentOfModule(request):
     
     if res[0]['type'] == 1:
         students = res[0]['students']
+        ta = res[0]['ta']
+        tut = res[0]['tut']
+        name = res[0]['name']
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session})
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'tutor':tut,'teachingA':ta,'sessionName':name})
     else:
         students = []
+        ta = []
+        tut = []
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session})
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'tutor':tut,'teachingA':ta,'sessionName':name})
 
-
-
-
-
-
+@csrf_exempt
+def addStudentToSession(request):
+    mod = request.POST['submit']
+    session_id = request.POST['session']
+    users = request.POST.lists()
+    # users[1][1][0]
+    Studentarray = []
+    MarkerArray = []
+    if users[1][0] == 'userS':
+        print users[1][0]
+        for n in users[1][1]:
+            Studentarray.append(n)
+    else:
+        for n in users[1][1]:
+            MarkerArray.append(n)
+    
+    data = {
+        'student':Studentarray,
+        'marker':Studentarray,
+        'session':session_id	
+    }
+    results = views.addUserToSession(request,json.loads(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        name = res[0]['name']
+        return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'sessionName':name})
 
 
 

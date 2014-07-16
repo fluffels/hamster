@@ -235,33 +235,6 @@ def getOpenSessionsForMarker(request):
 			}]
 		return HttpResponse(json.dumps(data))
 
-def getAllStudentOfModule(request):
-	if request.method == 'POST':
-		try:
-			json_data = json.loads(request.body)
-			mod_code = json_data['mod_code']
-			students = api.getAllStudentsOfModule(mod_code)
-			stuIDs = api.getAllUidOf(students)
-			surnames = api.getAllSurnameOf(students)
-			names = api.getAllNamesOf(students)
-			
-			data = [{
-				'type':1,
-				'message': 'students retrieved',
-				'uid': stuIDs,
-				'surnames':surname,
-				'names':names,
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			return Http404()
-	else:
-		data =[{
-			'type':-1,
-			'message':'error retrieving students',
-		}]
-		return HttpResponse(json.dumps(data))
-
 def getAllMarkerOfModule(request):
 	if request.method == 'POST':
 		try:
@@ -356,19 +329,6 @@ def createSessionForAssessment(request):
 			return HttpResponse(json.dumps(data))
 	else:
 		return Http404()
-
-	
-def addMarkersToSession(request):
-	pass
-	
-def addSessionToMarker(request):
-	pass
-
-def removeMarkerFromSession(request):
-	pass
-	
-def removeStudentFromSession(request):
-	pass
 	
 def deleteSessionFromAssessment(request):
 	if request.method == 'POST':
@@ -661,18 +621,21 @@ def searchForStudent(request, jsonObj):
 def getAllStudentForModule(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	mod = json_data['module']
-	session_id = json_data['session']
+	session = json_data['session']
 	
-	person = api.getAllStudentsOfModule(mod)
-	lists = []
-	if person != []:
-		for n in person:
-			lists.append(api.getPersonInformation(n))
-		
+	student = api.getAllStudentsOfModule(mod)
+	tut = api.getAllTutorsOfModule(mod)
+	ta = api.getAllTAsOfModule(mod)
+	name = api.getSessionName(session)
+	if student != []:
 		data = [{
 			'type':1,
 			'message':'students retrieved',
-			'students':lists
+			'students':student,
+			'tut':tut,
+			'ta':ta,
+			'name':name
+			
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
@@ -682,4 +645,46 @@ def getAllStudentForModule(request,jsonObj):
 		}]
 		return HttpResponse(json.dumps(data))
 
+def addUserToSession(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	session = json_data['session']
+	students = json_data['student']
+	Markers = json_data['marker']
+	name = api.getSessionName(session)
+	data = []
+	if students:
+		for n in students:
+			api.addStudentToSession(n,session)
+		student = api.getStudentsForASession(session)
+		marker = api.getMarkerForSession(session)
+		data = [{
+			'type':1,
+			'message':"user's added",
+			'name':name,
+			'students': students,
+			'marker':marker,
+		}]
+	elif Markers:
+		for n in Markers:
+			api.setMarkerForSession(n,session)
 		
+		student = api.getStudentsForASession(session)
+		marker = api.getMarkerForSession(session)
+		data = [{
+			'type':1,
+			'message':"user's added",
+			'name':name,
+			'students': students,
+			'marker':marker,
+		}]
+	else:
+		student = api.getStudentsForASession(session)
+		marker = api.getMarkerForSession(session)
+		data = [{
+			'type':-1,
+			'message':"user's not added",
+			'name':name,
+			'students': students,
+			'marker':marker,
+		}]
+	return HttpResponse(json.dumps(data))
