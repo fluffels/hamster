@@ -698,7 +698,7 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':mark,
 		}]
-		return HttpResponse(json.dumps(data))
+	return HttpResponse(json.dumps(data))
 
 
 def getAllPersonOfSession(request,jsonObj):
