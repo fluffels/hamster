@@ -518,9 +518,10 @@ class MarkAllocation(models.Model):
       return self.marker
 
 #===============================MarkAllocation Function================================
-def insertMarkAllocation(comment_,marker_,timeStamp_,student_,L_assessment):
-    markAlloc = MarkAllocation(comment=comment_,marker=marker_,timeStamp=timeStamp_,student=student_,assessment = L_assessment)
+def insertMarkAllocation(L_assessment,mark_,marker_,student_,timeStamp_,comment_):
+    markAlloc = MarkAllocation(comment=comment_,marker=marker_,timeStamp=timeStamp_,student=student_,assessment = L_assessment,mark=mark_)
     markAlloc.save()
+    return markAlloc
 
 def getMarkAllocation():
     mark_allocation = MarkAllocation.objects.all()

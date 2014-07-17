@@ -278,6 +278,13 @@ def createAssessment(request):
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                            'user_roles':user_roles,'assessmentName':assess,"module":mod})
+    else:
+        return render_to_response("web_interface/login.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                           'user_roles':user_roles})
 
 @csrf_exempt
 def createSession(request):
@@ -442,7 +449,40 @@ def getAllPersonOfSession(request):
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':'An error occurred, a session was not found!','marker':[]})
 
-
+@csrf_exempt
+def getAllChildrenOfAssessment(request):
+    assess_id = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = {
+        'assess_id':assess_id,
+        'mod':mod
+    }
+    results = views.getAllChildrenOfAssessment(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        if res[0]['message'] == 'Aggregate':
+            child = res[0]['child']
+            name = res[0]['name']
+            return render_to_response("web_interface/view_aggregate_assessment.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'child':child,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id})
+        
+        else:
+            studentMark = res[0]['studentMark']
+            name = res[0]['name']
+            fullmark = res[0]['fullmark']
+            return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
 
 
 

@@ -43,6 +43,28 @@ def getAllLecturesOfModule(mod_code):
 # Parameter: mod_code : String
 # Return: Person[],their uid,cn and sn
 def getAllStudentsOfModule(mod_code):
+    #For testing purposes ITS NOT ACCESSING LDAP
+    print "Mod code is : " + str(mod_code)
+    list = Person.objects.all()
+    print "Size of list : " + str(len(list))
+    module_list = []
+    modObj = Module.objects.get(id=mod_code)
+    print "ModObj : " + str(modObj)
+    for per in list:
+        print "OKAY!!!" + str(per)
+#        print "if " + str(per.studentOf_module) + "==" + str(modObj)
+        module_needed = per.studentOf_module.get(module_code=mod_code)
+        print module_needed
+        if module_needed:
+            module_list.append(getPersonInformation(per))
+            print "Added " + str(per)
+        else:
+            pass
+            
+    print "Module list :"
+    print module_list
+    return module_list
+    '''
     list = getStudentsOf(mod_code)
     #return getPersonObjectListFromArrayList(list)
     returnList = []
@@ -54,6 +76,7 @@ def getAllStudentsOfModule(mod_code):
         person.append(array['sn'])
         returnList.append(person)
     return returnList
+    '''
  
 # Name: getAllTAsOfModule(mod_code)
 # Description: Returns all the TA's assigned to a module
@@ -112,7 +135,7 @@ def getAllSurnameOf(list):
 
 def getPersonInformation(person):
     students = []
-    students.append(person.getgetupId())
+    students.append(person.getupId())
     students.append(person.getFirstName())
     students.append(person.getSurname())
     return students
@@ -177,29 +200,41 @@ def checkIfAssessmentIsLeaf(assess_id):
 				return True
 	
 	return False
+
+def isMarked(leaf_id):
+    leaf_obj = Assessment.objects.get(id=leaf_id)
+    allLeafsMarks = MarkAllocation.objects.filter(assessment = leaf_id)
+    
+    for leaf in allLeafsMarks:
+        if leaf.mark > -1:
+            return True
+    return False
+
 # Name: makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id)
 # Description: Makes the old leaf an aggregate assessment and makes the new leaf its child (assumes that new leaf already exists)
 # Parameter: old_leaf_id: String
 # Parameter: new_leaf_id: String
 # Return: Boolean			
 def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
-	print "I begin my journey"
 	all_assessments = Assessment.objects.all()
 	old_leaf_obj = None
 	new_leaf_obj = None
 	for assess in all_assessments:
 		if str(assess.id) == str(old_leaf_id):
 			old_leaf_obj = assess
-			print "Here she blows!!!!!"
+			
 		if assess.id == new_leaf_id:
 			new_leaf_obj = assess
-			print "Nope, there she blows!!!"
-			
-	print "Old leaf obj:"
-	print old_leaf_obj
-	print "New leaf obj:"
-	print new_leaf_obj
-			
+	
+	    
+	if isMarked(old_leaf_id): #We cannot continue with this function because the assessment cannot become an aggregate because it has marks
+	    new_leaf_obj.delete()
+	    return False	  # assigned to people
+	else:
+	    all_marks = MarkAllocation.objects.filter(assessment=old_leaf_id)
+	    for mark in all_marks:
+	        deleteMarkAllocation(mark)
+	    
 	if str(old_leaf_obj.assessment_type) == 'Leaf':
 	    if str(new_leaf_obj.assessment_type)=='Leaf':
 	        #can perform change
@@ -212,13 +247,14 @@ def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
 	        agg_parent = old_leaf_obj.parent
 	        
 	        new_agg_obj = insertAggregateAssessment(agg_name, agg_type, agg_mod_code, agg_published, agg_aggregator, agg_weight, agg_parent) 
-	        print "Get ready for the new born..."
-	        print new_agg_obj.id
+	        if new_agg_obj.parent:
+	            new_agg_obj.isroot = False
 	        new_leaf_obj.parent = new_agg_obj.id
 	        new_leaf_obj.save()
 	        print new_leaf_obj.parent
 	        new_leaf_obj.isroot = False
 	        new_leaf_obj.save()
+	        new_agg_obj.save()
 	        old_leaf_obj.delete()
 	        return True
 	else:
@@ -250,6 +286,8 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
 		if is_parent_leaf: #means its a leaf and must be changed
 			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
+			if changed == False:
+			    return False
 		else:
 		    obj.parent = parent_id
 		    obj.save()
@@ -281,6 +319,19 @@ def createAggregateAssessment(request, assessment_name, assessment_type, module_
 def getAssessmentForModuleByName(mod_code, name):
     temp = Assessment.objects.filter(mod_id=mod_code,assess_name=name) #assuming AND function
     return temp
+
+
+def getChildrenAssessmentsForAssessmemnt(assess_id):
+    assessments = Assessment.objects.all()
+    children = []
+    for ass in assessments:
+        if ass.parent == assess_id:
+            children.append(ass)
+    array = []
+    for child in children:
+        array.append(getAssessmentDetails(child))
+    return array
+        
 
 # Name: getLeafAssessmentOfAssessmentForModuleByName(mod_code, assess_name, leaf_name_)
 # Description: Returns all the LeafAssessments according to their name, and the assessments and module they belong to 
@@ -755,11 +806,16 @@ def getSessionByName(mod_code, name):
 # Parameter: student : String
 # Parameter: timestamp : DateTime
 # Return: Integer (The created objects id)
-def createMarkAllocation(request, leaf_id, session_id, marker, student, timestamp):
-    
-    obj = insertMarkAllocation(leaf_id,0,session_id,marker,student,timestamp)
+def createMarkAllocation(request, leaf_id, marker, student, timestamp,comment):
+    objL = Assessment.objects.get(id=leaf_id)
+    #per = Person.objects.get(upId = student)
+    obj = insertMarkAllocation(objL,-1,marker,student,timestamp,comment)
 #    logAudit(request,"Inserted new mark allocation","insert","dbModels_markallocation","id",None,obj.id)
-    return obj.id
+    return obj
+
+def getFullMark(assess_id):
+    obj = Assessment.objects.get(id=assess_id)
+    return obj.full_marks
 
 # Name: updateMarkAllocation(request, markAlloc_id, mark)
 # Description: Updates the mark of the MarkAllocation object
@@ -949,6 +1005,39 @@ def removeStudentFromSession(uid, sess_id_):
 	except Exception as e:
 		raise e
 	return True
+
+def getMarkForStudents(request, studentsArray, leaf_id):
+    finalArray = []
+    print 'NAAAAAAAZZZZZZZZZZZOOOOOOOOO'
+    print studentsArray
+    leafObj = Assessment.objects.get(id=leaf_id)
+    print leafObj
+    comment = "No comment"
+    for student in studentsArray:
+        per = Person.objects.get(upId=student[0])
+        has = isMarkGiven(per, leaf_id)
+        if has == False:
+            mark_created = createMarkAllocation(request, leaf_id,"No marker", per, datetime.datetime.now(),comment)
+            mark = mark_created.getMark()
+        else:
+            markAlloc = getMarkAllocationForLeafOfStudent(per, leafObj)
+            mark = markAlloc.getMark()
+        studentArray =[]
+        studentArray.append(student[0])
+        studentArray.append(student[1])
+        studentArray.append(student[2])
+        studentArray.append(mark)
+        finalArray.append(studentArray)
+    return finalArray
+
+def isMarkGiven(student,leaf_id):
+    all_marks = MarkAllocation.objects.all()
+    leafObj = Assessment.objects.get(id=leaf_id)
+    for mark in all_marks:
+        if (mark.assessment == leafObj) & (mark.student==student):
+            return True
+        
+    return False
 
 def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_):
     try:

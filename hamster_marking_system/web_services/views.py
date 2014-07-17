@@ -698,7 +698,7 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':mark,
 		}]
-	return HttpResponse(json.dumps(data))
+		return HttpResponse(json.dumps(data))
 
 
 def getAllPersonOfSession(request,jsonObj):
@@ -724,3 +724,32 @@ def getAllPersonOfSession(request,jsonObj):
 	                'message':'session not found'
 	        }]
 	        return HttpResponse(json.dumps(data))
+
+def getAllChildrenOfAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	mod = json_data['mod']
+	name = api.getAssessmentName(assess)
+	child = api.getChildrenAssessmentsForAssessmemnt(assess)
+	if child:
+		data = [{
+			'type':1,
+			'message':'Aggregate',
+			'child':child,
+			'name':name
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		student = api.getAllStudentsOfModule(mod)
+		studentMark = api.getMarkForStudents(request,student,assess)
+		fullmark = api.getFullMark(assess)
+		print studentMark
+		data = [{
+			'type':1,
+			'message':'leaf',
+			'studentMark':studentMark,
+			'name':name,
+			'fullmark':fullmark
+		}]
+		return HttpResponse(json.dumps(data))
+	
