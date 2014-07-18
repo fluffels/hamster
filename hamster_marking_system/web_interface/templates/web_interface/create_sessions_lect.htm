@@ -71,10 +71,15 @@
 	
 	{% for x in sessions%}
 	<div class="btn-group">
+		{% if x.0 == '-1' %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong>, there are no sessions available.</div>
+		{% else %}
 		<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown">{{x.1}} <b class="caret"></b></button>
 		
 		<ul class="dropdown-menu" role="menu">
 			<li>
+				
+				
 				<form action="/add_user_to_session" method="post">
 					<input type="hidden" id="session" name='session' value={{ x.0 }} >
 					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student({{ x.0 }})</button>
@@ -90,7 +95,7 @@
 				</form>
 			</li>
 		</ul>
-
+		{% endif %}
 	{%endfor%}
 	</div>
 	</div>

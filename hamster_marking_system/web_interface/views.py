@@ -517,6 +517,41 @@ def createLeafAssessment(request):
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                            'user_roles':user_roles})
-
-
-
+@csrf_exempt
+def updateMarkForStudent(request):
+    leaf_id = request.POST['assess_id']
+    mark = request.POST['mark']
+    student = request.POST['uid']
+    mod = request.POST['mod']
+    
+    data = {
+        'leaf_id':leaf_id,
+        'mark':mark,
+        'student':student,
+        'mod':mod
+    }
+    
+    result = views.updateMarkForStudent(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        studentMark = res[0]['studentMark']
+        name = res[0]['name']
+        fullmark = res[0]['fullmark']
+        return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,
+                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':1})
+    else:
+        studentMark = res[0]['studentMark']
+        name = res[0]['name']
+        fullmark = res[0]['fullmark']
+        return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,
+                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':0})

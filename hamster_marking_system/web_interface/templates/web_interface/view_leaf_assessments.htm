@@ -63,6 +63,28 @@
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 
+{% if message == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+	{% if message == 0 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> The mark could not be updated, please try again.
+		</div>
+	{% elif message == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Yay!</strong> The mark was updated successfully.
+		</div>
+
+	{% endif %}
+		
+{% endif %}
+
 <div class="row">
 	<div class="col-md-2"></div>
 	<div class="col-md-8">
@@ -80,22 +102,52 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="#" class="form-inline" role="form">
-						<input type="number" class="form-control" placeholder="Mark awarded" >
+					<form method="post" action="/update_mark" class="form-inline" role="form">
+						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
+						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
+						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+						<input hidden="hidden" name="uid" value={{ per.0 }}>
+						<input hidden="hidden" name="mod" value={{ module }}>
+
 					</form>
-				</td>
-				<td>
-					<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 				</td>
 				{% else %}
 				<td class="col-md-3">
-					<form method="post" action="#"  role="form">
-						<input disabled="disabled" type="number" class="form-control" placeholder="Mark awarded" value={{ per.3 }}>
+					<form  onsubmit='return to_submit({{ per.0 }});' class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" placeholder="Mark awarded" value={{ per.3 }}>
+						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
+						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+						<input hidden="hidden" name="uid" value={{ per.0 }}>
+						<input hidden="hidden" name="mod" value={{ module }}>
 					</form>
 				</td>
-				<td>
-					<button type="submit" class="btn btn-warning" >Edit  <span class="glyphicon glyphicon-edit"></span></button>
-				</td>
+				
+				<script>
+					function to_submit(stud_id) {
+						alert(stud_id);
+						var data_nyana = document.getElementById('form_edit').name;
+						alert(data_nyana);
+						var class_data = document.getElementById(data_nyana);
+						alert(class_data.className);
+						if (class_data.className == "btn btn-warning") {
+							alert(data_nyana);
+							class_data.className="btn btn-success";
+							class_data.span.className="glyphicon glyphicon-ok"
+							alert("changed button");
+							document.getElementById(data_nyana).disabled=false;
+							alert("editable");
+							return false;
+						}
+						else{
+							class_data.class="btn btn-warning";
+							document.getElementById('edit_input').disabled=true;
+							class_data.form.submit();
+							
+						}
+
+					}
+					
+			       </script>
 				{% endif %}
 			</tr>
 			{% endfor %}
