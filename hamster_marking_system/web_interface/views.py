@@ -464,7 +464,7 @@ def getAllChildrenOfAssessment(request):
         if res[0]['message'] == 'Aggregate':
             child = res[0]['child']
             name = res[0]['name']
-            return render_to_response("web_interface/view_aggregate_assessment.htm",{'default_user':default_user,
+            return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -484,7 +484,39 @@ def getAllChildrenOfAssessment(request):
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
 
-
+@csrf_exempt
+def createLeafAssessment(request):
+    assessName = request.POST['name']
+    mod = request.POST['mod']
+    fullmark = request.POST['fullmark']
+    assess_id = request.POST['leaf']
+    
+    data = {
+        'name':assessName,
+        'mod':mod,
+        'fullmark':fullmark,
+        'assess_id': assess_id
+    }
+    res= views.createLeafAssessment(request,json.dumps(data))
+    results = json.loads(res.content)
+    if results[0]['type'] == 1:
+        assess = results[0]['assessment']
+        name = results[0]['name']
+        assess_id = results[0]['assess_id']
+        
+        return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                           'user_roles':user_roles,'assessmentName':name,"module":mod,'child':assess,'assess_id':assess_id})
+    else:
+        return render_to_response("web_interface/login.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                           'user_roles':user_roles})
 
 
 

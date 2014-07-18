@@ -545,7 +545,7 @@ def createAssessment(request,jsonObject):
 	assess = api.getAllAssessmentsForModule(mod)
 	assessDetail = []
 	
-	if info:
+	if info != None:
 		for ass in assess:
 			assessDetail.append(api.getAssessmentDetails(ass))
 		data = [{
@@ -770,5 +770,60 @@ def updateMarkForStudent(request,jsonObj):
 		data =[{
 			'type':-1,
 			'message':'student mark not updated'
+		}]
+		return HttpResponse(json.dumps(data))
+
+def createLeafAssessment(request,jsonObject):
+	
+	print "WTF MAAAAANnnn"
+	json_data = json.loads(jsonObject)
+	mod = json_data['mod']
+	assessmentName = json_data['name']
+	mark=json_data['fullmark']
+	assess_id=json_data['assess_id']
+	assessment = api.getAssessmentName(assess_id)
+	print "_____________________________________"
+	print assessment
+	info = False
+	parent = None
+	assess = []
+	if assess_id == 'leaf':
+		print "i am a leaf that is a root"
+		leaf = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,None)
+		parent = api.getParent(leaf)
+	else:
+		print "am a leaf going to be an aggregate"
+		print assess_id
+		leaf = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,assess_id)
+		parent = api.getParent(leaf)
+	
+	assessDetail = []
+	if parent == None:
+		info = False
+	else:
+		info = True
+		assess = api.getChildrenAssessmentsForAssessmemnt(parent)
+	print "PRINTING LEAF PARENT ASSESS"
+	print leaf.assess_name
+	print parent
+	print assess
+	print 'END PRINTING LEAF PARENT ASSESS'
+	if info:
+		for ass in assess:
+			print "children"
+			print ass
+			assessDetail.append(ass)
+		data = [{
+			'type':1,
+			'message': 'Assessment Created',
+			'assessment':assessDetail,
+			'name':assessment,
+			'assess_id':parent
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message': 'Assessment Not Created',
 		}]
 		return HttpResponse(json.dumps(data))

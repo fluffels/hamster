@@ -166,7 +166,7 @@ def getAllMarkersOfModule(mod_code):
 def getAssessmentName(assess_id):
     assess = Assessment.objects.all()
     for ass in assess:
-        if(str(ass.id) == str(assess_id)):
+        if str(ass.id) == str(assess_id):
             result = ass.assess_name
     print "********************"
     print result
@@ -256,10 +256,21 @@ def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
 	        new_leaf_obj.save()
 	        new_agg_obj.save()
 	        old_leaf_obj.delete()
-	        return True
+	        return new_leaf_obj
 	else:
-		return False
-	
+		return None
+
+def getParent(leaf_obj):
+    print "eeeeee chale am here"
+    print leaf_obj
+    if leaf_obj == None:
+        print "leaf_Obj"
+        print leaf_obj
+        return None
+    else:
+        print "parent"
+        print leaf_obj.parent
+        return leaf_obj.get_parent()
 
 # Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)
 # Description: Creates a leaf assessment object by calling the function in models
@@ -286,14 +297,17 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
 		if is_parent_leaf: #means its a leaf and must be changed
 			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
-			if changed == False:
-			    return False
+			if changed == None:
+			    return None
+			else: return changed
 		else:
 		    obj.parent = parent_id
 		    obj.save()
 	if obj:
-		return True
-	else: return False
+	    print "bubububububu"
+	    print obj
+	    return obj
+	else: return None
 
 # Name: createAggregateAssessment(request,assessment_name, assessment_type, module_code,published_, aggregator, assessment_weight, parent_id)
 # Description: Creates an aggregate assessment object by calling the function in models.
@@ -322,10 +336,13 @@ def getAssessmentForModuleByName(mod_code, name):
 
 
 def getChildrenAssessmentsForAssessmemnt(assess_id):
+    print "am in heree"
     assessments = Assessment.objects.all()
     children = []
     for ass in assessments:
-        if ass.parent == assess_id:
+        print ass
+        if str(ass.parent) == str(assess_id):
+            print ass
             children.append(ass)
     array = []
     for child in children:
@@ -359,7 +376,8 @@ def getAllAssessmentsForModule(mod_code):
     print temp
     assessment = []
     for x in temp:
-        assessment.append(x)
+        if x.parent is None:
+            assessment.append(x)
     print assessment
     return assessment
 
