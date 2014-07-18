@@ -752,4 +752,23 @@ def getAllChildrenOfAssessment(request,jsonObj):
 			'fullmark':fullmark
 		}]
 		return HttpResponse(json.dumps(data))
+
+def updateMarkForStudent(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	leaf_id = json_data['leaf']
+	student = json_data['uid']
+	mark = json_data['mark']
 	
+	markID = api.updateMarkAllocation(request, leaf_id,student, mark)
+	if markID:
+		data =[{
+			'type':1,
+			'message':'student mark updated'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data =[{
+			'type':-1,
+			'message':'student mark not updated'
+		}]
+		return HttpResponse(json.dumps(data))
