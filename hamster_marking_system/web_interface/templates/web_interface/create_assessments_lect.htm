@@ -74,7 +74,8 @@
 		{% else %}
 		{% for ass in assessmentName %}
 			<div class="btn-group">
-				<button  class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown" value={{ass.0}}> {{ ass.1 }} <b class="caret"></b></button><br/>
+				<button type="button" class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown" value={{ass.0}}> {{ ass.1 }}
+				<b class="caret"></b></button><br/>
 				<ul class="dropdown-menu" role="menu">
 					<li>
 						<form action="/view_children_assessment" method="post">

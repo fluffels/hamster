@@ -210,7 +210,17 @@ def isMarked(leaf_id):
         if leaf.mark > -1:
             return True
     return False
-
+# Name: makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id)
+# Description: Makes the old leaf an aggregate assessment and makes the new leaf its child (assumes that new leaf already exists)
+# Parameter: old_leaf_id: String
+# Parameter: new_leaf_id: String
+# Return: Boolean
+def manageSessions(objFrom, objTo):
+    objFromSessions = Sessions.objects.filter(assessment_id=objFrom)
+    for sess in objFromSessions:
+        sess.assessment_id = objTo
+        sess.save()
+    return True
 # Name: makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id)
 # Description: Makes the old leaf an aggregate assessment and makes the new leaf its child (assumes that new leaf already exists)
 # Parameter: old_leaf_id: String
@@ -256,6 +266,8 @@ def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
 	        new_leaf_obj.isroot = False
 	        new_leaf_obj.save()
 	        new_agg_obj.save()
+	        
+	        manageSessions(old_leaf_obj, new_leaf_obj)
 	        old_leaf_obj.delete()
 	        return new_leaf_obj
 	else:
@@ -272,6 +284,16 @@ def getParent(leaf_obj):
         print "parent"
         print leaf_obj.parent
         return leaf_obj.get_parent()
+
+def changeLeafAssessmentFullMark(request,assess_id,mark):
+    try:
+        assess = Assessment.objects.get(id=assess_id)
+        assess.full_marks = mark
+        assess.save()
+        return True
+    except Exception as e:
+        raise e
+
 
 # Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)
 # Description: Creates a leaf assessment object by calling the function in models
@@ -528,14 +550,20 @@ def openSession(request, sess_id):
 # Return: Boolean
 def removeSession(request,sess_id):
     try:
-        sess =  Sessions.objects.filter(id=sess_id)
+        print "how come i dnt delete bathond" + str(sess_id)
+        sess =  Sessions.objects.get(id=sess_id)
+        person = AllocatePerson.objects.filter(session_id=sess)
         if sess:
-            sess.deleteSessions() #exception may be thrown here
+            if len(person)> 0:
+                for per in person:
+                    per.delete()
+            sess.delete() #exception may be thrown here
 #            logAuditDetail(request,"Deleted session","delete","business_logic_sessions","id",str(oldid1) + "," + str(oldid2),None,sess.id)
             return True
+        else:
+            return False
     except Exception as e:
         raise e
-        print 'The session to be deleted does not exist'
 
 # Name: removeMarkerFromSession(request, sess_id, uid)
 # Description: Removes a marker from a specific marking Session
@@ -880,29 +908,31 @@ def makeAggregateAssessmentALeaf(assess_id): #assumes agg_obj has no children
     try:
         agg_obj = Assessment.objects.get(id=assess_id)
         children = Assessment.objects.filter(parent=assess_id)
-        sessions = Sessions.objects.filter(assessment=assess_id)
+        sessions = Sessions.objects.filter(assessment_id=assess_id)
         if agg_obj:
-                if len(children) == 0:
-                    try:
-                        name_ = agg_obj.assess_name
-                        assessment_type_ = 'Leaf'
-                        module_code = agg_obj.mod_id
-                        published_ = agg_obj.published
-                        fullMarks_ =0
-                        parent = agg_obj.parent
-                        newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None)
-#                    newLeafObj.save()
-                        if len(sessions) != 0:
-                            for sess in sessions:
-                                session_name_ = sess.session_name
-                                assessment_id_ = newLeafObj.id
-                                opened_ = sess.open_time
-                                closed_ = sess.close_time
-                                newSession = insertSessions(session_name_, assessment_id_,opened_,closed_)
-    #                            newSession.save()
-                            removeAssessment(agg_obj)
-                    except Exception as e:
-                        raise e #there is still atleast one child
+            print "AGG OBJ FOUND TO BE: "+ str(agg_obj)
+            if len(children) == 0:
+                print "HAS NO CHILDREN"
+                try:
+                    name_ = agg_obj.assess_name
+                    assessment_type_ = 'Leaf'
+                    module_code = agg_obj.mod_id
+                    published_ = agg_obj.published
+                    fullMarks_ =0
+                    parent = agg_obj.parent
+                    newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None)
+                    manageSessions(agg_obj, newLeafObj)
+                    if len(sessions) != 0:
+                        for sess in sessions:
+                            session_name_ = sess.session_name
+                            assessment_id_ = newLeafObj.id
+                            opened_ = sess.open_time
+                            closed_ = sess.close_time
+                            newSession = insertSessions(session_name_, assessment_id_,opened_,closed_)
+#                            newSession.save()
+                    agg_obj.delete()
+                except Exception as e:
+                    raise e #there is still atleast one child
 
     except Exception as e:
         raise e  #object did not exist
@@ -922,6 +952,7 @@ def removeAssessment(request,assess_id):
     print "root_ = " + str(root_)
     print "root_.parent = " + str(root_.parent)
     if root_.parent is None:
+        print "CANT GO IN HERE MARA"
         par = None
         if isAggregate(root_.id):
             print "isAggregate == " + str("True")
@@ -936,20 +967,23 @@ def removeAssessment(request,assess_id):
         root_.delete()
           
     else:
+        print "MUST BE HERE"
         par = root_.parent
         childrenOfParent = Assessment.objects.filter(parent = par)
+        print "LENGTH OF CHILDREN OF PARENT:" + str(len(childrenOfParent))
         if isAggregate(root_.id):        
             children_ = Assessment.objects.filter(parent=assess_id)
             deleteAssessmentSessions(root_)
-            deleteAllChildren(children)
+            deleteAllChildren(children_)
         else:
             deleteAssessmentSessions(root_)    
         root_.delete()
  
         if len(childrenOfParent) == 1: #means the aggregate is the only child
-           par= makeAggregateAssessmentALeaf(par)
-
-   
+           print "Making agg a leaf..."
+           part= makeAggregateAssessmentALeaf(par)
+           par = part.id
+           print "Made agg a leaf..." + str(part.id)
 
     return par
 

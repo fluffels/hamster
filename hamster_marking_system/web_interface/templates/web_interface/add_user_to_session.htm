@@ -86,7 +86,7 @@
 			<div class="form-group">
 				<select multiple class="form-control" name="userS">
 					{%for per in students%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}</option>
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{session_id}}><br>
@@ -120,11 +120,11 @@
 				<div class="form-group">
 					<select multiple class="form-control">
 						{%for per in tutor%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 							<span class="badge">Tu</span></option>
 						{%endfor%}
 						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 							<span class="badge">Ta</span></option>
 						{%endfor%}
 					</select>
@@ -137,7 +137,7 @@
 					<label for="name">Select student's to add</label>
 					<select multiple class="form-control">
 						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+							<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 							<span class="badge">Ta</span></option>
 						{%endfor%}
 					</select>

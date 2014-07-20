@@ -695,7 +695,7 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':mark,
 		}]
-		return HttpResponse(json.dumps(data))
+	return HttpResponse(json.dumps(data))
 
 
 def getAllPersonOfSession(request,jsonObj):
@@ -864,5 +864,39 @@ def deleteAssessment(request,jsonObj):
 			'isMod':False,
 		}]
 		return HttpResponse(json.dumps(data))
+
+def deleteSession(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	sess_id = json_data['sessionId']
 	
+	info = api.removeSession(request,sess_id)
+	if info:
+		data = [{
+			'type':1,
+			'message':'session deleted'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'session not deleted'
+		}]
 	
+def changeAssessmentFullMark(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	mark = json_data['full_mark']
+	
+	info = api.changeLeafAssessmentFullMark(request,assess_id,mark)
+	if info:
+		data = [{
+			'type':1,
+			'message':'mark changed'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+	        data = [{
+	                'type':-1,
+	                'message':'mark not changed'
+	        }]
+	        return HttpResponse(json.dumps(data))

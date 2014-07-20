@@ -592,12 +592,12 @@ def deleteAssessment(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':mod,'type':-1})
         else:
-            assess_id = res[0]['assess_id']
+            assessment = res[0]['assess_id']
             data={
-                'assess_id':assess_id,
+                'assess_id':assessment,
                 'mod':mod
             }
-            children = veiws.getAllChildrenOfAssessment(request,json.dumps(data))
+            children = views.getAllChildrenOfAssessment(request,json.dumps(data))
             child = json.loads(children.content)
             if child[0]['type'] == 1:
                 if child[0]['message'] == 'Aggregate':
@@ -609,7 +609,7 @@ def deleteAssessment(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'child':child1,
-                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id})
+                                                                                'module':mod,'assessmentName':name,'assess_id':assessment})
 
                 else:
                     studentMark = child[0]['studentMark']
@@ -621,5 +621,110 @@ def deleteAssessment(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
-                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+                                                                                'module':mod,'assessmentName':name,'assess_id':assessment,'fullmark':fullmark})
 
+@csrf_exempt
+def deleteSession(request):
+    sess_id = request.POST['session']
+    assess_id = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = {
+        'sessionId':sess_id
+    }
+    
+    info = views.deleteSession(request,json.dumps(data))
+    res = json.loads(info.content)
+    
+    if res[0]['type'] == 1:
+        data = {
+            'assessmentID':assess_id
+        }
+        session = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(session.content)
+        sessions = []
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=mod
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess_id,'message':1})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=mod
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'message':1})
+    else:
+        data = {
+            'assessmentID':assess_id
+        }
+        session = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(session.content)
+        sessions = []
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=mod
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess_id,'message':0})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=mod
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'message':0})
+
+@csrf_exempt
+def changeAssessmentFullMark(request):
+    assess_id = request.POST['assess_id']
+    mod = request.POST['mod']
+    mark = request.POST['fullmark']
+    
+    data = {
+        'assess_id':assess_id,
+        'full_mark':mark
+    }
+    result = views.changeAssessmentFullMark(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        data={
+                'assess_id':assess_id,
+                'mod':mod
+        }
+        children = views.getAllChildrenOfAssessment(request,json.dumps(data))
+        child = json.loads(children.content)
+        if child[0]['type'] == 1:
+            if child[0]['message'] == 'leaf':
+                studentMark = child[0]['studentMark']
+                name = child[0]['name']
+                fullmark = child[0]['fullmark']
+                return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'studentMark':studentMark,
+                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
