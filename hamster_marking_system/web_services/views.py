@@ -500,6 +500,8 @@ def getAllSessionsForAssessment(request,jsonObject):
 		for x in info:
 			
 			list = api.getSessionDetails(x)
+			status = api.getSessionStatus(x)
+			list.append(status)
 			session.append(list)
 			
 		assess= api.getAssessmentName(assessID)
@@ -570,7 +572,10 @@ def createSessionForAssessment(request,jsonObj):
 	sessions = []
 	
 	for sess in session:
-		sessions.append(api.getSessionDetails(sess))
+		sess1 = api.getSessionDetails(sess)
+		status = api.getSessionStatus(sess)
+		sess1.append(status)
+		sessions.append(sess1)
 	if info:
 		data =[{
 			'type':1,
@@ -898,5 +903,29 @@ def changeAssessmentFullMark(request,jsonObj):
 	        data = [{
 	                'type':-1,
 	                'message':'mark not changed'
+	        }]
+	        return HttpResponse(json.dumps(data))
+
+def openOrCloseSession(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	sess_id = json_data['sess_id']
+	status = json_data['status']
+	
+	if status == 0:
+		info = api.closeSession(request, sess_id)
+	elif status ==1:
+		info = api.openSession(request, sess_id)
+	
+	if info:
+		data = [{
+			'type':1,
+			'message':'Successful'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+	        data = [{
+	                'type':-1,
+	                'message':'Unsuccessful'
 	        }]
 	        return HttpResponse(json.dumps(data))

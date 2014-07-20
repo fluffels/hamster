@@ -240,7 +240,11 @@ def getAllSessionsForAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess})
+                                                                        'user_roles':user_roles,
+                                                                        'sessions':sessions,
+                                                                        'assessmentName':assessmentName,
+                                                                        'moduleName':moduleName,
+                                                                        'assessment_id':assess,})
     else:
         list = []
         list.append('-1')
@@ -728,3 +732,87 @@ def changeAssessmentFullMark(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+
+@csrf_exempt
+def openOrCloseSession(request):
+    assess_id = request.POST['assess_id']
+    sess_id = request.POST['sess_id']
+    status = request.POST['status'] #whether to open or close it 0: closeSession 1:openSession
+    
+    data = {
+        'assess_id':assess_id,
+        'sess_id':sess_id,
+        'status':status
+    }
+    result = views.openOrCloseSession(request,json.dumps(data))
+    res = json.loads(result.content)
+    
+    if res[0]['type'] == 1:
+        message = res[0]['message']
+        data = {
+            'assess_id':assess_id
+        }
+        session = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(session)
+        sessions = []
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'sessions':sessions,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,
+                                                                            'assessment_id':assess_id,'type':1})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':1})
+    else:
+        data = {
+            'assess_id':assess_id
+        }
+        session = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(session)
+        sessions = []
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'sessions':sessions,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,
+                                                                            'assessment_id':assess_id,'type':0})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':-1})

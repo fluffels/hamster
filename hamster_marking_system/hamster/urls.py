@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^remove_assessment','web_interface.views.deleteAssessment', name='delete_assessment'),
     url(r'^remove_session','web_interface.views.deleteSession', name='delete_session'),
     url(r'^update_leaf_total_mark','web_interface.views.changeAssessmentFullMark', name='update_leaf_total_mark'),
+    url(r'^update_session_status','web_interface.views.openOrCloseSession', name='update_session_status'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

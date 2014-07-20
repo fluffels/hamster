@@ -57,14 +57,7 @@
 
 
 {% block jumbotron_header %}
-	<ul class="nav nav-pills nav-stacked">
-		<li class="active">
-		  <a href="#">
-		    <span class="badge pull-right">{{ fullmark }}</span>
-		    {{ assessmentName }}
-		  </a>
-		</li>
-        </ul>
+	{{ assessmentName }} <span class="label label-default">{{ fullmark }}</span>
 {% endblock %}
 
 {% block jumbotron_sub_header %} {{ module }} {% endblock %}
@@ -97,7 +90,7 @@
 				<td> {{per.1}} </td>
 				<td> {{per.2}} </td>
 				<td class="col-md-3">
-					<input type="number" class="form-control" placeholder="Mark obtained" disabled="disabled" name="mark" value={{ fullMark }}>
+					<input type="number" class="form-control" placeholder="Mark obtained" disabled="disabled" name="mark" value={{ fullmark }}>
 					<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 					<input hidden="hidden" name="uid" value={{ per.0 }}>
 					<input hidden="hidden" name="mod" value={{ module }}>

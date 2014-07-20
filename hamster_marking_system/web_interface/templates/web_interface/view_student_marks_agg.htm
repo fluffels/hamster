@@ -57,14 +57,7 @@
 
 
 {% block jumbotron_header %}
-	<ul class="nav nav-pills nav-stacked">
-		<li class="active">
-		  <a href="#">
-		    <span class="badge pull-right">0</span>
-		    {{ assessmentName }}
-		  </a>
-		</li>
-        </ul>
+	{{ assessmentName }}
 {% endblock %}
 
 {% block jumbotron_sub_header %} {{ module }} {% endblock %}

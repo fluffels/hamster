@@ -513,6 +513,10 @@ def getSessionName(sess_id):
         return sess.getName()
     else:
         return ''
+    
+def getSessionStatus(sessObj):
+    return sessObj.checkStatus()
+    
 # Name: closeSession(request, sess_id)
 # Description: Closes a session therefore no more marking can be done
 # Parameter: request : HTTPRequest

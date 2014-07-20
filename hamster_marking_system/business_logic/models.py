@@ -5,6 +5,7 @@ import json
 from django.db import models
 from django.http import HttpResponse
 from polymorphic import PolymorphicModel
+from django.utils import timezone
 
 
 from ldap_interface.ldap_api import *
@@ -543,11 +544,12 @@ class Sessions(models.Model):
     status = models.IntegerField(default = 0)
     
     def checkStatus(self):
-        if open_time < datetime.now() & close_time >= datetime.now():
-                status = 1
-                return status
+        if self.open_time < timezone.now()and self.close_time >= timezone.now():
+                self.status = 1
+                self.save()
+                return self.status
         else:
-                return status
+                return self.status
 
     def setAssessmentID(self,id):
         self.assessment_id = id
