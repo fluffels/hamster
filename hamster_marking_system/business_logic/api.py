@@ -186,7 +186,8 @@ def getModuleNameForAssessment(assess_id):
 # Name: checkIfAssessmentIsLeaf(asssess_id)
 # Description: Checks if the assessment is a leaf assessment
 # Parameter: assess_id: String
-# Return: Boolean    
+# Return: Boolean
+
 def checkIfAssessmentIsLeaf(assess_id):
 	print "++++++++++++++++++++"
 	print assess_id
@@ -874,7 +875,41 @@ def removeMarkAlloccation(markAlloc_id):
 
 def removeLeafAssessment(request,leaf_id):    
     deleteLeafAssessment(leaf_id)
+    
+def makeAggregateAssessmentALeaf(assess_id): #assumes agg_obj has no children
+    try:
+        agg_obj = Assessment.objects.get(id=assess_id)
+        children = Assessment.objects.filter(parent=assess_id)
+        sessions = Sessions.objects.filter(assessment=assess_id)
+        if agg_obj:
+                if len(children) == 0:
+                    try:
+                        name_ = agg_obj.assess_name
+                        assessment_type_ = 'Leaf'
+                        module_code = agg_obj.mod_id
+                        published_ = agg_obj.published
+                        fullMarks_ =0
+                        parent = agg_obj.parent
+                        newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None)
+#                    newLeafObj.save()
+                        if len(sessions) != 0:
+                            for sess in sessions:
+                                session_name_ = sess.session_name
+                                assessment_id_ = newLeafObj.id
+                                opened_ = sess.open_time
+                                closed_ = sess.close_time
+                                newSession = insertSessions(session_name_, assessment_id_,opened_,closed_)
+    #                            newSession.save()
+                            removeAssessment(agg_obj)
+                    except Exception as e:
+                        raise e #there is still atleast one child
 
+    except Exception as e:
+        raise e  #object did not exist
+    
+    return newLeafObj
+    
+    
 #Look at 212 book for tree traversals, make this function recursive, alternatively BFS,DFS
 # Name: removeAssessment(request, assess_id)
 # Description: Removes an assessment and all its children from the database
@@ -884,13 +919,39 @@ def removeLeafAssessment(request,leaf_id):
 def removeAssessment(request,assess_id):
     
     root_ = Assessment.objects.get(id=assess_id)
-    if isAggregate(root_):
-        deleteAssessmentSessions(root_)
-        children_ = Assessment.objects.filter(parent=assess_id)
-        deleteAllChildren(children)
+    print "root_ = " + str(root_)
+    print "root_.parent = " + str(root_.parent)
+    if root_.parent is None:
+        par = None
+        if isAggregate(root_.id):
+            print "isAggregate == " + str("True")
+            children_ = Assessment.objects.filter(parent=assess_id)
+            print "HERE ARE MY YOUNG ONES : " + str(children_)
+            deleteAssessmentSessions(root_)
+            deleteAllChildren(children_)
+            print "THEY SHOULD BE GONE TO COLLEGE"
+        else:
+            print "isAggregate == " + str("False")
+            deleteAssessmentSessions(root_)
+        root_.delete()
+          
+    else:
+        par = root_.parent
+        childrenOfParent = Assessment.objects.filter(parent = par)
+        if isAggregate(root_.id):        
+            children_ = Assessment.objects.filter(parent=assess_id)
+            deleteAssessmentSessions(root_)
+            deleteAllChildren(children)
+        else:
+            deleteAssessmentSessions(root_)    
+        root_.delete()
+ 
+        if len(childrenOfParent) == 1: #means the aggregate is the only child
+           par= makeAggregateAssessmentALeaf(par)
 
-    root_.delete()    
-    return True
+   
+
+    return par
 
 # Name: deleteAssessmentSessions(assessObj)
 # Description: Deletes all the sessions of that particular assessment 
@@ -912,8 +973,9 @@ def isAggregate(assessmentObj):
     #check if assessment exists
     try:
         possible_children = Assessment.objects.filter(parent=assessmentObj)
+        print "possible_children = " + str(possible_children)
         
-        if possible_children is None:
+        if len(possible_children) == 0:
             return False #not an aggregate
         return True
     except Exception as e:
@@ -924,14 +986,23 @@ def isAggregate(assessmentObj):
 # Parameter: childrenArray : Asssessment[]
 # Return: Boolean
 def deleteAllChildren(childrenArray):
+    try:
+        for child in childrenArray:
+            print "Deleting : " + str(child.assess_name)
+            deleteAssessmentSessions(child)
+            if (isAggregate(child.id)):
+                print str(child.assess_name) + " is Aggregate...so"
+                child_children = Assessment.objects.filter(parent=child.id)
+                print "CHILD CHILDREN : " + str(child_children)
+                if len(child_children) > 0:
+                    deleteAllChildren(child_children) #recursion
+                    child.delete()
 
-    for child in childrenArray:
-        deleteAssessmentSession(child)
-
-        if (isAggregate(child)):
-            child_children = Assessment.objects.filter(parent=child)
-            deleteAllChildren(child_children) #recursion    
-        deleteLeafAssessment(child.id)
+            else:
+                print "Adios amigo!"
+                child.delete()
+    except Exception as e:
+        raise e #no children to delete
     return True
 
 # Name: getAssessmentFromID(row_id)

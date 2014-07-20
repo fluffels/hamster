@@ -454,9 +454,6 @@ def setTutorForModule(request):
 	else:
 		return Http404()
 
-def createAssessment(request):
-	pass
-
 def personDetails(request):
 #	json_data = json.loads(jsonObject)
 	try:
@@ -838,3 +835,34 @@ def createLeafAssessment(request,jsonObject):
 			'message': 'Assessment Not Created',
 		}]
 		return HttpResponse(json.dumps(data))
+
+def deleteAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	
+	info = api.removeAssessment(request,assess_id)
+	
+	if info == None:
+		data = [{
+			'type':1,
+			'message': 'Assessment deleted',
+			'isMod':True
+		}]
+		return HttpResponse(json.dumps(data))
+	elif info:	
+		data = [{
+			'type':1,
+			'message': 'Assessment deleted',
+			'isMod':False,
+			'assess_id':info
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message': 'Assessment not deleted',
+			'isMod':False,
+		}]
+		return HttpResponse(json.dumps(data))
+	
+	

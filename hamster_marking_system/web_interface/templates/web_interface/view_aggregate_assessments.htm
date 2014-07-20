@@ -69,6 +69,9 @@
 		<button class="btn btn-info btn-lg btn-block"  data-target="#create_child" data-toggle="modal">Create Leaf Assessment</button><br>
 		
 		<!-- Python is used here to list all the assessments -->
+		{% if type == -1 %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+		{% else %}
 		{% for ass in child %}
 			<div class="btn-group">
 				<form method='post' action='/view_children_assessment'>
@@ -84,12 +87,18 @@
 							<form action="/view_session" method="post">
 								<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
 							</form>
+						</li><li>
+							<form action="/remove_assessment" method="post">
+								<input type="hidden" name="mod" value={{ module }}>
+								<button type="submit" class="btn btn-danger btn-md btn-block" name="assess_id" value={{ass.0}}>Delete Assessment</button>
+							</form>
 						</li>
 					</ul>
 
 				</form>
-			</div><br/>	
+			</div><br/>
 		{% endfor %}
+		{% endif %}
 		<!-- End python jQuery code -->
 	</div>
 	<div class="col-md-3"></div>

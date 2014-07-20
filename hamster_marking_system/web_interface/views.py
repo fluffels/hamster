@@ -104,7 +104,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module})
+                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
@@ -113,7 +113,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
     elif request.POST.get('tutB'):
         print "IN TUTB"
         module = request.POST.get('tutB')
@@ -132,7 +132,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module})
+                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
@@ -141,7 +141,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
     elif request.POST.get('taB'):
         print "IN TAB"
         module = request.POST.get('taB')
@@ -160,7 +160,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments})
+                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
@@ -169,7 +169,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
     elif request.POST.get('lectB'):
         print "IN LECTB"
         module = request.POST.get('lectB')
@@ -188,7 +188,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module})
+                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
@@ -197,7 +197,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1})
 
 def personDetails(request):
     web = views.personDetails(request)
@@ -277,7 +277,7 @@ def createAssessment(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                           'user_roles':user_roles,'assessmentName':assess,"module":mod})
+                                                                           'user_roles':user_roles,'assessmentName':assess,"module":mod,'type':1})
     else:
         return render_to_response("web_interface/login.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
@@ -555,3 +555,71 @@ def updateMarkForStudent(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':0})
+@csrf_exempt
+def deleteAssessment(request):
+    assess_id = request.POST['assess_id']
+    mod = request.POST['mod']
+    
+    data = {
+        'assess_id':assess_id,
+    }
+    result = views.deleteAssessment(request,json.dumps(data))
+    res = json.loads(result.content)
+    
+    if res[0]['type'] == 1:
+        if res[0]['isMod'] == True:
+            data=[ {
+                'mod_code':mod
+            }]
+            assess = views.getAllAssessmentOfModule(request,json.dumps(data))
+            print "Assessments of module : " + str(assess)
+            ass = json.loads(assess.content)
+            if ass[0]['type'] == 1:
+                assessment = ass[0]['assessments']
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles, 'assessmentName':assessment,'module':mod,'type':1})
+            else:
+                assessmentName = "There Are No Assessments."
+                assessmentId = 0
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':mod,'type':-1})
+        else:
+            assess_id = res[0]['assess_id']
+            data={
+                'assess_id':assess_id,
+                'mod':mod
+            }
+            children = veiws.getAllChildrenOfAssessment(request,json.dumps(data))
+            child = json.loads(children.content)
+            if child[0]['type'] == 1:
+                if child[0]['message'] == 'Aggregate':
+                    child1 = child[0]['child']
+                    name = child[0]['name']
+                    return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'child':child1,
+                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id})
+
+                else:
+                    studentMark = child[0]['studentMark']
+                    name = child[0]['name']
+                    fullmark = child[0]['fullmark']
+                    return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'studentMark':studentMark,
+                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+

@@ -69,6 +69,9 @@
 		<button class="btn btn-info btn-lg btn-block"  data-target="#create_ass" data-toggle="modal">Create Assessment</button><br>
 		
 		<!-- Python is used here to list all the assessments -->
+		{% if type == -1 %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+		{% else %}
 		{% for ass in assessmentName %}
 			<div class="btn-group">
 				<button  class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown" value={{ass.0}}> {{ ass.1 }} <b class="caret"></b></button><br/>
@@ -83,8 +86,9 @@
 							<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
 						</form>
 					</li><li>
-						<form action="#" method="post">
-							<button type="submit" class="btn btn-danger btn-md btn-block" name="assessment" value={{ass.0}}>Remove Sessions</button>
+						<form action="/remove_assessment" method="post">
+							<input type="hidden" name="mod" value={{ module }}>
+							<button type="submit" class="btn btn-danger btn-md btn-block" name="assess_id" value={{ass.0}}>Delete Assessment</button>
 						</form>
 					</li>
 				</ul>
@@ -143,6 +147,7 @@
 			
 		{% endfor %}
 		<!-- End python jQuery code -->
+		{% endif %}
 	</div>
 	<div class="col-md-3"></div>
 </div>
