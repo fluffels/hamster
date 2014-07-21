@@ -523,9 +523,11 @@ def getSessionStatus(sessObj):
 # Parameter:  sess_id : Integer
 # Return: Boolean
 def closeSession(request, sess_id):
+    print "closeSession::::::::::::::"
     sess = Sessions.objects.get(id=sess_id)
     old = sess.getStatus()
     if old == 1:
+        print "IF iS MY MIDDLE NAME..."
         sess.setClose()
 #        Detail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
     else:
@@ -540,7 +542,7 @@ def closeSession(request, sess_id):
 def openSession(request, sess_id):
     sess = Sessions.objects.get(id=sess_id)
     old = sess.getStatus()
-    if old == 2:
+    if old == 0:
         sess.setOpen()
 #        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
         return True

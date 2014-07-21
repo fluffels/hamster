@@ -93,10 +93,10 @@
 		{% if x.0 == '-1' %}
 			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no sessions available.</div>
 		{% else %}
-			{% if x.2 == 1 %}
+			{% if x.2 == 0 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ban-circle"></span>
 					{{x.1}} <b class="caret"></b></button>
-			{% elif x.2 == 0 %}
+			{% elif x.2 == 1 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ok-circle"></span>
 					{{x.1}} <b class="caret"></b></button>
 			{% else %}
@@ -125,14 +125,16 @@
 				{% if x.2 == 1 %}
 				<form action="/update_session_status" method="post">
 					<input type="hidden" name="mod" value={{ moduleName }}>
-					<input type="hidden" name="assessment" value={{ assessment_id }}>
-					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>Open Session</button>
+					<input type="hidden" name="status" value=0>
+					<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Close Session</button>
 				</form>
 				{% else %}
 				<form action="/update_session_status" method="post">
 					<input type="hidden" name="mod" value={{ moduleName }}>
-					<input type="hidden" name="assessment" value={{ assessment_id }}>
-					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>Close Session</button>
+					<input type="hidden" name="status" value=1>
+					<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Open Session</button>
 				</form>
 				{% endif %}
 			</li>

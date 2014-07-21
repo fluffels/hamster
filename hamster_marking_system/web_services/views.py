@@ -551,6 +551,7 @@ def createSessionForAssessment(request,jsonObj):
 	for sess in session:
 		sess1 = api.getSessionDetails(sess)
 		status = api.getSessionStatus(sess)
+		print "SESSION STATUS OF " + str(sess1) + " = " + str(status)
 		sess1.append(status)
 		sessions.append(sess1)
 	if info:
@@ -888,10 +889,13 @@ def openOrCloseSession(request, jsonObj):
 	assess_id = json_data['assess_id']
 	sess_id = json_data['sess_id']
 	status = json_data['status']
+	info = False
 	
-	if status == 0:
+	if status == '0':
+		print "I am visiting closeSession..."
 		info = api.closeSession(request, sess_id)
-	elif status ==1:
+	elif status == '1':
+		print "I am visiting openSession..."
 		info = api.openSession(request, sess_id)
 	
 	if info:

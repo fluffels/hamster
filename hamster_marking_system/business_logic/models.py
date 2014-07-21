@@ -566,11 +566,15 @@ class Sessions(models.Model):
         self.save()
        
     def setOpen(self):
+        self.open_time = datetime.datetime.now()
+        endDate = self.open_time + datetime.timedelta(days=10)
+        self.close_time = endDate
         self.status = 1
         self.save()
     
     def setClose(self):
-        self.status = 2
+        self.close_time = datetime.datetime.now()
+        self.status = 0
         self.save()
     
     def setName(self,name):

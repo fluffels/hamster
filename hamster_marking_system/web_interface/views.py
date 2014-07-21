@@ -744,16 +744,18 @@ def openOrCloseSession(request):
         'sess_id':sess_id,
         'status':status
     }
+    print "B4 RESULT>>>"
     result = views.openOrCloseSession(request,json.dumps(data))
     res = json.loads(result.content)
+    print "AFTER PARTY!!!"
     
     if res[0]['type'] == 1:
         message = res[0]['message']
         data = {
-            'assess_id':assess_id
+            'assessmentID':assess_id
         }
         session = views.getAllSessionsForAssessment(request,json.dumps(data))
-        sess = json.loads(session)
+        sess = json.loads(session.content)
         sessions = []
         if sess[0]['type'] == 1:
             sessions = sess[0]['sessions']
@@ -784,10 +786,10 @@ def openOrCloseSession(request):
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':1})
     else:
         data = {
-            'assess_id':assess_id
+            'assessmentID':assess_id
         }
         session = views.getAllSessionsForAssessment(request,json.dumps(data))
-        sess = json.loads(session)
+        sess = json.loads(session.content)
         sessions = []
         if sess[0]['type'] == 1:
             sessions = sess[0]['sessions']
