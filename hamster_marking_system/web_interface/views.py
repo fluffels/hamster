@@ -73,7 +73,7 @@ def login(request):
 								    'user_roles':user_roles})
 	else:
 		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
-
+@csrf_exempt
 def backHome(request):
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
@@ -81,7 +81,48 @@ def backHome(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles})
-
+@csrf_exempt
+def use_as(request,role):
+    if role == 'Student':
+        lect = 'LT'
+        tut = 'TT'
+        ta = 'TA'
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                        'user_lect':lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':tut,
+                                                                        'user_ta':ta,
+                                                                        'user_roles':user_roles})
+    elif role == 'Lecturer':
+        stud = 'ST'
+        tut = 'TT'
+        ta = 'TA'
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':stud,
+                                                                       'user_tut':tut,
+                                                                       'user_ta':ta,
+                                                                       'user_roles':user_roles})
+    elif role == 'Tutor':
+        lect = 'LT'
+        stud = 'ST'
+        ta = 'TA'
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':lect,
+                                                                       'user_stud':stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':ta,
+                                                                       'user_roles':user_roles})
+    else:
+        lect = 'LT'
+        stud = 'ST'
+        tut = 'TT'
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':lect,
+                                                                       'user_stud':stud,
+                                                                       'user_tut':tut,
+                                                                       'user_ta':user_ta,
+                                                                       'user_roles':user_roles})
 def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
@@ -826,7 +867,7 @@ def openOrCloseSession(request):
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':-1})
-        
+@csrf_exempt     
 def viewAssessment(request,module):
     data = [{
         'mod_code':str(module)

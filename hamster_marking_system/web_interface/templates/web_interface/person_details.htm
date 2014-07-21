@@ -38,7 +38,7 @@
 <!-- Use as button -->
 {% block courses_use_as %}
 {% for role in user_roles %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Use as button -->

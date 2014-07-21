@@ -20,15 +20,15 @@
 {% for role in user_lect.0.LC %}
 	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
-
+<li class="divider"></li>
 {% for role in user_stud.0.ST %}
 	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
-
+<li class="divider"></li>
 {% for role in user_tut.0.TT %}
 	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
-
+<li class="divider"></li>
 {% for role in user_ta.0.TA %}
 	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
@@ -38,7 +38,7 @@
 <!-- Use as button -->
 {% block courses_use_as %}
 {% for role in user_roles %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/use_as/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Use as button -->
@@ -62,100 +62,64 @@
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 
-{% if default_user == 'LC' %}
-<script>
-	$(document).ready(function(){
-		$('#ST').hide();
-		$('#TT').hide();
-		$('#TA').hide();
-	})
-</script>
-{% else %}{% if default_user == 'ST' %}
-<script >
-	$(document).ready(function(){
-		$('#LC').hide();
-		$('#TT').hide();
-		$('#TA').hide();
-	})
-</script>
-{% else %}{% if default_user == 'TT' %}
-<script>
-	$(document).ready(function(){
-		$('#LC').hide();
-		$('#ST').hide();
-		$('#TA').hide();
-	})
-</script>
-{% else %}{% if default_user == 'TA' %}
-<script >
-	$(document).ready(function(){
-		$('#LC').hide();
-		$('#TT').hide();
-		$('#ST').hide();
-	})
-</script>
-{% endif %}
-{% endif %}
-{% endif %}
-{% endif %}
-
-<!-- Student modules -->
-<div class="row" id="ST">
-	<p>You are a student of : </p>
+<div class="row">
 	<div class="col-md-3"></div><!-- Padding for left of jumbotron -->
 	<div class="col-md-6">
-		{% for mod in user_stud.0.ST %}
-			<form method='post'  action='view_assessment'>
-				<button type="submit" class="btn btn-default btn-lg btn-block" name='studB' value={{mod}}>{{mod}}</button>
-			</form>
-				<!--<a href="/view_assessment">{{mod}}</a> -->
-		{% endfor %}</button>
+		<div id="ST">
+			{% if user_stud.0.ST %}
+				<!-- Student modules -->
+				<ul class="nav nav-pills nav-stacked">
+					<li class="active"><a><strong>You are a Student of :</strong></a></li>
+				</ul><br>
+				{% for mod in user_stud.0.ST %}
+					<form method="post"  action="view_assessment">
+						<button type="submit" class="btn btn-default btn-lg btn-block" name='studB' value={{mod}}>{{mod}}</button>
+					</form>
+						<!--<a href="/view_assessment">{{mod}}</a> -->
+				{% endfor %}</button><br>
+			{% endif %}
+		</div>
+		<div id="LC">
+			{% if user_lect.0.LC %}
+				<!-- Lecturer modules -->
+				<ul class="nav nav-pills nav-stacked">
+					<li class="active"><a><strong>You are a Lecturer of :</strong></a></li>
+				</ul><br>
+				{% for mod in user_lect.0.LC %}
+					<form method="post" action="view_assessment">
+						<button type="submit" class="btn btn-default btn-lg btn-block"  name='lectB' value={{mod}}>{{mod}}</button>
+					</form>
+				{% endfor %}</button><br>
+			{% endif %}
+		</div>
+		<div id="TT">
+			{% if user_tut.0.TT %}
+				<!-- Tutor modules -->
+				<ul class="nav nav-pills nav-stacked">
+					<li class="active"><a><strong>You are a Tutor of :</strong></a></li>
+				</ul><br>
+				{% for mod in user_tut.0.TT %}
+					<form method="post" action="view_assessment">
+						<button type="submit" class="btn btn-default btn-lg btn-block" name="tutB" value={{mod}}>{{mod}}</button>
+					</form>
+				{% endfor %}</button><br>
+			{% endif %}
+		</div>
+		<div id="TA">
+			{% if user_ta.0.TA %}
+				<!-- Teaching assistant modules -->
+				<ul class="nav nav-pills nav-stacked">
+					<li class="active"><a><strong>You are a Teaching Assistant of :</strong></a></li>
+				</ul><br>
+				{% for mod in user_ta.0.TA %}
+					<form method="post" action="view_assessment">
+						<button type="submit" class="btn btn-default btn-lg btn-block" name="taB"value={{mod}}>{{mod}}</button>
+					</form>
+				{% endfor %}</button>
+			{% endif %}
+		</div>
 	</div>
-	<div class="col-md-3"></div>
-</div><!-- End Student modules -->
-
-<!-- Lecturer modules -->
-<div class="row" id="LC">
-	<p>You are a lecturer of :</p>
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
-		{% for mod in user_lect.0.LC %}
-			<form method=post action='view_assessment'>
-				<button type="submit" class="btn btn-default btn-lg btn-block"  name='lectB' value={{mod}}>{{mod}}</button>
-			</form>
-		{% endfor %}</button>
-	</div>
-	<div class="col-md-3"></div>
-</div><!-- End Lecturer modules -->
-
-<!-- Tutor modules -->
-<div class="row" id="TT">
-	<p>You are a tutor of :</p>
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
-		{% for mod in user_tut.0.TT %}
-			<form method="post" action="view_assessment">
-				<button type="submit" class="btn btn-default btn-lg btn-block" name="tutB" value={{mod}}>{{mod}}</button>
-			</form>
-		{% endfor %}</button>
-	</div>
-	<div class="col-md-3"></div>
-</div><!-- End Tutor modules -->
-
-<!-- Teaching assistant modules -->
-<div class="row" id= "TA">
-	<p>You are a teaching assistant of :</p>
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
-		{% for mod in user_ta.0.TA %}
-			<form method="post" action="view_assessment">
-				<button type="submit" class="btn btn-default btn-lg btn-block" name="taB"value={{mod}}>{{mod}}</button>
-			</form>
-		{% endfor %}</button>
-	</div>
-	<div class="col-md-3"></div>
-</div><!-- End Teaching assistant modules -->
-
+	<div class="col-md-3"></div><!-- Padding for left of jumbotron -->
 {% endblock %}
 <!-- End of jumbotron content -->
 <!--###########################  End of jumbotron part ############################-->
