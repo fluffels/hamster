@@ -138,8 +138,8 @@
 			</li>
 		</ul>
 		{% endif %}
-	{%endfor%}
 	</div>
+	{%endfor%}
 	</div>
 	<div class="col-md-3"></div>
 </div><!--End of Modal for ContactUs-->
@@ -152,7 +152,8 @@
 		<div class="modal-content">
 			<form class="form-horizontal" action="/create_session" method="post">
 				<div class="modal-header">
-					<h4>Create a Session</h4>
+					<h4>Create a Session for</h4>
+					<h5>{{ assessmentName }}</h5>
 				</div>
 				<div class="modal-body">
 					

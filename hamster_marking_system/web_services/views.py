@@ -306,29 +306,6 @@ def getAllAssessmentOfModule(request,jsonData):
 		}]
 		return HttpResponse(json.dumps(data))
 	'''
-
-def createSessionForAssessment(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		assID = json_data['assessmentID']
-		name = json_data['session_name']
-		open = json_data['open_time']
-		close = json_data['close_time']
-		bool = createSession(request,name,assID,open,close)
-		if bool:
-			data=[{
-				'type':1,
-				'message':'session created'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':-1,
-				'message':'session not created'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
 	
 def deleteSessionFromAssessment(request):
 	if request.method == 'POST':

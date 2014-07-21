@@ -549,7 +549,9 @@ class Sessions(models.Model):
                 self.save()
                 return self.status
         else:
-                return self.status
+          self.status = 0
+          self.save()
+          return self.status
 
     def setAssessmentID(self,id):
         self.assessment_id = id
