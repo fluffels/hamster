@@ -16,19 +16,19 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="#"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->

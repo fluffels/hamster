@@ -74,6 +74,14 @@ def login(request):
 	else:
 		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 
+def backHome(request):
+    return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'user_roles':user_roles})
+
 def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
@@ -818,3 +826,28 @@ def openOrCloseSession(request):
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':-1})
+        
+def viewAssessment(request,module):
+    data = [{
+        'mod_code':str(module)
+    }]
+    print "this is my module: " + module
+    result = views.getAllAssessmentOfModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+            assessments = res[0]['assessments']
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+    else:
+            assessmentName = "There Are No Assessments."
+            assessmentId = 0
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})

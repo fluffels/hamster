@@ -267,7 +267,6 @@ def getAllMarkerOfModule(request):
 		return HttpResponse(json.dumps(data))
 		
 def getAllAssessmentOfModule(request,jsonData):
-#	if request.method == 'POST':
 		print "web service views"
 		try:
 			json_data = json.loads(jsonData)
@@ -278,16 +277,23 @@ def getAllAssessmentOfModule(request,jsonData):
 			ass=api.getAllAssessmentsForModule(mod_code)
 			print "web service views2"
 			assessment = []
-			for x in ass:
-				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
-				assessment.append(list)
-			
-			data = [{
-				'type':1,
-				'message': 'assessment retrieved',
-				'assessments':assessment
-			}]
-			return HttpResponse(json.dumps(data))
+			if ass:
+				for x in ass:
+					list = api.getAssessmentDetails(x) #list consist of the assessment id and name
+					assessment.append(list)
+				
+				data = [{
+					'type':1,
+					'message': 'assessment retrieved',
+					'assessments':assessment
+				}]
+				return HttpResponse(json.dumps(data))
+			else:
+				data = [{
+					'type':-1,
+					'message': 'No assessments',
+				}]
+				return HttpResponse(json.dumps(data))
 		except Exception, e:
 			data = [{
 				'type':-1,
@@ -297,15 +303,6 @@ def getAllAssessmentOfModule(request,jsonData):
 			print json.dumps(data)
 			return HttpResponse(json.dumps(data))
 
-			'''
-	else:
-		data = [{
-			'type':-1,
-			'message': 'failed to retrieve data'
-			
-		}]
-		return HttpResponse(json.dumps(data))
-	'''
 	
 def deleteSessionFromAssessment(request):
 	if request.method == 'POST':
