@@ -365,8 +365,8 @@ class LeafAssessment(Assessment):
       return self.assess_name
 
 #=================================LeafAssessment Function==============================
-def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None):
-	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_) 
+def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent_):
+	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, parent =parent_) 
 	 
 	 a.save()
 	 return a

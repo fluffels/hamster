@@ -926,16 +926,9 @@ def makeAggregateAssessmentALeaf(assess_id): #assumes agg_obj has no children
                     published_ = agg_obj.published
                     fullMarks_ =0
                     parent = agg_obj.parent
-                    newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent=None)
+                    print "PARENT IS : " + str(parent)
+                    newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent)
                     manageSessions(agg_obj, newLeafObj)
-                    if len(sessions) != 0:
-                        for sess in sessions:
-                            session_name_ = sess.session_name
-                            assessment_id_ = newLeafObj.id
-                            opened_ = sess.open_time
-                            closed_ = sess.close_time
-                            newSession = insertSessions(session_name_, assessment_id_,opened_,closed_)
-#                            newSession.save()
                     agg_obj.delete()
                 except Exception as e:
                     raise e #there is still atleast one child
