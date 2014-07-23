@@ -464,42 +464,81 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: empl_no : String
 # Parameter: mod_code : String
 # Return: Assessments[]
-def getAllAssementsForStudent(empl_no,mod_code):
-    studentMod = getAllModulesForStudent(mod_code)
-    for mod in studentMod:
-        marked = Assessment.objects.filter(mod_id_id=mod_code, published=True)
-    return marked
+def getAllAssementsForStudent(mod_code):
+    assessments = Assessment.objects.get(id=mod_code,isroot=True)
+    return assessments
+    '''  for mod in studentMod:
+        marked = Assessment.objects.filter(mod_id=mod_code, published=True)
+    return marked'''
+    
+def getChildAssessmentOfAssessmentForStudent(assess_id,stud):
+    assess = Assessment.objects.get(id = assess_id)
+    done = []
+    person = Person.objects.get(upId=stud)
+    if assess.assessment_type == 'Leaf':
+        mark = MarkAllocation.objects.get(assessment=assess,student=person)
+        done.append('leaf')
+        done.append(mark.mark)
+        done.append(assess.full_mark)
+        return done
+    else:
+        children = Assessment.objects.filter(parent=assess_id)
+        done.append('Aggregate')
+        done.append(children)
+
 
 # Name: getAllSessionsForModule(mod_code)
 # Description: Returns all the sessions for a module
 # Parameter: mod_code : String
 # Return: Sessions[]
 def getAllSessionsForModule(mod_code):
-    assessments = getAllAssessmentsForModule(mod_code)
+    module = Module.objects.get(id=mod_code)
+    assessments = Assessment.objects.filter(mod_id=module)
+    print "we are the assessments"
+    print assessments
     list = []
     for x in assessments:
-        sessions = Sessions.objects.filter(assessment_id=x.getId())
+        sessions = Sessions.objects.filter(assessment_id=x.id)
         for y in sessions:
             list.append(y)
     return list
+
+def getAllSessionForMarker(mod_code,marker):
+    sessions = getAllSessionsForModule(mod_code)
+    person = Person.objects.get(upId=marker)
+    session = []
+    print "huh i dnt know wats happending"
+    if sessions:
+        print sessions
+        for sess in sessions:
+            marker = AllocatePerson.objects.filter(person_id=person,isMarker=1)
+            if marker:
+                session.append(sess)
+        assessments = []
+        for n in session:
+            array = []
+            ch = []
+            assessment= n.assessment_id
+            array.append(getSessionDetails(n))
+            if assessment.assessment_type == 'Leaf':
+                array.append(getAssessmentDetails(assessment))
+            else:
+                child = getLeafAssessmentOfAssessement(assessment,array)
+                for m in child:
+                    print "Huh wena y u not an object"
+                    print m
+                    ch.append(getAssessmentDetails(m))
+                array.append(ch)
+            assessments.append(array)
+        return assessments
+    else:
+        return None
 
 def getAllSessionsForAssessment(assess_id):
 	assess = getAssessmentFromID(assess_id)
 	sessions = Sessions.objects.filter(assessment_id_id=assess)
 	return sessions
 
-# Name: createSession(mod_code,assess_id, opentime, closetime )
-# Description: Creates a Session object and saves it to the database
-# Parameter: session_name : String
-# Parameter: assess_id : Assessment
-# Parameter: opentime : DateTime
-# Parameter: closetime : DateTime
-# Return: Boolean
-def createSession(request,session_name,assess_id, opentime, closetime ):
-    sessionObj = Assessment.objects.get(id=assess_id)
-    obj = insertSessions(session_name,sessionObj,opentime,closetime)
-#    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
-    return True
     
 def getSessionDetails(session):
     list = []
@@ -1115,22 +1154,11 @@ def getMarkerForSession(sess_id_):
     list = []
     for x in temp:
         person = Person.objects.get(id=x.getPersonID().id)
-        uid = person.getupId()
+        uid = getPersonInformation(person)
         list.append(uid)
     return list
     
-# Name: getStudentsForASession
-# Description:
-# Parameter: sess_id_:session Object
-# Return:  list of uids e.g ["u1200000", "u12233423"]   
-def getStudentsForASession(sess_id_):
-	temp = AllocatePerson.objects.filter(session_id=sess_id_,isStudent = 1)
-	list = []
-	for x in temp:
-	        person = Person.objects.get(id=x.getPersonID().id)
-	        uid = person.getupId()
-	        list.append(uid)
-	return list
+
 
 def getUserInformation(lists):
    
@@ -1144,6 +1172,11 @@ def getUserInformation(lists):
         user.append(per)
     return user
         
+
+def getAssessmentFullMark(assess_id):
+    assess = Assessment.objects.get(id=assess_id)
+    return assess.full_mark
+
 # Name: addStudentToSession
 # Description: Adds a student to the session
 # Parameter: uid:string, sess_id_:session Object
@@ -1298,3 +1331,132 @@ def checkMarkAllocationExists(uid, ass_id):
 		return True
 	else:
 		return False
+
+
+# Name: createSession(mod_code,assess_id, opentime, closetime )
+# Description: Creates a Session object and saves it to the database
+# Parameter: session_name : String
+# Parameter: assess_id : Assessment
+# Parameter: opentime : 
+def createSession(request,session_name,assess_id, opentime, closetime ):
+    assess = Assessment.objects.get(id=assess_id)
+    sessionStatus = assess.hasSession
+    
+    if sessionStatus == 0:
+        obj = insertSessions(session_name,assess,opentime,closetime)
+        assess.hasSession = 1
+        assess.save()
+        didItWork = makeOnlySessionInLineage(assess.id)
+    elif sessionStatus == 1:
+        obj = insertSessions(session_name,assess,opentime,closetime)
+    elif sessionStatus == 2:
+        return False
+#    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
+    return True
+
+######################### MARKER VIEW FUNCTIONS ################################
+
+def getSessionForMarker(mod,marker_id):
+    module = Module.objects.get(id=mod)
+    assess = Assessment.objects.get(assess_name="Final Mark", mod_id=module)
+    assessSession = checkAssessmentSession(assess)
+    finalarray = []
+    if assessSession == None:
+        return None
+    else:
+        session = Sessions.objects.filter(assessment=assessSession)
+        for n in session:
+            array = []
+            status = n.checkStatus()
+            if status == 1:
+                bool = validateIfMarkerCanViewSession(marker_id,n.id)
+                if bool == True:
+                    Studentarray = getStudentsForASession(n)
+                    array.append(assessSession)
+                    array.append(n)
+                    array.append(Studentarray)
+                finalarray.append(array)
+        return finalarray
+
+def getLeaf(assessment):
+    pass
+    
+def getModuleLeafAssessment(mod,marker_id):
+    final = getSessionForMarker(mod,marker_id)
+    for n in final:
+        leaf=getLeaf(n[0])
+
+#checks if passed assessment has a session	
+def checkAssessmentSession(assess):
+    if assess.hasSession ==0:
+        return None
+    elif assess.hasSession ==1:
+        return assess
+    else:
+        children = Assessment.objects.filter(parent=assess_id)	
+        for child in children:
+            return checkAssessmentSession(child)
+    
+# Name: getStudentsForASession
+# Description:
+# Parameter: sess_id_:session Object
+# Return:  list of uids e.g ["u1200000", "u12233423"]   
+def getStudentsForASession(sess_id_):
+	temp = AllocatePerson.objects.filter(session_id=sess_id_,isStudent = 1)
+	list = []
+	for x in temp:
+	        person = Person.objects.get(id=x.getPersonID().id)
+	        uid = person.getupId()
+	        list.append(uid)
+	return list
+
+def validateIfMarkerCanViewSession(marker_id, sess_id):
+    marker = Person.objects.get(upId=marker_id)
+    session = Session.objects.get(id=sess_id)
+    
+    personAllocated = AllocatePerson.objects.get(person_id=marker, isMarker = 1)
+    if personAllocated:
+        return True
+    return False
+
+def retrieveAllLeafAssessmentOfAggregate(assess_id,array):
+    leaf = Assessment.objects.filter(parent=assess_id)
+    for n in leaf:
+        if n.assessment_type == "Leaf":
+            array.append(n)
+        else:
+            retrieveAllLeafAssessmentOfAggregate(n.id,array)
+    return array
+
+def makeOnlySessionInLineage(assess_id):
+    assess = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    parent = Assessment.objects.get(id=assess.parent)
+    
+    for child in children:
+        child.hasSession = 2
+        if child.assessment_type == 'Aggregate':
+            makeOnlySessionInLineageChildren(child.id)
+    
+    makeOnlySessionInLineageAncestors(parent)
+    return True   
+        
+def makeOnlySessionInLineageChildren(assess_id):
+    children = Assessment.objects.filter(parent = assess_id)
+    
+    for n in child:
+        n.hasSession = 2
+        if child.assessment_type == 'Aggregate':
+            makeOnlySessionInLineageChildren(n.id)
+    return True
+
+def makeOnlySessionInLineageAncestors(parent):
+    parent.hasSession = 2
+    if parent.parent == None:
+        return True
+    else:
+        parents = Assessment.objects.get(id=parent.parent)
+        makeOnlySessionInLineageAncestors(parents)
+
+    
+########################## END MARKER VIEW FUNCTIONS ###############################

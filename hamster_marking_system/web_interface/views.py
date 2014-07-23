@@ -892,3 +892,163 @@ def viewAssessment(request,module):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+
+#marker views
+def viewChildrenOfAssessments(request):
+    assess_id = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = {
+        'assess_id':assess_id,
+        'mod':mod
+    }
+    results = views.getAllChildrenOfAssessment(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        if res[0]['message'] == 'Aggregate':
+            child = res[0]['child']
+            name = res[0]['name']
+            return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'child':child,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id})
+        
+        else:
+            studentMark = res[0]['studentMark']
+            name = res[0]['name']
+            fullmark = res[0]['fullmark']
+            return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+
+
+    
+#student views
+def viewAssessmentForStudent(request):
+    mod = request.POST['mod']
+    data = {
+        'mod_code':mod
+    }
+    data = views.viewStudentAssessment(request, json.dumps(data))
+    result = json.loads(data.content)
+    assessmentName = []
+    assessmentId = []
+    if result[0]['type'] == 1:
+        assessments = result[0]['assessments']
+        return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+    else:
+        assessmentName = "There Are No Assessments."
+        assessmentId = 0
+        return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+    
+def viewAssessmentOfAssessmentForStudent(request):
+    assess_id = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = {
+        'assess_id':assess_id,
+        'mod':mod
+    }
+    results = views.getAllChildrenOfAssessment(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        if res[0]['message'] == 'Aggregate':
+            child = res[0]['child']
+            name = res[0]['name']
+            return render_to_response("web_interface/view_student_mark_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'child':child,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id})
+        
+        else:
+            studentMark = res[0]['studentMark']
+            name = res[0]['name']
+            fullmark = res[0]['fullmark']
+            return render_to_response("web_interface/view_student_mark_leaf.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+
+#marker views
+@csrf_exempt
+def viewAssessmentForMarker(request):
+    mod = request.POST['studB']
+    
+    data ={
+        'mod':mod
+    }
+    result = views.viewAssessmentForMarker(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        assessments = res[0]['assessments']
+        return render_to_response("web_interface/view_assessments_marker.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assessments,
+                                                                        'module':mod})
+    else:
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'user_roles':user_roles})
+
+@csrf_exempt
+def viewStudentsForAssessment(request):
+    sess= request.POST['session']
+    assess = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = [{
+        'session':sess,
+        'assess_id':assess
+    }]
+    results = views.viewStudentsForAssessment(request,json.dumps(data))
+    res = json.loads(results)
+    if res[0]['type'] == 1:
+        assessment = res[0]['assessment']
+        fullmark = res[0]['fullmark']
+        if res[0]['type'] == 'success':
+            students = res[0]['students']
+            return render_to_response("web_interface/view_student_mark_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
+                                                                        'fullmark':fullmark,'module':mod})
+        else:
+            students = []
+            return render_to_response("web_interface/view_student_mark_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
+                                                                        'fullmark':fullmark,'module':mod})

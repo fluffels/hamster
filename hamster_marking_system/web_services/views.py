@@ -907,3 +907,148 @@ def openOrCloseSession(request, jsonObj):
 	                'message':'Unsuccessful'
 	        }]
 	        return HttpResponse(json.dumps(data))
+	
+#marker views
+def getAllChildrenOfAssessmentForMarker(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	mod = json_data['mod']
+	name = api.getAssessmentName(assess)
+	child = api.getChildrenAssessmentsForAssessmemnt(assess)
+	if child:
+		data = [{
+			'type':1,
+			'message':'Aggregate',
+			'child':child,
+			'name':name
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		student = api.getAllStudentsOfModule(mod)
+		studentMark = api.getMarkForStudents(request,student,assess)
+		fullmark = api.getFullMark(assess)
+		print studentMark
+		data = [{
+			'type':1,
+			'message':'leaf',
+			'studentMark':studentMark,
+			'name':name,
+			'fullmark':fullmark
+		}]
+		return HttpResponse(json.dumps(data))
+
+#student views
+def viewStudentAssessment(request,jsonObj):
+	try:
+		json_data = json.loads(jsonData)
+		mod_code = json_data[0]['mod_code']
+		ass=api.getAllAssementsForStudent(mod_code)
+		assessment = []
+		if ass:
+			for x in ass:
+				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
+				assessment.append(list)
+				
+			data = [{
+				'type':1,
+				'message': 'assessment retrieved',
+				'assessments':assessment
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':-1,
+				'message': 'No assessments',
+			}]
+			return HttpResponse(json.dumps(data))
+	except Exception, e:
+			data = [{
+				'type':-1,
+				'message': 'assessment could not be retrieved'
+			}]
+			print "What happened Mamelo?"
+			print json.dumps(data)
+			return HttpResponse(json.dumps(data))
+
+def viewAssessmentOfAssessmentForStudent(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	mod = json_data['mod']
+	name = api.getAssessmentName(assess)
+	child = api.getChildAssessmentOfAssessmentForStudent(assess,request.session['user']['uid'])
+	if child:
+		if child[0] == 'Leaf':
+			
+			data = [{
+				'type':1,
+				'message':'Leaf',
+				'mark':child[1],
+				'fullmark':child[2],
+				'name':name
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':1,
+				'message':'Aggregate',
+				'mark':child[1],
+				'name':name
+			}]
+			return HttpResponse(json.dumps(data))			
+	else:
+		data = [{
+			'type':-1,
+			'message':'Assessment not retrieved',
+		}]
+		return HttpResponse(json.dumps(data))
+
+#marker views
+def viewAssessmentForMarker(request,jsonObj):
+        json_data = json.loads(jsonObj)
+        mod = json_data['mod']
+        marker = request.session['user']['uid'][0]
+        print "i hate you"
+        print marker
+        children = api.getAllSessionForMarker(mod,marker)
+        if children != None:
+                print "there are children mos"
+                data = [{
+                        'type':1,
+                        'message':'assessment retrieved',
+                        'assessments':children
+                }]
+                return HttpResponse(json.dumps(data))
+        else:
+                print "there are no children mos"
+                data = [{
+                        'type':-1,
+                        'message':'assessment not retrieved',
+                }]
+                return HttpResponse(json.dumps(data))
+
+def viewStudentsForAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	sess_id = json_data['session']
+	assess_id = json_data['assess_id']
+	students = api.getStudentsForASession(sess_id)
+	fullMark = api.getAssessmentFullMark(assess_id)
+	assessment = api.getAssessmentDetails(assess_id)
+	
+	if students:
+		data =[{
+			'type':1,
+			'message':'success',
+			'students':students,
+			'fullmark':fullmark,
+			'assessment':assessment
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data =[{
+			'type':1,
+			'message':'failed',
+			'fullmark':fullmark,
+			'assessment':assessment
+		}]
+		return HttpResponse(json.dumps(data))
+	
