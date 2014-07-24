@@ -717,8 +717,41 @@ def getAllChildrenOfAssessment(request,jsonObj):
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
-		student = api.getAllStudentsOfModule(mod)
-		studentMark = api.getMarkForStudents(request,student,assess)
+		students = api.getAllStudentsOfModule(mod)
+		studentMark = api.getMarkForStudents(request,students,assess)
+		fullmark = api.getFullMark(assess)
+		print studentMark
+		data = [{
+			'type':1,
+			'message':'leaf',
+			'studentMark':studentMark,
+			'name':name,
+			'fullmark':fullmark
+		}]
+		return HttpResponse(json.dumps(data))
+
+def getAllChildrenOfAssessmentForLeaf(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	mod = json_data['mod']
+	ass_obj = api.getAssessmentFromID(assess)
+	print "Assessment obj : " + str(ass_obj)
+	leaf = api.getParent(ass_obj)
+	name = api.getAssessmentName(leaf)
+	child = api.getChildrenAssessmentsForAssessmemnt(leaf)
+	
+	print "Leaf obj : " + str(leaf)
+	if child:
+		data = [{
+			'type':1,
+			'message':'Aggregate',
+			'child':child,
+			'name':name
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		students = api.getAllStudentsOfModule(mod)
+		studentMark = api.getMarkForStudents(request,students,leaf)
 		fullmark = api.getFullMark(assess)
 		print studentMark
 		data = [{
@@ -908,6 +941,32 @@ def openOrCloseSession(request, jsonObj):
 	        }]
 	        return HttpResponse(json.dumps(data))
 	
+def setPublishedStatus(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	status = json_data['status']
+	info = False
+	
+	if status == '1':#True
+		print "I am visiting a publised assessment..."
+		info = api.unpublishAssessment(request, assess_id)
+	elif status == '0':#False
+		print "I am visiting an un-published assessment..."
+		info = api.publishAssessment(request, assess_id)
+	
+	if info:
+		data = [{
+			'type':1,
+			'message':'Successful'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+	        data = [{
+	                'type':-1,
+	                'message':'Unsuccessful'
+	        }]
+	        return HttpResponse(json.dumps(data))
+	
 #marker views
 def getAllChildrenOfAssessmentForMarker(request,jsonObj):
 	json_data = json.loads(jsonObj)
@@ -1003,19 +1062,19 @@ def viewAssessmentOfAssessmentForStudent(request,jsonObj):
 		return HttpResponse(json.dumps(data))
 
 #marker views
-def viewAssessmentForMarker(request,jsonObj):
+def viewSessionForMarker(request,jsonObj):
         json_data = json.loads(jsonObj)
         mod = json_data['mod']
         marker = request.session['user']['uid'][0]
         print "i hate you"
         print marker
-        children = api.getAllSessionForMarker(mod,marker)
-        if children != None:
+        sessions = api.getAllSessionForMarker(mod,marker)
+        if len(sessions) != 0:
                 print "there are children mos"
                 data = [{
                         'type':1,
                         'message':'assessment retrieved',
-                        'assessments':children
+                        'session':sessions
                 }]
                 return HttpResponse(json.dumps(data))
         else:
@@ -1026,29 +1085,116 @@ def viewAssessmentForMarker(request,jsonObj):
                 }]
                 return HttpResponse(json.dumps(data))
 
+
+def viewAssessmentForMarker(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	session = json_data['sessions']
+	sessObj = api.getSessionObject(session)
+	sess = api.getSessionDetails(sessObj)
+	assessment = api.getLeafAssessmentOfAssessmentBySession(session)
+	if assessment:
+		data = [{
+			'type':1,
+			'message':'assessments retrieved',
+			'session':sess,
+			'assessment':assessment
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'assessment not retrieved',
+			'session':sess
+		}]
+		return HttpResponse(json.dumps(data))
+
 def viewStudentsForAssessment(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	sess_id = json_data['session']
 	assess_id = json_data['assess_id']
 	students = api.getStudentsForASession(sess_id)
-	fullMark = api.getAssessmentFullMark(assess_id)
-	assessment = api.getAssessmentDetails(assess_id)
+	fullmark = api.getFullMark(assess_id)
+	assessment = api.getAssessmentName(assess_id)
 	
-	if students:
+	if assessment:
+		studentMarks = api.getStudentMarks(request,students,assess_id)
 		data =[{
 			'type':1,
-			'message':'success',
-			'students':students,
+			'message':'students',
+			'students':studentMarks,
 			'fullmark':fullmark,
 			'assessment':assessment
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
 		data =[{
-			'type':1,
+			'type':-1,
 			'message':'failed',
-			'fullmark':fullmark,
-			'assessment':assessment
 		}]
+		return HttpResponse(json.dumps(data))
+
+def updateMarkForStudentMarker(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	sess = json_data['session']
+	leaf_id = json_data['leaf_id']
+	student = json_data['student']
+	mark = json_data['mark']
+	mod = json_data['mod']
+	
+	markID = api.updateMarkAllocation(request, student, leaf_id, mark)
+	students = api.getStudentsForASession(sess)
+	studentMark = api.getStudentMarks(request,students,leaf_id)
+	fullmark = api.getFullMark(leaf_id)
+	name = api.getAssessmentName(leaf_id)
+	if markID:
+		
+		data =[{
+			'type':1,
+			'message':'student mark updated',
+			'studentMark':studentMark,
+			'fullmark':fullmark,
+			'name':name
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data =[{
+			'type':-1,
+			'message':'student mark not updated',
+			'studentMark':studentMark,
+			'fullmark':fullmark,
+			'name':name
+		}]
+		return HttpResponse(json.dumps(data))
+
+#Made with publishing assessments in mind
+def getChildrenAssessmentsForAssessment(request,jsonObj):
+	try:
+		json_data = json.loads(jsonData)
+		mod_code = json_data[0]['mod_code']
+		ass=api.getAllAssessmentsForModule(mod_code)
+		assessment = []
+		if ass:
+			for x in ass:
+				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
+				assessment.append(list)
+			
+			data = [{
+				'type':1,
+				'message': 'assessment retrieved',
+				'assessments':assessment
+			}]
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':-1,
+				'message': 'No assessments',
+			}]
+			return HttpResponse(json.dumps(data))
+	except Exception, e:
+		data = [{
+			'type':-1,
+			'message': 'assessment could not be retrieved'
+		}]
+		print json.dumps(data)
 		return HttpResponse(json.dumps(data))
 	
