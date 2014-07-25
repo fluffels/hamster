@@ -116,9 +116,9 @@
 
 		<div class="list-group">
 			<a href="#" class="list-group-item disabled"> Markers in session </a>
-				{%for mar in marker%}
+				{% for mar in marker %}
 					<a href="#" class="list-group-item" > {{ mar.0 }}, {{ mar.1 }} {{mar.2 }}</a>
-				{%endfor%}
+				{% endfor %}
 		</div>
 		
 		<form method="post" action="/add_user_to_session">
