@@ -1246,8 +1246,8 @@ def getAllChildrenOfAssessmentForStudent(request,jsonObj):
 			name = child[1]
 			list.append(assess)
 			list.append(name)
-			list.append('agg_mark')
-			list.append('full_mark')
+			list.append('0')
+			list.append('0')
 			CHILDREN.append(list)
 			
 		

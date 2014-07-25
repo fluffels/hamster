@@ -57,20 +57,37 @@
 
 
 {% block jumbotron_header %}
-<div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
-	<ul class="nav nav-pills nav-stacked">
-		<li class="active">
-			<a href="#">
-				{{ assessmentName.1 }} {{ assessmentName.2 }}    
-				<span class="badge"><h4>{{ assessmentName.0 }}</h4></span>
-			</a>
-		</li>
-	</ul>
+	{% if type == -1 %}
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+		<ul class="nav nav-pills nav-stacked">
+			<li class="active">
+				<a href="#">
+					No Information   
+					<span class="badge"><h4>0</h4></span>
+				</a>
+			</li>
+		</ul>
+		</div>
+		<div class="col-md-2"></div>
 	</div>
-	<div class="col-md-2"></div>
-</div>
+	{% else %}
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+		<ul class="nav nav-pills nav-stacked">
+			<li class="active">
+				<a href="#">
+					{{ assessmentName.1 }} {{ assessmentName.2 }}    
+					<span class="badge"><h4>{{ assessmentName.0 }}</h4></span>
+				</a>
+			</li>
+		</ul>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	{% endif %}
 	
 {% endblock %}
 
