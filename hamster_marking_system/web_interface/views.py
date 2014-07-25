@@ -135,90 +135,85 @@ def logout(request):
 def getAllAssessmentOfModule(request):
     if request.POST.get('studB'):
         module = request.POST.get('studB')
-        print "IN STUDB"
-        data=[{
+        uid = request.session['user']['uid'][0]
+    
+        data = {
             'mod_code':module,
-            'user_type':'tutor'
-        }]
-        data = views.getAllAssessmentOfModule(request, json.dumps(data))
-        print 'haaaaaaaaaaaaaaaaaaaaaaaaaaaahahahhahahahahahahhaahahhhhhhhhhhhhahahahah'
-        print data
+            'uid': uid
+            }
+        data = views.viewStudentAssessment(request, json.dumps(data))
         result = json.loads(data.content)
         assessmentName = []
         assessmentId = []
         if result[0]['type'] == 1:
+            person = result[0]['person']
+            assessmentName = 'Base Assessments Page'
             assessments = result[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+            return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+               							            'user_lect':user_lect,
+               							            'user_stud':user_stud,
+               							            'user_tut':user_tut,
+               							            'user_ta':user_ta,
+               							            'user_roles':user_roles, 'assessments':assessments,
+               							            'module':module,'type':1, 'assessmentName':person})
         else:
             assessmentName = "There Are No Assessments."
             assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+            return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+            							            'user_lect':user_lect,
+            							            'user_stud':user_stud,
+            							            'user_tut':user_tut,
+            							            'user_ta':user_ta,
+            							            'user_roles':user_roles,'assessmentName':person,
+            							            'assessmentId':assessmentId,'module':module,'type':-1})
     elif request.POST.get('tutB'):
         print "IN TUTB"
         module = request.POST.get('tutB')
-        data=[{
-            'mod_code':module,
-            'user_type':'tutor'
-        }]
-        data = views.getAllAssessmentOfModule(request, json.dumps(data))
-        result = json.loads(data.content)
-        assessmentName = []
-        assessmentId = []
-        if result[0]['type'] == 1:
-            assessments = result[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
+        data ={
+        'mod':module
+        }
+        result = views.viewSessionForMarker(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res[0]['type'] == 1:
+            assessments = res[0]['session']
+            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+               							            'user_lect':user_lect,
+               							            'user_stud':user_stud,
+               							            'user_tut':user_tut,
+               							            'user_ta':user_ta,
+               							            'user_roles':user_roles,'assessmentName':assessments,
+               							            'module':mod,'type':1})
         else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+            							           'user_lect':user_lect,
+            							           'user_stud':user_stud,
+            							           'user_tut':user_tut,
+            							           'user_ta':user_ta,
+            							           'user_roles':user_roles,'type':-1})
     elif request.POST.get('taB'):
         print "IN TAB"
         module = request.POST.get('taB')
-        data=[{
-            'mod_code':module,
-            'user_type':'tutor'
-        }]
-        data = views.getAllAssessmentOfModule(request, json.dumps(data))
-        result = json.loads(data.content)
-        assessmentName = []
-        assessmentId = []
-        if result[0]['type'] == 1:
-            assessments = result[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
+        data ={
+        'mod':module
+        }         
+        result = views.viewSessionForMarker(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res[0]['type'] == 1:
+            assessments = res[0]['session']
+            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+              							            'user_lect':user_lect,
+              							            'user_stud':user_stud,
+              							            'user_tut':user_tut,
+              							            'user_ta':user_ta,
+              							            'user_roles':user_roles,'assessmentName':assessments,
+              							            'module':mod,'type':1})
         else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+              							            'user_lect':user_lect,
+              							            'user_stud':user_stud,
+              							            'user_tut':user_tut,
+              							            'user_ta':user_ta,
+              							            'user_roles':user_roles,'type':-1})
     elif request.POST.get('lectB'):
         print "IN LECTB"
         module = request.POST.get('lectB')
