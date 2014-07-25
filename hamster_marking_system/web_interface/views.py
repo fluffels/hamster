@@ -164,7 +164,7 @@ def getAllAssessmentOfModule(request):
             							            'user_stud':user_stud,
             							            'user_tut':user_tut,
             							            'user_ta':user_ta,
-            							            'user_roles':user_roles,'assessmentName':person,
+            							            'user_roles':user_roles,'assessmentName':assessmentName,
             							            'assessmentId':assessmentId,'module':module,'type':-1})
     elif request.POST.get('tutB'):
         print "IN TUTB"

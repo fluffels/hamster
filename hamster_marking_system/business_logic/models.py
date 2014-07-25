@@ -234,7 +234,7 @@ class Assessment(PolymorphicModel):
     parent = models.IntegerField(null=True, blank=True) #the assess_id of the parent will be passed
     assessment_type = models.CharField(max_length=65)
     isroot = models.BooleanField( default= True)
-    hasSession = models.IntegerField(default=0) # 0 means no session has been assigned in that subtree
+    
     
     def getname(self):
         return self.assess_name

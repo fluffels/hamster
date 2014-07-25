@@ -1006,27 +1006,40 @@ def viewStudentAssessment(request,jsonObj):
 		mod_code = json_data['mod_code']
 		
 		uid = json_data['uid']
-		ass = api.getAllAssementsForStudent(mod_code)
+		print 'UID: '+ str(uid)
+		ass = api.getAllPublishedAssessmentsForStudent(mod_code)
+		print '==============================================\n'
+		print 'ASSESSMENTS PUBLISHED: \n'
+		print str(ass)+'\n'
+		print '=============================================='
 		root_list = []
 		for a in ass:
 			if a.parent is None:
 				root_list.append(a)
-		
+		print '==============================================\n'
+		print 'ASSESSMENTS LIST TO BE SENT: \n'
+		print str(root_list)+'\n'
+		print '=============================================='
 		per = api.getPersonsInformation(uid)
 		assessment = []
+		
 		if root_list:
 			for x in root_list:
 				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
 				list.append('agg_mark') #function for agg_mark here (of Student)
 				list.append('full_mark') #function for full_mark aggregated here
 				assessment.append(list)
-				
+				print "List: " +str(list)
+		
+			
 			data = [{
 				'type':1,
 				'message': 'assessment retrieved',
 				'assessments':assessment,
 				'person':per
 			}]
+			
+		
 			return HttpResponse(json.dumps(data))
 		else:
 			data = [{
@@ -1223,7 +1236,7 @@ def getAllChildrenOfAssessmentForStudent(request,jsonObj):
 	print 'I AM THE STUDENT...' + str(student)
 	person = api.getPersonDetails(student[0])
 	parent_name = api.getAssessmentName(parent)
-	children = api.getChildrenAssessmentsForAssessmemnt(parent)
+	children = api.getPublishedChildrenAssessmentsForAssessment(parent)
 	print "MY CHILDREN---" + str(children)
 	CHILDREN = []
 	if children:

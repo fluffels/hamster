@@ -141,6 +141,11 @@ def getAllSurnameOf(list):
 		surname.append(x.getSurname())
 	return surname
 
+def getAllPublishedAssessmentsForStudent(mod_code):
+    mod_obj = Module.objects.get(id=str(mod_code))
+    assessments = Assessment.objects.filter(mod_id=mod_obj, published = True)
+    return assessments
+
 def getPersonInformation(person):
     students = []
     students.append(person.getupId())
@@ -365,6 +370,18 @@ def getAssessmentForModuleByName(mod_code, name):
     temp = Assessment.objects.filter(mod_id=mod_code,assess_name=name) #assuming AND function
     return temp
 
+def getPublishedChildrenAssessmentsForAssessment(assess_id):
+    assessments = Assessment.objects.all()
+    children = []
+    for ass in assessments:
+        if str(ass.parent) == str(assess_id):
+            if ass.published == True:
+                children.append(ass)
+    array = []
+    for child in children:
+        array.append(getAssessmentDetails(child))
+    return array
+
 
 def getChildrenAssessmentsForAssessmemnt(assess_id):
     print "am in heree"
@@ -478,7 +495,7 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: empl_no : String
 # Parameter: mod_code : String
 # Return: Assessments[]
-def getAllAssementsForStudent(mod_code):
+def getAllAssessmentsForStudent(mod_code):
     print "==========================================="
     print 'GETTING ALL THE ASSESSMENTS'
     print mod_code
