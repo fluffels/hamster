@@ -48,6 +48,7 @@ def getAllStudentsOfModule(mod_code):
     list = Person.objects.all()
     print "Size of list : " + str(len(list))
     module_list = []
+    module_needed = None
     modObj = Module.objects.get(id=mod_code)
     print "ModObj : " + str(modObj)
     for per in list:
@@ -57,7 +58,6 @@ def getAllStudentsOfModule(mod_code):
             module_needed = per.studentOf_module.get(module_code=mod_code)
         except Exception as e:
             print e
-        print module_needed
         if module_needed:
             module_list.append(getPersonInformation(per))
             print "Added " + str(per)
@@ -115,6 +115,11 @@ def getAllTutorsOfModule(mod_code):
         returnList.append(person)
     
     return returnList
+
+def getPersonsInformation(uid):
+    per = Person.objects.get(upId=uid)
+    X = getPersonInformation(per)
+    return X
 
 # Name: getAllNamesOf(listy)
 # Description: Returns a list of the first names of the Person objects 
@@ -474,7 +479,15 @@ def getAllLeafAssessmentsForAssessment(assess_code):
 # Parameter: mod_code : String
 # Return: Assessments[]
 def getAllAssementsForStudent(mod_code):
-    assessments = Assessment.objects.get(id=mod_code,isroot=True)
+    print "==========================================="
+    print 'GETTING ALL THE ASSESSMENTS'
+    print mod_code
+   
+    mod_obj = Module.objects.get(id=str(mod_code))
+    print "mod_obj: " + str(mod_obj)
+    print '==================================='
+    assessments = Assessment.objects.filter(mod_id=mod_obj)
+    print 'Assessments: ' + str(assessments)
     return assessments
     '''  for mod in studentMod:
         marked = Assessment.objects.filter(mod_id=mod_code, published=True)
@@ -548,6 +561,19 @@ def getLeafAssessmentOfAssessment(assessment):
             else:
                 assessments.append(getLeafAssessmentOfAssessment(child))
         return assessments
+    
+def getMarkForStudent(student_id, assess_id):
+    stud = student_id[0]
+    print '=================================================\n'
+    print "Student: " + str(assess_id) + '\n'
+    print '================================================='
+    stu_obj = Person.objects.get(upId=stud)
+ 
+    assess_obj = Assessment.objects.get(id=assess_id)
+    markAlloc = MarkAllocation.objects.get(assessment=assess_obj, student=stu_obj)
+    mark = markAlloc.getMark()
+    
+    return mark
     
 def getSessionDetails(session):
     list = []
@@ -968,13 +994,16 @@ def updateMarkAllocation(request, student, leaf_id,mark):
        # assess = Assessment.objects.get(id=leaf_id)
         per = Person.objects.get(upId=student)
         leaf = Assessment.objects.get(id=leaf_id)
-        if mark <=leaf.full_marks:
-            markAlloc = MarkAllocation.objects.get(assessment=leaf_id,student=per.id)
-            old = markAlloc.getMark()
-            markAlloc.setMark(int(mark))
-            markAlloc.setmarker(marker)
-            return True
+        if int(mark) <=leaf.full_marks:
+            if int(mark) >= 0:
+                print "if " + mark + " <= " + leaf.full_marks
+                markAlloc = MarkAllocation.objects.get(assessment=leaf_id,student=per.id)
+                old = markAlloc.getMark()
+                markAlloc.setMark(int(mark))
+                markAlloc.setmarker(marker)
+                return True
         else:
+            print "MaRK IS WRONG"
             return False
 #        logAuditDetail(request,"Updated Mark Allocation","update","dbModels_markallocation","mark",old,markAlloc.getMark(),markAlloc_id)
     except Exception as e:

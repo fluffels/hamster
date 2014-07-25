@@ -57,7 +57,20 @@
 
 
 {% block jumbotron_header %}
-	{{ assessmentName }}
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+	<ul class="nav nav-pills nav-stacked">
+		<li class="active">
+			<a href="#"><span class="badge pull-right">{{ assessmentName.0 }}</span>
+				{{ assessmentName.1 }} {{ assessmentName.2 }}
+			</a>
+		</li>
+	</ul>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+	
 {% endblock %}
 
 {% block jumbotron_sub_header %} {{ module }} {% endblock %}
@@ -69,7 +82,7 @@
 <div class="row">
 	<div class="col-md-2"></div>
 	<div class="col-md-8">
-		{% if message == 0 %}
+		{% if type == -1 %}
 			<div class="alert alert-warning alert-dismissible" role="alert">
 				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 				</span><span class="sr-only">Close</span></button>
@@ -80,20 +93,22 @@
 			<tr>
 				<td><strong> Assessment Name </strong></td>
 				<td><strong> Aggregated Mark </strong></td>
+				<td><strong> Full Mark </strong></td>
 				<td><strong> Sub-assessments </strong></td>
 			</tr>
-			{% for per in studentMark %}
+			{% for ass in assessments %}
 			<tr>
-				<td> {{per.0}} </td>
-				<td> {{per.1}} </td>
+				<td> {{ass.1}} </td>
+				<td> {{ass.2}} </td>
+				<td> {{ass.3}} </td>
 				<td>
-					<form action="#" method="post">
+					<form action="/view_children_assessment_student" method="post">
 						<input type="hidden" name="mod" value={{ module }}>
-						<button  class="btn btn-primary" value={{ per.2 }} >
-						<span class="glyphicon glyphicon-arrow-right"></span></button
+						<button  class="btn btn-primary" value={{ ass.0 }} name = 'subs'
+						data-toggle="tooltip" data-placement="left" title="Leaf assessments">  <!-- parent id --> 
+						<span class="glyphicon glyphicon-arrow-right"></span></button>
 					</form>
 				</td>
-				{% endif %}
 			</tr>
 			{% endfor %}
 		</table>

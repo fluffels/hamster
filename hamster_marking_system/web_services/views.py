@@ -640,13 +640,15 @@ def addUserToSession(request,jsonObj):
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
-		mark = api.getUserInformation(marker)
+		print "MAAAARRRRKKKEEERRRR________"+str(marker)
+		
+#		mark = api.getUserInformation(marker)
 		data = [{
 			'type':1,
 			'message':"user's added",
 			'name':name,
 			'students': stud,
-			'marker':mark,
+			'marker':marker
 		}]
 	elif Markers:
 		for n in Markers:
@@ -655,13 +657,13 @@ def addUserToSession(request,jsonObj):
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
-		mark = api.getUserInformation(marker)
+#		mark = api.getUserInformation(marker)
 		data = [{
 			'type':1,
 			'message':"user's added",
 			'name':name,
 			'students': stud,
-			'marker':mark,
+			'marker':marker,
 		}]
 	else:
 		student = api.getStudentsForASession(session)
@@ -686,13 +688,13 @@ def getAllPersonOfSession(request,jsonObj):
 		student = api.getStudentsForASession(sess)
 		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(sess)
-		mark = api.getUserInformation(marker)
+#		mark = api.getUserInformation(marker)
 		data = [{
 			'type':1,
 			'message':"user's not added",
 			'name':name,
 			'students': stud,
-			'marker':mark,
+			'marker':marker,
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
@@ -999,19 +1001,31 @@ def getAllChildrenOfAssessmentForMarker(request,jsonObj):
 #student views
 def viewStudentAssessment(request,jsonObj):
 	try:
-		json_data = json.loads(jsonData)
-		mod_code = json_data[0]['mod_code']
-		ass=api.getAllAssementsForStudent(mod_code)
+		
+		json_data = json.loads(jsonObj)
+		mod_code = json_data['mod_code']
+		
+		uid = json_data['uid']
+		ass = api.getAllAssementsForStudent(mod_code)
+		root_list = []
+		for a in ass:
+			if a.parent is None:
+				root_list.append(a)
+		
+		per = api.getPersonsInformation(uid)
 		assessment = []
-		if ass:
-			for x in ass:
+		if root_list:
+			for x in root_list:
 				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
+				list.append('agg_mark') #function for agg_mark here (of Student)
+				list.append('full_mark') #function for full_mark aggregated here
 				assessment.append(list)
 				
 			data = [{
 				'type':1,
 				'message': 'assessment retrieved',
-				'assessments':assessment
+				'assessments':assessment,
+				'person':per
 			}]
 			return HttpResponse(json.dumps(data))
 		else:
@@ -1025,8 +1039,9 @@ def viewStudentAssessment(request,jsonObj):
 				'type':-1,
 				'message': 'assessment could not be retrieved'
 			}]
-			print "What happened Mamelo?"
 			print json.dumps(data)
+			
+			
 			return HttpResponse(json.dumps(data))
 
 def viewAssessmentOfAssessmentForStudent(request,jsonObj):
@@ -1198,3 +1213,50 @@ def getChildrenAssessmentsForAssessment(request,jsonObj):
 		print json.dumps(data)
 		return HttpResponse(json.dumps(data))
 	
+
+def getAllChildrenOfAssessmentForStudent(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	parent = json_data['assess_id']
+	mod = json_data['mod']
+	print "I AM THE ONE..."
+	student = json_data['student']
+	print 'I AM THE STUDENT...' + str(student)
+	person = api.getPersonDetails(student[0])
+	parent_name = api.getAssessmentName(parent)
+	children = api.getChildrenAssessmentsForAssessmemnt(parent)
+	print "MY CHILDREN---" + str(children)
+	CHILDREN = []
+	if children:
+		for child in children:
+			list = []
+			assess = child[0]
+			name = child[1]
+			list.append(assess)
+			list.append(name)
+			list.append('agg_mark')
+			list.append('full_mark')
+			CHILDREN.append(list)
+			
+		
+		data = [{
+			'type':1,
+			'message':'Aggregate',
+			'children':CHILDREN,
+			'parent_name':parent_name,
+			'agg_mark': 'agg_mark',
+			'person':person
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		studentMark = api.getMarkForStudent(student,parent)
+		fullmark = api.getFullMark(parent)
+		person = api.getPersonDetails(student[0])
+		data = [{
+			'type':1,
+			'message':'Leaf',
+			'studentMark':studentMark,
+			'name':parent_name,
+			'fullmark':fullmark,
+			'person':person
+		}]
+		return HttpResponse(json.dumps(data))

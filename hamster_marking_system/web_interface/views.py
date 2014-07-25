@@ -1024,23 +1024,30 @@ def viewChildrenOfAssessments(request):
 
     
 #student views
+@csrf_exempt
 def viewAssessmentForStudent(request):
-    mod = request.POST['mod']
+    mod = request.POST['studB']
+    uid = request.session['user']['uid'][0]
+    
     data = {
-        'mod_code':mod
+        'mod_code':mod,
+        'uid': uid
     }
     data = views.viewStudentAssessment(request, json.dumps(data))
     result = json.loads(data.content)
     assessmentName = []
     assessmentId = []
     if result[0]['type'] == 1:
+        person = result[0]['person']
+        assessmentName = 'Base Assessments Page'
         assessments = result[0]['assessments']
         return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+                                                                        'user_roles':user_roles, 'assessments':assessments,
+                                                                        'module':mod,'type':1, 'assessmentName':person})
     else:
         assessmentName = "There Are No Assessments."
         assessmentId = 0
@@ -1049,7 +1056,8 @@ def viewAssessmentForStudent(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+                                                                        'user_roles':user_roles,'assessmentName':person,
+                                                                        'assessmentId':assessmentId,'module':mod,'type':-1})
     
     
     
@@ -1215,3 +1223,63 @@ def updateMarkForStudentMarker(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'session':session,'message':0})
+
+
+@csrf_exempt
+def getAllChildrenOfAssessmentForStudent(request):
+    print "             ===============Hello===================="
+    parent_id = request.POST['subs']
+    print "             parent_id : "+parent_id
+    mod = request.POST['mod']
+    print "             mod : "+mod
+    student = request.session['user']['uid']
+    print "             student : "+str(student)
+    data = {
+        'assess_id':parent_id,
+        'mod':mod,
+        'student':student
+    }
+    results = views.getAllChildrenOfAssessmentForStudent(request,json.dumps(data))
+    print "             After result... : "
+    res = json.loads(results.content)
+    person = []
+    if res[0]['type'] == 1:
+        if res[0]['message'] == 'Aggregate':
+            children = res[0]['children']
+            name = res[0]['parent_name']
+            agg_mark = res[0]['agg_mark']
+            person_data = res[0]['person']
+            person.append(person_data['uid'][0])
+            person.append(person_data['cn'][0])
+            person.append(person_data['sn'][0])
+            print "             children : "+str(children)
+            print "             name : "+name
+            print "             agg_mark : "+agg_mark
+            print "             person : "+str(person)
+            print '==========================================='
+            print str(person)
+            print '==========================================='
+            return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessments':children,
+                                                                        'module':name,'assessmentName':person,'parent_id':parent_id, 'agg_mark':agg_mark})
+        
+        else:
+            studentMark = res[0]['studentMark']
+            name = res[0]['name']
+            fullmark = res[0]['fullmark']
+            person = res[0]['person']
+            pername = person['cn'][0]
+            persurname = person['sn'][0]
+            return render_to_response("web_interface/view_student_marks_leaf.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':studentMark,'student_id':student[0],
+                                                                        'module':mod,'assessmentName':name,'assess_id':parent_id,'fullmark':fullmark,
+                                                                        'student_name':pername, 'student_surname':persurname})
+

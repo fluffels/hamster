@@ -84,20 +84,22 @@
 				<td><strong> Surname </strong></td>
 				<td><strong> Mark obtained </strong></td>
 			</tr>
-			{% for per in studentMark %}
+			
 			<tr>
-				<td> {{per.0}} </td>
-				<td> {{per.1}} </td>
-				<td> {{per.2}} </td>
-				<td class="col-md-3">
+				<td> {{student_id}} </td>
+				<td> {{student_name}} </td>
+				<td> {{student_surname}} </td>
+				<td> {{studentMark}} </td>
+				
+				<!--<td class="col-md-3">
 					<input type="number" class="form-control" placeholder="Mark obtained" disabled="disabled" name="mark" value={{ fullmark }}>
 					<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 					<input hidden="hidden" name="uid" value={{ per.0 }}>
 					<input hidden="hidden" name="mod" value={{ module }}>
-				</td>
-				{% endif %}
+				</td> -->
+				
 			</tr>
-			{% endfor %}
+			
 		</table>
 		{% endif %}
 		<!-- Available for root assessments only, drowdown with export options-->

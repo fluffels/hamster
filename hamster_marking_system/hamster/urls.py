@@ -29,13 +29,16 @@ urlpatterns = patterns('',
     url(r'view_marker_assessment$','web_interface.views.viewAssessmentForMarker', name='view_marker_assessment'),
     url(r'view_student_assessment$','web_interface.views.viewStudentsForAssessment', name='view_student_assessment'),
     url(r'^use_as/([aA-zZ]{1,})/$','web_interface.views.use_as', name='use_as_redirect'),
-    url(r'^update_assessment_published','web_interface.views.SetPublishedStatus', name='update_assessment_published'),
+    url(r'^update_assessment_published','web_interface.views.setPublishedStatus', name='update_assessment_published'),
     url(r'^update_sub_assessment_published','web_interface.views.setPublishedStatusInLeaf', name='update_sub_assessment_published'),
     
     url(r'view_marker_sessions$','web_interface.views.viewSessionForMarker', name='view_marker_sessions'),
     url(r'view_marker_assessment$','web_interface.views.viewAssessmentForMarker', name='view_marker_assessment'),
     url(r'view_students_of_assessemnts$','web_interface.views.viewStudentsForAssessment', name='view_students_of_assessemnts'),
     url(r'update_mark_marker$','web_interface.views.updateMarkForStudentMarker', name='update_mark_marker'),
+    
+    url(r'view_student_assessment$','web_interface.views.viewAssessmentForStudent', name='view_student_assessment'),
+    url(r'view_children_assessment_student$','web_interface.views.getAllChildrenOfAssessmentForStudent', name='view_children_assessment_student'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
