@@ -62,8 +62,9 @@
 	<div class="col-md-8">
 	<ul class="nav nav-pills nav-stacked">
 		<li class="active">
-			<a href="#"><span class="badge pull-right">{{ assessmentName.0 }}</span>
-				{{ assessmentName.1 }} {{ assessmentName.2 }}
+			<a href="#">
+				{{ assessmentName.1 }} {{ assessmentName.2 }}    
+				<span class="badge"><h4>{{ assessmentName.0 }}</h4></span>
 			</a>
 		</li>
 	</ul>
@@ -114,19 +115,19 @@
 		</table>
 		{% endif %}
 		<!-- Available for root assessments only, drowdown with export options-->
-		<div class="btn-group">
-			<button type="submit" name="submit" class="btn btn-primary btn-block dropdown-toggle" data-toggle="dropdown">
+		<div class="dropdown">
+			<button type="submit" name="submit" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
 				<span class="glyphicon glyphicon-download"></span> Save as <b class="caret"></b></button>
 			<ul class="dropdown-menu" role="menu">
 				<li>
-					<form action="#" method="post">
+					<form action="#" method="post" class="form-group-sm">
 						<input type="hidden" name="mod" value={{ module }}>
-						<button type="submit" class="btn btn-default" name="docType" value="PDF">PDF</button>
+						<button type="button" class="btn btn-default btn-md btn-block" name="docType" value="PDF">PDF</button>
 					</form>
 				</li><li>
-					<form action="#" method="post">
+					<form action="#" method="post" class="form-group-sm">
 						<input type="hidden" name="mod" value={{ module }}>
-						<button type="submit" class="btn btn-primary" name="docType" value="CSV">CSV</button>
+						<button type="button" class="btn btn-primary btn-md btn-block" name="docType" value="CSV">CSV</button>
 					</form>
 				</li>
 			</ul>

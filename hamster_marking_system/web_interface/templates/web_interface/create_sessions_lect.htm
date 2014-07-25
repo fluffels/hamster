@@ -95,13 +95,13 @@
 		{% else %}
 			{% if x.2 == 0 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ban-circle"></span>
-					{{x.1}} <b class="caret"></b></button>
+					  {{x.1}}   <b class="caret"></b></button>
 			{% elif x.2 == 1 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ok-circle"></span>
-					{{x.1}} <b class="caret"></b></button>
+					  {{x.1}}   <b class="caret"></b></button>
 			{% else %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown">
-					{{x.1}} <b class="caret"></b></button>
+					  {{x.1}}   <b class="caret"></b></button>
 			{% endif %}
 		<ul class="dropdown-menu" role="menu">
 			<li>
@@ -153,7 +153,7 @@
 			<form class="form-horizontal" action="/create_session" method="post">
 				<div class="modal-header">
 					<h4>Create a Session for</h4>
-					<h5>{{ assessmentName }}</h5>
+					<h4>{{ assessmentName }}</h4>
 				</div>
 				<div class="modal-body">
 					
@@ -170,7 +170,7 @@
 						<label for="open-time" class="col-lg-3 control-label">Open time:</label>
 						<div class="col-lg-7">
 							<div class="input-group date" id="datetimepicker">
-								<input type="text" class="form-control" id="open-time" name="open_time" />
+								<input type="datetime" class="form-control" id="open-time" name="open_time" />
 								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 							</div>
 						</div>
@@ -180,7 +180,7 @@
 						<label for="close-time" class="col-lg-3 control-label">Close time:</label>
 						<div class="col-lg-7">
 							<div class="input-group date" id="datetimepicker">
-								<input type="text" class="form-control" id="close-time" name="close_time">
+								<input type="datetime" class="form-control" id="close-time" name="close_time">
 								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 							</div>
 						</div>

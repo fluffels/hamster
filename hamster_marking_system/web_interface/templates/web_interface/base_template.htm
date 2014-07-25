@@ -89,7 +89,7 @@
 		
 		<div class="container">
 			
-			<p class="navbar-text pull-left">University of Pretoria site</p>
+			<p class="navbar-text pull-left">Created by DEV_OID</p>
 			<a class="navbar-btn btn-primary btn pull-right" href="http://www.cs.up.ac.za">Go to CS website</a>
 
 		</div>
@@ -272,61 +272,6 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-
-<script>
-	$(document).ready(function(){
-		$('#Lecturer').click(function(){
-			$('#ST').hide();
-			$('#TT').hide();
-			$('#TA').hide();
-			$('#LC').show();
-		})
-		
-		$('#Student').click(function(){
-			$('#ST').show();
-			$('#TT').hide();
-			$('#TA').hide();
-			$('#LC').hide();
-		})
-		
-		$('#Tutor').click(function(){
-			$('#ST').hide();
-			$('#TT').show();
-			$('#TA').hide();
-			$('#LC').hide();
-		})
-		
-		$('#Teaching ass').click(function(){
-			$('#ST').hide();
-			$('#TT').hide();
-			$('#TA').show();
-			$('#LC').hide();
-		})
-		
-		var $modalData = $('#createLeaf');
-		
-		$('body').on('click.modal.data-api', '[data-toggle="modal"]', function(e){
-			var $this = $(this);
-			$modalData.data('value', $this.data('value'));
-			$modalData.modal('show');
-			e.preventDefault();
-			})
-		
-		$modalData.on('show', function(){
-			var myData = $modalData.data('value');
-		});
-		
-		
-		$('#leafAss').click(function(){
-			var me =$('#leafAss').val()
-			$('#leaf').val(me)
-		})
-		
-		$('#datetimepicker').datetimepicker();
-
-	})
-</script>
 
 </body>
 </html>

@@ -69,7 +69,7 @@
 			{% if user_stud.0.ST %}
 				<!-- Student modules -->
 				<ul class="nav nav-pills nav-stacked">
-					<li class="active"><a><strong>You are a Student of :</strong></a></li>
+					<li class="active"><a><strong> You are a Student for </strong></a></li>
 				</ul><br>
 				{% for mod in user_stud.0.ST %}
 					<form method="post"  action="view_assessment">
@@ -83,7 +83,7 @@
 			{% if user_lect.0.LC %}
 				<!-- Lecturer modules -->
 				<ul class="nav nav-pills nav-stacked">
-					<li class="active"><a><strong>You are a Lecturer of :</strong></a></li>
+					<li class="active"><a><strong> You are a Lecturer for </strong></a></li>
 				</ul><br>
 				{% for mod in user_lect.0.LC %}
 					<form method="post" action="view_assessment">
@@ -96,7 +96,7 @@
 			{% if user_tut.0.TT %}
 				<!-- Tutor modules -->
 				<ul class="nav nav-pills nav-stacked">
-					<li class="active"><a><strong>You are a Tutor of :</strong></a></li>
+					<li class="active"><a><strong> You are a Tutor for </strong></a></li>
 				</ul><br>
 				{% for mod in user_tut.0.TT %}
 					<form method="post" action="view_assessment">
@@ -109,7 +109,7 @@
 			{% if user_ta.0.TA %}
 				<!-- Teaching assistant modules -->
 				<ul class="nav nav-pills nav-stacked">
-					<li class="active"><a><strong>You are a Teaching Assistant of :</strong></a></li>
+					<li class="active"><a><strong> You are a Teaching Assistant for </strong></a></li>
 				</ul><br>
 				{% for mod in user_ta.0.TA %}
 					<form method="post" action="view_assessment">

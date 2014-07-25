@@ -85,14 +85,14 @@
 		<form role="form" method="post" action="/added_user_to_session">
 			<div class="form-group">
 				<select multiple class="form-control" name="userS">
-					{%for per in students%}
+					{% for per in students %}
 						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
-					{%endfor%}
+					{% endfor %}
 				</select>
-				<input type="hidden" name="session" value={{session_id}}><br>
+				<input type="hidden" name="session" value={{ session_id }}><br>
 				<input type="hidden" name="userM" value=""/><br>
 			</div>
-			<button type="submit" name="submit" class="btn btn-success btn-block" value={{module}}>
+			<button type="submit" name="submit" class="btn btn-success btn-block" value={{ module }}>
 				<span class="glyphicon glyphicon-plus"></span> Add Student(s)</button>
 		</form>			
 	</div>

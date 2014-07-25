@@ -89,7 +89,14 @@
 				<td> {{student_id}} </td>
 				<td> {{student_name}} </td>
 				<td> {{student_surname}} </td>
-				<td> {{studentMark}} </td>
+				<td><a href="#"><span class="badge">
+					{% if studentMark == -1 %}
+						No mark
+					{% else %}
+						{{studentMark}}
+					{% endif %}
+					</span></a>
+				</td>
 				
 				<!--<td class="col-md-3">
 					<input type="number" class="form-control" placeholder="Mark obtained" disabled="disabled" name="mark" value={{ fullmark }}>
