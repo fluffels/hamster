@@ -1456,18 +1456,8 @@ def checkMarkAllocationExists(uid, ass_id):
 # Parameter: assess_id : Assessment
 # Parameter: opentime : 
 def createSession(request,session_name,assess_id, opentime, closetime ):
-    assess = Assessment.objects.get(id=assess_id)
-    sessionStatus = assess.hasSession
-    
-    if sessionStatus == 0:
-        obj = insertSessions(session_name,assess,opentime,closetime)
-        assess.hasSession = 1
-        assess.save()
-        didItWork = makeOnlySessionInLineage(assess.id)
-    elif sessionStatus == 1:
-        obj = insertSessions(session_name,assess,opentime,closetime)
-    elif sessionStatus == 2:
-        return False
+    sessionObj = Assessment.objects.get(id=assess_id)
+    obj = insertSessions(session_name,sessionObj,opentime,closetime)
 #    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
     return True
 

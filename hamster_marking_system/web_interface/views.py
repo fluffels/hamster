@@ -241,7 +241,7 @@ def getAllAssessmentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1})
+                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1,'module':module})
 
 def personDetails(request):
     web = views.personDetails(request)
