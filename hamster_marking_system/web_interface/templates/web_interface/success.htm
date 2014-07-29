@@ -9,7 +9,9 @@
 {% endblock %}
 	
 {% block person_details %}
-	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>
+	</form>
 {% endblock %}
 
 <!--###########################  End Nav bar settings ############################-->
@@ -18,19 +20,19 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->
@@ -72,7 +74,7 @@
 					<li class="active"><a><strong> You are a Student for </strong></a></li>
 				</ul><br>
 				{% for mod in user_stud.0.ST %}
-					<form method="post"  action="view_assessment">
+					<form method="post"  action="courses/{{mod}}/Assessments/">
 						<button type="submit" class="btn btn-default btn-lg btn-block" name='studB' value={{mod}}>{{mod}}</button>
 					</form>
 						<!--<a href="/view_assessment">{{mod}}</a> -->
@@ -86,7 +88,7 @@
 					<li class="active"><a><strong> You are a Lecturer for </strong></a></li>
 				</ul><br>
 				{% for mod in user_lect.0.LC %}
-					<form method="post" action="view_assessment">
+					<form method="post" action="courses/{{mod}}/Assessments/">
 						<button type="submit" class="btn btn-default btn-lg btn-block"  name='lectB' value={{mod}}>{{mod}}</button>
 					</form>
 				{% endfor %}</button><br>
@@ -99,7 +101,7 @@
 					<li class="active"><a><strong> You are a Tutor for </strong></a></li>
 				</ul><br>
 				{% for mod in user_tut.0.TT %}
-					<form method="post" action="view_assessment">
+					<form method="post" action="courses/{{mod}}/Assessments/">
 						<button type="submit" class="btn btn-default btn-lg btn-block" name="tutB" value={{mod}}>{{mod}}</button>
 					</form>
 				{% endfor %}</button><br>
@@ -112,7 +114,7 @@
 					<li class="active"><a><strong> You are a Teaching Assistant for </strong></a></li>
 				</ul><br>
 				{% for mod in user_ta.0.TA %}
-					<form method="post" action="view_assessment">
+					<form method="post" action="courses/{{mod}}/Assessments">
 						<button type="submit" class="btn btn-default btn-lg btn-block" name="taB"value={{mod}}>{{mod}}</button>
 					</form>
 				{% endfor %}</button>

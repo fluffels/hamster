@@ -1,6 +1,7 @@
 import json
 import urllib2
 from django.shortcuts import render, render_to_response, RequestContext
+from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader
@@ -11,68 +12,72 @@ def home(request):
                               context_instance = RequestContext(request))
 @csrf_exempt
 def login(request):
-	user = request.POST['username']
-	passw = request.POST['password']
-	data = {
-		'username':user,
-		'password':passw
-	}
-	user_info = views.login(request,json.dumps(data))
-	#user_info = urllib2.urlopen('/login',json.dumps(data))
-	user = json.loads(user_info.content)
-	user_type = ''
-	global default_user
-	default_user =''
-	global user_roles
-	user_roles = []
-	
-	global user_lect
-	user_lect = []
-	global user_stud
-	user_stud = []
-	global user_tut
-	user_tut = []
-	global user_ta
-	user_ta = []
-	if user[0]['type'] == 1:
-		if len(user[0]['lecturerOf']) != 0:
-			user_type = 'LC'
-			user_lect.append({user_type:user[0]['lecturerOf']})
-			user_roles.append('Lecturer')
-			
-		if len(user[0]['studentOf']) != 0:
-			user_type ='ST'
-			user_stud.append({user_type:user[0]['studentOf']})
-			user_roles.append('Student')
-			
-		if len(user[0]['tutorFor']) != 0:
-			user_type = 'TT'
-			user_tut.append({user_type:user[0]['tutorFor']})
-			user_roles.append('Tutor')
-			
-		if len(user[0]['teachingAssistantOf']) != 0:
-			user_type ='TA'
-			user_ta.append({user_type:user[0]['teachingAssistantOf']})
-			user_roles.append('Teaching ass')
-		
-		#choosing the default user based on the user type ie,lecturer
-		if len(user[0]['lecturerOf']) != 0:
-		    default_user = 'LC'
-		elif len(user[0]['studentOf']) != 0:
-		    default_user = 'ST'
-		elif len(user[0]['tutorFor']) != 0:
-		    default_user = 'TT'
-		else:
-		    default_user = 'TA'
-		    
-		return render_to_response("web_interface/success.htm",{'default_user':default_user,
-								       'user_lect':user_lect,
-								       'user_stud':user_stud,
-								       'user_tut':user_tut,
-								       'user_ta':user_ta,
-								    'user_roles':user_roles})
-	else:
-		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+    try:
+        user = request.POST['username']
+        passw = request.POST['password']
+        data = {
+                'username':user,
+                'password':passw
+        }
+        user_info = views.login(request,json.dumps(data))
+        #user_info = urllib2.urlopen('/login',json.dumps(data))
+        user = json.loads(user_info.content)
+        user_type = ''
+        global default_user
+        default_user =''
+        global user_roles
+        user_roles = []
+        
+        global user_lect
+        user_lect = []
+        global user_stud
+        user_stud = []
+        global user_tut
+        user_tut = []
+        global user_ta
+        user_ta = []
+        if user[0]['type'] == 1:
+                if len(user[0]['lecturerOf']) != 0:
+                        user_type = 'LC'
+                        user_lect.append({user_type:user[0]['lecturerOf']})
+                        user_roles.append('Lecturer')
+                        
+                if len(user[0]['studentOf']) != 0:
+                        user_type ='ST'
+                        user_stud.append({user_type:user[0]['studentOf']})
+                        user_roles.append('Student')
+                        
+                if len(user[0]['tutorFor']) != 0:
+                        user_type = 'TT'
+                        user_tut.append({user_type:user[0]['tutorFor']})
+                        user_roles.append('Tutor')
+                        
+                if len(user[0]['teachingAssistantOf']) != 0:
+                        user_type ='TA'
+                        user_ta.append({user_type:user[0]['teachingAssistantOf']})
+                        user_roles.append('Teaching ass')
+                        
+                #choosing the default user based on the user type ie,lecturer
+                if len(user[0]['lecturerOf']) != 0:
+                    default_user = 'LC'
+                elif len(user[0]['studentOf']) != 0:
+                    default_user = 'ST'
+                elif len(user[0]['tutorFor']) != 0:
+                    default_user = 'TT'
+                else:
+                    default_user = 'TA'
+                
+                return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'user_roles':user_roles})
+        else:
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+    except Exception  as e:
+        raise Http404()
+    
 @csrf_exempt
 def backHome(request):
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
@@ -132,245 +137,261 @@ def logout(request):
 		return render_to_response("web_interface/success.htm",locals(),context_instance = RequestContext(request))
 
 @csrf_exempt
-def getAllAssessmentOfModule(request):
-    if request.POST.get('studB'):
-        module = request.POST.get('studB')
-        uid = request.session['user']['uid'][0]
-    
-        data = {
-            'mod_code':module,
-            'uid': uid
+def getAllAssessmentOfModule(request,module):
+        if request.POST.get('studB'):
+            module = request.POST.get('studB')
+            uid = request.session['user']['uid'][0]
+            
+            data = {
+                'mod_code':module,
+                'uid': uid
+                }
+            data = views.viewStudentAssessment(request, json.dumps(data))
+            result = json.loads(data.content)
+            assessmentName = []
+            assessmentId = []
+            if result[0]['type'] == 1:
+                person = result[0]['person']
+                assessmentName = 'Base Assessments Page'
+                assessments = result[0]['assessments']
+                return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles, 'assessments':assessments,
+                                                                                'module':module,'type':1, 'assessmentName':person})
+            else:
+                assessmentName = "There Are No Assessments."
+                assessmentId = 0
+                return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'assessmentName':assessmentName,
+                                                                                            'assessmentId':assessmentId,'module':module,'type':-1})
+        elif request.POST.get('tutB'):
+            print "IN TUTB"
+            module = request.POST.get('tutB')
+            data ={
+            'mod':module
             }
-        data = views.viewStudentAssessment(request, json.dumps(data))
-        result = json.loads(data.content)
-        assessmentName = []
-        assessmentId = []
-        if result[0]['type'] == 1:
-            person = result[0]['person']
-            assessmentName = 'Base Assessments Page'
-            assessments = result[0]['assessments']
-            return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
-               							            'user_lect':user_lect,
-               							            'user_stud':user_stud,
-               							            'user_tut':user_tut,
-               							            'user_ta':user_ta,
-               							            'user_roles':user_roles, 'assessments':assessments,
-               							            'module':module,'type':1, 'assessmentName':person})
+            result = views.viewSessionForMarker(request,json.dumps(data))
+            res = json.loads(result.content)
+            if res[0]['type'] == 1:
+                assessments = res[0]['session']
+                return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'assessmentName':assessments,
+                                                                                'module':mod,'type':1})
+            else:
+                return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'type':-1})
+        elif request.POST.get('taB'):
+            print "IN TAB"
+            module = request.POST.get('taB')
+            data ={
+            'mod':module
+            }         
+            result = views.viewSessionForMarker(request,json.dumps(data))
+            res = json.loads(result.content)
+            if res[0]['type'] == 1:
+                assessments = res[0]['session']
+                return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'assessmentName':assessments,
+                                                                                'module':mod,'type':1})
+            else:
+                return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'type':-1})
+        elif request.POST.get('lectB'):
+            print "IN LECTB"
+            module = request.POST.get('lectB')
+            data=[{
+                'mod_code':module,
+                'user_type':'tutor'
+            }]
+            data = views.getAllAssessmentOfModule(request, json.dumps(data))
+            result = json.loads(data.content)
+            assessmentName = []
+            assessmentId = []
+            if result[0]['type'] == 1:
+                assessments = result[0]['assessments']
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
+            else:
+                assessmentName = "There Are No Assessments."
+                assessmentId = 0
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1,'module':module})
         else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
-            							            'user_lect':user_lect,
-            							            'user_stud':user_stud,
-            							            'user_tut':user_tut,
-            							            'user_ta':user_ta,
-            							            'user_roles':user_roles,'assessmentName':assessmentName,
-            							            'assessmentId':assessmentId,'module':module,'type':-1})
-    elif request.POST.get('tutB'):
-        print "IN TUTB"
-        module = request.POST.get('tutB')
-        data ={
-        'mod':module
-        }
-        result = views.viewSessionForMarker(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res[0]['type'] == 1:
-            assessments = res[0]['session']
-            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
-               							            'user_lect':user_lect,
-               							            'user_stud':user_stud,
-               							            'user_tut':user_tut,
-               							            'user_ta':user_ta,
-               							            'user_roles':user_roles,'assessmentName':assessments,
-               							            'module':mod,'type':1})
-        else:
-            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
-            							           'user_lect':user_lect,
-            							           'user_stud':user_stud,
-            							           'user_tut':user_tut,
-            							           'user_ta':user_ta,
-            							           'user_roles':user_roles,'type':-1})
-    elif request.POST.get('taB'):
-        print "IN TAB"
-        module = request.POST.get('taB')
-        data ={
-        'mod':module
-        }         
-        result = views.viewSessionForMarker(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res[0]['type'] == 1:
-            assessments = res[0]['session']
-            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
-              							            'user_lect':user_lect,
-              							            'user_stud':user_stud,
-              							            'user_tut':user_tut,
-              							            'user_ta':user_ta,
-              							            'user_roles':user_roles,'assessmentName':assessments,
-              							            'module':mod,'type':1})
-        else:
-            return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
-              							            'user_lect':user_lect,
-              							            'user_stud':user_stud,
-              							            'user_tut':user_tut,
-              							            'user_ta':user_ta,
-              							            'user_roles':user_roles,'type':-1})
-    elif request.POST.get('lectB'):
-        print "IN LECTB"
-        module = request.POST.get('lectB')
-        data=[{
-            'mod_code':module,
-            'user_type':'tutor'
-        }]
-        data = views.getAllAssessmentOfModule(request, json.dumps(data))
-        result = json.loads(data.content)
-        assessmentName = []
-        assessmentId = []
-        if result[0]['type'] == 1:
-            assessments = result[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
-        else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1,'module':module})
-
-def personDetails(request):
-    web = views.personDetails(request)
-    results = json.loads(web.content)
-    if results[0]['type'] == 1:
-        name = results[0]['name']
-        surname = results[0]['surname']
-        title = results[0]['title']
-        initials = results[0]['initials']
-        return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'name':name,'surname':surname,'title':title,'initials':initials})
-    else:
-        return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'name':'person data not found'})
+            raise Http404()
 
 @csrf_exempt
-def getAllSessionsForAssessment(request):
-    assess = request.POST['assessment']
-    data = {
-        'assessmentID':assess
-    }
-    res = views.getAllSessionsForAssessment(request,json.dumps(data))
-    sess = json.loads(res.content)
-    sessions = []
-    print sess
-    if sess[0]['type'] == 1:
-        sessions = sess[0]['sessions']
-        assessmentName = sess[0]['assessmentName']
-        moduleName=sess[0]['moduleName']
-        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'sessions':sessions,
-                                                                        'assessmentName':assessmentName,
-                                                                        'moduleName':moduleName,
-                                                                        'assessment_id':assess,})
+def personDetails(request):
+    if request.method == 'POST':
+        web = views.personDetails(request)
+        results = json.loads(web.content)
+        if results[0]['type'] == 1:
+            name = results[0]['name']
+            surname = results[0]['surname']
+            title = results[0]['title']
+            initials = results[0]['initials']
+            return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'name':name,'surname':surname,'title':title,'initials':initials})
+        else:
+            return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'name':'person data not found'})
     else:
-        list = []
-        list.append('-1')
-        list.append('session data not found')
-        sessions.append(list)
-        assessmentName = sess[0]['assessmentName']
-        moduleName=sess[0]['moduleName']
-        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
+        raise Http404()
+
+@csrf_exempt
+def getAllSessionsForAssessment(request,module,assessment):
+    try:
+        assess = request.POST['assessment']
+        data = {
+            'assessmentID':assess
+        }
+        res = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(res.content)
+        sessions = []
+        print sess
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'sessions':sessions,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,
+                                                                            'assessment_id':assess,})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
+    except Exception as e:
+        raise Http404()
 
 @csrf_exempt
 def createAssessment(request):
-    assessName = request.POST['name']
-    mod = request.POST['mod']
-    fullmark = request.POST['fullmark']
-    assess_id = request.POST['leaf']
-    
-    data = {
-        'name':assessName,
-        'mod':mod,
-        'fullmark':fullmark,
-        'assess_id': assess_id
-    }
-    res= views.createAssessment(request,json.dumps(data))
-    results = json.loads(res.content)
-    if results[0]['type'] == 1:
-        assess = results[0]['assessment']
-        return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                           'user_roles':user_roles,'assessmentName':assess,"module":mod,'type':1})
-    else:
-        return render_to_response("web_interface/login.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                           'user_roles':user_roles})
+    try:
+        assessName = request.POST['name']
+        mod = request.POST['mod']
+        fullmark = request.POST['fullmark']
+        assess_id = request.POST['leaf']
+        
+        data = {
+            'name':assessName,
+            'mod':mod,
+            'fullmark':fullmark,
+            'assess_id': assess_id
+        }
+        res= views.createAssessment(request,json.dumps(data))
+        results = json.loads(res.content)
+        if results[0]['type'] == 1:
+            assess = results[0]['assessment']
+            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessmentName':assess,"module":mod,'type':1})
+        else:
+            return render_to_response("web_interface/login.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles})
+    except Exception as e:
+        raise Http404()
 
 @csrf_exempt
 def createSession(request):
-    assess_id = request.POST['assess_id']
-    open_time = request.POST['open_time']
-    close_time = request.POST['close_time']
-    name = request.POST['name']
+    try:
+        assess_id = request.POST['assess_id']
+        open_time = request.POST['open_time']
+        close_time = request.POST['close_time']
+        name = request.POST['name']
+        
+        data ={
+            'assess_id':assess_id,
+            'name':name,
+            'open_time': open_time,
+            'close_time':close_time
+        }
+        res = views.createSessionForAssessment(request,json.dumps(data))
+        results = json.loads(res.content)
+        
+        if results[0]['type'] == 1:
+            assess_name = results[0]['assessmentName']
+            sessions = results[0]['sessions']
+            mod = results[0]['mod']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
     
-    data ={
-        'assess_id':assess_id,
-        'name':name,
-        'open_time': open_time,
-        'close_time':close_time
-    }
-    res = views.createSessionForAssessment(request,json.dumps(data))
-    results = json.loads(res.content)
+        else:
+            assess_name = results[0]['assessmentName']
+            sessions = results[0]['sessions']
+            mod = results[0]['mod']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
+    except Exception as e:
+        raise Http404()
     
-    if results[0]['type'] == 1:
-        assess_name = results[0]['assessmentName']
-        sessions = results[0]['sessions']
-        mod = results[0]['mod']
-        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
-
-    else:
-        assess_name = results[0]['assessmentName']
-        sessions = results[0]['sessions']
-        mod = results[0]['mod']
-        return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
 @csrf_exempt
 def searchForStudent(request):
     user_query = request.POST['query']
@@ -605,72 +626,75 @@ def updateMarkForStudent(request):
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':0})
 @csrf_exempt
 def deleteAssessment(request):
-    assess_id = request.POST['assess_id']
-    mod = request.POST['mod']
-    
-    data = {
-        'assess_id':assess_id,
-    }
-    result = views.deleteAssessment(request,json.dumps(data))
-    res = json.loads(result.content)
-    
-    if res[0]['type'] == 1:
-        if res[0]['isMod'] == True:
-            data=[ {
-                'mod_code':mod
-            }]
-            assess = views.getAllAssessmentOfModule(request,json.dumps(data))
-            print "Assessments of module : " + str(assess)
-            ass = json.loads(assess.content)
-            if ass[0]['type'] == 1:
-                assessment = ass[0]['assessments']
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessment,'module':mod,'type':1})
-            else:
-                assessmentName = "There Are No Assessments."
-                assessmentId = 0
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':mod,'type':-1})
-        else:
-            assessment = res[0]['assess_id']
-            data={
-                'assess_id':assessment,
-                'mod':mod
-            }
-            children = views.getAllChildrenOfAssessment(request,json.dumps(data))
-            child = json.loads(children.content)
-            if child[0]['type'] == 1:
-                if child[0]['message'] == 'Aggregate':
-                    child1 = child[0]['child']
-                    name = child[0]['name']
-                    return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
-                                                                                'user_lect':user_lect,
-                                                                                'user_stud':user_stud,
-                                                                                'user_tut':user_tut,
-                                                                                'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'child':child1,
-                                                                                'module':mod,'assessmentName':name,'assess_id':assessment})
-
+    try:
+        assess_id = request.POST['assess_id']
+        mod = request.POST['mod']
+        
+        data = {
+            'assess_id':assess_id,
+        }
+        result = views.deleteAssessment(request,json.dumps(data))
+        res = json.loads(result.content)
+        
+        if res[0]['type'] == 1:
+            if res[0]['isMod'] == True:
+                data=[ {
+                    'mod_code':mod
+                }]
+                assess = views.getAllAssessmentOfModule(request,json.dumps(data))
+                print "Assessments of module : " + str(assess)
+                ass = json.loads(assess.content)
+                if ass[0]['type'] == 1:
+                    assessment = ass[0]['assessments']
+                    return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles, 'assessmentName':assessment,'module':mod,'type':1})
                 else:
-                    studentMark = child[0]['studentMark']
-                    name = child[0]['name']
-                    fullmark = child[0]['fullmark']
-                    return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
-                                                                                'user_lect':user_lect,
-                                                                                'user_stud':user_stud,
-                                                                                'user_tut':user_tut,
-                                                                                'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'studentMark':studentMark,
-                                                                                'module':mod,'assessmentName':name,'assess_id':assessment,'fullmark':fullmark})
-
+                    assessmentName = "There Are No Assessments."
+                    assessmentId = 0
+                    return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':mod,'type':-1})
+            else:
+                assessment = res[0]['assess_id']
+                data={
+                    'assess_id':assessment,
+                    'mod':mod
+                }
+                children = views.getAllChildrenOfAssessment(request,json.dumps(data))
+                child = json.loads(children.content)
+                if child[0]['type'] == 1:
+                    if child[0]['message'] == 'Aggregate':
+                        child1 = child[0]['child']
+                        name = child[0]['name']
+                        return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'child':child1,
+                                                                            'module':mod,'assessmentName':name,'assess_id':assessment})
+    
+                    else:
+                        studentMark = child[0]['studentMark']
+                        name = child[0]['name']
+                        fullmark = child[0]['fullmark']
+                        return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'studentMark':studentMark,
+                                                                            'module':mod,'assessmentName':name,'assess_id':assessment,'fullmark':fullmark})
+    except Exception as e:
+        raise Http404()
+    
 @csrf_exempt
 def deleteSession(request):
     sess_id = request.POST['session']
@@ -868,29 +892,32 @@ def setPublishedStatusInLeaf(request):
 
 @csrf_exempt     
 def viewAssessment(request,module):
-    data = [{
-        'mod_code':str(module)
-    }]
-    print "this is my module: " + module
-    result = views.getAllAssessmentOfModule(request,json.dumps(data))
-    res = json.loads(result.content)
-    if res[0]['type'] == 1:
-            assessments = res[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+    if request.POST:
+        data = [{
+            'mod_code':str(module)
+        }]
+        print "this is my module: " + module
+        result = views.getAllAssessmentOfModule(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res[0]['type'] == 1:
+                assessments = res[0]['assessments']
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+        else:
+                assessmentName = "There Are No Assessments."
+                assessmentId = 0
+                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
     else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+        raise Http404()
 
 @csrf_exempt
 def openOrCloseSession(request):

@@ -9,7 +9,9 @@
 {% endblock %}
 	
 {% block person_details %}
-	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>
+	</form>
 {% endblock %}
 
 <!--###########################  End Nav bar settings ############################-->
@@ -18,19 +20,19 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->
@@ -83,18 +85,18 @@
 							<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
 						</form>
 					</li><li>
-						<form action="/view_session" method="post" class="form-group-sm">
+						<form action=/courses/{{module}}/{{ass.1}}/sessions method="post" class="form-group-sm">
 							<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
 						</form>
 					</li><li>
-						<form action="/remove_assessment" method="post" class="form-group-sm">
+						<form action="remove" method="post" class="form-group-sm">
 							<input type="hidden" name="mod" value={{ module }}>
 							<button type="submit" class="btn btn-danger btn-md btn-block" name="assess_id" value={{ass.0}}>Delete Assessment</button>
 						</form>
 					</li>
 					{% if ass.2 == False %}<!-- Not published, so publish -->
 					<li>
-						<form action="/update_assessment_published" method="post" class="form-group-sm">
+						<form action="published" method="post" class="form-group-sm">
 							<input type="hidden" name="mod" value={{ module }}>
 							<input type="hidden" name="assess_id" value={{ ass.0 }}>
 							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="0"
@@ -104,7 +106,7 @@
 					</li>
 					{% else %}<!-- Already published, so un-publish -->
 					<li>
-						<form action="/update_assessment_published" method="post" class="form-group-sm">
+						<form action="published" method="post" class="form-group-sm">
 							<input type="hidden" name="mod" value={{ module }}>
 							<input type="hidden" name="assess_id" value={{ ass.0 }}>
 							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="1"
@@ -122,7 +124,7 @@
 	<div class="modal fade" id="create_leaf" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/create_assessment" method="post">
+			<form class="form-horizontal" action="#" method="post">
 				<div class="modal-header">
 					<h4>Create an Assessment</h4>
 				</div>
