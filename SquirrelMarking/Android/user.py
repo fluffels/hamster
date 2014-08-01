@@ -3,17 +3,6 @@ from django.shortcuts import render
 import SquirrelMarking.businessLogicAPI as BL
 import json
 
-'''
-Function: login
-Deescription: Authenticate users login details
-
-@type: String
-@param: A http request for validation of the users login details
-
-@type: String
-@return: A http responce containing required data if the user was successfuly login and return 
-	     a confirmation of failer if the user was not successfuly login
-'''
 def login(request):	
 	if request.method == 'GET':
 		#print("Method: " +request.method)
@@ -60,16 +49,7 @@ def login(request):
 		]
 		return HttpResponse(json.dumps(data))
 
-'''
-Function: logout
-Deescription: The user is logged out of the  server
 
-@type: String
-@param: A http request to logout the user
-
-@type: String
-@return: A http responce confirming if the user was successfuly logout or not
-'''
 def logout(request):
 	if request.method == 'GET':
 		try:
