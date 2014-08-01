@@ -187,7 +187,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
-                                                                                'module':mod,'type':1})
+                                                                                'module':module,'type':1})
             else:
                 return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
@@ -211,7 +211,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
-                                                                                'module':mod,'type':1})
+                                                                                'module':module,'type':1})
             else:
                 return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
@@ -277,7 +277,7 @@ def personDetails(request):
         raise Http404()
 
 @csrf_exempt
-def getAllSessionsForAssessment(request,module,assessment):
+def getAllSessionsForAssessment(request):
     try:
         assess = request.POST['assessment']
         data = {
@@ -354,6 +354,7 @@ def createAssessment(request):
 @csrf_exempt
 def createSession(request):
     try:
+        print "huh gane y"
         assess_id = request.POST['assess_id']
         open_time = request.POST['open_time']
         close_time = request.POST['close_time']
@@ -390,7 +391,7 @@ def createSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
     except Exception as e:
-        raise Http404()
+       raise Http404()
     
 @csrf_exempt
 def searchForStudent(request):
@@ -892,7 +893,7 @@ def setPublishedStatusInLeaf(request):
 
 @csrf_exempt     
 def viewAssessment(request,module):
-    if request.POST:
+    if request.method == "POST":
         data = [{
             'mod_code':str(module)
         }]

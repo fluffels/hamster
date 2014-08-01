@@ -107,30 +107,30 @@
 			{% endif %}
 		<ul class="dropdown-menu" role="menu">
 			<li>
-				<form action="/add_user_to_session" method="post" class="form-group-sm">
+				<form action="view-students" method="post" class="form-group-sm">
 					<input type="hidden" id="session" name='session' value={{ x.0 }} >
 					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student</button>
 					
 				</form>
-				<form action="/view_user_in_session" method="post" class="form-group-sm">
+				<form action="session-info" method="post" class="form-group-sm">
 					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>View Students</button>
 					<input type="hidden" name="mod" value={{ moduleName }}>
 
 				</form>
-				<form action="/remove_session" method="post" class="form-group-sm">
+				<form action="remove-session" method="post" class="form-group-sm">
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="assessment" value={{ assessment_id }}>
 					<button type="submit" class="btn btn-danger btn-md btn-block" name="session" value={{x.0}}>Delete Session</button>
 				</form>
 				{% if x.2 == 1 %}
-				<form action="/update_session_status" method="post" class="form-group-sm">
+				<form action="change-status" method="post" class="form-group-sm">
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="status" value=0>
 					<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Close Session</button>
 				</form>
 				{% else %}
-				<form action="/update_session_status" method="post" class="form-group-sm">
+				<form action="change-status" method="post" class="form-group-sm">
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="status" value=1>
 					<input type="hidden" name="assess_id" value={{ assessment_id }}>
@@ -152,7 +152,7 @@
 <div class="modal fade" id="create_sess" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="session/create" method="post">
+			<form class="form-horizontal" action="create-session" method="post">
 				<div class="modal-header">
 					<h4>Create a Session for</h4>
 					<h4>{{ assessmentName }}</h4>

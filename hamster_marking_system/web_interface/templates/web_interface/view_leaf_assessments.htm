@@ -66,7 +66,7 @@
 		<div class="modal fade" id="update_leaf_mark" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/update_leaf_total_mark" method="post">
+			<form class="form-horizontal" action="update-fullmark" method="post">
 				<div class="modal-header">
 					<h2><strong>Update Total Mark for</strong></h2>
 					<h2><strong>{{ assessmentName }}</strong></h2>
@@ -153,7 +153,7 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="/update_mark" class="form-inline" role="form">
+					<form method="post" action="update_mark" class="form-inline" role="form">
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
@@ -212,7 +212,7 @@
 	<div class="modal fade" id="create_leaf_ass" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal" action="/create_leaf_assessment" method="post">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">
 					<div class="modal-header">
 						<h4>Create a Leaf Assessment</h4>
 					</div>

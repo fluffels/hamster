@@ -1347,10 +1347,12 @@ def getMarkForStudents(request, studentsArray, leaf_id):
 def isMarkGiven(student,leaf_id):
     all_marks = MarkAllocation.objects.all()
     leafObj = Assessment.objects.get(id=leaf_id)
+    print "Get all together" +str(leafObj)
     for mark in all_marks:
-        if (mark.assessment == leafObj) & (mark.student==student):
-            return True
-        
+        print "Get all together"
+      #  if (mark.assessment == leafObj) & (mark.student==student):
+            #return True
+        print "Get all together"
     return False
 
 def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_):

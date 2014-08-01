@@ -106,7 +106,7 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="/update_mark_marker" class="form-inline" role="form">
+					<form method="post" action="update-marks" class="form-inline" role="form">
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
