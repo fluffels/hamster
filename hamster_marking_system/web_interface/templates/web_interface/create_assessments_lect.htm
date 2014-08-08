@@ -81,12 +81,13 @@
 				<span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 					<li>
-						<form action="view-assessment" method="post" class="form-group-sm">
+						<form action={{ass.1|urlencode}} method="post" class="form-group-sm">
 							<input type="hidden" name="mod" value={{ module }}>
 							<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
 						</form>
 					</li><li>
-						<form action=/courses/{{module}}/sessions/ method="post" class="form-group-sm">
+						<form action=/courses/{{module}}/{{ass.1|urlencode}}/sessions  method="post" class="form-group-sm">
+							<input type="hidden" name="mod" value={{ module }}>
 							<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
 						</form>
 					</li><li>

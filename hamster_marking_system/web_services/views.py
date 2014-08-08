@@ -997,98 +997,6 @@ def getAllChildrenOfAssessmentForMarker(request,jsonObj):
 			'fullmark':fullmark
 		}]
 		return HttpResponse(json.dumps(data))
-
-#student views
-def viewStudentAssessment(request,jsonObj):
-	try:
-		
-		json_data = json.loads(jsonObj)
-		mod_code = json_data['mod_code']
-		
-		uid = json_data['uid']
-		print 'UID: '+ str(uid)
-		ass = api.getAllPublishedAssessmentsForStudent(mod_code)
-		print '==============================================\n'
-		print 'ASSESSMENTS PUBLISHED: \n'
-		print str(ass)+'\n'
-		print '=============================================='
-		root_list = []
-		for a in ass:
-			if a.parent is None:
-				root_list.append(a)
-		print '==============================================\n'
-		print 'ASSESSMENTS LIST TO BE SENT: \n'
-		print str(root_list)+'\n'
-		print '=============================================='
-		per = api.getPersonsInformation(uid)
-		assessment = []
-		
-		if root_list:
-			for x in root_list:
-				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
-				list.append('agg_mark') #function for agg_mark here (of Student)
-				list.append('full_mark') #function for full_mark aggregated here
-				assessment.append(list)
-				print "List: " +str(list)
-		
-			
-			data = [{
-				'type':1,
-				'message': 'assessment retrieved',
-				'assessments':assessment,
-				'person':per
-			}]
-			
-		
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':-1,
-				'message': 'No assessments',
-			}]
-			return HttpResponse(json.dumps(data))
-	except Exception, e:
-			data = [{
-				'type':-1,
-				'message': 'assessment could not be retrieved'
-			}]
-			print json.dumps(data)
-			
-			
-			return HttpResponse(json.dumps(data))
-
-def viewAssessmentOfAssessmentForStudent(request,jsonObj):
-	json_data = json.loads(jsonObj)
-	assess = json_data['assess_id']
-	mod = json_data['mod']
-	name = api.getAssessmentName(assess)
-	child = api.getChildAssessmentOfAssessmentForStudent(assess,request.session['user']['uid'])
-	if child:
-		if child[0] == 'Leaf':
-			
-			data = [{
-				'type':1,
-				'message':'Leaf',
-				'mark':child[1],
-				'fullmark':child[2],
-				'name':name
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':1,
-				'message':'Aggregate',
-				'mark':child[1],
-				'name':name
-			}]
-			return HttpResponse(json.dumps(data))			
-	else:
-		data = [{
-			'type':-1,
-			'message':'Assessment not retrieved',
-		}]
-		return HttpResponse(json.dumps(data))
-
 #marker views
 def viewSessionForMarker(request,jsonObj):
         json_data = json.loads(jsonObj)
@@ -1193,7 +1101,6 @@ def updateMarkForStudentMarker(request,jsonObj):
 			'name':name
 		}]
 		return HttpResponse(json.dumps(data))
-
 #Made with publishing assessments in mind
 def getChildrenAssessmentsForAssessment(request,jsonObj):
 	try:
@@ -1225,43 +1132,98 @@ def getChildrenAssessmentsForAssessment(request,jsonObj):
 		}]
 		print json.dumps(data)
 		return HttpResponse(json.dumps(data))
-	
+
+'''
+
+########################### ALL VIEWS RELATING TO STUDENT #########################################
+
+'''
+def viewStudentAssessment(request,jsonObj):
+	try:
+		
+		json_data = json.loads(jsonObj)
+		mod_code = json_data['mod_code']
+		
+		uid = json_data['uid']
+		print 'UID: '+ str(uid)
+		ass = api.getAllPublishedAssessmentsForStudent(mod_code)
+		root_list = []
+		for a in ass:
+			if a.parent is None:
+				root_list.append(a)
+				
+		per = api.getPersonsInformation(uid)
+		assessment = []
+		print '====================================================='
+		print "DAMMMMMMMMEEEEETTTTTTTT" + str(root_list)
+		print '======================================================='
+		if root_list:
+			for x in root_list:
+				assDets = api.getAssessmentDetails(x) #list consist of the assessment id and name
+				list =[]
+				list.append(assDets[0])
+				list.append(assDets[1])
+				list.append(assDets[2])
+				print "PLEASE SHOW PLEASE" + str(assDets)
+				aggregatedMark = api.getMarkForStudent(uid,x.id)
+				print "MARKS ARE AGGED"
+								
+				list.append(aggregatedMark[0]) #function for agg_mark here (of Student)
+				list.append(aggregatedMark[1]) #function for agg_mark here (of Student)
+				list.append(aggregatedMark[2]) #function for agg_mark here (of Student)
+								
+				assessment.append(list)
+				print "List: " +str(list)
+		
+			
+			data = [{
+				'type':1,
+				'message': 'assessment retrieved',
+				'assessments':assessment,
+				'person':per
+			}]
+			
+		
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':-1,
+				'message': 'No assessments',
+				
+			}]
+			return HttpResponse(json.dumps(data))
+	except Exception, e:
+			data = [{
+				'type':-1,
+				'message': 'assessment could not be retrieved'
+			}]
+			print json.dumps(data)
+			
+			
+			return HttpResponse(json.dumps(data))
 
 def getAllChildrenOfAssessmentForStudent(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	parent = json_data['assess_id']
 	mod = json_data['mod']
-	print "I AM THE ONE..."
 	student = json_data['student']
-	print 'I AM THE STUDENT...' + str(student)
 	person = api.getPersonDetails(student[0])
 	parent_name = api.getAssessmentName(parent)
-	children = api.getPublishedChildrenAssessmentsForAssessment(parent)
-	print "MY CHILDREN---" + str(children)
-	CHILDREN = []
+	#children = Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark, percentage}
+	children = api.getPublishedChildrenAssessmentsForAssessmentForStudent(parent, student[0])
+	
 	if children:
-		for child in children:
-			list = []
-			assess = child[0]
-			name = child[1]
-			list.append(assess)
-			list.append(name)
-			list.append('0')
-			list.append('0')
-			CHILDREN.append(list)
 			
-		
 		data = [{
 			'type':1,
 			'message':'Aggregate',
-			'children':CHILDREN,
+			'children':children,
 			'parent_name':parent_name,
-			'agg_mark': 'agg_mark',
 			'person':person
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
-		studentMark = api.getMarkForStudent(student,parent)
+		studentMark = api.getMarkForStudent(student[0],parent)
 		fullmark = api.getFullMark(parent)
 		person = api.getPersonDetails(student[0])
 		data = [{
@@ -1273,3 +1235,29 @@ def getAllChildrenOfAssessmentForStudent(request,jsonObj):
 			'person':person
 		}]
 		return HttpResponse(json.dumps(data))
+
+'''
+def viewAssessmentOfAssessmentForStudent(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	mod = json_data['mod']
+	name = api.getAssessmentName(assess)
+	marks = api.getMarksOfChildrenAssessments(assess, request.session['user']['uid'])
+	if marks:
+		data = [{
+			'type':1,
+			'childrenMarks':marks,
+		}]
+	else:
+		data = [{
+			'type':-1,
+			'message':'Assessment has no children',
+		}]
+	
+	return HttpResponse(json.dumps(data))
+'''
+'''
+
+############################### END VIEWS FOR STUDENT ######################################
+
+'''

@@ -145,49 +145,70 @@ class WeightedSumAggregator(Aggregator):
       return sumAgg
 
 '''
-          SIMPLE-SUM AGGREGATOR
+          SIMPLE-SUM AGGREGATOR - FOR STUDENT
 '''
 class SimpleSumAggregator(Aggregator):
-  def aggregateMarks(self, assess_id):
-    root = Assessment.objects.filter(id=assess_id)
-    children = Assessment.objects.filter(parent=assess_id)
-    sum_of_children =0.0
-    
-    for child in children:
-      if child.getType() == 'Leaf':
-        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
-        mark = markAlloc.getMark()
-        sum_of_children += mark
-      
-      elif child.getType() == 'Aggregate':
-        sum_of_children += helperSimpleSum(child.id, sum_of_children)
-        
-      num_children = len(children)
-      aggregate = sum_of_children/num_children
-    
-    return aggregate
   
-  def helperSimpleSum(child_id, summation):
-    parent = Assessment.objects.filter(id=child_id)
-    children = Assessment.objects.filter(parent=child_id)
-    
+  def aggregateMarksStudent(self, assess_id, student_id):
+    root = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_agg_of_children = 0.0
+    sum_total_of_children = 0.0
+
+    student_obj = Person.objects.get(upId=student_id)
+
     for child in children:
-      if child.getType() == 'Leaf':
-        markAlloc = MarkAllocation.objects.filter(assessment=child.id)
+      if child.assessment_type == 'Leaf':
+        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
         mark = markAlloc.getMark()
-        summation += mark
-      
-      elif child.getType() == 'Aggregate':
-        summation += helperSimpleSum(child.id, summation)
+        sum_agg_of_children += mark
+        sum_total_of_children += child.full_marks
         
-    return summation 
-  '''
-    def aggregateMarks(self,assessmentMarks):
-        total = 0.0
-        for x in range(len(assessmentMarks)):
-            total += assessmentMarks[x]
-        return u'%d' % (total/len(assessmentMarks))
-  '''
+      elif child.assessment_type == 'Aggregate':
+        sum_agg_of_children += getSumAggOfChildren(child.id, student_id)
+        sum_total_of_children += getSumTotalOfChildren(child.id)
+        
+      if sum_total_of_children == 0.0:
+        sum_total_of_children == 1
+
+      percentage = (sum_agg_of_children/sum_total_of_children) *100
+      list = []
+      list.append(sum_agg_of_children)
+      list.append(sum_total_of_children)
+      list.append(percentage)
+
+    return list
+  
+def getSumTotalOfChildren(assess_id):
+    total =0
+    assess = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+
+    for child in children:
+      if child.assessment_type == 'Leaf':
+        mark = child.full_marks
+        total += mark
+      else:
+        total += getSumTotalOfChildren(child.id)
+
+    return total
+  
+def getSumAggOfChildren(assess_id, student_id):
+    student_obj = Person.objects.get(upId=student_id)
+    total =0
+    assess = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+
+    for child in children:
+      if child.assessment_type == 'Leaf':
+        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+        mark = markAlloc.getMark()
+        total += mark
+      else:
+        total += getSumAggOfChildren(child.id, student_id)
+
+    return total
+
 
 class Module(models.Model):
     module_code = models.CharField(max_length=6)
@@ -234,6 +255,7 @@ class Assessment(PolymorphicModel):
     parent = models.IntegerField(null=True, blank=True) #the assess_id of the parent will be passed
     assessment_type = models.CharField(max_length=65)
     isroot = models.BooleanField( default= True)
+    numContributors = models.IntegerField(default=0)
     
     
     def getname(self):

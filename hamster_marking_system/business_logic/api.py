@@ -141,11 +141,6 @@ def getAllSurnameOf(list):
 		surname.append(x.getSurname())
 	return surname
 
-def getAllPublishedAssessmentsForStudent(mod_code):
-    mod_obj = Module.objects.get(id=str(mod_code))
-    assessments = Assessment.objects.filter(mod_id=mod_obj, published = True)
-    return assessments
-
 def getPersonInformation(person):
     students = []
     students.append(person.getupId())
@@ -578,20 +573,7 @@ def getLeafAssessmentOfAssessment(assessment):
             else:
                 assessments.append(getLeafAssessmentOfAssessment(child))
         return assessments
-    
-def getMarkForStudent(student_id, assess_id):
-    stud = student_id[0]
-    print '=================================================\n'
-    print "Student: " + str(assess_id) + '\n'
-    print '================================================='
-    stu_obj = Person.objects.get(upId=stud)
- 
-    assess_obj = Assessment.objects.get(id=assess_id)
-    markAlloc = MarkAllocation.objects.get(assessment=assess_obj, student=stu_obj)
-    mark = markAlloc.getMark()
-    
-    return mark
-    
+        
 def getSessionDetails(session):
     list = []
     list.append(session.id)
@@ -1569,3 +1551,118 @@ def makeOnlySessionInLineageAncestors(parent):
 
     
 ########################## END MARKER VIEW FUNCTIONS ###############################
+'''
+
+##################### STUDENT VIEW FUNCTIONS #######################################
+
+'''
+# Name: getAllPublishedAssessmentsForStudent(mod_code)
+# Description: Returns all the published assessments for the module
+# Parameter: mod_code : String
+# Returns: Assessments[]
+def getAllPublishedAssessmentsForStudent(mod_code):
+    mod_obj = Module.objects.get(id=str(mod_code))
+    assessments = Assessment.objects.filter(mod_id=mod_obj, published = True)
+    return assessments
+
+# Name: getMarkForStudent(student_id, assess_id)
+# Description: Retrieves the student's mark for the assessment specified. (Whether aggregate or leaf)
+# Parameter: student_id : String
+# Parameter: assess_id : String
+# Returns: Float
+def getMarkForStudent(student_id, assess_id):
+    stud = student_id[0]
+    print '=================================================\n'
+    print "Assessment aaaaaaa: " + str(student_id) + '\n'
+    print '================================================='
+    stu_obj = Person.objects.get(upId=student_id)
+    
+    assess_obj = Assessment.objects.get(id=assess_id)
+   
+    if assess_obj.assessment_type == 'Leaf':
+        markAlloc = MarkAllocation.objects.get(assessment=assess_obj, student=stu_obj)
+        mark = markAlloc.getMark()
+        full = assess_obj.full_marks
+        percentage = (mark/full) * 100
+        list =[]
+        list.append(mark)
+        list.append(full)
+        list.append(percentage)
+    else:
+
+        agg = SimpleSumAggregator()
+        print '*********************'
+        print "Bout to aggregate"
+        print '********************'
+        list = agg.aggregateMarksStudent(assess_id, student_id)
+        print '*********************'
+        print "THE LIST---" + str(list)
+        print '********************'
+
+    mark = list[0]
+    perc = list[2]
+
+    list[0] = "{0:.2f}".format(mark)
+    list[2] = "{0:.2f}".format(perc)
+
+    return list
+
+# Name: getMarksOfChildrenAssessments(assess_id)
+# Description: Returns name, marks obtained and full marks for all children of assess
+# Parameter: parent_id : String
+# Return: String[] (because the marks should not be editable)
+def getMarksOfChildrenAssessments(parent_id, student_id):
+    children = Assessment.objects.filter(parent = parent_id)
+    #Array that will contain lists with name, aggregated_mark, full_mark for each child of parent
+    marksOfChildren = []
+    for child in children:
+        name = child.assess_name
+        student_obj = Person.objects.get(upId=student_id)
+        list = []
+
+        list.append(child.id)
+        list.append(name)
+        list.append(child.published)
+        marks = getMarkForStudent(student_id,child.id)
+        print "am hereeeeee"
+        list.append(marks[0])
+        list.append(marks[1])
+        list.append(marks[2])
+        print '============================================='
+        print "My LIST MAAAAAN: "+str(list)
+        print '============================================='
+        marksOfChildren.append(list)
+        #Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark, percentage}
+        print '============================================='
+        print "MY CHILDREN MARKS: "+str(marksOfChildren)
+        print '============================================='
+    return marksOfChildren 
+
+def getPublishedChildrenAssessmentsForAssessmentForStudent(assess_id, student_id):
+    assessments = Assessment.objects.all()
+    children = []
+    
+    for ass in assessments:
+        if str(ass.parent) == str(assess_id):
+            if ass.published == True:
+                children.append(ass)
+    
+    print "%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    print "MY CHILDREN" + str(children)
+    print "%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    #published is not taken into account
+    childrenMarks = getMarksOfChildrenAssessments(assess_id, student_id)
+    publishedChildrenMarks = []
+    #getAllthe marks that are published
+    for markedChild in childrenMarks:
+        if markedChild[2] == True: #published value is true
+            publishedChildrenMarks.append(markedChild)
+        
+           #Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark}
+    return publishedChildrenMarks
+
+'''
+
+#################### END STUDENT VIEW FUNCTIONS ###################################
+
+'''

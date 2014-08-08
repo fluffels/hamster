@@ -9,9 +9,7 @@
 {% endblock %}
 	
 {% block person_details %}
-	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
-	<form action="/User" id="details" method="post" hidden='hidden'>
-	</form>
+	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
 {% endblock %}
 
 <!--###########################  End Nav bar settings ############################-->
@@ -20,19 +18,19 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->
@@ -114,15 +112,17 @@
 				<td><strong> Assessment Name </strong></td>
 				<td><strong> Aggregated Mark </strong></td>
 				<td><strong> Full Mark </strong></td>
+				<td><strong> Percentage </strong></td>
 				<td><strong> Sub-assessments </strong></td>
 			</tr>
 			{% for ass in assessments %}
 			<tr>
 				<td> {{ass.1}} </td>
-				<td> {{ass.2}} </td>
 				<td> {{ass.3}} </td>
+				<td> {{ass.4}} </td>
+				<td> {{ass.5}}</td>
 				<td>
-					<form action="/view_children_assessment_student" method="post">
+					<form action={{ass.1|slugify}} method="post">
 						<input type="hidden" name="mod" value={{ module }}>
 						<button  class="btn btn-primary" value={{ ass.0 }} name = 'subs'
 						data-toggle="tooltip" data-placement="left" title="Leaf assessments">  <!-- parent id --> 
