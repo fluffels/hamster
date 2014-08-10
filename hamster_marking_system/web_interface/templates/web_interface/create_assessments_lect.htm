@@ -81,7 +81,8 @@
 				<span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 					<li>
-						<form action={{ass.1|urlencode}} method="post" class="form-group-sm">
+						<!-- {{ass.1|urlencode}}-->
+						<form action={% url 'view_children_assessment'  %} method="post" class="form-group-sm">
 							<input type="hidden" name="mod" value={{ module }}>
 							<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
 						</form>

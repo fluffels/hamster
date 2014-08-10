@@ -122,7 +122,7 @@
 				<td> {{ass.4}} </td>
 				<td> {{ass.5}}</td>
 				<td>
-					<form action={{ass.1|slugify}} method="post">
+					<form action={% url 'view_children_assessment_student' %} method="post">
 						<input type="hidden" name="mod" value={{ module }}>
 						<button  class="btn btn-primary" value={{ ass.0 }} name = 'subs'
 						data-toggle="tooltip" data-placement="left" title="Leaf assessments">  <!-- parent id --> 

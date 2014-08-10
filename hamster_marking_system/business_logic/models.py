@@ -1,11 +1,14 @@
 import time                     # [jacques] For audit logging
 import datetime
 import json
+import __builtin__
+import __future__
 
 from django.db import models
 from django.http import HttpResponse
 from polymorphic import PolymorphicModel
 from django.utils import timezone
+from operator import itemgetter
 
 
 from ldap_interface.ldap_api import *
@@ -45,63 +48,33 @@ class Aggregator(object):
         pass
 
 '''
-        BEST-OF AGGREGATOR
+        BEST-OF AGGREGATOR - FOR STUDENT
 '''
 class BestOfAggregator(Aggregator):
-  numContributors = 0.0
+  numContributors = 0
   
-  def aggregateMarks(self, assess_id, contributors):
-    numContributors = contributors
-    main_parent = Assessment.objects.filter(id=assess_id)
-    list_of_children_marks = []
+  def aggregateMarksStudent(self, assess_id, student_id):
+    print "============================"
+    print "IN BEST-OF AGGREGATOR"
+    print "============================\n"
+    assess_obj = Assessment.objects.get(id=assess_id)
+    numContributors = assess_obj.numContributors
     children = Assessment.objects.filter(parent=assess_id)
+    list_of_children = []
+    aggregator = SimpleSumAggregator()
+    
     for child in children:
-      child_mark = helperBestOf(child.id)
-      list_of_children_marks.append(child_mark)
+      list_of_children.append(aggregator.aggregateMarksStudent(child.id, student_id))
     
-    try:
-      numChildren = len(children)
-      if numChildren >= numContributors:
-        summation =0.0
-        #sort
-        list_of_children_marks.sort(reversed)
-        
-        for i in range(numContributors):
-          item = list_of_children_marks[i]
-          summation += item
-        
-        aggregate = summation/numContributors
-        return aggregate
-    except Exception as e:
-      e = 'ERROR'
+    list_of_children.sort(key=lambda x:x[2],reversed=True)
     
-  def helperBestOf(child_id, sumOfMarks):
-    child_obj = Assessment.objects.filter(id=child_id)
-    if child_obj.getType() == 'Leaf':
-      markAlloc = MarkAllocation.objects.filter(assessment=child_id)
-      markGiven = markAlloc.getMark()
-      sumOfMarks += markGiven
-     
-    elif child_obj.getType() == 'Aggregate':
-      children = Assessment.objects.filter(parent = child_id)
-      for child in children:
-        sumOfMarks+= helperBestOf(child.id, sumOfMarks)
-      
-    return sumOfMarks
-    '''
-#pass the numContributer as the constructor's parameter
-class BestOfAggregator(Aggregator):
-    numContributors = 0
-    def __init__(value):
-            numContributors = value      
-          
-    def aggregateMarks(self,assessment=[]):
-        assessment.sort(reversed)
-        total = 0.0
-        for x in range(0,self.numContributors ):
-            total += assessment[x]
-        return (total/self.numContributors)
-    '''
+    list_of_chosen_students = []
+    for i in numContributors:
+      list_of_chosen_students.append(list_of_children[i])
+    
+    return list_of_chosen_students
+    
+
 
 #pass the array of weights as the constructure's parameter
 '''
@@ -150,6 +123,7 @@ class WeightedSumAggregator(Aggregator):
 class SimpleSumAggregator(Aggregator):
   
   def aggregateMarksStudent(self, assess_id, student_id):
+    
     root = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
     sum_agg_of_children = 0.0
@@ -170,13 +144,13 @@ class SimpleSumAggregator(Aggregator):
         
       if sum_total_of_children == 0.0:
         sum_total_of_children == 1
-
-      percentage = (sum_agg_of_children/sum_total_of_children) *100
-      list = []
-      list.append(sum_agg_of_children)
-      list.append(sum_total_of_children)
-      list.append(percentage)
-
+    
+    percentage = (sum_agg_of_children/sum_total_of_children) *100
+    list = []
+    list.append(sum_agg_of_children)
+    list.append(sum_total_of_children)
+    list.append(percentage)
+    
     return list
   
 def getSumTotalOfChildren(assess_id):

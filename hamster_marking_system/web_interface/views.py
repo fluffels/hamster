@@ -1247,7 +1247,7 @@ def getAllChildrenOfAssessmentForStudent(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessments':children,
+                                                                        'user_roles':user_roles,'assessments':children, 'student_id':student,
                                                                         'module':parent_name,'assessmentName':person,'parent_id':parent_id})
         
         else:

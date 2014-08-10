@@ -1590,7 +1590,7 @@ def getMarkForStudent(student_id, assess_id):
         list.append(percentage)
     else:
 
-        agg = SimpleSumAggregator()
+        agg = BestOfAggregator()
         print '*********************'
         print "Bout to aggregate"
         print '********************'
