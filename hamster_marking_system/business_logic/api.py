@@ -15,6 +15,96 @@ def getAllModules():
 def getPersonDetails(username):
     return getPersonFromArr(username)
 
+def getAssessment(mod):
+    root = getAllAssessmentsForModule(mod)
+    final = []
+    roots = []
+    FirstChildren = []
+    SecondChildren = []
+    ThirdChildren = []
+    agregator =  SimpleSumAggregator()
+    for nrs in root:
+        list = getAssessmentDetails(nrs)
+        mark = agregator.aggregateTotalMarkForLecture(nrs.id)
+        list.append(mark)
+        roots.append(list)
+        children1 = Assessment.objects.filter(parent=nrs.id)
+        firstChildren = []
+        for nfs in children1:
+            list = getAssessmentDetails(nfs)
+            mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+            list.append(mark)
+            firstChildren.append(list)
+            children2 = Assessment.objects.filter(parent=nfs.id)
+            secondChildren = []
+            for nss in children2:
+                list = getAssessmentDetails(nss)
+                mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                list.append(mark)
+                secondChildren.append(list)
+                children3 = Assessment.objects.filter(parent=nss.id)
+                thirdChildren = []
+                for nts in children3:
+                    list = getAssessmentDetails(nts)
+                    mark = agregator.aggregateTotalMarkForLecture(nts.id)
+                    list.append(mark)
+                    thirdChildren.append(list)
+                
+                ThirdChildren.append({nss.getname(): thirdChildren})
+            SecondChildren.append({nfs.getname():secondChildren})
+        FirstChildren.append({nrs.getname():firstChildren})
+    final.append(roots)
+    final.append(FirstChildren)
+    final.append(SecondChildren)
+    final.append(ThirdChildren)
+    return final
+
+def getAssessmentForAssessment(assess_id):
+        root = getChildrenAssessmentsForAssessmemnt(assess_id)
+        final = []
+        roots = []
+        FirstChildren = []
+        SecondChildren = []
+        ThirdChildren = []
+        agregator = SimpleSumAggregator()
+        for nrs in root:
+            mark = agregator.aggregateTotalMarkForLecture(nrs[0])
+            nrs.append(mark)
+            roots.append(nrs)
+            children1 = Assessment.objects.filter(parent=nrs[0])
+            firstChildren = []
+            for nfs in children1:
+                list = getAssessmentDetails(nfs)
+                mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+                list.append(mark)
+                firstChildren.append(list)
+                children2 = Assessment.objects.filter(parent=nfs.id)
+                secondChildren = []
+                for nss in children2:
+                    list = getAssessmentDetails(nss)
+                    mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                    list.append(mark)
+                    secondChildren.append(list)
+                    children3 = Assessment.objects.filter(parent=nss.id)
+                    thirdChildren = []
+                    for nts in children3:
+                        list = getAssessmentDetails(nts)
+                        mark = agregator.aggregateTotalMarkForLecture(nts.id)
+                        list.append(mark)
+                        thirdChildren.append(list)
+                    
+                    ThirdChildren.append({nss.getname(): thirdChildren})
+                SecondChildren.append({nfs.getname():secondChildren})
+            FirstChildren.append({nrs[1]:firstChildren})
+        final.append(roots)
+        final.append(FirstChildren)
+        final.append(SecondChildren)
+        final.append(ThirdChildren)
+        return final
+
+
+
+
 # Name: getPersonObjectListFromArrayList(list)
 # Description: Returns a list of Person objects constructed from a list of Person id's
 # Parameter: list: UP_ID[]
@@ -173,12 +263,11 @@ def getAllMarkersOfModule(mod_code):
 
 def getAssessmentName(assess_id):
     assess = Assessment.objects.all()
+    result = ""
     for ass in assess:
         if str(ass.id) == str(assess_id):
             result = ass.assess_name
-    print "********************"
-    print result
-    print "********************"
+
     return result
 
 def getModuleNameForAssessment(assess_id):
@@ -429,6 +518,7 @@ def getAssessmentDetails(assess):
 	list.append(assess.id)
 	list.append(assess.getname())
 	list.append(assess.getpublished())
+	list.append(assess.assessment_type)
 	return list
 
 def getAssessmentPublishStatus(assess):
@@ -995,7 +1085,6 @@ def updateMarkAllocation(request, student, leaf_id,mark):
         leaf = Assessment.objects.get(id=leaf_id)
         if int(mark) <=leaf.full_marks:
             if int(mark) >= 0:
-                print "if " + mark + " <= " + leaf.full_marks
                 markAlloc = MarkAllocation.objects.get(assessment=leaf_id,student=per.id)
                 old = markAlloc.getMark()
                 markAlloc.setMark(int(mark))

@@ -822,34 +822,42 @@ def createLeafAssessment(request,jsonObject):
 		leaf = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,assess_id)
 		
 	if leaf is not None:
-		parent = api.getParent(leaf)
+		array = api.getAssessment(mod)
+		root = array[0]
+		first = array[1]
+		second = array[2]
+		third = array[3]
+		print "going into the array"
+		print root
+		print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print first
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print second
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print third
+		print "ARRAY : " + str(array)
+		if array :
+			print "\n -------------- : "
+			data = [{
+				'type':1,
+				'root':root,
+				'first':first,
+				'second':second,
+				'third':third
+			
+			}]
+			print "sending data back"
+			return HttpResponse(json.dumps(data))
+		else:
+			data = [{
+				'type':-1,
+				'assessment':array,
+			
+			}]
+			return HttpResponse(json.dumps(data))
+	else:
+		print "oh-no mamelo,sipho and cebo"
 	
-	assessDetail = []
-	if parent == None:
-		info = False
-	else:
-		info = True
-		assess = api.getChildrenAssessmentsForAssessmemnt(parent)
-
-	if info:
-		for ass in assess:
-			print "children"
-			print ass
-			assessDetail.append(ass)
-		data = [{
-			'type':1,
-			'message': 'Assessment Created',
-			'assessment':assessDetail,
-			'name':assessment,
-			'assess_id':parent
-		}]
-		return HttpResponse(json.dumps(data))
-	else:
-		data = [{
-			'type':-1,
-			'message': 'Assessment Not Created',
-		}]
-		return HttpResponse(json.dumps(data))
 
 def deleteAssessment(request,jsonObj):
 	json_data = json.loads(jsonObj)
@@ -1261,3 +1269,80 @@ def viewAssessmentOfAssessmentForStudent(request,jsonObj):
 ############################### END VIEWS FOR STUDENT ######################################
 
 '''
+def testing(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	mod = json_data['module']
+	print "am here already shem"
+	array = api.getAssessment(mod)
+	root = array[0]
+	first = array[1]
+	second = array[2]
+	third = array[3]
+	print "going into the array"
+	print root
+	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print first
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print second
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print third
+	print "ARRAY : " + str(array)
+	if array :
+		print "\n -------------- : "
+		data = [{
+			'type':'1',
+			'root':root,
+			'first':first,
+			'second':second,
+			'third':third
+			
+		}]
+		print "sending data back"
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':'-1',
+			'assessment':array,
+			
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def testingAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	print "am here already shem"
+	array = api.getAssessmentForAssessment(assess)
+	assess_name = api.getAssessmentName(assess)
+	root = array[0]
+	first = array[1]
+	second = array[2]
+	third = array[3]
+	print "going into the array"
+	print root
+	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print first
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print second
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print third
+	print "ARRAY : " + str(array)
+	if array :
+		print "\n -------------- : "
+		data = [{
+			'type':'1',
+			'root':root,
+			'first':first,
+			'second':second,
+			'third':third,
+			'assess_name':assess_name 
+			
+		}]
+		print "sending data back"
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':'-1',
+			'assessment':array,
+			
+		}]
+		return HttpResponse(json.dumps(data))

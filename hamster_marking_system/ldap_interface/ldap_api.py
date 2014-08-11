@@ -2,13 +2,15 @@ import ldap, sys
 import re
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.contrib.auth.models import User
+from django_auth_ldap.backend import LDAPBackend
 from hamster.settings import *
+import logging
 
-global ldapURI
-#ldapURI = "ldap://196.249.15.94"
-#ldapURI = 'ldap://127.0.0.1'
-global basedn
-basedn = "ou=Computer Science,o=University of Pretoria,c=ZA"
+logger = logging.getLogger('django_auth_ldap')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
+
 # Create your views here.
 def initialize_ldap():
     try:
@@ -28,8 +30,33 @@ def authenticateUser(request, username, password):
     try:
         ldapConnectionLocal = initialize_ldap()
         print 'LDAP initialized...'
+
         results = ldapConnectionLocal.search_s(AUTH_LDAP_BIND_DN,ldap.SCOPE_SUBTREE,"uid="+username)
+        if results is None:
+            print "results is None"
+            #Do nothing authentication failed, something else takes care of this.
+            print "Authentication failed!"
+            pass
+        else :
+            print "Valid credentials"
+            first_name = results[0][1]['cn'][0]
+            last_name = results[0][1]['sn'][0]
+            try:
+                user = User.objects.get(username = username, first_name = first_name, last_name = last_name)
+            except User.DoesNotExist:
+                user = None
+            if user is None:
+                user = User.objects.create_user(username, '', password)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
         print results
+#        Testing if pre-population of user works...Feel free to delete this code
+        #user = LDAPBackend().populate_user(username)
+        #if user is None:
+        #    raise Exception('No user named ' + username)
+#        Done testing
+        
         for dn,entry in results:
             dn = dn
         try:

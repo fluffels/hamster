@@ -568,26 +568,31 @@ def createLeafAssessment(request):
         'fullmark':fullmark,
         'assess_id': assess_id
     }
-    res= views.createLeafAssessment(request,json.dumps(data))
-    results = json.loads(res.content)
-    if results[0]['type'] == 1:
-        assess = results[0]['assessment']
-        name = results[0]['name']
-        assess_id = results[0]['assess_id']
-        
-        return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                           'user_roles':user_roles,'assessmentName':name,"module":mod,'child':assess,'assess_id':assess_id})
+    results= views.createLeafAssessment(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        print "something"
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root,'first':first,
+                                                                        'module':mod,'second':second,'third':third})
     else:
-        return render_to_response("web_interface/login.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                           'user_roles':user_roles})
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root})
+
 @csrf_exempt
 def updateMarkForStudent(request):
     leaf_id = request.POST['assess_id']
@@ -1301,4 +1306,69 @@ def viewAssessmentOfAssessmentForStudent(request):
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
 '''
-################################################ END STUDENT VIEWS ################################################################3
+################################################ END STUDENT VIEWS ################################################################
+
+@csrf_exempt
+def testing(request,cos):
+    mod = request.POST['lectB']
+    data ={
+        'module':mod
+    }
+    result = views.testing(request,json.dumps(data))
+    res = json.loads(result.content)
+    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+    if res[0]['type'] == '1':
+        print "something"
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root,'first':first,
+                                                                        'module':mod,'second':second,'third':third})
+    else:
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root})
+    
+@csrf_exempt
+def testingAssessment(request):
+    mod = 35;
+    data ={
+        'assess_id':mod
+    }
+    result = views.testingAssessment(request,json.dumps(data))
+    res = json.loads(result.content)
+    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+    if res[0]['type'] == '1':
+        print "something"
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
+        name = res[0]['assess_name']
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root,'first':first,
+                                                                        'module':mod,'second':second,'third':third,'assessmentName':name})
+    else:
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root})

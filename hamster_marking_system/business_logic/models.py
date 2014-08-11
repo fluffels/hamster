@@ -3,12 +3,14 @@ import datetime
 import json
 import __builtin__
 import __future__
+from operator import itemgetter
 
 from django.db import models
 from django.http import HttpResponse
 from polymorphic import PolymorphicModel
 from django.utils import timezone
-from operator import itemgetter
+from django.contrib.auth.models import Group
+
 
 
 from ldap_interface.ldap_api import *
@@ -152,6 +154,23 @@ class SimpleSumAggregator(Aggregator):
     list.append(percentage)
     
     return list
+
+  def aggregateTotalMarkForLecture(self, assess_id):
+    root = Assessment.objects.get(id=assess_id)
+    if root.assessment_type == "Leaf":
+      sum_total_of_children = root.full_marks
+    else:
+      children = Assessment.objects.filter(parent=assess_id)
+      sum_total_of_children = 0.0
+  
+      for child in children:
+        if child.assessment_type == 'Leaf':
+          sum_total_of_children += child.full_marks
+          
+        elif child.assessment_type == 'Aggregate':
+          sum_total_of_children += getSumTotalOfChildren(child.id)
+          
+    return sum_total_of_children
   
 def getSumTotalOfChildren(assess_id):
     total =0
@@ -803,3 +822,13 @@ class Course(models.Model):
     def __unicode__(self):
         return self.course_code
     
+    #Creating Groups for Users
+    lecture_user = Group.objects.get_or_create(name='Lecturer Group')
+
+    student_user = Group.objects.get_or_create(name='Student Group')
+
+    teaching_ass_user = Group.objects.get_or_create(name='Teaching Assistant Group')
+
+    tutor_user = Group.objects.get_or_create(name='Tutor Group')
+
+    marker_user = Group.objects.get_or_create(name='Marker Group')

@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-	<!--<link rel="stylesheet" type="text/css" href="static/web_interface/css/style.css">-->
+	<link rel="stylesheet" href="/static/web_interface/css/style.css">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
 
 	<!--Jumbotron-->
 	<div class="container">
-		<div class="jumbotron text-center">
+		<div class="jumbotron text-center" id="no-jumbotron">
 			{% block breadcrumbs %}{% endblock %}
 			<h2>{% block jumbotron_header %}{% endblock %}</h2>
 			<p>{% block jumbotron_sub_header %}{% endblock %}</p>
@@ -225,7 +225,7 @@
 <div class="modal fade" id="create_ass" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="create" method="post">
+			<form class="form-horizontal" action="create-leaf-assessment" method="post">
 				<div class="modal-header">
 					<h4>Create an Assessment</h4>
 				</div>
@@ -272,6 +272,70 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script>
+      $(document).ready(function () {
+	var exist = $( "#no-jumbotron" ).find('#rem-jumbotron').hasClass( "tree-finder" );	//Tests if inner div of jumbotron has class tree-finder
+												//this is done to disable the text-center for the tree page
+												//as it disables indenation in the tree.
+	if (exist) {
+		$('#no-jumbotron').attr('class', 'jumbotron');	//Removes text-center from page
+	}
+	//Toggle is OFF initially
+	var Tree = 'button.tree-toggler';
+	$(Tree).parent().children('ul.tree').toggle(300);
+	$(Tree).click(function () {
+		$(this).parent().children('ul.tree').toggle(300);
+		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-open").animate(300);
+		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-close").animate(300);
+	});
+	
+	
+	//var btn_grid = 'button.grid-exp';
+	
+	//$(btn_grid).click(function () {
+		//$('#btn-grid-exp').toggleClass("glyphicon glyphicon-plus").animate(300);
+		//$('#btn-grid-exp').toggleClass("glyphicon glyphicon-minus").animate(300);
+	//});
+	
+	
+	$('.grid-toggle-opts').hide();
+	//$('button.grid-exp').click( function(){
+		//$('.grid-toggle-opts').toggle('slow');
+	//});
+	
+	//Confirm delete modal javascript
+	/*
+	$('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.danger').attr('href', $(e.relatedTarget).data('href'));
+            
+            //$('.debug-url').html('Delete URL: <strong>' + $(this).find('.danger').attr('href') + '</strong>');
+        });
+        */
+	
+	//Datetime picker
+        $('#datetimepicker1').datetimepicker();
+	alert("After 9");
+	//Toggle is ON initialy
+	/*
+	$('label.tree-toggler').click(function () {
+		$(this).parent().children('ul.tree').toggle(300);
+		$(this).toggleClass("icon-folder-open").animate(300);
+		$(this).toggleClass("icon-folder-close").animate(300);
+	});
+	*/
+      });
+	  
+	  /*Function for changing the sign of the expansion button in the tree structure
+	   *Second part shows the button group with options next to the expansion button
+	   */
+	  function plus_minus_sign(this_btn) {
+		jQuery(this_btn).children("span").toggleClass("glyphicon glyphicon-plus").animate(300);
+		jQuery(this_btn).children("span").toggleClass("glyphicon glyphicon-minus").animate(300);
+		
+		$(this_btn).parent().parent().children('div.grid-toggle-opts').toggle('slow');
+	}
+</script>
 
 </body>
 </html>
