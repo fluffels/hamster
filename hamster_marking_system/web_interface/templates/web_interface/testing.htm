@@ -58,6 +58,12 @@
 
 {% block jumbotron_header %}
 	<div class="text-center">Assessments</div>
+	
+	{% ifequal assessment '' %}
+		
+	{% else %}
+		<div class="text-center"><div class="label label-default">{{ assessment }}</div></div>
+	{% endifequal %}
 {% endblock %}
 
 {% block jumbotron_sub_header %}
@@ -67,8 +73,8 @@
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 <div class="row">
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
 		
 		<button class="btn btn-info btn-lg btn-block"  data-target="#create_ass" data-toggle="modal">Create an Assessment</button><br>
 		
@@ -76,9 +82,9 @@
 		<div id="rem-jumbotron" class="well tree-finder">
 			<ul class="nav nav-list list-group">
 				
-				{%if root == ""%}
-					<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
-				{%endif%}
+				{% ifequal root.0 empty %}
+					<div class="alert alert-warning text-center" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+				{%endifequal%}
 				{%for n in root%}<!-- Major point -->
 					{% ifequal n.3 'Aggregate' %}
 						<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
@@ -101,7 +107,7 @@
 								<span class="glyphicon glyphicon-cog"></span>
 							</button>
 							
-							<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 								<input type="hidden" name="assessment" value={{n.0}}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -109,7 +115,7 @@
 								<span class="glyphicon glyphicon-time"></span>
 							</button>
 							
-							<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
@@ -120,7 +126,7 @@
 							</button>
 							
 							{% if n.2 == False %}
-								<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='0'>
@@ -130,7 +136,7 @@
 									<span class="glyphicon glyphicon-volume-off"></span>
 								</button>
 							{% else %}
-								<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='1'>
@@ -168,7 +174,7 @@
 								<span class="glyphicon glyphicon-cog"></span>
 							</button>
 							
-							<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 								<input type="hidden" name="assessment" value={{n.0}}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -176,7 +182,7 @@
 								<span class="glyphicon glyphicon-time"></span>
 							</button>
 							
-							<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
@@ -187,7 +193,7 @@
 							</button>
 							
 							{% if n.2 == False %}
-								<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='0'>
@@ -197,7 +203,7 @@
 									<span class="glyphicon glyphicon-volume-off"></span>
 								</button>
 							{% else %}
-								<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='1'>
@@ -238,7 +244,7 @@
 													<span class="glyphicon glyphicon-cog"></span>
 												</button>
 												
-												<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 													<input type="hidden" name="assessment" value={{y.0}}>
 												</form>
 												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -246,7 +252,7 @@
 													<span class="glyphicon glyphicon-time"></span>
 												</button>
 												
-												<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assess_id" value={{ y.0 }}>
 												</form>
@@ -257,7 +263,7 @@
 												</button>
 												
 												{% if y.2 == False %}
-													<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='0'>
@@ -267,7 +273,7 @@
 														<span class="glyphicon glyphicon-volume-off"></span>
 													</button>
 												{% else %}
-													<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='1'>
@@ -305,7 +311,7 @@
 													<span class="glyphicon glyphicon-cog"></span>
 												</button>
 												
-												<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 													<input type="hidden" name="assessment" value={{y.0}}>
 												</form>
 												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -313,7 +319,7 @@
 													<span class="glyphicon glyphicon-time"></span>
 												</button>
 												
-												<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assess_id" value={{ y.0 }}>
 												</form>
@@ -324,7 +330,7 @@
 												</button>
 												
 												{% if y.2 == False %}
-													<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='0'>
@@ -334,7 +340,7 @@
 														<span class="glyphicon glyphicon-volume-off"></span>
 													</button>
 												{% else %}
-													<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='1'>
@@ -375,7 +381,7 @@
 																		<span class="glyphicon glyphicon-cog"></span>
 																	</button>
 																	
-																	<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 																		<input type="hidden" name="assessment" value={{e.0}}>
 																	</form>
 																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -383,7 +389,7 @@
 																		<span class="glyphicon glyphicon-time"></span>
 																	</button>
 																	
-																	<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assess_id" value={{ e.0 }}>
 																	</form>
@@ -394,7 +400,7 @@
 																	</button>
 																	
 																	{% if e.2 == False %}
-																		<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='0'>
@@ -404,7 +410,7 @@
 																			<span class="glyphicon glyphicon-volume-off"></span>
 																		</button>
 																	{% else %}
-																		<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='1'>
@@ -442,7 +448,7 @@
 																		<span class="glyphicon glyphicon-cog"></span>
 																	</button>
 																	
-																	<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 																		<input type="hidden" name="assessment" value={{e.0}}>
 																	</form>
 																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -450,7 +456,7 @@
 																		<span class="glyphicon glyphicon-time"></span>
 																	</button>
 																	
-																	<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assess_id" value={{ e.0 }}>
 																	</form>
@@ -461,7 +467,7 @@
 																	</button>
 																	
 																	{% if e.2 == False %}
-																		<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='0'>
@@ -471,7 +477,7 @@
 																			<span class="glyphicon glyphicon-volume-off"></span>
 																		</button>
 																	{% else %}
-																		<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='1'>
@@ -512,7 +518,7 @@
 																							<span class="glyphicon glyphicon-cog"></span>
 																						</button>
 																						
-																						<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 																							<input type="hidden" name="assessment" value={{h.0}}>
 																						</form>
 																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -520,7 +526,7 @@
 																							<span class="glyphicon glyphicon-time"></span>
 																						</button>
 																						
-																						<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assess_id" value={{ h.0 }}>
 																						</form>
@@ -531,7 +537,7 @@
 																						</button>
 																						
 																						{% if h.2 == False %}
-																							<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='0'>
@@ -541,7 +547,7 @@
 																								<span class="glyphicon glyphicon-volume-off"></span>
 																							</button>
 																						{% else %}
-																							<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='1'>
@@ -579,7 +585,7 @@
 																							<span class="glyphicon glyphicon-cog"></span>
 																						</button>
 																						
-																						<form action="/view_session" method="post" hidden="hidden" class="form-group-sm post-sess">
+																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
 																							<input type="hidden" name="assessment" value={{h.0}}>
 																						</form>
 																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -587,7 +593,7 @@
 																							<span class="glyphicon glyphicon-time"></span>
 																						</button>
 																						
-																						<form action="/remove_assessment" hidden="hidden" method="post" class="form-group-sm post-rem">
+																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assess_id" value={{ h.0 }}>
 																						</form>
@@ -598,7 +604,7 @@
 																						</button>
 																						
 																						{% if h.2 == False %}
-																							<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='0'>
@@ -608,7 +614,7 @@
 																								<span class="glyphicon glyphicon-volume-off"></span>
 																							</button>
 																						{% else %}
-																							<form action="/update_assessment_published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='1'>
@@ -657,59 +663,6 @@
 				
 			</ul>
 		</div>
-		
-		
-		
-		<!-- Python is used here to list all the assessments -->
-		{% if type == -1 %}
-			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
-		{% else %}
-		{% for ass in assessmentName %}
-			<div class="dropdown">
-				<button type="button" class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown" value={{ass.0}}> {{ ass.1 }}
-				<span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-					<li>
-						<form action={% url 'view_children_assessment' %} method="post" class="form-group-sm">
-							<input type="hidden" name="mod" value={{ module }}>
-							<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
-						</form>
-					</li><li>
-						<form action="/view_session" method="post" class="form-group-sm">
-							<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
-						</form>
-					</li><li>
-						<form action="/remove_assessment" method="post" class="form-group-sm">
-							<input type="hidden" name="mod" value={{ module }}>
-							<button type="submit" class="btn btn-danger btn-md btn-block" name="assess_id" value={{ass.0}}>Delete Assessment</button>
-						</form>
-					</li>
-					{% if ass.2 == False %}<!-- Not published, so publish -->
-					<li>
-						<form action="/update_assessment_published" method="post" class="form-group-sm">
-							<input type="hidden" name="mod" value={{ module }}>
-							<input type="hidden" name="assess_id" value={{ ass.0 }}>
-							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="0"
-							data-toggle="tooltip" data-placement="right" title="Not published"
-							><span class="glyphicon glyphicon-volume-off"></span>Publish Assessment</button>
-						</form>
-					</li>
-					{% else %}<!-- Already published, so un-publish -->
-					<li>
-						<form action="/update_assessment_published" method="post" class="form-group-sm">
-							<input type="hidden" name="mod" value={{ module }}>
-							<input type="hidden" name="assess_id" value={{ ass.0 }}>
-							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="1"
-							data-toggle="tooltip" data-placement="right" title="Already published"
-							><span class="glyphicon glyphicon-volume-up"></span>  Un-Publish Assessment</button>
-						</form>
-					</li>
-					{% endif %}
-				</ul>
-			</div>
-		{% endfor %}
-		<!-- End python jQuery code -->
-		{% endif %}
 			
 <div class="modal fade" id="create_leaf" role="dialog">
 	<div class="modal-dialog">
@@ -787,7 +740,7 @@
 <!-- End confirm delete modal -->
 
 	</div>
-	<div class="col-md-3"></div>
+	<div class="col-md-2"></div>
 	</script>
 </div>
 {% endblock %}

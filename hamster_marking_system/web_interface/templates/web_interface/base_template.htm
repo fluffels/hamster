@@ -227,7 +227,8 @@
 		<div class="modal-content">
 			<form class="form-horizontal" action="create-leaf-assessment" method="post">
 				<div class="modal-header">
-					<h4>Create an Assessment</h4>
+					<h4>Create an Assessment for</h4>
+					<h4>{{ assessmentName }}</h4>
 				</div>
 				<div class="modal-body">
 					
@@ -255,7 +256,7 @@
 						
 						<div class="col-lg-8">
 							<input type="hidden" class="form-control" id="assessment-name" name="mod" value={{ module }} placeholder={{ module }}>
-
+							<input type="hidden" class="form-control" name="assess_id" value={{ assessmentName }}>
 						</div>
 
 					</div>
@@ -263,7 +264,7 @@
 				</div>
 				<div class="modal-footer">
 					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button class="btn btn-success" type="submit" name="leaf" value='leaf'>Create</button>
+					<button class="btn btn-success" type="submit" >Create</button>
 				</div>
 			</form>
 		</div>

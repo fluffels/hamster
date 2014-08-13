@@ -812,7 +812,7 @@ def createLeafAssessment(request,jsonObject):
 	info = False
 	parent = None
 	assess = []
-	if assess_id == 'leaf':
+	if assess_id == '':
 		print "i am a leaf that is a root"
 		leaf = api.createLeafAssessment(request,assessmentName,'Leaf',mod,False,mark,None)
 		

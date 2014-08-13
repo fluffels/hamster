@@ -560,7 +560,7 @@ def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['mod']
     fullmark = request.POST['fullmark']
-    assess_id = request.POST['leaf']
+    assess_id = request.POST['assess_id']
     
     data = {
         'name':assessName,
@@ -644,61 +644,34 @@ def deleteAssessment(request):
         res = json.loads(result.content)
         
         if res[0]['type'] == 1:
-            if res[0]['isMod'] == True:
-                data=[ {
-                    'mod_code':mod
-                }]
-                assess = views.getAllAssessmentOfModule(request,json.dumps(data))
-                print "Assessments of module : " + str(assess)
-                ass = json.loads(assess.content)
-                if ass[0]['type'] == 1:
-                    assessment = ass[0]['assessments']
-                    return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles, 'assessmentName':assessment,'module':mod,'type':1})
-                else:
-                    assessmentName = "There Are No Assessments."
-                    assessmentId = 0
-                    return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':mod,'type':-1})
-            else:
-                assessment = res[0]['assess_id']
-                data={
-                    'assess_id':assessment,
-                    'mod':mod
+            data ={
+                    'module':mod
                 }
-                children = views.getAllChildrenOfAssessment(request,json.dumps(data))
-                child = json.loads(children.content)
-                if child[0]['type'] == 1:
-                    if child[0]['message'] == 'Aggregate':
-                        child1 = child[0]['child']
-                        name = child[0]['name']
-                        return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'child':child1,
-                                                                            'module':mod,'assessmentName':name,'assess_id':assessment})
-    
-                    else:
-                        studentMark = child[0]['studentMark']
-                        name = child[0]['name']
-                        fullmark = child[0]['fullmark']
-                        return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'studentMark':studentMark,
-                                                                            'module':mod,'assessmentName':name,'assess_id':assessment,'fullmark':fullmark})
+            results = views.testing(request,json.dumps(data))
+            res = json.loads(results.content)
+            print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+            if res[0]['type'] == '1':
+                print "something"
+                root = res[0]['root']
+                first = res[0]['first']
+                second = res[0]['second']
+                third = res[0]['third']
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod,'assessment':'','second':second,'third':third})
+            else:
+                print "NONE"
+                root = "NONE";
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root})
     except Exception as e:
         raise Http404()
     
@@ -820,34 +793,69 @@ def setPublishedStatus(request):
         'status':status,
         'module':mod_code
     }
-    data_mod = [{
-        'mod_code':mod_code
-    }]
     print "B5 RESULTANT>>>"
     result = views.setPublishedStatus(request,json.dumps(data))
-    relo = views.getAllAssessmentOfModule(request,json.dumps(data_mod))
     res = json.loads(result.content)
-    res_mod = json.loads(relo.content)
     print "AFTER PARTY TIME!!!"
     
-    if res_mod[0]['type'] == 1:
-            assessments = res_mod[0]['assessments']
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles, 'assessmentName':assessments,'module':mod_code,'type':1})
+    if res[0]['type'] == 1:
+            data ={
+                'module':mod_code
+            }
+            result = views.testing(request,json.dumps(data))
+            res = json.loads(result.content)
+            print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+            if res[0]['type'] == '1':
+                print "something"
+                root = res[0]['root']
+                first = res[0]['first']
+                second = res[0]['second']
+                third = res[0]['third']
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod_code,'assessment':'','second':second,'third':third})
+            else:
+                print "NONE"
+                root = "NONE";
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root})
     else:
-            assessmentName = "There Are No Assessments."
-            assessmentId = 0
-            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assessmentName,
-                                                                        'assessmentId':assessmentId,'module':mod_code,'type':-1})
+            data ={
+                'module':mod_code
+            }
+            result = views.testing(request,json.dumps(data))
+            res = json.loads(result.content)
+            print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+            if res[0]['type'] == '1':
+                print "something"
+                root = res[0]['root']
+                first = res[0]['first']
+                second = res[0]['second']
+                third = res[0]['third']
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod_code,'assessment':'','second':second,'third':third})
+            else:
+                print "NONE"
+                root = "NONE";
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root})
 
 @csrf_exempt
 def setPublishedStatusInLeaf(request):
@@ -1329,7 +1337,7 @@ def testing(request,cos):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,'third':third})
+                                                                        'module':mod,'assessment':'','second':second,'third':third})
     else:
         print "NONE"
         root = "NONE";
@@ -1342,9 +1350,10 @@ def testing(request,cos):
     
 @csrf_exempt
 def testingAssessment(request):
-    mod = 35;
+    mod = request.POST['mod']
+    assessment = request.POST['assessment']
     data ={
-        'assess_id':mod
+        'assess_id':assessment
     }
     result = views.testingAssessment(request,json.dumps(data))
     res = json.loads(result.content)
@@ -1362,7 +1371,7 @@ def testingAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,'third':third,'assessmentName':name})
+                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment})
     else:
         print "NONE"
         root = "NONE";
