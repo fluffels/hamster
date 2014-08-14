@@ -633,6 +633,7 @@ def addUserToSession(request,jsonObj):
 	Markers = json_data['marker']
 	name = api.getSessionName(session)
 	data = []
+	print "lol sipho is shouting at her parents via anele";
 	if students:
 		for n in students:
 			api.addStudentToSession(n,session)
@@ -652,7 +653,7 @@ def addUserToSession(request,jsonObj):
 		}]
 	elif Markers:
 		for n in Markers:
-			api.setMarkerForSession(n,session)
+			api.setMarkerForSession(request,n,session)
 		
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)

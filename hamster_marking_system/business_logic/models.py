@@ -824,11 +824,11 @@ class Course(models.Model):
     
     #Creating Groups for Users
     lecture_user = Group.objects.get_or_create(name='Lecturer Group')
-
+    
     student_user = Group.objects.get_or_create(name='Student Group')
-
+    
     teaching_ass_user = Group.objects.get_or_create(name='Teaching Assistant Group')
-
+    
     tutor_user = Group.objects.get_or_create(name='Tutor Group')
-
+    
     marker_user = Group.objects.get_or_create(name='Marker Group')

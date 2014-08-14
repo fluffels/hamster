@@ -893,7 +893,9 @@ def setTutorForModule(request, uid, mod_code):
 # Parameter: session_id : Integer
 # Return: Nothing
 def setMarkerForSession(request, uid, session_id):
-    obj = insertPersonToSession(uid, session_id,0,1)
+    person = Person.objects.get(upId=uid)
+    session = Sessions.objects.get(id=session_id)
+    obj = insertPersonToSession(person, session,0,1)
 #    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.getId())
 
 # Name: getOpenSessions(assessment_id_)

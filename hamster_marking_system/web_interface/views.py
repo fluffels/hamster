@@ -221,33 +221,35 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'type':-1})
         elif request.POST.get('lectB'):
-            print "IN LECTB"
-            module = request.POST.get('lectB')
-            data=[{
-                'mod_code':module,
-                'user_type':'tutor'
-            }]
-            data = views.getAllAssessmentOfModule(request, json.dumps(data))
-            result = json.loads(data.content)
-            assessmentName = []
-            assessmentId = []
-            if result[0]['type'] == 1:
-                assessments = result[0]['assessments']
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+            mod = request.POST['lectB']
+            data ={
+                'module':mod
+            }
+            result = views.testing(request,json.dumps(data))
+            res = json.loads(result.content)
+            print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+            if res[0]['type'] == '1':
+                print "something"
+                root = res[0]['root']
+                first = res[0]['first']
+                second = res[0]['second']
+                third = res[0]['third']
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'assessmentName':assessments,'module':module,'type':1})
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod,'assessment':'','second':second,'third':third})
             else:
-                assessmentName = "There Are No Assessments."
-                assessmentId = 0
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
+                print "NONE"
+                root = "NONE";
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'type':-1,'module':module})
+                                                                                'user_roles':user_roles,'root':root})
         else:
             raise Http404()
 
@@ -453,8 +455,8 @@ def addStudentToSession(request):
     mod = request.POST['submit']
     session_id = request.POST['session']
     users = request.POST.lists()
-    print "]]]]]]]]]]]]]]]]]]"
-    print users
+    print "]]]]]]]]]]]]]]]]]] huh wena wa hlanya shem"
+    #print users
     # users[1][1][0]
     Studentarray = []
     MarkerArray = []
@@ -465,10 +467,10 @@ def addStudentToSession(request):
     else:
         for n in users[1][1]:
             MarkerArray.append(n)
-    
+    print "studnt array"+ str(Studentarray)
     data = {
         'student':Studentarray,
-        'marker':Studentarray,
+        'marker':MarkerArray,
         'session':session_id	
     }
     results = views.addUserToSession(request,json.dumps(data))
@@ -485,9 +487,10 @@ def addStudentToSession(request):
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':name,'marker':marker})
+   
 @csrf_exempt
 def getAllPersonOfSession(request):
-    mod = request.POST['submit']
+    mod = request.POST['mod']
     session_id = request.POST['session']
     Studentarray = []
     MarkerArray = []
