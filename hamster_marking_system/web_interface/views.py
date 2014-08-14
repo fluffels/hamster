@@ -487,7 +487,7 @@ def addStudentToSession(request):
                                                                         'sessionName':name,'marker':marker})
 @csrf_exempt
 def getAllPersonOfSession(request):
-    mod = request.POST['mod']
+    mod = request.POST['submit']
     session_id = request.POST['session']
     Studentarray = []
     MarkerArray = []
