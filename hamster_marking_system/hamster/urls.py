@@ -33,6 +33,7 @@ urlpatterns = patterns('',
     url(r'^use_as/([aA-zZ]{1,})/$','web_interface.views.use_as', name='use_as_redirect'),
     url(r'published','web_interface.views.setPublishedStatus', name='update_assessment_published'),
     url(r'^update_sub_assessment_published','web_interface.views.setPublishedStatusInLeaf', name='update_sub_assessment_published'),
+    url(r'assessment_marking','web_interface.views.getAllChildrenOfAssessment', name='view_leaf'),
     
     url(r'view_marker_sessions$','web_interface.views.viewSessionForMarker', name='view_marker_sessions'),
     url(r'view_marker_assessment$','web_interface.views.viewAssessmentForMarker', name='view_marker_assessment'),

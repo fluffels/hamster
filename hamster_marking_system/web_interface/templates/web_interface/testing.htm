@@ -165,7 +165,7 @@
 						</div>
 						
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
@@ -302,7 +302,7 @@
 											</div>
 											
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
-												<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
@@ -439,7 +439,7 @@
 																</div>
 																
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																	<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
@@ -576,7 +576,7 @@
 																					</div>
 																					
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																						<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
