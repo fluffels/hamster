@@ -117,10 +117,11 @@
 					</form>
 				</td>
 				{% else %}
-				<td class="col-md-3">
-					<form  onsubmit='return to_submit({{ per.0 }});' class="form-inline" name={{ per.0 }} role="form" id="form_edit">
-						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" placeholder="Mark awarded" value={{ per.3 }}>
-						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
+				<td class="col-md-3"><!-- Edit button -->
+					<form  class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
+						       name="mark" placeholder="Mark awarded" value={{ per.3 }}>
+						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
 						<input hidden="hidden" name="mod" value={{ module }}>
@@ -153,7 +154,67 @@
 
 					}
 					
+					function makeEditable(curr) {
+						
+						//Make input editable
+						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						
+						//Change button color
+						$(curr).parent().children('button').attr('class', 'btn btn-success');
+						
+						//Change icon of button
+						$(curr).parent().children('button').children('span').attr('class', 'glyphicon glyphicon-ok');
+						
+						var btnInnerHTML = $(curr).parent().children('button').get(0).innerHTML;
+						
+						//Change button type to submit
+						if (btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-edit"></span>' ||
+						    btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-ok"></span>') {
+							//Dont make the form postable, we only needed to change the button
+							//Add method and action to form
+							$(curr).parent().attr('method', 'post');
+							$(curr).parent().attr('action', 'update-marks');
+						}
+						else {
+							//Finaly submit
+							$(curr).parent().children('button').attr('type', 'submit');
+						}
+						
+						//Change html on button
+						$(curr).parent().children('button').get(0).innerHTML = 'Submit  <span class="glyphicon glyphicon-ok"></span>';
+						
+						
+					}
+					
 			       </script>
+				
+				<!-- Confirm modify mark modal -->
+
+				<div class="modal fade" id="confirm_mark_modification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Confirm Modification</h4>
+				</div>
+				
+				<div class="modal-body">
+				<p>You are about to modify the mark already assigned to a student.</p>
+				<p>Do you want to proceed?</p>
+				</div>
+				
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" onclick="makeEditable(this);"
+				class="btn btn-warning danger">Modify</button>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				<!-- End confirm modify mark modal -->
+				
 				{% endif %}
 			</tr>
 			{% endfor %}
