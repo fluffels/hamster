@@ -4,6 +4,7 @@
 	<title>{% block title %}{% endblock %}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-multiselect.css">
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/static/web_interface/css/style.css">
@@ -327,9 +328,6 @@
         });
         */
 	
-	//Datetime picker
-        $('#datetimepicker1').datetimepicker();
-	alert("After 9");
 	//Toggle is ON initialy
 	/*
 	$('label.tree-toggler').click(function () {
@@ -344,8 +342,8 @@
 	   *Second part shows the button group with options next to the expansion button
 	   */
 	function plus_minus_sign(this_btn) {
-		jQuery(this_btn).children("span").toggleClass("glyphicon glyphicon-plus").animate(300);
-		jQuery(this_btn).children("span").toggleClass("glyphicon glyphicon-minus").animate(300);
+		jQuery(this_btn).children("span").toggleClass("fa fa-ellipsis-h").animate(300);
+		jQuery(this_btn).children("span").toggleClass("fa fa-minus-circle").animate(300);
 		
 		$(this_btn).parent().parent().children('div.grid-toggle-opts').toggle('slow');
 	}
