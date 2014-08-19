@@ -273,6 +273,7 @@
 	</div>
 </div><!--End of Modal for ContactUs-->
 
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="/static/web_interface/js/bootstrap-multiselect.js"></script>
@@ -347,6 +348,18 @@
 		
 		$(this_btn).parent().parent().children('div.grid-toggle-opts').toggle('slow');
 	}
+	
+	//Called when create leaf assessment modal is called
+	$(document).on('click', '#addAssessmentBtn', function() {
+		//Retrieve data from page
+		var thisModule = $(this).data('module');
+		var thisAssessmentId = $(this).data('assessment_id');
+		
+		//Overide data in modal
+		$('.modal-body #leaf_assessment_id').val(thisModule);
+		$('.modal-footer #parent_assess_id').val(thisAssessmentId);
+		
+	});
 </script>
 
 </body>

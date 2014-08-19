@@ -98,13 +98,15 @@
 						</div>
 						
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+							      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
-							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-							data-placement="top" title="View/Edit Assessment">
-								<span class="glyphicon glyphicon-cog"></span>
+							<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+							 class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+							 data-module={{ module }} data-assessment_id={{ n.0 }}>
+								<span class="fa fa-plus"></span>
 							</button>
 							
 							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -169,9 +171,10 @@
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
-							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-							data-placement="top" title="View/Edit Assessment">
-								<span class="glyphicon glyphicon-cog"></span>
+							<button  id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+							 class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+							 data-module={{ module }} data-assessment_id={{ n.0 }}>
+								<span class="fa fa-plus"></span>
 							</button>
 							
 							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -213,6 +216,15 @@
 								<span class="glyphicon glyphicon-volume-up"></span>
 								</button>
 							{% endif %}
+							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+								class="btn btn-success" data-toggle="tooltip"
+							data-placement="top" title="Mark Assessment">
+								<span class="fa fa-check"></span>
+							</button>
 						</div>
 						
 						</li>
@@ -239,9 +251,10 @@
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
-												<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-												data-placement="top" title="View/Edit Assessment">
-													<span class="glyphicon glyphicon-cog"></span>
+												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+													class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+													data-module={{ module }} data-assessment_id={{ y.0 }}>
+													<span class="fa fa-plus"></span>
 												</button>
 												
 												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -306,9 +319,10 @@
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
-												<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-												data-placement="top" title="View/Edit Assessment">
-													<span class="glyphicon glyphicon-cog"></span>
+												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+													class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+													data-module={{ module }} data-assessment_id={{ y.0 }}>
+													<span class="fa fa-plus"></span>
 												</button>
 												
 												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -350,6 +364,15 @@
 													<span class="glyphicon glyphicon-volume-up"></span>
 													</button>
 												{% endif %}
+													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+														<input type="hidden" name="mod" value={{ module }}>
+														<input type="hidden" name="assessment" value={{ y.0 }}>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+														class="btn btn-success" data-toggle="tooltip"
+													data-placement="top" title="Mark Assessment">
+														<span class="fa fa-check"></span>
+													</button>
 											</div>
 											
 											</li>
@@ -376,9 +399,10 @@
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
-																	<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-																	data-placement="top" title="View/Edit Assessment">
-																		<span class="glyphicon glyphicon-cog"></span>
+																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																		class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																		data-module={{ module }} data-assessment_id={{ e.0 }}>
+																		<span class="fa fa-plus"></span>
 																	</button>
 																	
 																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -443,9 +467,10 @@
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
-																	<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-																	data-placement="top" title="View/Edit Assessment">
-																		<span class="glyphicon glyphicon-cog"></span>
+																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																		class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																		data-module={{ module }} data-assessment_id={{ e.0 }}>
+																		<span class="fa fa-plus"></span>
 																	</button>
 																	
 																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -487,6 +512,15 @@
 																		<span class="glyphicon glyphicon-volume-up"></span>
 																		</button>
 																	{% endif %}
+																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																			<input type="hidden" name="mod" value={{ module }}>
+																			<input type="hidden" name="assessment" value={{ e.0 }}>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+																			class="btn btn-success" data-toggle="tooltip"
+																		data-placement="top" title="Mark Assessment">
+																			<span class="fa fa-check"></span>
+																		</button>
 																</div>
 																
 																</li>
@@ -514,8 +548,8 @@
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
 																						<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-																						data-placement="top" title="View/Edit Assessment">
-																							<span class="glyphicon glyphicon-cog"></span>
+																						data-placement="top" title="Create new Assessment">
+																							<span class="fa fa-plus"></span>
 																						</button>
 																						
 																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -580,9 +614,10 @@
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
-																						<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
-																						data-placement="top" title="View/Edit Assessment">
-																							<span class="glyphicon glyphicon-cog"></span>
+																						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																							class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																							data-module={{ module }} data-assessment_id={{ h.0 }}>
+																							<span class="fa fa-plus"></span>
 																						</button>
 																						
 																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
@@ -624,6 +659,15 @@
 																							<span class="glyphicon glyphicon-volume-up"></span>
 																							</button>
 																						{% endif %}
+																							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																								<input type="hidden" name="mod" value={{ module }}>
+																								<input type="hidden" name="assessment" value={{ h.0 }}>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+																								class="btn btn-success" data-toggle="tooltip"
+																							data-placement="top" title="Mark Assessment">
+																								<span class="fa fa-check"></span>
+																							</button>
 																					</div>
 																					
 																					</li>
@@ -739,6 +783,46 @@
 </div>
 
 <!-- End confirm delete modal -->
+
+<!--Modal for Create Leaf assessment-->
+<div class="modal fade" id="create_leaf_ass" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">
+					<div class="modal-header">
+						<h4>Create a Leaf Assessment</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+							<div class="col-lg-8">
+								<input type="text" class="form-control" name="name" placeholder="Project 1 Phase 1">
+							</div>
+						</div>
+	
+						<div class="form-group">
+							<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+							<div class="col-lg-8">
+								<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="col-lg-8">
+								<input type="hidden" class="form-control" id="leaf_assessment_id" name="mod" value="" placeholder={{ module }}>
+							</div>
+						</div>
+	
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+						<button id="parent_assess_id" class="btn btn-success" type="submit" name="assess_id" value="">Create</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div><!--End of Modal for Create Leaf assessment-->
+
 
 	</div>
 	<div class="col-md-2"></div>
