@@ -1,16 +1,16 @@
 import json
 import urllib2
-from django.shortcuts import render, render_to_response, RequestContext
+from django.shortcuts import render, render_to_response
 from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
-from django.template import loader
+from django.template import loader, RequestContext
 
 def home(request):
     return render_to_response("web_interface/login.htm",
                               locals(),
                               context_instance = RequestContext(request))
-@csrf_exempt
+
 def login(request):
     try:
         user = request.POST['username']
@@ -72,21 +72,21 @@ def login(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles})
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
         else:
                 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     except Exception  as e:
         raise Http404()
     
-@csrf_exempt
+
 def backHome(request):
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles})
-@csrf_exempt
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+
 def use_as(request,role):
     if role == 'Student':
         lect = 'LT'
@@ -97,7 +97,7 @@ def use_as(request,role):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':tut,
                                                                         'user_ta':ta,
-                                                                        'user_roles':user_roles})
+                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     elif role == 'Lecturer':
         stud = 'ST'
         tut = 'TT'
@@ -107,7 +107,7 @@ def use_as(request,role):
                                                                        'user_stud':stud,
                                                                        'user_tut':tut,
                                                                        'user_ta':ta,
-                                                                       'user_roles':user_roles})
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
     elif role == 'Tutor':
         lect = 'LT'
         stud = 'ST'
@@ -117,7 +117,7 @@ def use_as(request,role):
                                                                        'user_stud':stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':ta,
-                                                                       'user_roles':user_roles})
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         lect = 'LT'
         stud = 'ST'
@@ -127,7 +127,7 @@ def use_as(request,role):
                                                                        'user_stud':stud,
                                                                        'user_tut':tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles})
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
 def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
@@ -136,7 +136,7 @@ def logout(request):
 	else:
 		return render_to_response("web_interface/success.htm",locals(),context_instance = RequestContext(request))
 
-@csrf_exempt
+
 def getAllAssessmentOfModule(request,module):
         if request.POST.get('studB'):
             mod = request.POST['studB']
@@ -160,7 +160,8 @@ def getAllAssessmentOfModule(request,module):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles, 'assessments':assessments,
-                                                                        'module':mod,'type':1, 'assessmentName':person})
+                                                                        'module':mod,'type':1, 'assessmentName':person},
+                                                                        context_instance = RequestContext(request))
             else:
                 assessmentName = "There Are No Assessments."
                 assessmentId = 0
@@ -171,7 +172,8 @@ def getAllAssessmentOfModule(request,module):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':'ERROR',
-                                                                        'assessmentId':assessmentId,'module':mod,'type':-1})
+                                                                        'assessmentId':assessmentId,'module':mod,'type':-1},
+                                                                        context_instance = RequestContext(request))
         elif request.POST.get('tutB'):
             print "IN TUTB"
             module = request.POST.get('tutB')
@@ -188,14 +190,16 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
-                                                                                'module':module,'type':1})
+                                                                                'module':module,'type':1},
+                                                                                context_instance = RequestContext(request))
             else:
                 return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'type':-1})
+                                                                                'user_roles':user_roles,'type':-1},
+                                                                                context_instance = RequestContext(request))
         elif request.POST.get('taB'):
             print "IN TAB"
             module = request.POST.get('taB')
@@ -212,14 +216,16 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
-                                                                                'module':module,'type':1})
+                                                                                'module':module,'type':1},
+                                                                                context_instance = RequestContext(request))
             else:
                 return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'type':-1})
+                                                                                'user_roles':user_roles,'type':-1}
+                                                                                ,context_instance = RequestContext(request))
         elif request.POST.get('lectB'):
             mod = request.POST['lectB']
             data ={
@@ -240,7 +246,9 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod,'assessment':'','second':second,'third':third})
+                                                                                'module':mod,'assessment':'',
+                                                                                'second':second,'third':third},
+                                                                                context_instance = RequestContext(request))
             else:
                 print "NONE"
                 root = "NONE";
@@ -249,11 +257,13 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root})
+                                                                                'user_roles':user_roles,
+                                                                                'root':root},
+                                                                                context_instance = RequestContext(request))
         else:
             raise Http404()
 
-@csrf_exempt
+
 def personDetails(request):
     if request.method == 'POST':
         web = views.personDetails(request)
@@ -268,18 +278,20 @@ def personDetails(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'name':name,'surname':surname,'title':title,'initials':initials})
+                                                                            'user_roles':user_roles,'name':name,'surname':surname,
+                                                                            'title':title,'initials':initials},
+                                                                            context_instance = RequestContext(request))
         else:
             return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'name':'person data not found'})
+                                                                            'user_roles':user_roles,'name':'person data not found'},
+                                                                            context_instance = RequestContext(request))
     else:
         raise Http404()
 
-@csrf_exempt
 def getAllSessionsForAssessment(request):
     try:
         assess = request.POST['assessment']
@@ -303,7 +315,8 @@ def getAllSessionsForAssessment(request):
                                                                             'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
-                                                                            'assessment_id':assess,})
+                                                                            'assessment_id':assess,},
+                                                                            context_instance = RequestContext(request))
         else:
             list = []
             list.append('-1')
@@ -316,11 +329,14 @@ def getAllSessionsForAssessment(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
+                                                                            'user_roles':user_roles,'sessions':sessions,
+                                                                            'assessment_id':assess,'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName},
+                                                                            context_instance = RequestContext(request))
     except Exception as e:
         raise Http404()
 
-@csrf_exempt
+
 def createAssessment(request):
     try:
         assessName = request.POST['name']
@@ -343,18 +359,21 @@ def createAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessmentName':assess,"module":mod,'type':1})
+                                                                        'user_roles':user_roles,'assessmentName':assess,
+                                                                        "module":mod,'type':1},
+                                                                        context_instance = RequestContext(request))
         else:
             return render_to_response("web_interface/login.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles})
+                                                                                'user_roles':user_roles},
+                                                                                context_instance = RequestContext(request))
     except Exception as e:
         raise Http404()
 
-@csrf_exempt
+
 def createSession(request):
     try:
         print "huh gane y"
@@ -381,7 +400,10 @@ def createSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
+                                                                            'assessment_id':assess_id,
+                                                                            'moduleName':mod},
+                                                                            context_instance = RequestContext(request))
     
         else:
             assess_name = results[0]['assessmentName']
@@ -392,11 +414,14 @@ def createSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,'assessment_id':assess_id,'moduleName':mod})
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
+                                                                            'assessment_id':assess_id,
+                                                                            'moduleName':mod},
+                                                                            context_instance = RequestContext(request))
     except Exception as e:
        raise Http404()
     
-@csrf_exempt
+
 def searchForStudent(request):
     user_query = request.POST['query']
     
@@ -414,9 +439,10 @@ def searchForStudent(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'list_of_people':list_of_people})
+                                                                        'user_roles':user_roles,
+                                                                        'list_of_people':list_of_people},
+                                                                        context_instance = RequestContext(request))
 
-@csrf_exempt
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -438,7 +464,10 @@ def getAllStudentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'tutor':tut,'teachingA':ta,'sessionName':name})
+                                                                        'user_roles':user_roles,'students':students,'module':mod,
+                                                                        'session_id':session,'tutor':tut,
+                                                                        'teachingA':ta,'sessionName':name},
+                                                                        context_instance = RequestContext(request))
     else:
         students = []
         ta = []
@@ -448,9 +477,11 @@ def getAllStudentOfModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,'tutor':tut,'teachingA':ta,'sessionName':name})
+                                                                        'user_roles':user_roles,'students':students,'module':mod,'session_id':session,
+                                                                        'tutor':tut,'teachingA':ta,
+                                                                        'sessionName':name},
+                                                                        context_instance = RequestContext(request))
 
-@csrf_exempt
 def addStudentToSession(request):
     mod = request.POST['submit']
     session_id = request.POST['session']
@@ -486,9 +517,9 @@ def addStudentToSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':name,'marker':marker})
+                                                                        'sessionName':name,'marker':marker},
+                                                                        context_instance = RequestContext(request))
    
-@csrf_exempt
 def getAllPersonOfSession(request):
     mod = request.POST['mod']
     session_id = request.POST['session']
@@ -512,7 +543,8 @@ def getAllPersonOfSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':sessionName,'marker':marker})
+                                                                        'sessionName':sessionName,'marker':marker},
+                                                                        context_instance = RequestContext(request))
     else:
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
@@ -521,9 +553,9 @@ def getAllPersonOfSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':[],
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':'An error occurred, a session was not found!','marker':[]})
+                                                                        'sessionName':'An error occurred, a session was not found!',
+                                                                        'marker':[]},context_instance = RequestContext(request))
 
-@csrf_exempt
 def getAllChildrenOfAssessment(request):
     assess_id = request.POST['assessment']
     mod = request.POST['mod']
@@ -544,7 +576,8 @@ def getAllChildrenOfAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'child':child,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'type':1})
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,
+                                                                        'type':1},context_instance = RequestContext(request))
         
         else:
             studentMark = res[0]['studentMark']
@@ -556,9 +589,9 @@ def getAllChildrenOfAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark,'type':-1})
+                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,
+                                                                        'fullmark':fullmark,'type':-1},context_instance = RequestContext(request))
 
-@csrf_exempt
 def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['mod']
@@ -585,7 +618,8 @@ def createLeafAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,'third':third})
+                                                                        'module':mod,'second':second,
+                                                                        'third':third},context_instance = RequestContext(request))
     else:
         print "NONE"
         root = "NONE";
@@ -594,9 +628,8 @@ def createLeafAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'root':root})
+                                                                        'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
 
-@csrf_exempt
 def updateMarkForStudent(request):
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
@@ -622,7 +655,8 @@ def updateMarkForStudent(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':1})
+                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,
+                                                                        'fullmark':fullmark,'message':1},context_instance = RequestContext(request))
     else:
         studentMark = res[0]['studentMark']
         name = res[0]['name']
@@ -633,8 +667,9 @@ def updateMarkForStudent(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'message':0})
-@csrf_exempt
+                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,
+                                                                        'message':0},context_instance = RequestContext(request))
+
 def deleteAssessment(request):
     try:
         assess_id = request.POST['assess_id']
@@ -665,7 +700,9 @@ def deleteAssessment(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod,'assessment':'','second':second,'third':third})
+                                                                                'module':mod,'assessment':'',
+                                                                                'second':second,'third':third},
+                                                                                context_instance = RequestContext(request))
             else:
                 print "NONE"
                 root = "NONE";
@@ -674,11 +711,11 @@ def deleteAssessment(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root})
+                                                                                'user_roles':user_roles,'root':root},
+                                                                                context_instance = RequestContext(request))
     except Exception as e:
         raise Http404()
     
-@csrf_exempt
 def deleteSession(request):
     sess_id = request.POST['session']
     assess_id = request.POST['assessment']
@@ -707,7 +744,11 @@ def deleteSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess_id,'message':1})
+                                                                            'user_roles':user_roles,'sessions':sessions,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,
+                                                                            'assessment_id':assess_id,
+                                                                            'message':1},context_instance = RequestContext(request))
         else:
             list = []
             list.append('-1')
@@ -720,7 +761,11 @@ def deleteSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'message':1})
+                                                                            'user_roles':user_roles,'sessions':sessions,
+                                                                            'assessment_id':assess_id,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,'message':1},
+                                                                            context_instance = RequestContext(request))
     else:
         data = {
             'assessmentID':assess_id
@@ -737,7 +782,9 @@ def deleteSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,'moduleName':moduleName,'assessment_id':assess_id,'message':0})
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,'assessment_id':assess_id,
+                                                                            'message':0},context_instance = RequestContext(request))
         else:
             list = []
             list.append('-1')
@@ -750,9 +797,13 @@ def deleteSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'message':0})
+                                                                            'user_roles':user_roles,'sessions':sessions,
+                                                                            'assessment_id':assess_id,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,'message':0},
+                                                                            context_instance = RequestContext(request))
 
-@csrf_exempt
+
 def changeAssessmentFullMark(request):
     assess_id = request.POST['assess_id']
     mod = request.POST['mod']
@@ -782,9 +833,11 @@ def changeAssessmentFullMark(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
-                                                                                'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+                                                                                'module':mod,'assessmentName':name,
+                                                                                'assess_id':assess_id,'fullmark':fullmark},
+                                                                                context_instance = RequestContext(request))
 
-@csrf_exempt
+
 def setPublishedStatus(request):
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
@@ -820,7 +873,8 @@ def setPublishedStatus(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod_code,'assessment':'','second':second,'third':third})
+                                                                                'module':mod_code,'assessment':'','second':second,
+                                                                                'third':third},context_instance = RequestContext(request))
             else:
                 print "NONE"
                 root = "NONE";
@@ -829,7 +883,8 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root})
+                                                                                'user_roles':user_roles,'root':root},
+                                                                                context_instance = RequestContext(request))
     else:
             data ={
                 'module':mod_code
@@ -849,7 +904,9 @@ def setPublishedStatus(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod_code,'assessment':'','second':second,'third':third})
+                                                                                'module':mod_code,'assessment':'',
+                                                                                'second':second,'third':third},
+                                                                                context_instance = RequestContext(request))
             else:
                 print "NONE"
                 root = "NONE";
@@ -858,9 +915,9 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root})
+                                                                                'user_roles':user_roles,'root':root},
+                                                                                context_instance = RequestContext(request))
 
-@csrf_exempt
 def setPublishedStatusInLeaf(request):
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
@@ -893,7 +950,9 @@ def setPublishedStatusInLeaf(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'child':child,
-                                                                        'module':mod_code,'assessmentName':name,'assess_id':assess_id,'type':1})
+                                                                        'module':mod_code,'assessmentName':name,
+                                                                        'assess_id':assess_id,'type':1},
+                                                                        context_instance = RequestContext(request))
         
         else:
             studentMark = res[0]['studentMark']
@@ -905,10 +964,10 @@ def setPublishedStatusInLeaf(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod_code,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark,'type':-1})
+                                                                        'module':mod_code,'assessmentName':name,'assess_id':assess_id,
+                                                                        'fullmark':fullmark,'type':-1},
+                                                                        context_instance = RequestContext(request))
 
-
-@csrf_exempt     
 def viewAssessment(request,module):
     if request.method == "POST":
         data = [{
@@ -924,7 +983,9 @@ def viewAssessment(request,module):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles, 'assessmentName':assessments,'module':module,'type':1})
+                                                                            'user_roles':user_roles, 'assessmentName':assessments,
+                                                                            'module':module,'type':1},
+                                                                            context_instance = RequestContext(request))
         else:
                 assessmentName = "There Are No Assessments."
                 assessmentId = 0
@@ -933,11 +994,12 @@ def viewAssessment(request,module):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'assessmentName':assessmentName, 'assessmentId':assessmentId,'module':module,'type':-1})
+                                                                            'user_roles':user_roles,'assessmentName':assessmentName,
+                                                                            'assessmentId':assessmentId,'module':module,
+                                                                            'type':-1},context_instance = RequestContext(request))
     else:
         raise Http404()
 
-@csrf_exempt
 def openOrCloseSession(request):
     assess_id = request.POST['assess_id']
     sess_id = request.POST['sess_id']
@@ -974,7 +1036,8 @@ def openOrCloseSession(request):
                                                                             'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
-                                                                            'assessment_id':assess_id,'type':1})
+                                                                            'assessment_id':assess_id,'type':1},
+                                                                            context_instance = RequestContext(request))
         else:
             list = []
             list.append('-1')
@@ -989,7 +1052,8 @@ def openOrCloseSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
                                                                             'assessment_id':assess_id,'assessmentName':assessmentName,
-                                                                            'moduleName':moduleName,'type':1})
+                                                                            'moduleName':moduleName,'type':1},
+                                                                            context_instance = RequestContext(request))
     else:
         data = {
             'assessmentID':assess_id
@@ -1010,7 +1074,8 @@ def openOrCloseSession(request):
                                                                             'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
-                                                                            'assessment_id':assess_id,'type':0})
+                                                                            'assessment_id':assess_id,'type':0},
+                                                                            context_instance = RequestContext(request))
         else:
             list = []
             list.append('-1')
@@ -1023,7 +1088,9 @@ def openOrCloseSession(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,'assessmentName':assessmentName,'moduleName':moduleName,'type':-1})
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,
+                                                                            'assessmentName':assessmentName,'moduleName':moduleName,
+                                                                            'type':-1},context_instance = RequestContext(request))
 
 
 #marker views
@@ -1047,7 +1114,9 @@ def viewChildrenOfAssessments(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'child':child,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id})
+                                                                        'module':mod,'assessmentName':name,
+                                                                        'assess_id':assess_id},
+                                                                        context_instance=RequestContext(request))
         
         else:
             studentMark = res[0]['studentMark']
@@ -1059,15 +1128,11 @@ def viewChildrenOfAssessments(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
+                                                                        'module':mod,'assessmentName':name,
+                                                                        'assess_id':assess_id,'fullmark':fullmark}
+                                                                        ,context_instance=RequestContext(request))
 
 
-    
-    
-    
-
-#marker views
-@csrf_exempt
 def viewSessionForMarker(request):
     mod = request.POST['studB']
     
@@ -1084,16 +1149,15 @@ def viewSessionForMarker(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':assessments,
-                                                                        'module':mod,'type':1})
+                                                                        'module':mod,'type':1},context_instance=RequestContext(request))
     else:
         return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles,'type':-1})
+                                                                       'user_roles':user_roles,'type':-1},context_instance=RequestContext(request))
 
-@csrf_exempt
 def viewAssessmentForMarker(request):
     mod = request.POST['mod']
     assessment = request.POST['session']
@@ -1111,7 +1175,9 @@ def viewAssessmentForMarker(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles,'module':mod,'session':session,'assessmentName':assessment,'type':1})
+                                                                       'user_roles':user_roles,'module':mod,
+                                                                       'session':session,'assessmentName':assessment,
+                                                                       'type':1},context_instance=RequestContext(request))
     else:
         session = res[0]['session']
         return render_to_response("web_interface/view_assessments_marker.htm",{'default_user':default_user,
@@ -1119,9 +1185,9 @@ def viewAssessmentForMarker(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles,'module':mod,'session':session,'type':-1})
+                                                                       'user_roles':user_roles,'module':mod,
+                                                                       'session':session,'type':-1},context_instance=RequestContext(request))
 
-@csrf_exempt
 def viewStudentsForAssessment(request):
     sess= request.POST['session']
     assess = request.POST['assessment']
@@ -1143,7 +1209,9 @@ def viewStudentsForAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':students,
-                                                                        'module':mod,'assessmentName':assessment,'session':sess,'assess_id':assess,'fullmark':fullmark})
+                                                                        'module':mod,'assessmentName':assessment,
+                                                                        'session':sess,'assess_id':assess,
+                                                                        'fullmark':fullmark},context_instance=RequestContext(request))
     else:
         students = []
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
@@ -1152,9 +1220,9 @@ def viewStudentsForAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessment':assessment,'students':student,
-                                                                        'fullmark':fullmark,'module':mod})
+                                                                        'fullmark':fullmark,'module':mod},
+                                                                        context_instance=RequestContext(request))
 
-@csrf_exempt
 def updateMarkForStudentMarker(request):
     session = request.POST['session']
     leaf_id = request.POST['assess_id']
@@ -1182,7 +1250,10 @@ def updateMarkForStudentMarker(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'session':session,'message':1})
+                                                                        'module':mod,'assessmentName':name,
+                                                                        'assess_id':leaf_id,'fullmark':fullmark,
+                                                                        'session':session,'message':1},
+                                                                        context_instance=RequestContext(request))
     else:
         studentMark = res[0]['studentMark']
         name = res[0]['name']
@@ -1193,13 +1264,15 @@ def updateMarkForStudentMarker(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,'session':session,'message':0})
+                                                                        'module':mod,'assessmentName':name,'assess_id':leaf_id,
+                                                                        'fullmark':fullmark,'session':session,
+                                                                        'message':0},context_instance=RequestContext(request))
 
 
 
 ##################################### STUDENT VIEWS #############################################################################
 #student views
-@csrf_exempt
+
 def viewAssessmentsForStudent(request):
     mod = request.POST['studB']
     uid = request.session['user']['uid'][0]
@@ -1222,7 +1295,7 @@ def viewAssessmentsForStudent(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles, 'assessments':assessments,
-                                                                        'module':mod,'type':1, 'assessmentName':person})
+                                                                        'module':mod,'type':1, 'assessmentName':person},context_instance=RequestContext(request))
     else:
         assessmentName = "There Are No Assessments."
         assessmentId = 0
@@ -1233,10 +1306,10 @@ def viewAssessmentsForStudent(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':'ERROR',
-                                                                        'assessmentId':assessmentId,'module':mod,'type':-1})
+                                                                        'assessmentId':assessmentId,'module':mod,
+                                                                        'type':-1},context_instance=RequestContext(request))
 
 
-@csrf_exempt
 def getAllChildrenOfAssessmentForStudent(request):
     parent_id = request.POST['subs']
     mod = request.POST['mod']
@@ -1264,7 +1337,8 @@ def getAllChildrenOfAssessmentForStudent(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessments':children, 'student_id':student,
-                                                                        'module':parent_name,'assessmentName':person,'parent_id':parent_id})
+                                                                        'module':parent_name,'assessmentName':person,
+                                                                        'parent_id':parent_id},context_instance=RequestContext(request))
         
         else:
             studentMark = res[0]['studentMark']
@@ -1280,46 +1354,12 @@ def getAllChildrenOfAssessmentForStudent(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,'student_id':student[0],
                                                                         'module':mod,'assessmentName':name,'assess_id':parent_id,'fullmark':fullmark,
-                                                                        'student_name':pername, 'student_surname':persurname})
+                                                                        'student_name':pername, 'student_surname':persurname},
+                                                                        context_instance=RequestContext(request))
 
-'''   
-def viewAssessmentOfAssessmentForStudent(request):
-    assess_id = request.POST['assessment']
-    mod = request.POST['mod']
-    
-    data = {
-        'assess_id':assess_id,
-        'mod':mod
-    }
-    results = views.getAllChildrenOfAssessment(request,json.dumps(data))
-    res = json.loads(results.content)
-    if res[0]['type'] == 1:
-        if res[0]['message'] == 'Aggregate':
-            child = res[0]['child']
-            name = res[0]['name']
-            return render_to_response("web_interface/view_student_mark_agg.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'child':child,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id})
-        
-        else:
-            studentMark = res[0]['studentMark']
-            name = res[0]['name']
-            fullmark = res[0]['fullmark']
-            return render_to_response("web_interface/view_student_mark_leaf.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'studentMark':studentMark,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,'fullmark':fullmark})
-'''
+
 ################################################ END STUDENT VIEWS ################################################################
 
-@csrf_exempt
 def testing(request,cos):
     mod = request.POST['lectB']
     data ={
@@ -1340,7 +1380,9 @@ def testing(request,cos):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'assessment':'','second':second,'third':third})
+                                                                        'module':mod,'assessment':'',
+                                                                        'second':second,'third':third},
+                                                                        context_instance=RequestContext(request))
     else:
         print "NONE"
         root = "NONE";
@@ -1349,9 +1391,9 @@ def testing(request,cos):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'root':root})
+                                                                        'user_roles':user_roles,'root':root},
+                                                                        context_instance=RequestContext(request))
     
-@csrf_exempt
 def testingAssessment(request):
     mod = request.POST['mod']
     assessment = request.POST['assessment']
@@ -1374,7 +1416,10 @@ def testingAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment})
+                                                                        'module':mod, 'assessment':name,
+                                                                        'second':second,'third':third,
+                                                                        'assessmentName':assessment},
+                                                                        context_instance=RequestContext(request))
     else:
         print "NONE"
         root = "NONE";
@@ -1383,4 +1428,5 @@ def testingAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'root':root})
+                                                                        'user_roles':user_roles,'root':root},
+                                                                        context_instance=RequestContext(request))

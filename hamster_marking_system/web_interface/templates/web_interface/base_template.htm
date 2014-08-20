@@ -102,7 +102,7 @@
 	<div class="modal fade" id="contact" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal">
+				<form class="form-horizontal">{% csrf_token %}
 					<div class="modal-header">
 						<h4>Contact Tech Team</h4>
 					</div>
@@ -155,6 +155,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<form class="form-horizontal">
+					{% csrf_token %}
 					<div class="modal-header">
 						<h4>Query system</h4>
 					</div>
@@ -229,6 +230,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form class="form-horizontal" action="create-leaf-assessment" method="post">
+				{% csrf_token %}
 				<div class="modal-header text-center">
 					<h4>Create an Assessment for</h4>
 					<h4>{{ assessment }} </h4>

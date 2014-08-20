@@ -104,6 +104,7 @@
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
 							      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
@@ -114,6 +115,7 @@
 							</button>
 							
 							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+								{% csrf_token %}
 								<input type="hidden" name="assessment" value={{n.0}}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -122,6 +124,7 @@
 							</button>
 							
 							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
@@ -133,6 +136,7 @@
 							
 							{% if n.2 == False %}
 								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+									{% csrf_token %}
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='0'>
@@ -143,6 +147,7 @@
 								</button>
 							{% else %}
 								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+									{% csrf_token %}
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='1'>
@@ -172,6 +177,7 @@
 						
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
@@ -182,6 +188,7 @@
 							</button>
 							
 							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+								{% csrf_token %}
 								<input type="hidden" name="assessment" value={{n.0}}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -190,6 +197,7 @@
 							</button>
 							
 							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
@@ -201,6 +209,7 @@
 							
 							{% if n.2 == False %}
 								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+									{% csrf_token %}
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='0'>
@@ -211,6 +220,7 @@
 								</button>
 							{% else %}
 								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+									{% csrf_token %}
 									<input type="hidden" name="mod" value={{ module }}>
 									<input type="hidden" name="assess_id" value={{ n.0 }}>
 									<input type="hidden" name="publish_state" value='1'>
@@ -221,6 +231,7 @@
 								</button>
 							{% endif %}
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
@@ -256,6 +267,7 @@
 											
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
 												<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+													{% csrf_token %}
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
@@ -266,6 +278,7 @@
 												</button>
 												
 												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+													{% csrf_token %}
 													<input type="hidden" name="assessment" value={{y.0}}>
 												</form>
 												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -274,6 +287,7 @@
 												</button>
 												
 												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+													{% csrf_token %}
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assess_id" value={{ y.0 }}>
 												</form>
@@ -285,6 +299,7 @@
 												
 												{% if y.2 == False %}
 													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+														{% csrf_token %}
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='0'>
@@ -295,6 +310,7 @@
 													</button>
 												{% else %}
 													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+														{% csrf_token %}
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='1'>
@@ -324,6 +340,7 @@
 											
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
 												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+													{% csrf_token %}
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
@@ -334,6 +351,7 @@
 												</button>
 												
 												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+													{% csrf_token %}
 													<input type="hidden" name="assessment" value={{y.0}}>
 												</form>
 												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -342,6 +360,7 @@
 												</button>
 												
 												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+													{% csrf_token %}
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assess_id" value={{ y.0 }}>
 												</form>
@@ -353,6 +372,7 @@
 												
 												{% if y.2 == False %}
 													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+														{% csrf_token %}
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='0'>
@@ -363,6 +383,8 @@
 													</button>
 												{% else %}
 													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+														{% csrf_token %}
+														
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 														<input type="hidden" name="publish_state" value='1'>
@@ -373,6 +395,7 @@
 													</button>
 												{% endif %}
 													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+														{% csrf_token %}
 														<input type="hidden" name="mod" value={{ module }}>
 														<input type="hidden" name="assessment" value={{ y.0 }}>
 													</form>
@@ -408,6 +431,7 @@
 																
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																	<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																		{% csrf_token %}
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
@@ -418,6 +442,7 @@
 																	</button>
 																	
 																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																		{% csrf_token %}
 																		<input type="hidden" name="assessment" value={{e.0}}>
 																	</form>
 																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -426,6 +451,7 @@
 																	</button>
 																	
 																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																		{% csrf_token %}
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assess_id" value={{ e.0 }}>
 																	</form>
@@ -437,6 +463,7 @@
 																	
 																	{% if e.2 == False %}
 																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																			{% csrf_token %}
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='0'>
@@ -447,6 +474,7 @@
 																		</button>
 																	{% else %}
 																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																			{% csrf_token %}
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='1'>
@@ -476,6 +504,7 @@
 																
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																		{% csrf_token %}
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
@@ -486,6 +515,7 @@
 																	</button>
 																	
 																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																		{% csrf_token %}
 																		<input type="hidden" name="assessment" value={{e.0}}>
 																	</form>
 																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -494,6 +524,7 @@
 																	</button>
 																	
 																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																		{% csrf_token %}
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assess_id" value={{ e.0 }}>
 																	</form>
@@ -505,6 +536,7 @@
 																	
 																	{% if e.2 == False %}
 																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																			{% csrf_token %}
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='0'>
@@ -515,6 +547,7 @@
 																		</button>
 																	{% else %}
 																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																			{% csrf_token %}
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																			<input type="hidden" name="publish_state" value='1'>
@@ -525,6 +558,7 @@
 																		</button>
 																	{% endif %}
 																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																			{% csrf_token %}
 																			<input type="hidden" name="mod" value={{ module }}>
 																			<input type="hidden" name="assessment" value={{ e.0 }}>
 																		</form>
@@ -560,6 +594,7 @@
 																					
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																						<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																							{% csrf_token %}
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
@@ -569,6 +604,7 @@
 																						</button>
 																						
 																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																							{% csrf_token %}
 																							<input type="hidden" name="assessment" value={{h.0}}>
 																						</form>
 																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -577,6 +613,7 @@
 																						</button>
 																						
 																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																							{% csrf_token %}
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assess_id" value={{ h.0 }}>
 																						</form>
@@ -588,6 +625,7 @@
 																						
 																						{% if h.2 == False %}
 																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																								{% csrf_token %}
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='0'>
@@ -598,6 +636,7 @@
 																							</button>
 																						{% else %}
 																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																								{% csrf_token %}
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='1'>
@@ -627,6 +666,7 @@
 																					
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																							{% csrf_token %}
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
@@ -637,6 +677,7 @@
 																						</button>
 																						
 																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																							{% csrf_token %}
 																							<input type="hidden" name="assessment" value={{h.0}}>
 																						</form>
 																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
@@ -645,6 +686,7 @@
 																						</button>
 																						
 																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																							{% csrf_token %}
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assess_id" value={{ h.0 }}>
 																						</form>
@@ -656,6 +698,7 @@
 																						
 																						{% if h.2 == False %}
 																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																								{% csrf_token %}
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='0'>
@@ -666,6 +709,7 @@
 																							</button>
 																						{% else %}
 																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																								{% csrf_token %}
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																								<input type="hidden" name="publish_state" value='1'>
@@ -676,6 +720,7 @@
 																							</button>
 																						{% endif %}
 																							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																								{% csrf_token %}
 																								<input type="hidden" name="mod" value={{ module }}>
 																								<input type="hidden" name="assessment" value={{ h.0 }}>
 																							</form>
@@ -727,7 +772,7 @@
 <div class="modal fade" id="create_leaf" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/create_assessment" method="post">
+			<form class="form-horizontal" action="/create_assessment" method="post">{% csrf_token %}
 				<div class="modal-header">
 					<h4>Create an Assessment</h4>
 					<h4>{{ module }}</h4>
@@ -804,7 +849,7 @@
 <div class="modal fade" id="create_leaf_ass" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal" action="create-leaf-assessment" method="post">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
 					<div class="modal-header">
 						<h4>Create a Leaf Assessment</h4>
 					</div>

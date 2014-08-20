@@ -10,7 +10,7 @@
 	
 {% block person_details %}
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
-	<form action="/User" id="details" method="post" hidden='hidden'>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
 	</form>
 {% endblock %}
 
@@ -67,6 +67,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form class="form-horizontal" action="update-fullmark" method="post">
+				{% csrf_token %}
 				<div class="modal-header">
 					<h2><strong>Update Total Mark for</strong></h2>
 					<h2><strong>{{ assessmentName }}</strong></h2>
@@ -154,6 +155,8 @@
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
 					<form method="post" action="update_mark" class="form-inline" role="form">
+						{% csrf_token %}
+						
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
@@ -165,6 +168,7 @@
 				{% else %}
 				<td class="col-md-3">
 					<form  onsubmit='return to_submit({{ per.0 }});' class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" placeholder="Mark awarded" value={{ per.3 }}>
 						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
@@ -213,7 +217,7 @@
 	<div class="modal fade" id="create_leaf_ass" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal" action="create-leaf-assessment" method="post">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
 					<div class="modal-header">
 						<h4>Create a Leaf Assessment</h4>
 					</div>

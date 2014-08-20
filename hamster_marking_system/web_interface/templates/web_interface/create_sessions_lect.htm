@@ -10,7 +10,7 @@
 	
 {% block person_details %}
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
-	<form action="/User" id="details" method="post" hidden='hidden'>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
 	</form>
 {% endblock %}
 
@@ -108,22 +108,26 @@
 		<ul class="dropdown-menu" role="menu">
 			<li>
 				<form action="view-students" method="post" class="form-group-sm">
+					{% csrf_token %}
 					<input type="hidden" id="session" name='session' value={{ x.0 }} >
 					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student</button>
 					
 				</form>
 				<form action="session-info" method="post" class="form-group-sm">
+					{% csrf_token %}
 					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>View Students</button>
 					<input type="hidden" name="mod" value={{ moduleName }}>
 
 				</form>
 				<form action="remove-session" method="post" class="form-group-sm">
+					{% csrf_token %}
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="assessment" value={{ assessment_id }}>
 					<button type="submit" class="btn btn-danger btn-md btn-block" name="session" value={{x.0}}>Delete Session</button>
 				</form>
 				{% if x.2 == 1 %}
 				<form action="change-status" method="post" class="form-group-sm">
+					{% csrf_token %}
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="status" value=0>
 					<input type="hidden" name="assess_id" value={{ assessment_id }}>
@@ -131,6 +135,7 @@
 				</form>
 				{% else %}
 				<form action="change-status" method="post" class="form-group-sm">
+					{% csrf_token %}
 					<input type="hidden" name="mod" value={{ moduleName }}>
 					<input type="hidden" name="status" value=1>
 					<input type="hidden" name="assess_id" value={{ assessment_id }}>
@@ -153,6 +158,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form class="form-horizontal" action="create-session" method="post">
+				{% csrf_token %}
 				<div class="modal-header">
 					<h4>Create a Session for</h4>
 					<h4>{{ assessmentName }}</h4>

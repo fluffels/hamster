@@ -10,7 +10,7 @@
 	
 {% block person_details %}
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
-	<form action="/User" id="details" method="post" hidden='hidden'>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
 	</form>
 {% endblock %}
 
@@ -107,6 +107,7 @@
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
 					<form method="post" action="update-marks" class="form-inline" role="form">
+						{% csrf_token %}
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
@@ -119,6 +120,7 @@
 				{% else %}
 				<td class="col-md-3"><!-- Edit button -->
 					<form  class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
 						       name="mark" placeholder="Mark awarded" value={{ per.3 }}>
 						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>

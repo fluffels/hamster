@@ -123,6 +123,7 @@
 				<td> {{ass.5}}</td>
 				<td>
 					<form action={% url 'view_children_assessment_student' %} method="post">
+						{% csrf_token %}
 						<input type="hidden" name="mod" value={{ module }}>
 						<button  class="btn btn-primary" value={{ ass.0 }} name = 'subs'
 						data-toggle="tooltip" data-placement="left" title="Leaf assessments">  <!-- parent id --> 
@@ -140,11 +141,13 @@
 			<ul class="dropdown-menu" role="menu">
 				<li>
 					<form action="#" method="post" class="form-group-sm">
+						{% csrf_token %}
 						<input type="hidden" name="mod" value={{ module }}>
 						<button type="button" class="btn btn-default btn-md btn-block" name="docType" value="PDF">PDF</button>
 					</form>
 				</li><li>
 					<form action="#" method="post" class="form-group-sm">
+						{% csrf_token %}
 						<input type="hidden" name="mod" value={{ module }}>
 						<button type="button" class="btn btn-primary btn-md btn-block" name="docType" value="CSV">CSV</button>
 					</form>
