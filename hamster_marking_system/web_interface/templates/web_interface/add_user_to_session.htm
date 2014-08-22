@@ -67,21 +67,6 @@
 
 <div class="row">
 	<div class="col-md-6"><!--Left of jumbotron showing students in module -->
-		<!-- Search bar -->
-		<div class="input-group">
-			<input type="text" class="form-control">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-					<li><a href="#">Name</a></li>
-					<li><a href="#">Surname</a></li>
-				</ul>
-			</div>
-		</div>
-		<br><!--*********-->
-		<!-- End of Search bar -->
-
 		
 		<h3><span class="label label-default">Select students to add</span></h3>
 		<form role="form" method="post" action="update-info">{% csrf_token %}
@@ -100,66 +85,33 @@
 	</div>
 	
 	<div class="col-md-6"><!-- Right of jumbotron showing markers for module -->
-		<!-- Search bar -->
-		<div class="input-group">
-		<input type="text" class="form-control">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-					<li><a href="#">Name</a></li>
-					<li><a href="#">Surname</a></li>
-				</ul>
+			
+		<h3><span class="label label-default">Select markers to add</span></h3>
+		{%if tutor%}
+		<form role="form" method="post" action="update-info">{% csrf_token %}
+			<div class="form-group">
+				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession">
+					{%for per in tutor%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+					{%for per in teachingA%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="session" value={{ session_id }}><br>
+				<input type="hidden" name="userS" value=""/><br>
 			</div>
-		</div>
-		<br><!--*********-->
-		<!-- End of Search bar -->
-
-		<div class="list-group">			
-			<h3><span class="label label-default">Select markers to add</span></h3>
-			{%if tutor%}
-			<form role="form" method="post" action="update-info">{% csrf_token %}
-				<div class="form-group">
-					<select multiple class="form-control" name="userM" id="multiselectStudentsForSession">
-						{%for per in tutor%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
-							</option>
-						{%endfor%}
-						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
-							</option>
-						{%endfor%}
-					</select>
-					<input type="hidden" name="session" value={{ session_id }}><br>
-					<input type="hidden" name="userS" value=""/><br>
-				</div>
-				<button type="submit" name="submit" class="btn btn-success btn-block" value={{ module }}>
-				<span class="glyphicon glyphicon-plus"></span> Add Marker(s)</button>
-			</form>
-			{%else%}{%if teachingA%}
-			<form role="form" method="post" action="update-info">{% csrf_token %}
-				<div class="form-group">
-					<label for="name">Select student(s) to add</label>
-					<select multiple class="form-control" name="userM" id="multiselectStudentsForSession">
-						{%for per in teachingA%}
-							<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
-							</option>
-						{%endfor%}
-					</select>
-					<input type="hidden" name="userS" value=""><br>
-					<input type="hidden" name="session" value={{session_id}}><br>
-				</div>
-				<button type="submit" name="submit" class="btn btn-success btn-block" value={{ module }}>
-				<span class="glyphicon glyphicon-plus"></span> Add Marker(s)</button>
-			</form>
-			{%else%}
-				<div class="alert alert-info" role="alert">
-					<strong>There are currently no markers for this module<strong>
-				</div>
-				
-			{%endif%}
-			{%endif%}
-		</div>
+			<button type="submit" name="submit" class="btn btn-success btn-block" value={{ module }}>
+			<span class="glyphicon glyphicon-plus"></span> Add Marker(s)</button>
+		</form>
+		{%else%}
+			<div class="alert alert-info" role="alert">
+				<strong>There are currently no markers for this module<strong>
+			</div>
+			
+		{%endif%}
 	</div>
 </div>
 

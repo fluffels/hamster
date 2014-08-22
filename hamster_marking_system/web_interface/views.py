@@ -487,16 +487,19 @@ def addStudentToSession(request):
     session_id = request.POST['session']
     users = request.POST.lists()
     print "]]]]]]]]]]]]]]]]]] huh wena wa hlanya shem"
-    #print users
-    # users[1][1][0]
+    print users
+    print "Part : " + str(users[0][1])
+    print "len(user[0][1]) = " + str(len(users[0][1]))
+    print "users[5][1] = " + str(users[5][1])
     Studentarray = []
     MarkerArray = []
-    if users[1][0] == 'userS':
-        print users[1][0]
-        for n in users[1][1]:
+    if (users[0][0] == 'userS' and (len(users[0][1]) > 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+        print "Students : " + str(users[0][1])
+        for n in users[0][1]:
             Studentarray.append(n)
     else:
-        for n in users[1][1]:
+        print "Markers : " + str(users[0][1])
+        for n in users[5][1]:
             MarkerArray.append(n)
     print "studnt array"+ str(Studentarray)
     data = {

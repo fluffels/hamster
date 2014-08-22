@@ -285,13 +285,23 @@
 
 <script>
       $(document).ready(function () {
-	$('multiselectStudentsForSession').multiselect({
+	$('#multiselectStudentsForSession').multiselect({
 		includeSelectAllOption : true,
 		enableFiltering : true,
 		disableIfEmpty : true,
 		maxHeight : 350,
 		nonSelectedText : 'No User is selected',
-		buttonWidth : '350px',
+		//buttonWidth : '350px',
+		dropRight : true
+	});
+	
+	$('#multiselectMarkerForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		//buttonWidth : '350px',
 		dropRight : true
 	});
 	
