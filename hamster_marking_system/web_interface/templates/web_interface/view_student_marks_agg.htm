@@ -1,15 +1,15 @@
 {% extends "web_interface/base_template.htm" %}
 
-{% block title %} View Marks {% endblock %}
+{% block title %} Marks {% endblock %}
 
 <!--###########################  Nav bar settings ############################-->
 
 {% block logout_button %}
-	<li><a href="/">Logout</a></li>
+  <li><a href="/">Logout</a></li>
 {% endblock %}
-	
+  
 {% block person_details %}
-	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+  <li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
 {% endblock %}
 
 <!--###########################  End Nav bar settings ############################-->
@@ -18,19 +18,19 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+  <li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+  <li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+  <li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+  <li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->
@@ -38,7 +38,7 @@
 <!-- Use as button -->
 {% block courses_use_as %}
 {% for role in user_roles %}
-	<li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
+  <li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
 {% endfor %}
 {% endblock %}
 <!-- End of Use as button -->
@@ -47,118 +47,519 @@
 
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
+{% block breadcrumbs_2 %}
 <ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li class="active"><a href="#">Assessments</a></li>
+  <li><a href="#">Login</a></li>
+  <li ><a href="#">Home</a></li>
+  <li class="active"><a  href="/use_as/{{ role }}">Marks</a></li>
 </ol>
 {% endblock %}
 
 
 {% block jumbotron_header %}
-	{% if type == -1 %}
-	<div class="row">
-		<div class="col-md-2"></div>
-		<div class="col-md-8">
-		<ul class="nav nav-pills nav-stacked">
-			<li class="active">
-				<a href="#">
-					No Information   
-					<span class="badge"><h4>0</h4></span>
-				</a>
-			</li>
-		</ul>
-		</div>
-		<div class="col-md-2"></div>
-	</div>
-	{% else %}
-	<div class="row">
-		<div class="col-md-2"></div>
-		<div class="col-md-8">
-		<ul class="nav nav-pills nav-stacked">
-			<li class="active">
-				<a href="#">
-					{{ assessmentName.1 }} {{ assessmentName.2 }}    
-					<span class="badge"><h4>{{ assessmentName.0 }}</h4></span>
-				</a>
-			</li>
-		</ul>
-		</div>
-		<div class="col-md-2"></div>
-	</div>
-	{% endif %}
-	
+  <div class="text-center">Marks</div>
+  
+  {% ifequal assessment '' %}
+    
+  {% else %}
+    <div class="text-center"><div class="label label-default">{{ assessment }}</div></div>
+  {% endifequal %}
 {% endblock %}
 
-{% block jumbotron_sub_header %} {{ module }} {% endblock %}
+{% block jumbotron_sub_header %}
+  <div class="text-center">{{ module }}</div>
+{% endblock %}
 
 <!-- jumbotron content -->
 {% block jumbotron_content %}
-
-
 <div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
-		{% if type == -1 %}
-			<div class="alert alert-warning alert-dismissible" role="alert">
-				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
-				</span><span class="sr-only">Close</span></button>
-				<strong>Sorry!</strong> There is no mark for this assessment.
-			</div>
-		{% else %}
-		<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> Assessment Name </strong></td>
-				<td><strong> Aggregated Mark </strong></td>
-				<td><strong> Full Mark </strong></td>
-				<td><strong> Percentage </strong></td>
-				<td><strong> Sub-assessments </strong></td>
-			</tr>
-			{% for ass in assessments %}
-			<tr>
-				<td> {{ass.1}} </td>
-				<td> {{ass.3}} </td>
-				<td> {{ass.4}} </td>
-				<td> {{ass.5}}</td>
-				<td>
-					<form action={% url 'view_children_assessment_student' %} method="post">
-						{% csrf_token %}
-						<input type="hidden" name="mod" value={{ module }}>
-						<button  class="btn btn-primary" value={{ ass.0 }} name = 'subs'
-						data-toggle="tooltip" data-placement="left" title="Leaf assessments">  <!-- parent id --> 
-						<span class="glyphicon glyphicon-arrow-right"></span></button>
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+        
+    <div id="rem-jumbotron" class="well tree-finder">
+      <ul class="nav nav-list list-group">
+        
+        {% ifequal root.0 empty %}
+          <div class="alert alert-warning text-center" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+        {%endifequal%}
+        {%for n in root%}<!-- Major point -->
+          {% ifequal n.3 'Aggregate' %}
+            <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+            <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{n.1}}</button>
+            
+            <!--<div class="btn-group btn-group-xs">-->
+            <!--  <span class="badge">{{n.4}}</span>-->
+            <!--</div>-->
+	    
+	    <div class="btn-group btn-group-xs">
+              <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+		      class="btn btn-primary grid-exp" data-toggle="tooltip"
+		      data-placement="top" title="View mark">
+                <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+              </button>
+            </div>
+            
+            <div  class="btn-group btn-group-xs mark-view-toggle">
+              <button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Mark obtained">{{ n.4 }}</button>
+              <button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Total obtainable mark">{{ n.5 }}</button>
+	      <button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Total obtainable mark">{{ n.6 }} %</button>
+            </div>
+            
+            <div class="btn-group btn-group-xs">
+              <button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Export marks as">
+                <span id="btn-grid-exp" class="fa fa-download"></span>
+              </button>
+            </div>
+            
+            <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+              <form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+                    class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+                {% csrf_token %}
+                <input type="hidden" name="mod" value={{ module }}>
+                <input type="hidden" name="assessment" value={{ n.0 }}>
+              </form>
+              <button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+               class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+               data-module={{ module }} data-assessment_id={{ n.0 }}>
+                <span class="fa fa-file-pdf-o"></span> 
+              </button>
+              
+              <form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+                {% csrf_token %}
+                <input type="hidden" name="assessment" value={{n.0}}>
+              </form>
+              <button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+              data-placement="top" title="Export as ">
+                <span class="fa fa-file-excel-o"></span> 
+              </button>
+            </div>
+            
+            <!--<span class="badge pull-right">{{n.4}}</span>-->
+          {% else %}
+            <li class="list-group-item"><button  type="button" class="btn btn-xs btn-info">{{n.1}}</button>
+            
+	    <div class="btn-group btn-group-xs">
+              <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+		      class="btn btn-primary grid-exp" data-toggle="tooltip"
+		      data-placement="top" title="View mark">
+                <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+              </button>
+            </div>
+	    
+            <div  class="btn-group btn-group-xs mark-view-toggle">
+              <button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Mark obtained">{{ n.4 }}</button>
+              <button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Total obtainable mark">{{ n.5 }}</button>
+	      <button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Total obtainable mark">{{ n.6 }} %</button>
+            </div>
+            
+            <div class="btn-group btn-group-xs">
+              <button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Export marks as">
+                <span id="btn-grid-exp" class="fa fa-download"></span>
+              </button>
+            </div>
+            
+            <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+              <form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+                    class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+                {% csrf_token %}
+                <input type="hidden" name="mod" value={{ module }}>
+                <input type="hidden" name="assessment" value={{ n.0 }}>
+              </form>
+              <button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+               class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+               data-module={{ module }} data-assessment_id={{ n.0 }}>
+                <span class="fa fa-file-pdf-o"></span> 
+              </button>
+              
+              <form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+                {% csrf_token %}
+                <input type="hidden" name="assessment" value={{n.0}}>
+              </form>
+              <button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+              data-placement="top" title="Export as ">
+                <span class="fa fa-file-excel-o"></span> 
+              </button>
+            </div>
+            
+            </li>
+          {% endifequal %}
+          <!--<h1>{{n.3}}</h1>-->
+          {%for m in first%}
+            <ul class="nav nav-list tree">
+              {% for key, value in m.items %}
+                {% ifequal key n.1 %}
+                  {% for y in value %}<!-- Major point 2-->
+                    {% ifequal y.3 'Aggregate' %}
+                      <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+                      <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{y.1}}</button>
+                      
+		      <div class="btn-group btn-group-xs">
+			<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+				class="btn btn-primary grid-exp" data-toggle="tooltip"
+				data-placement="top" title="View mark">
+			  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+			</button>
+		      </div>
+		      
+                      <div  class="btn-group btn-group-xs mark-view-toggle">
+			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
+			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
+			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.6 }} %</button>
+		      </div>
+		      
+		      <div class="btn-group btn-group-xs">
+			<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Export marks as">
+			  <span id="btn-grid-exp" class="fa fa-download"></span>
+			</button>
+		      </div>
+		      
+		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+			<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+			      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+			  {% csrf_token %}
+			  <input type="hidden" name="mod" value={{ module }}>
+			  <input type="hidden" name="assessment" value={{ n.0 }}>
+			</form>
+			<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+			 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+			 data-module={{ module }} data-assessment_id={{ n.0 }}>
+			  <span class="fa fa-file-pdf-o"></span> 
+			</button>
+			
+			<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+			  {% csrf_token %}
+			  <input type="hidden" name="assessment" value={{n.0}}>
+			</form>
+			<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+			data-placement="top" title="Export as ">
+			  <span class="fa fa-file-excel-o"></span> 
+			</button>
+		      </div>
+                      
+                      <!--<span class="badge pull-right">{{y.4}}</span>-->
+                    {% else %}
+                      <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{y.1}}</button>
+                      
+		      <div class="btn-group btn-group-xs">
+			<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+				class="btn btn-primary grid-exp" data-toggle="tooltip"
+				data-placement="top" title="View mark">
+			  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+			</button>
+		      </div>
+		      
+                      <div  class="btn-group btn-group-xs mark-view-toggle">
+			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
+			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
+			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.6 }} %</button>
+		      </div>
+		      
+		      <div class="btn-group btn-group-xs">
+			<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Export marks as">
+			  <span id="btn-grid-exp" class="fa fa-download"></span>
+			</button>
+		      </div>
+		      
+		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+			<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+			      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+			  {% csrf_token %}
+			  <input type="hidden" name="mod" value={{ module }}>
+			  <input type="hidden" name="assessment" value={{ n.0 }}>
+			</form>
+			<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+			 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+			 data-module={{ module }} data-assessment_id={{ n.0 }}>
+			  <span class="fa fa-file-pdf-o"></span> 
+			</button>
+			
+			<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+			  {% csrf_token %}
+			  <input type="hidden" name="assessment" value={{n.0}}>
+			</form>
+			<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+			data-placement="top" title="Export as ">
+			  <span class="fa fa-file-excel-o"></span> 
+			</button>
+		      </div>
+                      
+                      </li>
+                    {% endifequal %}
+                    <!--<h2 style="color:red">{{ y.1}}</h2>-->
+                    {%for s in second%}
+                      <ul class="nav nav-list tree">
+                        {%for key, value in s.items%}
+                          {%ifequal key y.1%}
+                            {%for e in value%}<!-- Major point 3-->
+                              {% ifequal e.3 'Aggregate' %}
+                                <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+                                <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{e.1}}</button>
+                              
+				<div class="btn-group btn-group-xs">
+					<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+						class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="View mark">
+					  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+					</button>
+				</div>
+			      
+                                <div  class="btn-group btn-group-xs mark-view-toggle">
+					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
+					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
+					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.6 }} %</button>
+				      </div>
+				      
+				      <div class="btn-group btn-group-xs">
+					<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Export marks as">
+					  <span id="btn-grid-exp" class="fa fa-download"></span>
+					</button>
+				      </div>
+				      
+				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+					<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+					      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+					  {% csrf_token %}
+					  <input type="hidden" name="mod" value={{ module }}>
+					  <input type="hidden" name="assessment" value={{ n.0 }}>
 					</form>
-				</td>
-			</tr>
-			{% endfor %}
-		</table>
-		{% endif %}
-		<!-- Available for root assessments only, drowdown with export options-->
-		<div class="dropdown">
-			<button type="submit" name="submit" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-				<span class="glyphicon glyphicon-download"></span> Save as <b class="caret"></b></button>
-			<ul class="dropdown-menu" role="menu">
-				<li>
-					<form action="#" method="post" class="form-group-sm">
-						{% csrf_token %}
-						<input type="hidden" name="mod" value={{ module }}>
-						<button type="button" class="btn btn-default btn-md btn-block" name="docType" value="PDF">PDF</button>
+					<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+					 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+					 data-module={{ module }} data-assessment_id={{ n.0 }}>
+					  <span class="fa fa-file-pdf-o"></span> 
+					</button>
+					
+					<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+					  {% csrf_token %}
+					  <input type="hidden" name="assessment" value={{n.0}}>
 					</form>
-				</li><li>
-					<form action="#" method="post" class="form-group-sm">
-						{% csrf_token %}
-						<input type="hidden" name="mod" value={{ module }}>
-						<button type="button" class="btn btn-primary btn-md btn-block" name="docType" value="CSV">CSV</button>
+					<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+					data-placement="top" title="Export as ">
+					  <span class="fa fa-file-excel-o"></span> 
+					</button>
+				</div>
+                              
+                                <!--<span class="badge pull-right">{{e.4}}</span>-->
+                              {% else %}
+                                <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{e.1}}</button>
+                                
+				<div class="btn-group btn-group-xs">
+					<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+						class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="View mark">
+					  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+					</button>
+				</div>
+				
+                                <div  class="btn-group btn-group-xs mark-view-toggle">
+					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
+					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
+					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.6 }} %</button>
+				      </div>
+				      
+				      <div class="btn-group btn-group-xs">
+					<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Export marks as">
+					  <span id="btn-grid-exp" class="fa fa-download"></span>
+					</button>
+				      </div>
+				      
+				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+					<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+					      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+					  {% csrf_token %}
+					  <input type="hidden" name="mod" value={{ module }}>
+					  <input type="hidden" name="assessment" value={{ n.0 }}>
 					</form>
-				</li>
-			</ul>
-		</div>
+					<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+					 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+					 data-module={{ module }} data-assessment_id={{ n.0 }}>
+					  <span class="fa fa-file-pdf-o"></span> 
+					</button>
+					
+					<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+					  {% csrf_token %}
+					  <input type="hidden" name="assessment" value={{n.0}}>
+					</form>
+					<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+					data-placement="top" title="Export as ">
+					  <span class="fa fa-file-excel-o"></span> 
+					</button>
+				</div>
+                                
+                                </li>
+                              {% endifequal %}
+                              <!--<h4  style="color:yellow">{{e.1}}</h4>-->
+                              {%for t in third%}
+                                <ul class="nav nav-list tree">
+                                  {%for key, value in t.items%}
+                                    {%ifequal key e.1%}
+                                      {%for h in value%}<!-- Major point 4-->
+                                        {% ifequal h.3 'Aggregate' %}
+                                          <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+                                          <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{h.1}}</button>
+                                        
+					  <div class="btn-group btn-group-xs">
+						<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+							class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="View mark">
+						  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+						</button>
+					  </div>
+					
+                                          <div  class="btn-group btn-group-xs mark-view-toggle">
+						<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Mark obtained">{{ h.4 }}</button>
+						<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
+						<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Total obtainable mark">{{ h.6 }} %</button>
+					      </div>
+					      
+					      <div class="btn-group btn-group-xs">
+						<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Export marks as">
+						  <span id="btn-grid-exp" class="fa fa-download"></span>
+						</button>
+					      </div>
+					      
+					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+						<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+						      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+						  {% csrf_token %}
+						  <input type="hidden" name="mod" value={{ module }}>
+						  <input type="hidden" name="assessment" value={{ n.0 }}>
+						</form>
+						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+						 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+						 data-module={{ module }} data-assessment_id={{ n.0 }}>
+						  <span class="fa fa-file-pdf-o"></span> 
+						</button>
+						
+						<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+						  {% csrf_token %}
+						  <input type="hidden" name="assessment" value={{n.0}}>
+						</form>
+						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+						data-placement="top" title="Export as ">
+						  <span class="fa fa-file-excel-o"></span> 
+						</button>
+					</div>
+                                        
+                                          <!--<span class="badge pull-right">{{h.4}}</span>-->
+                                        {% else %}
+                                          <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{h.1}}</button>
+                                          
+					    <div class="btn-group btn-group-xs">
+						<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+							class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="View mark">
+						  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+						</button>
+					    </div>
+					  
+                                            <div  class="btn-group btn-group-xs mark-view-toggle">
+						<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Mark obtained">{{ h.4 }}</button>
+						<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
+						<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Total obtainable mark">{{ h.6 }} %</button>
+					      </div>
+					      
+					      <div class="btn-group btn-group-xs">
+						<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+						data-placement="top" title="Export marks as">
+						  <span id="btn-grid-exp" class="fa fa-download"></span>
+						</button>
+					      </div>
+					      
+					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+						<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+						      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+						  {% csrf_token %}
+						  <input type="hidden" name="mod" value={{ module }}>
+						  <input type="hidden" name="assessment" value={{ n.0 }}>
+						</form>
+						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+						 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
+						 data-module={{ module }} data-assessment_id={{ n.0 }}>
+						  <span class="fa fa-file-pdf-o"></span> 
+						</button>
+						
+						<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+						  {% csrf_token %}
+						  <input type="hidden" name="assessment" value={{n.0}}>
+						</form>
+						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+						data-placement="top" title="Export as ">
+						  <span class="fa fa-file-excel-o"></span> 
+						</button>
+					</div>
+                                          
+                                          </li>
+                                        {% endifequal %}
+                                        <!--<h6  style="color:pink">{{h.1}}</h6>-->
+                                      {%endfor%}
+                                      {% ifequal h.3 'Aggregate' %}
+                                        </li>
+                                      {% endifequal %}
+                                    {%endifequal%}
+                                  {%endfor%}
+                                </ul>
+                              {%endfor%}
+                              {% ifequal e.3 'Aggregate' %}
+                                </li>
+                              {% endifequal %}
+                            {%endfor%}
+                          {%endifequal%}
+                        {%endfor%}
+                      </ul>
+                    {%endfor%}
+                    {% ifequal y.3 'Aggregate' %}
+                      </li>
+                    {% endifequal %}
+                  {% endfor %}
+                {% endifequal %}
+              {% endfor %}
+            </ul>
+          {%endfor%}
+          {% ifequal n.3 'Aggregate' %}
+            </li>
+            <li class="nav-divider"></li>
+          {% else %}
+            <li class="nav-divider"></li>
+          {% endifequal %}
+        {%endfor%}
+        
+      </ul>
+    </div>
 
-	</div>
-	<div class="col-md-2"></div>
+  </div>
+  <div class="col-md-3"></div>
 </div>
-
 {% endblock %}
 <!-- End of jumbotron content -->
 <!--###########################  End of jumbotron part ############################-->

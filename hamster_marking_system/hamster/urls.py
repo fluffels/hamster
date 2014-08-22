@@ -42,6 +42,7 @@ urlpatterns = patterns('',
     
     url(r'view_student_assessment$','web_interface.views.viewAssessmentsForStudent', name='view_student_assessment'),
     url(r'student','web_interface.views.getAllChildrenOfAssessmentForStudent', name='view_children_assessment_student'),
+    url(r'testingAssess$','web_interface.views.testingStudentAssessmentForModule', name='view_children_assessment_student'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

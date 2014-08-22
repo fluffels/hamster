@@ -1433,3 +1433,76 @@ def testingAssessment(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root},
                                                                         context_instance=RequestContext(request))
+
+@csrf_exempt
+def testingStudentAssessmentForModule(request):
+    mod = request.POST['studB'];
+    data ={
+        'module':mod
+    }
+    result = views.testingStudentAssessmentForModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+    if res[0]['type'] == '1':
+        print "something"
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
+        print "root"+ str(root)
+        print "---------------------------------------------------------------"
+        print "first"+str(first)
+        print "---------------------------------------------------------------"
+        print "second"+str(second)
+        print "---------------------------------------------------------------"
+        print "third" + str(third)
+        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root,'first':first,
+                                                                        'module':mod,'second':second,'third':third})
+    else:
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root})
+    
+@csrf_exempt
+def testingStudnetAssessment(request):
+    mod = request.POST['studB']
+    assessment = 8
+    data ={
+        'assess_id':assessment
+    }
+    result = views.testingStudentAssessment(request,json.dumps(data))
+    res = json.loads(result.content)
+    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+    if res[0]['type'] == '1':
+        print "something"
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
+        name = res[0]['assess_name']
+        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root,'first':first,
+                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment})
+    else:
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'root':root})

@@ -102,7 +102,81 @@ def getAssessmentForAssessment(assess_id):
         final.append(ThirdChildren)
         return final
 
+def studentAssessmentFromModule(mod,student):
+    root = getAllAssessmentsForModule(mod)
+    final = []
+    roots = []
+    FirstChildren = []
+    SecondChildren = []
+    ThirdChildren = []
+    for nrs in root:
+        if nrs.published == True:
+            print "the assessment is published moss"
+            list = getAssessmentDetails(nrs)
+            mark = getMarkForStudent(student,nrs.id)
+            print "the assessment is published mosos"
+            for data in mark:
+                list.append(data)
+            roots.append(list)
+            children1 = Assessment.objects.filter(parent=nrs.id)
+            firstChildren = []
+            firstChildren = getMarksOfChildrenAssessments(nrs.id,student)
+            for nfs in children1:
+                #firstChildren.append(list)
+                children2 = Assessment.objects.filter(parent=nfs.id)
+                secondChildren = []
+                secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
+                for nss in children2:
+                    #secondChildren.append(list)
+                    children3 = Assessment.objects.filter(parent=nss.id)
+                    thirdChildren = []
+                    thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
+                    #for nts in children3:
+                        
+                        #thirdChildren.append(list)
+                        
+                    ThirdChildren.append({nss.getname(): thirdChildren})
+                SecondChildren.append({nfs.getname():secondChildren})
+            FirstChildren.append({nrs.getname():firstChildren})
+    final.append(roots)
+    final.append(FirstChildren)
+    final.append(SecondChildren)
+    final.append(ThirdChildren)
+    return final
 
+def studentAssessmentForAssessment(assess_id,student):
+        root = getChildrenAssessmentsForAssessmemnt(assess_id)
+        roots = []
+        final = []
+        FirstChildren = []
+        SecondChildren = []
+        ThirdChildren = []
+        agregator = SimpleSumAggregator()
+        for nrs in root:
+            mark = getMarkForStudent(student,nrs[0])
+            print "the assessment is published mosos"
+            for data in mark:
+                nrs.append(data)
+            roots.append(nrs)
+            children1 = Assessment.objects.filter(parent=nrs[0])
+            firstChildren = []
+            firstChildren = getMarksOfChildrenAssessments(nrs[0],student)
+            for nfs in children1:
+                children2 = Assessment.objects.filter(parent=nfs.id)
+                secondChildren = []
+                secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
+                for nss in children2:
+                    children3 = Assessment.objects.filter(parent=nss.id)
+                    thirdChildren = []
+                    thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
+                    ThirdChildren.append({nss.getname(): thirdChildren})
+                SecondChildren.append({nfs.getname():secondChildren})
+            FirstChildren.append({nrs[1]:firstChildren})
+        final.append(roots)
+        final.append(FirstChildren)
+        final.append(SecondChildren)
+        final.append(ThirdChildren)
+        return final
 
 
 # Name: getPersonObjectListFromArrayList(list)
@@ -1423,8 +1497,8 @@ def isMarkGiven(student,leaf_id):
     print "Get all together" +str(leafObj)
     for mark in all_marks:
         print "Get all together"
-      #  if (mark.assessment == leafObj) & (mark.student==student):
-            #return True
+        if (mark.assessment == leafObj) & (mark.student==student):
+            return True
         print "Get all together"
     return False
 
@@ -1681,7 +1755,7 @@ def getMarkForStudent(student_id, assess_id):
         list.append(percentage)
     else:
 
-        agg = BestOfAggregator()
+        agg = SimpleSumAggregator()
         print '*********************'
         print "Bout to aggregate"
         print '********************'
@@ -1714,6 +1788,7 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
         list.append(child.id)
         list.append(name)
         list.append(child.published)
+        list.append(child.assessment_type)
         marks = getMarkForStudent(student_id,child.id)
         print "am hereeeeee"
         list.append(marks[0])
@@ -1727,7 +1802,9 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
         print '============================================='
         print "MY CHILDREN MARKS: "+str(marksOfChildren)
         print '============================================='
-    return marksOfChildren 
+    return marksOfChildren
+
+
 
 def getPublishedChildrenAssessmentsForAssessmentForStudent(assess_id, student_id):
     assessments = Assessment.objects.all()

@@ -1347,3 +1347,84 @@ def testingAssessment(request,jsonObj):
 			
 		}]
 		return HttpResponse(json.dumps(data))
+	
+
+def testingStudentAssessmentForModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	mod = json_data['module']
+	student = request.session['user']['uid'][0]
+	print "Am the student" +str(student)
+	array = api.studentAssessmentFromModule(mod,student)
+	root = array[0]
+	first = array[1]
+	second = array[2]
+	third = array[3]
+	'''print "going into the array"
+	print root
+	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print first
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print second
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print third
+	print "ARRAY : " + str(array)'''
+	if array :
+		
+		print "\n -------------- : "
+		data = [{
+			'type':'1',
+			'root':root,
+			'first':first,
+			'second':second,
+			'third':third
+			
+		}]
+		print "sending data back"
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':'-1',
+			'assessment':array,
+			
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def testingStudentAssessment(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess = json_data['assess_id']
+	print "am here already shem"
+	array = api.studentAssessmentForAssessment(assess,request.session['user']['uid'][0])
+	assess_name = api.getAssessmentName(assess)
+	root = array[0]
+	first = array[1]
+	second = array[2]
+	third = array[3]
+	print "going into the array"
+	print root
+	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print first
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print second
+	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	print third
+	print "ARRAY : " + str(array)
+	if array :
+		print "\n -------------- : "
+		data = [{
+			'type':'1',
+			'root':root,
+			'first':first,
+			'second':second,
+			'third':third,
+			'assess_name':assess_name 
+			
+		}]
+		print "sending data back"
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':'-1',
+			'assessment':array,
+			
+		}]
+		return HttpResponse(json.dumps(data))
