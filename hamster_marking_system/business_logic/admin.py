@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment
+from .models import  Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment
 
 
 class CourseAdmin(admin.ModelAdmin):

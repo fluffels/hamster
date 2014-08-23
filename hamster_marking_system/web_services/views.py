@@ -1350,27 +1350,24 @@ def testingAssessment(request,jsonObj):
 	
 
 def testingStudentAssessmentForModule(request,jsonObj):
+	print "=================================================== \n"
+	print "Web_services: testingStudentAssessmentForModule"
+	print "=================================================== \n"
 	json_data = json.loads(jsonObj)
 	mod = json_data['module']
 	student = request.session['user']['uid'][0]
-	print "Am the student" +str(student)
 	array = api.studentAssessmentFromModule(mod,student)
 	root = array[0]
+	print "ROOT: "+str(root)
 	first = array[1]
+	print "FIRST: "+str(first)
 	second = array[2]
+	print "SECOND: "+str(second)
 	third = array[3]
-	'''print "going into the array"
-	print root
-	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print first
-	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print second
-	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print third
-	print "ARRAY : " + str(array)'''
+	print "THIRD: "+str(third)
+
 	if array :
 		
-		print "\n -------------- : "
 		data = [{
 			'type':'1',
 			'root':root,
@@ -1379,7 +1376,9 @@ def testingStudentAssessmentForModule(request,jsonObj):
 			'third':third
 			
 		}]
-		print "sending data back"
+		print "=================================================== \n"
+		print "Web_services: LEAVING testingStudentAssessmentForModule "
+		print "=================================================== \n"
 		return HttpResponse(json.dumps(data))
 	else:
 		data = [{
@@ -1387,29 +1386,25 @@ def testingStudentAssessmentForModule(request,jsonObj):
 			'assessment':array,
 			
 		}]
+		print "=================================================== \n"
+		print "Web_services: LEAVING testingStudentAssessmentForModule with ERROR "
+		print "=================================================== \n"
 		return HttpResponse(json.dumps(data))
 	
 def testingStudentAssessment(request,jsonObj):
+	print "=================================================== \n"
+	print "Web_services: testingStudentAssessment"
+	print "=================================================== \n"
 	json_data = json.loads(jsonObj)
 	assess = json_data['assess_id']
-	print "am here already shem"
 	array = api.studentAssessmentForAssessment(assess,request.session['user']['uid'][0])
 	assess_name = api.getAssessmentName(assess)
 	root = array[0]
 	first = array[1]
 	second = array[2]
 	third = array[3]
-	print "going into the array"
-	print root
-	print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print first
-	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print second
-	print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	print third
-	print "ARRAY : " + str(array)
 	if array :
-		print "\n -------------- : "
+		
 		data = [{
 			'type':'1',
 			'root':root,
@@ -1419,7 +1414,9 @@ def testingStudentAssessment(request,jsonObj):
 			'assess_name':assess_name 
 			
 		}]
-		print "sending data back"
+		print "=================================================== \n"
+		print "Web_services: LEAVING testingStudentAssessment"
+		print "=================================================== \n"
 		return HttpResponse(json.dumps(data))
 	else:
 		data = [{
@@ -1427,4 +1424,7 @@ def testingStudentAssessment(request,jsonObj):
 			'assessment':array,
 			
 		}]
+		print "=================================================== \n"
+		print "Web_services: leaving testingStudentAssessment with ERROR"
+		print "=================================================== \n"
 		return HttpResponse(json.dumps(data))
