@@ -1,15 +1,17 @@
-from __future__ import division
 import time                     # [jacques] For audit logging
 import datetime
 import json
 import __builtin__
 import __future__
 from operator import itemgetter
+
 from django.db import models
 from django.http import HttpResponse
 from polymorphic import PolymorphicModel
 from django.utils import timezone
 from django.contrib.auth.models import Group
+
+
 
 from ldap_interface.ldap_api import *
 
@@ -54,27 +56,28 @@ class BestOfAggregator(Aggregator):
   numContributors = 0
   
   def aggregateMarksStudent(self, assess_id, student_id):
+    print "============================"
+    print "IN BEST-OF AGGREGATOR"
+    print "============================\n"
     assess_obj = Assessment.objects.get(id=assess_id)
     numContributors = assess_obj.numContributors
     children = Assessment.objects.filter(parent=assess_id)
     list_of_children = []
     aggregator = SimpleSumAggregator()
     
-    if assess_obj.assessment_type == 'Aggregate':
-      for child in children:
-        list_of_children.append(aggregator.aggregateMarksStudent(child.id, student_id))
-      
-      list_of_children.sort(key=lambda x:x[2],reversed=True)
-      
-      list_of_chosen_children= []
-      for i in numContributors:
-        list_of_chosen_children.append(list_of_children[i])
-      
-      return list_of_chosen_children
+    for child in children:
+      list_of_children.append(aggregator.aggregateMarksStudent(child.id, student_id))
     
-    elif assess_obj.assessment_type == 'Leaf':
-      print "Error, trying best of on leaf: " +str(assess_obj)
+    list_of_children.sort(key=lambda x:x[2],reversed=True)
     
+    list_of_chosen_students = []
+    for i in numContributors:
+      list_of_chosen_students.append(list_of_children[i])
+    
+    return list_of_chosen_students
+    
+
+
 #pass the array of weights as the constructure's parameter
 '''
           WEIGHTED-SUM AGGGREGATOR
@@ -126,52 +129,30 @@ class SimpleSumAggregator(Aggregator):
     root = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
     sum_agg_of_children = 0.0
-    sum_total_of_children = 0
+    sum_total_of_children = 0.0
 
     student_obj = Person.objects.get(upId=student_id)
-    if root.assessment_type == 'Aggregate':
-      for child in children:
-        if child.assessment_type == 'Leaf':
-          print "LEAF"
-          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-          mark = markAlloc.getMark()
-          sum_agg_of_children += mark
-          sum_total_of_children += child.full_marks
-          print "Sum AGG: "+ str(child)+ "  "+str(sum_agg_of_children)
-          print "Sum Total: " + str(child) + "  "+str(sum_total_of_children)
-          
-        elif child.assessment_type == 'Aggregate':
-          print "AGGREGATE"
-          sum_agg_of_children += getSumAggOfChildren(child.id, student_id)
-          sum_total_of_children += getSumTotalOfChildren(child.id)
-          print "Sum AGG: "+ str(child)+ "  "+str(sum_agg_of_children)
-          print "Sum Total: " + str(child) + "  "+str(sum_total_of_children)
-          
+
+    for child in children:
+      if child.assessment_type == 'Leaf':
+        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+        mark = markAlloc.getMark()
+        sum_agg_of_children += mark
+        sum_total_of_children += child.full_marks
+        
+      elif child.assessment_type == 'Aggregate':
+        sum_agg_of_children += getSumAggOfChildren(child.id, student_id)
+        sum_total_of_children += getSumTotalOfChildren(child.id)
+        
       if sum_total_of_children == 0.0:
         sum_total_of_children == 1
     
-      percentage = (sum_agg_of_children/sum_total_of_children) *100
-      list = []
-      list.append(sum_agg_of_children)
-      list.append(sum_total_of_children)
-      list.append(percentage)
-      print "Sum AGG: "+ "  "+str(sum_agg_of_children)
-      print "Sum Total: " +  "  "+str(sum_total_of_children)
-      print "Sum Percentage: " +  "  "+str(percentage)
-      
-    else:
-      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
-      mark = markAlloc.getMark()
-      total = root.full_marks
-      perc = ((mark/total) *100)
-      list = []
-      print "Mark: " + str(root) + "  "+ str(mark)
-      list.append(mark)
-      print "Total: " + str(root) + "  "+ str(total)
-      list.append(total)
-      print "Perc: " + str(root) + "  "+ str(perc) +"\n"
-      list.append(perc)
-  
+    percentage = (sum_agg_of_children/sum_total_of_children) *100
+    list = []
+    list.append(sum_agg_of_children)
+    list.append(sum_total_of_children)
+    list.append(percentage)
+    
     return list
 
   def aggregateTotalMarkForLecture(self, assess_id):
@@ -210,7 +191,7 @@ def getSumAggOfChildren(assess_id, student_id):
     total =0
     assess = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
-    
+
     for child in children:
       if child.assessment_type == 'Leaf':
         markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
@@ -268,7 +249,7 @@ class Assessment(PolymorphicModel):
     assessment_type = models.CharField(max_length=65)
     isroot = models.BooleanField( default= True)
     numContributors = models.IntegerField(default=0)
-    weight = models.FloatField(default=0)
+    
     
     def getname(self):
         return self.assess_name
@@ -310,6 +291,7 @@ def deleteAssessment(self):
 #Inherits from Assessment using django-polymorphism
 class AggregateAssessment(Assessment):
     aggregator_name = models.CharField(max_length = 65)
+    weight = models.IntegerField(null=True, blank=True, default=100)
    
     def add_child(self, child_id):
       childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
@@ -400,7 +382,7 @@ class LeafAssessment(Assessment):
 
 #=================================LeafAssessment Function==============================
 def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent_):
-	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, parent =parent_, weight=0, numContributors=0) 
+	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, parent =parent_) 
 	 
 	 a.save()
 	 return a

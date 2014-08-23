@@ -103,9 +103,6 @@ def getAssessmentForAssessment(assess_id):
         return final
 
 def studentAssessmentFromModule(mod,student):
-    '''
-        SIMPLESUM
-    '''
     root = getAllAssessmentsForModule(mod)
     final = []
     roots = []
@@ -114,8 +111,10 @@ def studentAssessmentFromModule(mod,student):
     ThirdChildren = []
     for nrs in root:
         if nrs.published == True:
+            print "the assessment is published moss"
             list = getAssessmentDetails(nrs)
             mark = getMarkForStudent(student,nrs.id)
+            print "the assessment is published mosos"
             for data in mark:
                 list.append(data)
             roots.append(list)
@@ -132,7 +131,8 @@ def studentAssessmentFromModule(mod,student):
                     children3 = Assessment.objects.filter(parent=nss.id)
                     thirdChildren = []
                     thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
-                    #for nts in children3:    
+                    #for nts in children3:
+                        
                         #thirdChildren.append(list)
                         
                     ThirdChildren.append({nss.getname(): thirdChildren})
@@ -143,9 +143,6 @@ def studentAssessmentFromModule(mod,student):
     final.append(SecondChildren)
     final.append(ThirdChildren)
     return final
-    '''
-    BEST-OF
-    '''
 
 def studentAssessmentForAssessment(assess_id,student):
         root = getChildrenAssessmentsForAssessmemnt(assess_id)
@@ -428,7 +425,7 @@ def makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id):
 	        agg_mod_code = old_leaf_obj.mod_id
 	        agg_published = old_leaf_obj.published
 	        agg_aggregator = 'SimpleSum'
-	        agg_weight = old_leaf_obj.weight
+	        agg_weight = None
 	        agg_parent = old_leaf_obj.parent
 	        
 	        new_agg_obj = insertAggregateAssessment(agg_name, agg_type, agg_mod_code, agg_published, agg_aggregator, agg_weight, agg_parent) 
@@ -807,37 +804,7 @@ def publishAssessment(request, assess_id):
     else:
         ass.published = True
         ass.save()
-        
-        if ass.assessment_type == 'Aggregate':
-            publishChildren(ass.id)
-            
         return old
-    
-def publishChildren(parent_id):
-    children = Assessment.objects.filter(parent=parent_id)
-    for child in children:
-        if child.assessment_type == 'Leaf':
-            child.published = True
-            child.save()
-            
-        elif child.assessment_type == 'Aggregate':
-            child.published = True
-            child.save()
-            publishChildren(child.id)
-    
-def unpublishChildren(parent_id):
-    children = Assessment.objects.filter(parent=parent_id)
-    for child in children:
-        if child.assessment_type == 'Leaf':
-            child.published = False
-            child.save()
-            
-        elif child.assessment_type == 'Aggregate':
-            child.published = False
-            child.save()
-            publishChildren(child.id)
-
-
     
 # Name: unpublishAssessment(request, sess_id)
 # Description: Un-publishes an assessment
@@ -850,8 +817,6 @@ def unpublishAssessment(request, assess_id):
     if old == True:
         ass.published = False
         ass.save()
-        if ass.assessment_type == 'Aggregate':
-            unpublishChildren(ass.id)
         return old
         #Do nothing, assessment is already published
 #        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
@@ -1772,14 +1737,14 @@ def getAllPublishedAssessmentsForStudent(mod_code):
 # Returns: Float
 def getMarkForStudent(student_id, assess_id):
     stud = student_id[0]
+    print '=================================================\n'
+    print "Assessment aaaaaaa: " + str(student_id) + '\n'
+    print '================================================='
     stu_obj = Person.objects.get(upId=student_id)
     
     assess_obj = Assessment.objects.get(id=assess_id)
    
-    #if assess_obj.assessment_type == 'Leaf':
-    agg = SimpleSumAggregator()
-    list = agg.aggregateMarksStudent(assess_id, student_id)
-    '''
+    if assess_obj.assessment_type == 'Leaf':
         markAlloc = MarkAllocation.objects.get(assessment=assess_obj, student=stu_obj)
         mark = markAlloc.getMark()
         full = assess_obj.full_marks
@@ -1788,11 +1753,16 @@ def getMarkForStudent(student_id, assess_id):
         list.append(mark)
         list.append(full)
         list.append(percentage)
-        
     else:
+
         agg = SimpleSumAggregator()
+        print '*********************'
+        print "Bout to aggregate"
+        print '********************'
         list = agg.aggregateMarksStudent(assess_id, student_id)
-        '''
+        print '*********************'
+        print "THE LIST---" + str(list)
+        print '********************'
 
     mark = list[0]
     perc = list[2]
@@ -1820,12 +1790,18 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
         list.append(child.published)
         list.append(child.assessment_type)
         marks = getMarkForStudent(student_id,child.id)
+        print "am hereeeeee"
         list.append(marks[0])
         list.append(marks[1])
         list.append(marks[2])
+        print '============================================='
+        print "My LIST MAAAAAN: "+str(list)
+        print '============================================='
         marksOfChildren.append(list)
         #Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark, percentage}
-
+        print '============================================='
+        print "MY CHILDREN MARKS: "+str(marksOfChildren)
+        print '============================================='
     return marksOfChildren
 
 

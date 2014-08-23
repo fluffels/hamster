@@ -1434,7 +1434,7 @@ def testingAssessment(request):
                                                                         'user_roles':user_roles,'root':root},
                                                                         context_instance=RequestContext(request))
 
-
+@csrf_exempt
 def testingStudentAssessmentForModule(request):
     mod = request.POST['studB'];
     data ={
@@ -1462,7 +1462,7 @@ def testingStudentAssessmentForModule(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,'third':third}, context_instance=RequestContext(request))
+                                                                        'module':mod,'second':second,'third':third})
     else:
         print "NONE"
         root = "NONE";
@@ -1471,9 +1471,10 @@ def testingStudentAssessmentForModule(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'root':root}, context_instance=RequestContext(request))
+                                                                        'user_roles':user_roles,'root':root})
     
-def testingStudentAssessment(request):
+@csrf_exempt
+def testingStudnetAssessment(request):
     mod = request.POST['studB']
     assessment = 8
     data ={
@@ -1495,7 +1496,7 @@ def testingStudentAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment}, context_instance=RequestContext(request))
+                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment})
     else:
         print "NONE"
         root = "NONE";
@@ -1504,4 +1505,4 @@ def testingStudentAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'root':root}, context_instance=RequestContext(request))
+                                                                        'user_roles':user_roles,'root':root})
