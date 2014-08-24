@@ -313,7 +313,7 @@
 	}
 	//Toggle is OFF initially
 	var Tree = 'button.tree-toggler';
-	$(Tree).parent().children('ul.tree').toggle(300);
+	//$(Tree).parent().children('ul.tree').toggle(300);	//Makes tree load with children un-expended
 	$(Tree).click(function () {
 		$(this).parent().children('ul.tree').toggle(300);
 		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-open").animate(300);

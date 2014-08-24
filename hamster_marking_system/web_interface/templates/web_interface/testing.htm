@@ -88,7 +88,7 @@
 				{%for n in root%}<!-- Major point -->
 					{% ifequal n.3 'Aggregate' %}
 						<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-						<span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>	{{n.1}}</button>
+						<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{n.1}}</button>
 						
 						<div class="btn-group btn-group-xs">
 							<span class="label label-default">{{n.4}}</span>
@@ -252,7 +252,7 @@
 									{% for y in value %}<!-- Major point 2-->
 										{% ifequal y.3 'Aggregate' %}
 											<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-											<span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>	{{y.1}}</button>
+											<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{y.1}}</button>
 											
 											<div class="btn-group btn-group-xs">
 												<span class="label label-default">{{y.4}}</span>
@@ -416,7 +416,7 @@
 														{%for e in value%}<!-- Major point 3-->
 															{% ifequal e.3 'Aggregate' %}
 																<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-																<span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>	{{e.1}}</button>
+																<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{e.1}}</button>
 															
 																<div class="btn-group btn-group-xs">
 																	<span class="label label-default">{{e.4}}</span>
@@ -579,7 +579,7 @@
 																			{%for h in value%}<!-- Major point 4-->
 																				{% ifequal h.3 'Aggregate' %}
 																					<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-																					<span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>	{{h.1}}</button>
+																					<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{h.1}}</button>
 																				
 																					<div class="btn-group btn-group-xs">
 																						<span class="label label-default">{{h.4}}</span>
