@@ -1506,3 +1506,54 @@ def testingStudnetAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root})
+
+def ChangeSessionTime(request):
+    mod = request.POST['module']
+    session = request.POST['session']
+    assess=request.POST['assess']
+    opn = request.POST['open']
+    close = request.POST['close']
+    
+    data = {
+        'session': session,
+        'open':opn,
+        'close':close
+    }
+    
+    results = views.ChangeSessionTime(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        data = {
+            'assessmentID':assess
+        }
+        res = views.getAllSessionsForAssessment(request,json.dumps(data))
+        sess = json.loads(res.content)
+        sessions = []
+        print sess
+        if sess[0]['type'] == 1:
+            sessions = sess[0]['sessions']
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'sessions':sessions,
+                                                                            'assessmentName':assessmentName,
+                                                                            'moduleName':moduleName,
+                                                                            'assessment_id':assess,})
+        else:
+            list = []
+            list.append('-1')
+            list.append('session data not found')
+            sessions.append(list)
+            assessmentName = sess[0]['assessmentName']
+            moduleName=sess[0]['moduleName']
+            return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})

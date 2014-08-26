@@ -1428,3 +1428,5 @@ def testingStudentAssessment(request,jsonObj):
 			
 		}]
 		return HttpResponse(json.dumps(data))
+	
+

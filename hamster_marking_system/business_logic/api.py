@@ -1885,3 +1885,29 @@ def getPublishedChildrenAssessmentsForAssessmentForStudent(assess_id, student_id
 #################### END STUDENT VIEW FUNCTIONS ###################################
 
 '''
+
+def changeSessionTime(request,session,opn,close):
+    sess=Sessions.objects.get(id=session)
+    start = sess.open_time
+    end=sess.close_time
+    sess.open_time = opn
+    sess.close_time = close
+    sess.save()
+    person = Person.objects.get(upId=request.session['user']['uid'][0])
+    assess = sess.assessment_id
+    if str(start) == str(opn) and str(end) != str(close):
+        print "first one"
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session close time",end,close,assess.mod_id)
+    elif str(start) != str(opn) and str(end) != str(close):
+        print "start :"+ str(start)
+        print "send :"+ str(opn)
+        print "end "+ str(end)
+        print "send "+ str(close)
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session open time",start,opn,assess.mod_id)
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session close time",end,close,assess.mod_id)
+    elif str(start) != str(opn) and str(end) == str(close):
+        print "third one"
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session open time",start,opn,assess.mod_id)
+    else :
+        return False
+    return True
