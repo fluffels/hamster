@@ -729,75 +729,61 @@ def deleteAllocatedPerson(self):
 #-------------------- Audit tables ------------------------
 #----------------------------------------------------------
 
-class AuditAction(models.Model):
-    auditAction = models.IntegerField()
-    auditDesc = models.CharField(max_length=15)
-    
-    def __unicode__(self):
-      return self.auditDesc
 
-
-class AuditTable(models.Model):
-    tableId = models.IntegerField()
-    tableName = models.CharField(max_length=50)
-
-    def __unicode__(self):
-      return self.tableName
-
-
-
-class AuditTableColumn(models.Model):
-    auditTableId = models.ForeignKey('AuditTable')
-    columnId = models.IntegerField()
-    columnName = models.CharField(max_length=30)
-
-    def __unicode__(self):
-      return self.columnName
-
-class AuditLog(models.Model):
+class AuditLogAssessment(models.Model):
     person_id = models.ForeignKey('Person')
-    description = models.CharField(max_length=50)
-    action = models.ForeignKey('AuditAction')
+    mod = models.ForeignKey('module')
+    assessment = models.CharField(max_length = 50)
+    action = models.CharField(max_length=255)
     time = models.DateTimeField()
-    audit_table_id = models.ForeignKey('AuditTable',null=True)
-    audit_table_column_id = models.ForeignKey('AuditTableColumn',null=True)
     old_value = models.CharField(max_length=255,null=True)
     new_value = models.CharField(max_length=255,null=True)
-    affected_table_id = models.IntegerField(null=True)
     
-    def __unicode__(self):
-      return self.person_id
     
+def insertAuditLogAssessment(person,assess,act,old,new,modl):
+  temp = AuditLogAssessment(person_id = person,assessment=assess,action=act,time=datetime.datetime.now(),old_value=old,new_value=new,mod=modl)
+  temp.save()
+  
+class AuditLogSession(models.Model):
+  person_id = models.ForeignKey('Person')
+  mod = models.ForeignKey('module')
+  assessment = models.CharField(max_length=50)
+  session = models.CharField(max_length = 50)
+  action = models.CharField(max_length=255)
+  time = models.DateTimeField()
+  old_value = models.CharField(max_length=255,null=True)
+  new_value = models.CharField(max_length=255,null=True)
+  
+def insertAuditLogSession(person,assess,sess,act,old,new,modl):
+  temp = AuditLogSession(person_id=person,session=sess,assessment=assess,action=act,time=datetime.datetime.now(),old_value=old,new_value=new,mod=modl)
+  temp.save()
+  
+class AuditLogMarkAllocation(models.Model):
+  person_id=models.ForeignKey('Person')
+  student = models.CharField(max_length=255)
+  mod = models.ForeignKey('module')
+  markAllocation = models.ForeignKey('MarkAllocation')
+  action = models.CharField(max_length=255)
+  time=models.DateTimeField()
+  old_value=models.CharField(max_length=255,null=True)
+  new_value=models.CharField(max_length=255,null=True)
 
-#===================================AuditLog functions====================================
-
-def logAudit(request,desc,act,table,column,old,new):
-    p = Person.objects.get(upId=request.session["user"]["uid"][0])
-    t = AuditTable.objects.get(tableName=table)
-    c = AuditTableColumn.objects.get(columnName=column)
-    ti = time.strftime("%Y-%m-%d %H:%M:%S")
-    if (column in {3,6,7,8,10,12,21,23,24,26}):     #[jacques] converts int fields to str for display purposes
-        old = str(old)
-        new = str(new)
-    AuditLog(person_id=p,description=desc,action=act,time=ti,audit_table_id=t,audit_table_column_id=c,old_value=old,new_value=new).save()
+def insertAuditLogMarkAllocation(person,markalloc,stud,act,old,new,modl):
+  temp = AuditLogMarkAllocation(person_id=person,student=stud,markAllocation=markalloc,action=act,time=datetime.datetime.now(),old_value=old,new_value=new,mod=modl)
+  temp.save()
+  
+class AuditLogAllocatePerson(models.Model):
+    person_id=models.ForeignKey('Person')
+    mod = models.ForeignKey('module')
+    allocatePerson = models.CharField(max_length=255)
+    session = models.ForeignKey('Sessions')
+    action = models.CharField(max_length=255)
+    time=models.DateTimeField()
     
+def insertAuditLogAllocatePerson(person,student,ses,act,modl):
+  temp = AuditLogAllocatePerson(person_id=person,allocatePerson=student,time= datetime.datetime.now(),action=act,session=ses,mod=modl)
+  temp.save()
 
-
-def logAuditDetail(person,desc,act,table,column,old,new,table_id):
-    p = Person.objects.get(upId=request.session["user"]["uid"][0])
-    t = AuditTable.objects.get(tableName=table)
-    c = AuditTableColumn.objects.get(columnName=column)
-    aa = AuditAction.objects.get(auditDesc=act)
-    ti = time.strftime("%Y-%m-%d %H:%M:%S")
-    if (column in {3,6,7,8,10,12,21,23,24,26}):     #[jacques] converts int fields to str for display purposes
-        old = str(old)
-        new = str(new)
-    AuditLog(person_id=p,description=desc,action=aa,time=ti,audit_table_id=t,
-             audit_table_column_id=c,old_value=old,new_value=new,affected_table_id=table_id).save()
-
-def getAuditlog():
-    auditlog = AuditLog.objects.all()
-    return auditlog
 
 
 #===================================End of AuditLog functions====================================

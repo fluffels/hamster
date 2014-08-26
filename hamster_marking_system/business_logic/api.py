@@ -458,9 +458,12 @@ def getParent(leaf_obj):
 
 def changeLeafAssessmentFullMark(request,assess_id,mark):
     try:
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
         assess = Assessment.objects.get(id=assess_id)
+        old = assess.full_marks
         assess.full_marks = mark
         assess.save()
+        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
         return True
     except Exception as e:
         raise e
@@ -484,11 +487,14 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 	if parent_id is None:
 		print "I am None"
 		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
-#		logAudit(request,"Inserted new leaf assessment","insert","business_logic_leafassessment","id",None,obj.id)
+		person = Person.objects.get(upId=request.session['user']['uid'][0])
+		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
 	else:
 		print "I am something"
 		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
 		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
+		person = Person.objects.get(upId=request.session['user']['uid'][0])
+		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
 		if is_parent_leaf: #means its a leaf and must be changed
 			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
 			if changed == None:
@@ -765,10 +771,13 @@ def getSessionStatus(sessObj):
 def closeSession(request, sess_id):
     print "closeSession::::::::::::::"
     sess = Sessions.objects.get(id=sess_id)
+    assess = sess.assessment_id
     old = sess.getStatus()
     if old == 1:
         print "IF iS MY MIDDLE NAME..."
         sess.setClose()
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,'Closed',None,None,assess.mod_id)
 #        Detail(request,"Closed session","update","dbModels_sessions","status",old,sess.status,sess.id)
     else:
         return False
@@ -781,9 +790,12 @@ def closeSession(request, sess_id):
 # Return: Boolean
 def openSession(request, sess_id):
     sess = Sessions.objects.get(id=sess_id)
+    assess = sess.assessment_id
     old = sess.getStatus()
     if old == 0:
         sess.setOpen()
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogSession(person,assess.assess_name,sess.session_name,'Opened',None,None,assess.mod_id)
 #        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
         return True
     else:
@@ -804,6 +816,8 @@ def publishAssessment(request, assess_id):
     else:
         ass.published = True
         ass.save()
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogAssessment(person,ass.assess_name,'publish mark',None,None,ass.mod_id)
         return old
     
 # Name: unpublishAssessment(request, sess_id)
@@ -817,6 +831,8 @@ def unpublishAssessment(request, assess_id):
     if old == True:
         ass.published = False
         ass.save()
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogAssessment(person,ass.assess_name,'unpublish mark',None,None,ass.mod_id)
         return old
         #Do nothing, assessment is already published
 #        logAuditDetail(request,"Opened session","update","dbModels_sessions","status",old,sess.status,sess.id)
@@ -832,12 +848,16 @@ def removeSession(request,sess_id):
     try:
         print "how come i dnt delete bathond" + str(sess_id)
         sess =  Sessions.objects.get(id=sess_id)
+        ass=sess.assessment_id
         person = AllocatePerson.objects.filter(session_id=sess)
         if sess:
             if len(person)> 0:
                 for per in person:
                     per.delete()
-            sess.delete() #exception may be thrown here
+            sess.delete()
+            person = Person.objects.get(upId=request.session['user']['uid'][0])
+            insertAuditLogSession(person,ass.assess_name,sess.session_name,'deleted',None,None,ass.mod_id)
+            #exception may be thrown here
 #            logAuditDetail(request,"Deleted session","delete","business_logic_sessions","id",str(oldid1) + "," + str(oldid2),None,sess.id)
             return True
         else:
@@ -853,9 +873,13 @@ def removeSession(request,sess_id):
 # Return: Boolean
 def removeMarkerFromSession(request, sess_id, uid):
     try:
+        person = Person.objects.get(request['user']['uid'][0])
         MarkSess = AllocatePerson.objects.get(session_id_id=sess_id, person_id_id=uid)
         marker_id = MarkSess.getId()
+        sess= MarkSess.session_id
+        assess = sess.assessment
         MarkSess.deleteAllocatedPerson()
+        insertAuditLogAllocatePerson(person,marker_id.upId,sess,"Removed",assess.mod_id)
 #        logAuditDetail(request,"Deleted marker session","delete","business_logic_allocateperson","id",uid + "," + sess_id,None,marker_id)
     except Exception as e:
         print "Cannot remove marker from session, person or session does not exist."
@@ -967,9 +991,12 @@ def setTutorForModule(request, uid, mod_code):
 # Parameter: session_id : Integer
 # Return: Nothing
 def setMarkerForSession(request, uid, session_id):
+    user = Person.objects.get(upId=request['user']['uid'][0])
     person = Person.objects.get(upId=uid)
     session = Sessions.objects.get(id=session_id)
+    assess = session.assessment
     obj = insertPersonToSession(person, session,0,1)
+    insertAuditLogAllocatePerson(user,person.upId,session,assess.mod_id)
 #    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.getId())
 
 # Name: getOpenSessions(assessment_id_)
@@ -1165,6 +1192,8 @@ def updateMarkAllocation(request, student, leaf_id,mark):
                 old = markAlloc.getMark()
                 markAlloc.setMark(int(mark))
                 markAlloc.setmarker(marker)
+                person = Person.objects.get(upId=request.session['user']['uid'][0])
+                insertAuditLogMarkAllocation(person,markAlloc,student,'update mark',old,mark,markAlloc.assessment.mod_id)
                 return True
         else:
             print "MaRK IS WRONG"
@@ -1245,6 +1274,8 @@ def removeAssessment(request,assess_id):
         else:
             print "isAggregate == " + str("False")
             deleteAssessmentSessions(root_)
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogAssessment(person,root_.assess_name,'deleted assessment',None,None,root_.mod_id)
         root_.delete()
           
     else:
@@ -1257,7 +1288,9 @@ def removeAssessment(request,assess_id):
             deleteAssessmentSessions(root_)
             deleteAllChildren(children_)
         else:
-            deleteAssessmentSessions(root_)    
+            deleteAssessmentSessions(root_)
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        insertAuditLogAssessment(person,root_.assess_name,'deleted assessment',None,None,root_.mod_id)
         root_.delete()
  
         if len(childrenOfParent) == 1: #means the aggregate is the only child
@@ -1445,24 +1478,41 @@ def getAssessmentFullMark(assess_id):
 # Description: Adds a student to the session
 # Parameter: uid:string, sess_id_:session Object
 # Return: None
-def addStudentToSession(uid, sess_id):
+def addStudentToSession(request,uid, sess_id):
     try:
+        user = Person.objects.get(upId=request.session['user']['uid'][0])
         sessObj = Sessions.objects.get(id=sess_id)
         person = Person.objects.get(upId = uid)
-        insertPersonToSession(person,sessObj,1,0)
+        assess= sessObj.assessment_id
+        list = []
+        if checkPersonInSession(person,sessObj):
+            return False
+        else:
+            insertPersonToSession(person,sessObj,1,0)
+            insertAuditLogAllocatePerson(user,person.upId,sessObj,"Added to session",assess.mod_id)
     except Exception as e:
         raise e
     return True
 
+def checkPersonInSession(person,sess):
+    allocate = AllocatePerson.objects.all()
+    for n in allocate:
+        if n.session_id == sess and n.person_id == person:
+            return True
+    return False
 # Name:removeStudentFromSession
 # Description: removes the student from the session
 # Parameter: uid:string, sess_id_:session Object
 # Return:  None
 def removeStudentFromSession(uid, sess_id_):
-	try:
-	        person = Person.objects.filter(upId = uid)
-	        stsess = AllocatePerson.objects.get(session_id=sess_id_, student_id=person.id)
-	        stsess.deleteAllocatedPerson()
+	try: 
+	        person = Person.objects.get(upId = uid)
+	        per = Person.objects.get(upId=request.session['user']['uid'][0])
+	        sess = Sessions.objects.get(id=sess_id_)
+	        assess=sess.assessment_id
+	        stsess = AllocatePerson.objects.get(session_id=sess_id_, person_id=person.id)
+	        stsess.delete()
+	        insertAuditLogAllocatePerson(per,uid,sess,"Removed",assess.mod_id)
 	except Exception as e:
 		raise e
 	return True
@@ -1606,8 +1656,9 @@ def checkMarkAllocationExists(uid, ass_id):
 # Parameter: opentime : 
 def createSession(request,session_name,assess_id, opentime, closetime ):
     sessionObj = Assessment.objects.get(id=assess_id)
+    person = Person.objects.get(upId=request.session['user']['uid'][0])
     obj = insertSessions(session_name,sessionObj,opentime,closetime)
-#    logAudit(request,"Inserted new session","insert","dbModels_sessions","id",None,obj.id)
+    insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
     return True
 
 ######################### MARKER VIEW FUNCTIONS ################################

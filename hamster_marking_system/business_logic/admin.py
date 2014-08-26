@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Course, Person, Assessment, Module, Sessions, Person_data, AuditLog, AuditTableColumn, AuditTable, AuditAction, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment
+from .models import Course, Person, Assessment, Module, Sessions, Person_data, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment,  AuditLogAssessment, AuditLogAllocatePerson, AuditLogSession, AuditLogMarkAllocation
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -41,33 +41,30 @@ class MarkAllocationAdmin(admin.ModelAdmin):
 admin.site.register(MarkAllocation, MarkAllocationAdmin)
 
 
-class AuditActionAdmin(admin.ModelAdmin):
+class AuditLogAssessmentAdmin(admin.ModelAdmin):
     class Meta:
-        model = AuditAction
+        model = AuditLogAssessment
 
-admin.site.register(AuditAction, AuditActionAdmin)
+admin.site.register(AuditLogAssessment, AuditLogAssessmentAdmin)
 
 
-class AuditTableAdmin(admin.ModelAdmin):
+class AuditLogAllocatePersonAdmin(admin.ModelAdmin):
     class Meta:
-        model = AuditTable
+        model = AuditLogAllocatePerson
 
-admin.site.register(AuditTable, AuditTableAdmin)
+admin.site.register(AuditLogAllocatePerson, AuditLogAllocatePersonAdmin)
 
-
-class AuditTableColumnAdmin(admin.ModelAdmin):
+class AuditLogSessionAdmin(admin.ModelAdmin):
     class Meta:
-        model = AuditTableColumn
+        model = AuditLogSession
 
-admin.site.register(AuditTableColumn, AuditTableColumnAdmin)
+admin.site.register(AuditLogSession, AuditLogSessionAdmin)
 
-
-class AuditLogAdmin(admin.ModelAdmin):
+class AuditLogMarkAllocationAdmin(admin.ModelAdmin):
     class Meta:
-        model = AuditLog
+        model = AuditLogMarkAllocation
 
-admin.site.register(AuditLog, AuditLogAdmin)
-
+admin.site.register(AuditLogMarkAllocation, AuditLogMarkAllocationAdmin)
 
 class Person_dataAdmin(admin.ModelAdmin):
     class Meta:

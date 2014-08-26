@@ -636,7 +636,7 @@ def addUserToSession(request,jsonObj):
 	print "lol sipho is shouting at her parents via anele";
 	if students:
 		for n in students:
-			api.addStudentToSession(n,session)
+			api.addStudentToSession(request,n,session)
 		
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
