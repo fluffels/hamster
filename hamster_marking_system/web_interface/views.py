@@ -293,7 +293,7 @@ def personDetails(request):
         raise Http404()
 
 def getAllSessionsForAssessment(request):
-    try:
+    #try:
         assess = request.POST['assessment']
         data = {
             'assessmentID':assess
@@ -333,8 +333,8 @@ def getAllSessionsForAssessment(request):
                                                                             'assessment_id':assess,'assessmentName':assessmentName,
                                                                             'moduleName':moduleName},
                                                                             context_instance = RequestContext(request))
-    except Exception as e:
-        raise Http404()
+   # except Exception as e:
+   #     raise Http404()
 
 
 def createAssessment(request):

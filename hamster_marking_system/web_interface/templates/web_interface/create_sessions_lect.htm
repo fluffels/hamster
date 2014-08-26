@@ -98,9 +98,27 @@
 			{% if x.2 == 0 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ban-circle"></span>
 					  {{x.1}}   <b class="caret"></b></button>
+				<form action="change-time" method="post">
+					{% csrf_token %}
+					{{x.3}}<input type='datetime' name='open'/><br/>
+					{{x.4}}<input type='datetime' name='close' />
+					<input type="hidden" name='module' value={{moduleName}} />
+					<input type='hidden' name="session" value={{x.0}} />
+					<input type='hidden' name='assess' value={{assessment_id}} />
+					<input type='submit' name='submit' value=submit/>
+				</form>
 			{% elif x.2 == 1 %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ok-circle"></span>
 					  {{x.1}}   <b class="caret"></b></button>
+				<form action="change-time" method="post">
+					{% csrf_token %}
+					{{x.3}}<input type='datetime' name='open'/><br/>
+					{{x.4}}<input type='datetime' name='close' />
+					<input type="hidden" name='module' value={{moduleName}} />
+					<input type='hidden' name="session" value={{x.0}} />
+					<input type='hidden' name='assess' value={{assessment_id}} />
+					<input type='submit' name='submit' value=submit/>
+				</form>
 			{% else %}
 				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown">
 					  {{x.1}}   <b class="caret"></b></button>

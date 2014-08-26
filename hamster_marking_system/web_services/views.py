@@ -474,8 +474,6 @@ def getAllSessionsForAssessment(request,jsonObject):
 		for x in info:
 			
 			list = api.getSessionDetails(x)
-			status = api.getSessionStatus(x)
-			list.append(status)
 			session.append(list)
 			
 		assess= api.getAssessmentName(assessID)
@@ -1429,4 +1427,23 @@ def testingStudentAssessment(request,jsonObj):
 		}]
 		return HttpResponse(json.dumps(data))
 	
-
+def ChangeSessionTime(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	session = json_data['session']
+	opn = json_data['open']
+	close = json_data['close']
+	
+	info = api.changeSessionTime(request,session,opn,close)
+	
+	if info:
+		data = [{
+			'type': 1,
+			'message':'Time was successfuly changed'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message': 'Time was not successfully changed'
+		}]
+		return HttpResponse(json.dumps(data))

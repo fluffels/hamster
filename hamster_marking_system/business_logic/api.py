@@ -748,6 +748,9 @@ def getSessionDetails(session):
     list = []
     list.append(session.id)
     list.append(session.getName())
+    list.append(session.checkStatus())
+    list.append(str(session.open_time))
+    list.append(str(session.close_time))
     return list
 
 def getSessionObject(sess):
