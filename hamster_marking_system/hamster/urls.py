@@ -44,7 +44,7 @@ urlpatterns = patterns('',
     url(r'student','web_interface.views.getAllChildrenOfAssessmentForStudent', name='view_children_assessment_student'),
     url(r'testingAssess$','web_interface.views.testingStudentAssessmentForModule', name='view_children_assessment_student'),
     url(r'change-time$','web_interface.views.ChangeSessionTime', name='change-time'),
-    #url(r'remove-stud$','web_interface.views.removeUserfromSession', name='change-time'),
+    url(r'remove-stud$','web_interface.views.removeUserfromSession', name='change-time'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

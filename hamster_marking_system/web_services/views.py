@@ -1447,3 +1447,71 @@ def ChangeSessionTime(request,jsonObj):
 			'message': 'Time was not successfully changed'
 		}]
 		return HttpResponse(json.dumps(data))
+
+def removeUserfromSession(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	session = json_data['session']
+	students = json_data['student']
+	Markers = json_data['marker']
+	name = api.getSessionName(session)
+	data = []
+	if students:
+		for n in students:
+			api.removeStudentFromSession(request,n,session)
+		
+		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
+		marker = api.getMarkerForSession(session)
+		
+#		mark = api.getUserInformation(marker)
+		data = [{
+			'type':1,
+			'message':"user's added",
+			'name':name,
+			'students': stud,
+			'marker':marker
+		}]
+	elif Markers:
+		for n in Markers:
+			api.removeMarkerFromSession(request,n,session)
+		
+		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
+		marker = api.getMarkerForSession(session)
+#		mark = api.getUserInformation(marker)
+		data = [{
+			'type':1,
+			'message':"user's added",
+			'name':name,
+			'students': stud,
+			'marker':marker,
+		}]
+	else:
+		student = api.getStudentsForASession(session)
+		stud = api.getUserInformation(student)
+		marker = api.getMarkerForSession(session)
+		mark = api.getUserInformation(marker)
+		data = [{
+			'type':-1,
+			'message':"user's not added",
+			'name':name,
+			'students': stud,
+			'marker':mark,
+		}]
+	return HttpResponse(json.dumps(data))
+
+def Auditlog(request):
+	assess = api.assessmentAuditLog();
+	sess = api.sessionAuditLog();
+	mark = api.markAllocationAuditLog();
+	alloc = api.allocatePersonAuditLog();
+	
+	data =[{
+		'type':1,
+		'message':'data returned',
+		'Assessment':assess,
+		'markAllocation': mark,
+		'Session': sess,
+		'allocatePerson': alloc
+	}]
+	return HttpResponse(json.dumps(data))

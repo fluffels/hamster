@@ -876,7 +876,7 @@ def removeSession(request,sess_id):
 # Return: Boolean
 def removeMarkerFromSession(request, sess_id, uid):
     try:
-        person = Person.objects.get(request['user']['uid'][0])
+        person = Person.objects.get(request.session['user']['uid'][0])
         MarkSess = AllocatePerson.objects.get(session_id_id=sess_id, person_id_id=uid)
         marker_id = MarkSess.getId()
         sess= MarkSess.session_id
@@ -1507,7 +1507,7 @@ def checkPersonInSession(person,sess):
 # Description: removes the student from the session
 # Parameter: uid:string, sess_id_:session Object
 # Return:  None
-def removeStudentFromSession(uid, sess_id_):
+def removeStudentFromSession(request,uid, sess_id_):
 	try: 
 	        person = Person.objects.get(upId = uid)
 	        per = Person.objects.get(upId=request.session['user']['uid'][0])
@@ -1515,7 +1515,7 @@ def removeStudentFromSession(uid, sess_id_):
 	        assess=sess.assessment_id
 	        stsess = AllocatePerson.objects.get(session_id=sess_id_, person_id=person.id)
 	        stsess.delete()
-	        insertAuditLogAllocatePerson(per,uid,sess,"Removed",assess.mod_id)
+	        insertAuditLogAllocatePerson(per,uid,sess,"Removed from Session",assess.mod_id)
 	except Exception as e:
 		raise e
 	return True
@@ -1914,3 +1914,68 @@ def changeSessionTime(request,session,opn,close):
     else :
         return False
     return True
+
+def assessmentAuditLog():
+    log = AuditLogAssessment.objects.all()
+    list = []
+    assesslog = []
+    for logged in log:
+        assesslog.append(logged.id)
+        assesslog.append(logged.person_id.upId)
+        assesslog.append(logged.mod)
+        assesslog.append(logged.assessment)
+        assesslog.append(logged.action)
+        assesslog.append(logged.time)
+        assesslog.append(logged.old_value)
+        assesslog.append(logged.new_value)
+        list.append(assesslog)
+    return list
+
+def sessionAuditLog():
+    log = AuditLogSession.objects.all()
+    list = []
+    sesslog = []
+    for logged in log:
+        sesslog.append(logged.id)
+        sesslog.append(logged.person_id.upId)
+        sesslog.append(logged.mod)
+        sesslog.append(logged.assessment)
+        sesslog.append(logged.session)
+        sesslog.append(logged.action)
+        sesslog.append(logged.time)
+        sesslog.append(logged.old_value)
+        sesslog.append(logged.new_value)
+        list.append(sesslog)
+    return list
+
+def markAllocationAuditLog():
+    log = AuditLogMarkAllocation.objects.all()
+    list = []
+    markAlloc = []
+    for  logged in log:
+        markAlloc.append(logged.id)
+        markAlloc.append(logged.person_id.upId)
+        markAlloc.append(logged.student)
+        markAlloc.append(logged.mod)
+        markAlloc.append(logged.action)
+        markAlloc.append(logged.time)
+        markAlloc.append(logged.old_value)
+        markAlloc.append(logged.new_value)
+        list.append(markAlloc)
+    return list
+
+def allocatePersonAuditLog():
+    log = AuditLogAllocatePerson.objects.all()
+    list = []
+    allocate = []
+    for logged in log:
+        allocate.append(logged.id)
+        allocate.append(logged.person_id.upId)
+        allocate.append(logged.mod)
+        allocate.append(logged.allocatePerson)
+        allocate.append(logged.session.session_name)
+        alloctae.append(logged.action)
+        allocate.append(logged.time)
+        list.append(allocate)
+    return list
+

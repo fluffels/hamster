@@ -1557,3 +1557,51 @@ def ChangeSessionTime(request):
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
+
+def removeUserfromSession(request):
+    mod = request.POST['submit']
+    session_id = request.POST['session']
+    users = request.POST.lists()
+    print "]]]]]]]]]]]]]]]]]] huh wena wa hlanya shem"
+    #print users
+    # users[1][1][0]
+    Studentarray = []
+    MarkerArray = []
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+        print "Students : " + str(users[0][1])
+        for n in users[0][1]:
+            Studentarray.append(n)
+    else:
+        print "Markers : " + str(users[0][1])
+        for n in users[5][1]:
+            MarkerArray.append(n)
+    print "studnt array"+ str(Studentarray)
+    data = {
+        'student':Studentarray,
+        'marker':MarkerArray,
+        'session':session_id	
+    }
+    results = views.removeUserfromSession(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        name = res[0]['name']
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker},context_instance=RequestContext(request))
+
+def AuditLog(request):
+    result = views.Auditlog(request)
+    res = json.loads(result.content)
+    assess = res[0]['Assessment']
+    session=res[0]['Session']
+    markAlloc= res[0]['markAllocation']
+    allocate = res[0]['allocatePerson']
+    
+    
