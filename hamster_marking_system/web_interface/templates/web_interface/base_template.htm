@@ -389,6 +389,9 @@
 		$(this_btn).parent().parent().children('div.mark-view-toggle').toggle('slow');
 	}
 	
+	function goBack() {
+		window.history.back()
+	}
 	//Called when create leaf assessment modal is called
 	//Replaces information in modal before it is posted
 	$(document).on('click', '#addAssessmentBtn', function() {
