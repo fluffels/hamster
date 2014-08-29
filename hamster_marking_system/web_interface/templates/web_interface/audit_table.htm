@@ -1,0 +1,202 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Assessments {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs_2 %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a  href="/use_as/{{ role }}">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %}
+	
+	{% ifequal assessment '' %}
+		
+	{% else %}
+		<div class="text-center"><div class="label label-default">Audit Table</div></div>
+	{% endifequal %}
+{% endblock %}
+
+{% block jumbotron_sub_header %}
+{% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+<!-- End of jumbotron content -->
+
+<!-- Audit table -->
+<div class="tabbable">
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#pane1" data-toggle="tab">Assessments</a></li>
+    <li><a href="#pane2" data-toggle="tab">Sessions</a></li>
+    <li><a href="#pane3" data-toggle="tab">Allocate Person</a></li>
+    <li><a href="#pane4" data-toggle="tab">Mark Allocation</a></li>
+  </ul>
+  <div class="tab-content">
+    <div id="pane1" class="tab-pane active">
+      <h4>Assessments Audit Log</h4>
+		<!-- Table1 -->
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td><strong> User </strong></td>
+				<td><strong> Module </strong></td>
+				<td><strong> Assessment </strong></td>
+				<td><strong> Action </strong></td>
+				<td><strong> Time </strong></td>
+				<td><strong> Old value </strong></td>
+				<td><strong> New value </strong></td>
+			</tr>
+			{% for x in assess %}
+			<tr>
+				<td> {{x.1}} </td>
+				<td> {{x.2}} </td>
+				<td> {{x.3}} </td>
+				<td> {{x.4}} </td>
+				<td> {{x.5}} </td>
+				<td> {{x.6}} </td>
+				<td> {{x.7}} </td>
+			</tr>
+			{% endfor %}
+		</table>
+		<!-- ./Table1 -->
+    </div>
+    <div id="pane2" class="tab-pane">
+    <h4>Sessions Audit Log</h4>
+      <!-- Table2 -->
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td><strong> User </strong></td>
+				<td><strong> Module </strong></td>
+				<td><strong> Assessment </strong></td>
+				<td><strong> Session </strong></td>
+				<td><strong> Action </strong></td>
+				<td><strong> Time </strong></td>
+				<td><strong> Old value </strong></td>
+				<td><strong> New value </strong></td>
+			</tr>
+			{% for x in session %}
+			<tr>
+				<td> {{x.1}} </td>
+				<td> {{x.2}} </td>
+				<td> {{x.3}} </td>
+				<td> {{x.4}} </td>
+				<td> {{x.5}} </td>
+				<td> {{x.6}} </td>
+				<td> {{x.7}} </td>
+				<td> {{x.8}} </td>
+			</tr>
+			{% endfor %}
+		</table>
+		<!-- ./Table2 -->
+    </div>
+    <div id="pane3" class="tab-pane">
+      <h4>Allocate Person Audit Log</h4>
+      <!-- Table3 -->
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td><strong> User </strong></td>
+				<td><strong> Module </strong></td>
+				<td><strong> Session </strong></td>
+				<td><strong> Student </strong></td>
+				<td><strong> Action </strong></td>
+				<td><strong> Time </strong></td>
+			</tr>
+			{% for x in allocate %}
+			<tr>
+				<td> {{x.1}} </td>
+				<td> {{x.2}} </td>
+				<td> {{x.4}} </td>
+				<td> {{x.3}} </td>
+				<td> {{x.5}} </td>
+				<td> {{x.6}} </td>
+			</tr>
+			{% endfor %}
+		</table>
+		<!-- ./Table3 -->
+    </div>
+    <div id="pane4" class="tab-pane">
+      <h4>Mark Allocation Audit Log</h4>
+      <!-- Table4 -->
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td><strong> User </strong></td>
+				<td><strong> Module </strong></td>
+				<td><strong> Student </strong></td>
+				<td><strong> Session </strong></td>
+				<td><strong> Action </strong></td>
+				<td><strong> Time </strong></td>
+				<td><strong> Old </strong></td>
+				<td><strong> New </strong></td>
+			</tr>
+			{% for x in markAlloc %}
+			<tr>
+				<td> {{x.1}} </td>
+				<td> {{x.3}} </td>
+				<td> {{x.2}} </td>
+				<td> {{x.8}} </td>
+				<td> {{x.4}} </td>
+				<td> {{x.5}} </td>
+				<td> {{x.6}} </td>
+				<td> {{x.7}} </td>
+			</tr>
+			{% endfor %}
+		</table>
+		<!-- ./Table4 -->
+    </div>
+  </div><!-- /.tab-content -->
+</div><!-- /.tabbable -->
+{% endblock %}
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

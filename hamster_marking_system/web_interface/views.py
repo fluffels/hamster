@@ -1587,7 +1587,7 @@ def removeUserfromSession(request):
         name = res[0]['name']
         students = res[0]['students']
         marker = res[0]['marker']
-        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+        return render_to_response("web_interface/audit_table.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -1604,4 +1604,12 @@ def AuditLog(request):
     markAlloc= res[0]['markAllocation']
     allocate = res[0]['allocatePerson']
     
+    return render_to_response("web_interface/audit_table.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assess':assess,
+                                                                        'session':session,'markAlloc':markAlloc,
+                                                                        'allocate':allocate},context_instance=RequestContext(request))
     

@@ -1504,6 +1504,7 @@ def Auditlog(request):
 	assess = api.assessmentAuditLog();
 	sess = api.sessionAuditLog();
 	mark = api.markAllocationAuditLog();
+	print "Mark alloc : " + str(mark)
 	alloc = api.allocatePersonAuditLog();
 	
 	data =[{

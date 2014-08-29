@@ -1918,14 +1918,15 @@ def changeSessionTime(request,session,opn,close):
 def assessmentAuditLog():
     log = AuditLogAssessment.objects.all()
     list = []
-    assesslog = []
+    
     for logged in log:
+        assesslog = []
         assesslog.append(logged.id)
         assesslog.append(logged.person_id.upId)
-        assesslog.append(logged.mod)
+        assesslog.append(logged.mod.module_code)
         assesslog.append(logged.assessment)
         assesslog.append(logged.action)
-        assesslog.append(logged.time)
+        assesslog.append(str(logged.time))
         assesslog.append(logged.old_value)
         assesslog.append(logged.new_value)
         list.append(assesslog)
@@ -1934,15 +1935,16 @@ def assessmentAuditLog():
 def sessionAuditLog():
     log = AuditLogSession.objects.all()
     list = []
-    sesslog = []
+    
     for logged in log:
+        sesslog = []
         sesslog.append(logged.id)
         sesslog.append(logged.person_id.upId)
-        sesslog.append(logged.mod)
+        sesslog.append(logged.mod.module_code)
         sesslog.append(logged.assessment)
         sesslog.append(logged.session)
         sesslog.append(logged.action)
-        sesslog.append(logged.time)
+        sesslog.append(str(logged.time))
         sesslog.append(logged.old_value)
         sesslog.append(logged.new_value)
         list.append(sesslog)
@@ -1950,32 +1952,38 @@ def sessionAuditLog():
 
 def markAllocationAuditLog():
     log = AuditLogMarkAllocation.objects.all()
+    print str(log)
     list = []
-    markAlloc = []
+    
     for  logged in log:
+        markAlloc = []
+        print "Audit log: " + str(logged.old_value) + " ---> " + str(logged.new_value)
+        session = logged.markAllocation.assessment
         markAlloc.append(logged.id)
         markAlloc.append(logged.person_id.upId)
         markAlloc.append(logged.student)
-        markAlloc.append(logged.mod)
+        markAlloc.append(logged.mod.module_code)
         markAlloc.append(logged.action)
-        markAlloc.append(logged.time)
+        markAlloc.append(str(logged.time))
         markAlloc.append(logged.old_value)
         markAlloc.append(logged.new_value)
+        markAlloc.append(session.assess_name)
         list.append(markAlloc)
     return list
 
 def allocatePersonAuditLog():
     log = AuditLogAllocatePerson.objects.all()
     list = []
-    allocate = []
+    
     for logged in log:
+        allocate = []
         allocate.append(logged.id)
         allocate.append(logged.person_id.upId)
-        allocate.append(logged.mod)
+        allocate.append(logged.mod.module_code)
         allocate.append(logged.allocatePerson)
         allocate.append(logged.session.session_name)
         alloctae.append(logged.action)
-        allocate.append(logged.time)
+        allocate.append(str(logged.time))
         list.append(allocate)
     return list
 
