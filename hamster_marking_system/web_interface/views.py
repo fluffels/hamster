@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
+from .decorators import isLecture
 
 def home(request):
     return render_to_response("web_interface/login.htm",
@@ -291,7 +292,7 @@ def personDetails(request):
                                                                             context_instance = RequestContext(request))
     else:
         raise Http404()
-
+@isLecture
 def getAllSessionsForAssessment(request):
     #try:
         assess = request.POST['assessment']
@@ -336,7 +337,7 @@ def getAllSessionsForAssessment(request):
    # except Exception as e:
    #     raise Http404()
 
-
+@isLecture
 def createAssessment(request):
     try:
         assessName = request.POST['name']
@@ -373,7 +374,7 @@ def createAssessment(request):
     except Exception as e:
         raise Http404()
 
-
+@isLecture
 def createSession(request):
     try:
         print "huh gane y"
@@ -442,7 +443,7 @@ def searchForStudent(request):
                                                                         'user_roles':user_roles,
                                                                         'list_of_people':list_of_people},
                                                                         context_instance = RequestContext(request))
-
+@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -482,6 +483,7 @@ def getAllStudentOfModule(request):
                                                                         'sessionName':name},
                                                                         context_instance = RequestContext(request))
 
+@isLecture
 def addStudentToSession(request):
     mod = request.POST['submit']
     session_id = request.POST['session']
@@ -559,6 +561,7 @@ def getAllPersonOfSession(request):
                                                                         'sessionName':'An error occurred, a session was not found!',
                                                                         'marker':[]},context_instance = RequestContext(request))
 
+
 def getAllChildrenOfAssessment(request):
     assess_id = request.POST['assessment']
     mod = request.POST['mod']
@@ -595,6 +598,7 @@ def getAllChildrenOfAssessment(request):
                                                                         'module':mod,'assessmentName':name,'assess_id':assess_id,
                                                                         'fullmark':fullmark,'type':-1},context_instance = RequestContext(request))
 
+@isLecture
 def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['mod']
@@ -672,7 +676,7 @@ def updateMarkForStudent(request):
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,
                                                                         'message':0},context_instance = RequestContext(request))
-
+@isLecture
 def deleteAssessment(request):
     try:
         assess_id = request.POST['assess_id']
@@ -718,7 +722,8 @@ def deleteAssessment(request):
                                                                                 context_instance = RequestContext(request))
     except Exception as e:
         raise Http404()
-    
+
+@isLecture
 def deleteSession(request):
     sess_id = request.POST['session']
     assess_id = request.POST['assessment']
@@ -806,7 +811,7 @@ def deleteSession(request):
                                                                             'moduleName':moduleName,'message':0},
                                                                             context_instance = RequestContext(request))
 
-
+@isLecture
 def changeAssessmentFullMark(request):
     assess_id = request.POST['assess_id']
     mod = request.POST['mod']
@@ -840,7 +845,7 @@ def changeAssessmentFullMark(request):
                                                                                 'assess_id':assess_id,'fullmark':fullmark},
                                                                                 context_instance = RequestContext(request))
 
-
+@isLecture
 def setPublishedStatus(request):
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
@@ -920,7 +925,7 @@ def setPublishedStatus(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root},
                                                                                 context_instance = RequestContext(request))
-
+@isLecture
 def setPublishedStatusInLeaf(request):
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
@@ -1003,6 +1008,7 @@ def viewAssessment(request,module):
     else:
         raise Http404()
 
+@isLecture
 def openOrCloseSession(request):
     assess_id = request.POST['assess_id']
     sess_id = request.POST['sess_id']

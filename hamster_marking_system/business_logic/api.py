@@ -220,6 +220,8 @@ def getAllStudentsOfModule(mod_code):
 #        print "if " + str(per.studentOf_module) + "==" + str(modObj)
         try:
             module_needed = per.studentOf_module.get(module_code=mod_code)
+            print "Are you there and if you are who are you"
+            print per.file
         except Exception as e:
             print e
         if module_needed:
@@ -353,7 +355,7 @@ def getModuleNameForAssessment(assess_id):
 #            print result.getModuleCode()
 #    print "------------------------------"
     return result.getModuleCode()
-	
+
 # Name: checkIfAssessmentIsLeaf(asssess_id)
 # Description: Checks if the assessment is a leaf assessment
 # Parameter: assess_id: String
