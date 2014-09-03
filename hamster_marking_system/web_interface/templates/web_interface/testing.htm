@@ -157,6 +157,15 @@
 								<span class="glyphicon glyphicon-volume-up"></span>
 								</button>
 							{% endif %}
+							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+								{% csrf_token %}
+								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="assess_id" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="Choose Aggregator">
+								<span class="glyphicon glyphicon-stats"></span>
+							</button>
 						</div>
 						
 						<!--<span class="label label-default pull-right">{{n.4}}</span>-->
@@ -320,6 +329,15 @@
 													<span class="glyphicon glyphicon-volume-up"></span>
 													</button>
 												{% endif %}
+												<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+													{% csrf_token %}
+													<input type="hidden" name="mod" value={{ module }}>
+													<input type="hidden" name="assess_id" value={{ n.0 }}>
+												</form>
+												<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+												data-placement="top" title="Choose Aggregator">
+													<span class="glyphicon glyphicon-stats"></span>
+												</button>
 											</div>
 											
 											<!--<span class="label label-default pull-right">{{y.4}}</span>-->
@@ -484,6 +502,15 @@
 																		<span class="glyphicon glyphicon-volume-up"></span>
 																		</button>
 																	{% endif %}
+																	<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																		{% csrf_token %}
+																		<input type="hidden" name="mod" value={{ module }}>
+																		<input type="hidden" name="assess_id" value={{ n.0 }}>
+																	</form>
+																	<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																	data-placement="top" title="Choose Aggregator">
+																		<span class="glyphicon glyphicon-stats"></span>
+																	</button>
 																</div>
 															
 																<!--<span class="label label-default pull-right">{{e.4}}</span>-->
@@ -646,6 +673,15 @@
 																							<span class="glyphicon glyphicon-volume-up"></span>
 																							</button>
 																						{% endif %}
+																						<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																							{% csrf_token %}
+																							<input type="hidden" name="mod" value={{ module }}>
+																							<input type="hidden" name="assess_id" value={{ n.0 }}>
+																						</form>
+																						<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																						data-placement="top" title="Choose Aggregator">
+																							<span class="glyphicon glyphicon-stats"></span>
+																						</button>
 																					</div>
 																				
 																					<!--<span class="label label-default pull-right">{{h.4}}</span>-->

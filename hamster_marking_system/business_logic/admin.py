@@ -1,13 +1,37 @@
 from django.contrib import admin
 
-from .models import Course, Person, Assessment, Module, Sessions, Person_data, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment,  AuditLogAssessment, AuditLogAllocatePerson, AuditLogSession, AuditLogMarkAllocation
+from .models import  SimpleSumAggregator, BestOfAggregator, WeightedSumAggregator, Aggregator, Person, Assessment, Module, Sessions, Person_data, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment,  AuditLogAssessment, AuditLogAllocatePerson, AuditLogSession, AuditLogMarkAllocation
 
-
+'''
 class CourseAdmin(admin.ModelAdmin):
     class Meta:
         model = Course
 
 admin.site.register(Course, CourseAdmin)
+'''
+class AggregatorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Aggregator
+
+admin.site.register(Aggregator, AggregatorAdmin)
+       
+class SimpleSumAggregatorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = SimpleSumAggregator
+        
+admin.site.register(SimpleSumAggregator, SimpleSumAggregatorAdmin)
+       
+class BestOfAggregatorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = BestOfAggregator
+        
+admin.site.register(BestOfAggregator, BestOfAggregatorAdmin)
+
+class WeightedSumAggregatorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = WeightedSumAggregator
+        
+admin.site.register(WeightedSumAggregator, WeightedSumAggregatorAdmin)
 
 class PersonAdmin(admin.ModelAdmin):
     class Meta:

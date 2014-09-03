@@ -708,7 +708,7 @@ def getAllChildrenOfAssessment(request,jsonObj):
 	assess = json_data['assess_id']
 	mod = json_data['mod']
 	name = api.getAssessmentName(assess)
-	child = api.getChildrenAssessmentsForAssessmemnt(assess)
+	child = api.getChildrenAssessmentsForAssessment(assess)
 	if child:
 		data = [{
 			'type':1,
@@ -1516,3 +1516,65 @@ def Auditlog(request):
 		'allocatePerson': alloc
 	}]
 	return HttpResponse(json.dumps(data))
+
+'''
+###################### Aggregation Views ####################################
+'''
+def chooseAggregator(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	
+	info = api.getAggregationInfo(assess_id)
+
+	if info is not None:
+
+		numContributors = info[0]
+		children = info[1]
+		data = {
+			'type':1,
+			'numContributors':numContributors,
+			'children':children
+		}
+		return HttpResponse(json.dumps(data))
+	
+	else:
+		pass #trying to aggregate a leaf/error
+	
+
+def aggregateMarkForAssessment(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	agg_name = json_data['agg_name']
+	assess_id = json_data['assess_id']
+	children = json_data['children']
+	numContributors = json_data['numContributors']
+	
+	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, children )
+	
+	mod = json_data['module']
+	array = api.getAssessment(mod)
+	root = array[0]
+	first = array[1]
+	second = array[2]
+	third = array[3]
+
+	if array :
+		data = [{
+			'type':'1',
+			'root':root,
+			'first':first,
+			'second':second,
+			'third':third
+			
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':'-1',
+			'assessment':array,
+			
+		}]
+		return HttpResponse(json.dumps(data))
+
+'''
+###################### End Aggregation Views ###############################
+'''

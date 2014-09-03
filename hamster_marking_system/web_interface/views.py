@@ -1613,3 +1613,74 @@ def AuditLog(request):
                                                                         'session':session,'markAlloc':markAlloc,
                                                                         'allocate':allocate},context_instance=RequestContext(request))
     
+'''
+###################### Aggregation Views ####################################
+'''
+def chooseAggregator(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['mod']
+    data ={
+        'assess_id':assess_id,
+    }
+    result = views.chooseAggregator(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res['type'] ==1:
+        numContributors = res['numContributors']
+        children = res['children']
+
+        return render_to_response("web_interface/aggregate.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'numContributors':numContributors,
+                                                                        'children':children, 'assess_id':assess_id, 'module':module}, context_instance=RequestContext(request))
+
+
+def aggregateMarkForAssessment(request):
+    agg_name = request.POST['agg_name']
+    numContributors = request.POST['numC']
+    children = request.POST['children']
+    assess_id = request.POST['assess_id']
+    mod = request.POST['module']
+    data = {
+        'assess_id':assess_id,
+        'agg_name':agg_name,
+        'children':children,
+        'numContributors':numContributors,
+        'module':mod
+    }
+    
+    result = views.aggregateMarkForAssessment(request,json.dumps(data))
+    res = json.loads(result.content)
+
+    if res[0]['type'] == '1':
+                print "something"
+                root = res[0]['root']
+                first = res[0]['first']
+                second = res[0]['second']
+                third = res[0]['third']
+                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod,'assessment':'',
+                                                                                'second':second,'third':third},
+                                                                                context_instance = RequestContext(request))
+    else:
+        root = "NONE";
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'root':root},
+                                                                        context_instance = RequestContext(request))
+
+
+'''
+###################### End Aggregation Views ###############################
+'''

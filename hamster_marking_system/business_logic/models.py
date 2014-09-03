@@ -1,17 +1,15 @@
-import time                     # [jacques] For audit logging
+from __future__ import division
+import time                     
 import datetime
 import json
 import __builtin__
 import __future__
 from operator import itemgetter
-
 from django.db import models
 from django.http import HttpResponse
 from polymorphic import PolymorphicModel
 from django.utils import timezone
 from django.contrib.auth.models import Group
-
-
 
 from ldap_interface.ldap_api import *
 
@@ -45,40 +43,153 @@ def getPersonFromArr(uid) :
   '''
   return person
 
-class Aggregator(object):
-    def aggregateMarks(self,assessment=[]):
-        pass
+class Aggregator(PolymorphicModel):
+    aggregator_name = models.CharField(max_length=65)
+    assessment = models.ForeignKey('Assessment')
+  
+    def setname(self, name):
+      self.aggregator_name = name
+      self.save()
+ 
+    def getname(self):
+      return self.aggregator_name
+    
+    def getAssessmentId(self):
+      return self.assessment
+ 
+    def __unicode__(self):
+      return self.aggregator_name
+
+def insertSimpleSumAggregator(assess):
+  a = SimpleSumAggregator(aggregator_name = 'SimpleSum', assessment=assess)
+  a.save()
+  
+  return a
+
+def insertBestOfAggregator(assess, numC):
+  a = BestOfAggregator(aggregator_name = 'BestOf', assessment=assess, numContributors=numC)
+  a.save()
+  
+  return a
+
+def insertWeightedSumAggregator(assess):
+  a = WeightedSumAggregator(aggregator_name = 'WeightedSum', assessment=assess)
+  a.save()
+  
+  return a
 
 '''
         BEST-OF AGGREGATOR - FOR STUDENT
 '''
+
 class BestOfAggregator(Aggregator):
-  numContributors = 0
+  numContributors = models.IntegerField()
   
   def aggregateMarksStudent(self, assess_id, student_id):
-    print "============================"
-    print "IN BEST-OF AGGREGATOR"
-    print "============================\n"
     assess_obj = Assessment.objects.get(id=assess_id)
-    numContributors = assess_obj.numContributors
+    assess_agg = Aggregator.objects.get(assessment=assess_obj)
+    numContributors = assess_agg.numContributors
     children = Assessment.objects.filter(parent=assess_id)
     list_of_children = []
-    aggregator = SimpleSumAggregator()
+    agg_mark = 0.0
+    agg_total = 0
+    agg_perc = 0.0
+    mod = assess_obj.mod_id
     
-    for child in children:
-      list_of_children.append(aggregator.aggregateMarksStudent(child.id, student_id))
+    if assess_obj.assessment_type == 'Aggregate':
+      for child in children:
+        list_of_children.append(helperBestOfStudent(child.id, student_id))
+      
+      print "********************************************\n"
+      print "full list: " + str(list_of_children)
+      print "********************************************\n"
+        
+      list_of_children.sort(key=lambda x:x[6], reverse=True) 
+
+      print "********************************************\n"
+      print "full SORTED list: " + str(list_of_children)
+      print "\n numC:" + str(numContributors)
+      print "********************************************\n"
+     
+      list_of_chosen_children= []
+      for i in range(0,numContributors):
+        list_of_chosen_children.append(list_of_children[i])
+      
+      print "********************************************\n"
+      print "full CHOSEN list: " + str(list_of_chosen_children)
+      print "********************************************\n"
+      
+      for child in list_of_chosen_children:
+        agg_mark += child[4]
+        agg_total += child[5]
+      
+      if agg_total == 0:
+        agg_total = 1
+        
+      agg_perc = (agg_mark/agg_total) *100
+      
+      list =[]
+      list.append(assess_obj.id)
+      list.append(assess_obj.assess_name)
+      list.append(assess_obj.published)
+      list.append(assess_obj.assessment_type)
+      list.append(agg_mark)
+      list.append(agg_total)
+      list.append(agg_perc)
+      
+      return list
     
-    list_of_children.sort(key=lambda x:x[2],reversed=True)
-    
-    list_of_chosen_students = []
-    for i in numContributors:
-      list_of_chosen_students.append(list_of_children[i])
-    
-    return list_of_chosen_students
-    
+    elif assess_obj.assessment_type == 'Leaf':
+      print "Error, trying best of on a leaf: " +str(assess_obj)
+
+      
+  def __unicode__(self):
+    return self.aggregator_name
 
 
-#pass the array of weights as the constructure's parameter
+def helperBestOfStudent(assess_id, student_id ):
+    root = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_agg_of_children = 0.0
+    sum_total_of_children = 0
+    student_obj = Person.objects.get(upId=student_id)
+    if root.assessment_type == 'Aggregate':
+      for child in children:
+        if child.assessment_type == 'Leaf':
+          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+          mark = markAlloc.getMark()
+          sum_agg_of_children += mark
+          sum_total_of_children += child.full_marks
+        elif child.assessment_type == 'Aggregate':
+          sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
+          sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
+      if sum_total_of_children == 0.0:
+        sum_total_of_children == 1
+      percentage = (sum_agg_of_children/sum_total_of_children) *100
+      list = []
+      list.append(root.id)
+      list.append(root.assess_name)
+      list.append(root.published)
+      list.append(root.assessment_type)
+      list.append(sum_agg_of_children)
+      list.append(sum_total_of_children)
+      list.append(percentage)
+    else:
+      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
+      mark = markAlloc.getMark()
+      total = root.full_marks
+      perc = ((mark/total) *100)
+      list = []
+      list.append(root.id)
+      list.append(root.assess_name)
+      list.append(root.published)
+      list.append(root.assessment_type)
+      list.append(mark)
+      list.append(total)
+      list.append(perc)
+    return list
+
+
 '''
           WEIGHTED-SUM AGGGREGATOR
 '''
@@ -123,36 +234,54 @@ class WeightedSumAggregator(Aggregator):
           SIMPLE-SUM AGGREGATOR - FOR STUDENT
 '''
 class SimpleSumAggregator(Aggregator):
-  
+      
   def aggregateMarksStudent(self, assess_id, student_id):
-    
     root = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
     sum_agg_of_children = 0.0
-    sum_total_of_children = 0.0
+    sum_total_of_children = 0
 
     student_obj = Person.objects.get(upId=student_id)
-
-    for child in children:
-      if child.assessment_type == 'Leaf':
-        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-        mark = markAlloc.getMark()
-        sum_agg_of_children += mark
-        sum_total_of_children += child.full_marks
-        
-      elif child.assessment_type == 'Aggregate':
-        sum_agg_of_children += getSumAggOfChildren(child.id, student_id)
-        sum_total_of_children += getSumTotalOfChildren(child.id)
-        
+    if root.assessment_type == 'Aggregate':
+      for child in children:
+        if child.assessment_type == 'Leaf':
+          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+          mark = markAlloc.getMark()
+          sum_agg_of_children += mark
+          sum_total_of_children += child.full_marks
+  
+        elif child.assessment_type == 'Aggregate':
+          sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
+          sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
+ 
       if sum_total_of_children == 0.0:
         sum_total_of_children == 1
-    
-    percentage = (sum_agg_of_children/sum_total_of_children) *100
-    list = []
-    list.append(sum_agg_of_children)
-    list.append(sum_total_of_children)
-    list.append(percentage)
-    
+
+      percentage = (sum_agg_of_children/sum_total_of_children) *100
+      list = []
+      list.append(root.id)
+      list.append(root.assess_name)
+      list.append(root.published)
+      list.append(root.assessment_type)
+      list.append(sum_agg_of_children)
+      list.append(sum_total_of_children)
+      list.append(percentage)
+ 
+    else:
+      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
+      mark = markAlloc.getMark()
+      total = root.full_marks
+      perc = ((mark/total) *100)
+  
+      list = []
+      list.append(root.id)
+      list.append(root.assess_name)
+      list.append(root.published)
+      list.append(root.assessment_type)
+      list.append(mark)
+      list.append(total)
+      list.append(perc)
+  
     return list
 
   def aggregateTotalMarkForLecture(self, assess_id):
@@ -172,33 +301,51 @@ class SimpleSumAggregator(Aggregator):
           
     return sum_total_of_children
   
+  def __unicode__(self):
+    return self.aggregator_name
+  
 def getSumTotalOfChildren(assess_id):
     total =0
     assess = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
 
     for child in children:
-      if child.assessment_type == 'Leaf':
-        mark = child.full_marks
-        total += mark
-      else:
-        total += getSumTotalOfChildren(child.id)
+        if child.assessment_type == 'Leaf':
+          mark = child.full_marks
+          total += mark
+        else:
+          total += getSumTotalOfChildren(child.id)
 
     return total
-  
-def getSumAggOfChildren(assess_id, student_id):
-    student_obj = Person.objects.get(upId=student_id)
+def getSumTotalOfChildrenForStudent(assess_id):
     total =0
     assess = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
 
     for child in children:
-      if child.assessment_type == 'Leaf':
-        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-        mark = markAlloc.getMark()
-        total += mark
-      else:
-        total += getSumAggOfChildren(child.id, student_id)
+      if child.published == True:
+        if child.assessment_type == 'Leaf':
+          mark = child.full_marks
+          total += mark
+        else:
+          total += getSumTotalOfChildren(child.id)
+
+    return total
+  
+def getSumAggOfChildrenForStudent(assess_id, student_id):
+    student_obj = Person.objects.get(upId=student_id)
+    total =0
+    assess = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    
+    for child in children:
+      if child.published == True:
+        if child.assessment_type == 'Leaf':
+          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+          mark = markAlloc.getMark()
+          total += mark
+        else:
+          total += getSumAggOfChildren(child.id, student_id)
 
     return total
 
@@ -226,7 +373,7 @@ class Module(models.Model):
         return u'%s %s' %(self.module_code, self.module_name)
       
 #===============================Module Function================================
-# [jacques] We need to know who makes insert for logging purposes (Possibly from web services)
+
 def insertModule(code,name,year,assessments_):
     module = Module(moduleCode=code,moduleName=name,presentationYear=year,assessments=assessments_)
     module.save()
@@ -247,9 +394,8 @@ class Assessment(PolymorphicModel):
     mod_id = models.ForeignKey(Module)
     parent = models.IntegerField(null=True, blank=True) #the assess_id of the parent will be passed
     assessment_type = models.CharField(max_length=65)
-    isroot = models.BooleanField( default= True)
-    numContributors = models.IntegerField(default=0)
-    
+    isroot = models.BooleanField( default= True) 
+    weight = models.FloatField(default=0) #for weighted sum aggregation
     
     def getname(self):
         return self.assess_name
@@ -270,80 +416,46 @@ class Assessment(PolymorphicModel):
     def is_root(self):
       return self.isroot
 
-    '''
-        class Meta:
-        abstract = True 
-    '''
-
     def __unicode__(self):
       return self.assess_name
       
 #================================Additional Assessment Function===============================
-def getAssessment(): #returns all the assessments stored in the database
-    asses = Assessment.objects.all()
+def getAllAssessmentsForModule(module): #returns all the assessments stored in the database
+    asses = Assessment.objects.filter(mod_id=module)
     return asses
-
+  
 def deleteAssessment(self):
     Assessment.delete(self)
 
 #===================================End of Assessment Function============================
 
 #Inherits from Assessment using django-polymorphism
-class AggregateAssessment(Assessment):
-    aggregator_name = models.CharField(max_length = 65)
-    weight = models.IntegerField(null=True, blank=True, default=100)
-   
-    def add_child(self, child_id):
-      childAssess = Assessment.objects.filter(Q(Assessment_id=child_id))
-      childAssess.set_parent(self.id)
-      return true
-    
-    def get_current_assessment():
-      assess = Assessment.objects.filter(Q(Assessment__id=self.id))
-      return assess
-    
-    def get_subassessment(self, sub_id):
-      # This traverses through the tree and tries find the object
-      sub = Assessment.objects.filter(Q(Assessment__id=sub_id))
-      if sub != null:
-        return sub
-      else:
-        #We can change this to throw an exception if that is what we decide on 
-        return 'Assessment does not exist'
-      
+class AggregateAssessment(Assessment):      
     def get_children(self):
       #make a list of all the children of this assessment and returns that list
-      list_ = Assessment.objects.filter(Q(Assessment_parent=self.id))
+      list_ = Assessment.objects.filter(parent=self.id)
       return list_
       
     def get_aggregator_name(self):
       #get the name from the database
       return self.aggregator_name
     
-     #find a way to determine the root 
-    
-    def getaggregator(self):
-      return self.aggregator
-    
-    def choose_aggregator(self, agg_key):
+    def choose_aggregator(self, aggregatorname_chosen):
       statement = 'Aggregator changed to: '
-      if agg_key == 1:
-        self.aggregator = SimpleSumAggregator()
-        self.aggregator_name = 'S' #fetch name from database... exact format
-        statement += 'Simple Sum Aggregator'
+      if aggregatorname_chosen == 'SimpleSum':
+        self.aggregator = SimpleSumAggregator(aggregator_name='SimpleSum')
+        statement += 'SimpleSum Aggregator'
         
-      elif agg_key == 2:
-        self.aggregator = BestOfAggregator()
-        self.aggregator_name = 'B' #fetch name from database... exact format
-        statement += 'Best of Aggrgator'
+      elif aggregatorname_chosen == 'BestOf':
+        self.aggregator = BestOfAggregator(aggregator_name='BestOf')
+        statement += 'BestOf Aggrgator'
         
-      elif agg_key == 3:
-        self.aggregator = WeightedSumAggregator()
-        self.aggregator_name = 'W' #fetch name from database... exact format
-        statement += 'Weighted Sum Aggregator'
+      elif aggregatorname_chosen == 'WeightedSum':
+        self.aggregator = WeightedSumAggregator(aggregator_name='WeightedSum')
+        statement += 'WeightedSum Aggregator'
         
       else:
-        statement = 'Throw Exception'
+        statement = 'Was unable to change aggregator'
        
       self.save() 
       return statement
@@ -351,23 +463,27 @@ class AggregateAssessment(Assessment):
     def __unicode__(self):
       return self.assess_name
 
+
 #================================AggregateAssessment Function============================
-def insertAggregateAssessment(name_, assessment_type_, module_code, published_,aggregator_, assessment_weight, parent_id):
-	if parent_id is None:
-	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator_name=aggregator_, weight=assessment_weight)
+def insertAggregateAssessment(name_,published_, module_code, parent_id,assessment_type_,assessment_weight):
+  if parent_id is None:
+    a = AggregateAssessment(assess_name=name_,assessment_type=assessment_type_,mod_id=module_code, published = published_, weight=assessment_weight)
+    a.save()
 
-	else:
-	  a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_,aggregator_name=aggregator_, weight=assessment_weight, parent=parent_id)
+  else:
+    a = AggregateAssessment(assess_name = name_,assessment_type=assessment_type_,mod_id=module_code, published = published_, weight=assessment_weight, parent=parent_id, isroot=False)
+    a.save()
 
-	a.save()
-	return a
+  agg = insertSimpleSumAggregator(a)
 
-def getAggregateAssessment(): #gets all aggregate assessments
-    aggregate_assessments = AggregateAssessment.objects.all()
-    return aggregate_assessments
+  return a
+
+def getAggregateAssessmentsForModule(): #gets all aggregate assessments
+  aggregate_assessments = AggregateAssessment.objects.all()
+  return aggregate_assessments
 
 def deleteAggregateAssessment(self):
-    AggregateAssessment.delete(self)
+  AggregateAssessment.delete(self)
 
 #================================End of AggregateAssessment Function============================
 
@@ -382,16 +498,19 @@ class LeafAssessment(Assessment):
 
 #=================================LeafAssessment Function==============================
 def insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent_):
-	 a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, parent =parent_) 
-	 
-	 a.save()
-	 return a
+    if parent_ is None:
+      a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, weight=0) 
+    else:
+      a = LeafAssessment(assess_name = name_,assessment_type=assessment_type_, mod_id=module_code, published=published_, full_marks=fullMarks_, parent =parent_,isroot=False, weight=0) 
+      
+    a.save()
+    return a
 
 def deleteLeafAssessment(self):
     LeafAssessment.delete(self)
 
-def getLeafAssessment():
-    leaf = LeafAssessment.objects.all()
+def getLeafAssessmentsForModule(module):
+    leaf = LeafAssessment.objects.filter(mod_id=module)
     return leaf
 #=================================End of LeafAssessment Function==============================
 
@@ -667,8 +786,6 @@ def getSessions(Id):
 	return Sessions.object.get(id= Id)
 
 
-
-
 class AllocatePerson(models.Model):
 	person_id = models.ForeignKey('Person')
 	session_id = models.ForeignKey('Sessions')
@@ -787,11 +904,9 @@ def insertAuditLogAllocatePerson(person,student,ses,act,modl):
 
 
 #===================================End of AuditLog functions====================================
-
-
 #This is to create the table shown in the master specification giving a
 #general idea of how their MySQL database table for courses looks like
-
+'''
 class Course(models.Model):
     course_code = models.CharField(max_length = 20, null = False)
     name = models.CharField(max_length = 255, null = False)
@@ -818,3 +933,4 @@ class Course(models.Model):
     tutor_user = Group.objects.get_or_create(name='Tutor Group')
     
     marker_user = Group.objects.get_or_create(name='Marker Group')
+'''
