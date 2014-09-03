@@ -1031,6 +1031,7 @@ def getOpenSessionsForMarker(assessment_id_,marker_id_):
 		        listy.append(session)
 	return listy
 
+
 # Name:  getLeafAssessmentMarksOfAsssessmentForStudent(uid, assess_id)
 # Description: Returns all marks of a student for a specific assessment
 # Parameter: uid : String
