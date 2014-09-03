@@ -12,7 +12,7 @@
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
 	</form>
-{% endblock %}
+{% endblock %}s
 
 <!--###########################  End Nav bar settings ############################-->
 
@@ -67,23 +67,8 @@
 
 <div class="row">
 	<div class="col-md-6">
-		<!-- Search bar -->
-		<div class="input-group">
-			<input type="text" class="form-control">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu dropdown-menu-right" role="menu">
-					<li><a href="#">Name</a></li>
-					<li><a href="#">Surname</a></li>
-				</ul>
-			</div>
-		</div>
-		<br><!--*********-->
-		<!-- End of Search bar -->
 		
-		
-		<div class="list-group">
+		<!--<div class="list-group">
 			<a href="#" class="list-group-item disabled"> Students in session </a>
 				{%for per in students%}
 					<a href="#" class="list-group-item" > {{ per.0 }}, {{ per.1 }} {{per.2 }}</a>
@@ -96,27 +81,38 @@
 			</button>
 			<input type="hidden" name="session" value={{session_id}}>
 			<input type="hidden" name="module" value={{ module }}>
+		</form>-->
+		
+		<h3><span class="label label-default">Select students to remove</span></h3>
+		<form role="form" method="post" action="remove-stud">{% csrf_token %}
+			<div class="form-group">
+				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession">
+					{% for per in students %}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
+					{% endfor %}
+				</select>
+				<input type="hidden" name="session" value={{ session_id }}><br>
+				<input type="hidden" name="userM" value=""/><br>
+			</div>
+			<button type="submit" name="submit" class="btn btn-danger btn-block" value={{ module }}>
+				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button>
+		</form>
+		
+		<form method="post" action="view-students">{% csrf_token %}
+			<div class="clearfix">
+				<button  type="submit" name="submit" class="btn btn-primary btn-block">
+					<span class="glyphicon glyphicon-plus"></span> Add student to session
+				</button>
+			</div>
+			<input type="hidden" name="session" value={{session_id}}>
+			<input type="hidden" name="module" value={{ module }}>
 		</form>
 
 		
 	</div>
 	<div class="col-md-6">
-		<!-- Search bar -->
-		<div class="input-group">
-			<input type="text" class="form-control">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-				>Search via<span class="caret"></span></button>
-				<ul class="dropdown-menu dropdown-menu-right" role="menu">
-					<li><a href="#">Name</a></li>
-					<li><a href="#">Surname</a></li>
-				</ul>
-			</div>
-		</div>
-		<br><!--*********-->
-		<!-- End of Search bar -->
 
-		<div class="list-group">
+		<!--<div class="list-group">
 			<a href="#" class="list-group-item disabled"> Markers in session </a>
 				{% for mar in marker %}
 					<a href="#" class="list-group-item" > {{ mar.0 }}, {{ mar.1 }} {{mar.2 }}</a>
@@ -127,6 +123,36 @@
 			<button type="submit" name="submit" class="btn btn-primary btn-lg btn-block">
 				<span class="glyphicon glyphicon-plus"></span> Add marker to session
 			</button>
+			<input type="hidden" name="session" value={{session_id}}>
+			<input type="hidden" name="module" value={{ module }}>
+		</form>-->
+		
+		<h3><span class="label label-default">Select markers to remove</span></h3>
+		<form role="form" method="post" action="remove-stud">{% csrf_token %}
+			<div class="form-group">
+				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession">
+					{%for per in tutor%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+					{%for per in teachingA%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="session" value={{ session_id }}><br>
+				<input type="hidden" name="userS" value=""/><br>
+			</div>
+			<button type="submit" name="submit" class="btn btn-danger btn-block" value={{ module }}>
+			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button>
+		</form>
+		
+		<form method="post" action="view-students">{% csrf_token %}
+			<div class="clearfix">
+				<button type="submit" name="submit" class="btn btn-primary btn-block">
+					<span class="glyphicon glyphicon-plus"></span> Add marker to session
+				</button>
+			</div>
 			<input type="hidden" name="session" value={{session_id}}>
 			<input type="hidden" name="module" value={{ module }}>
 		</form>

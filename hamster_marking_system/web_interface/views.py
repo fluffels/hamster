@@ -493,7 +493,7 @@ def addStudentToSession(request):
     print "users[5][1] = " + str(users[5][1])
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) > 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)
@@ -1587,7 +1587,7 @@ def removeUserfromSession(request):
         name = res[0]['name']
         students = res[0]['students']
         marker = res[0]['marker']
-        return render_to_response("web_interface/audit_table.htm",{'default_user':default_user,
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,

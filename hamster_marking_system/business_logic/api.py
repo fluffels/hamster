@@ -1034,7 +1034,7 @@ def setTutorForModule(request, uid, mod_code):
 # Parameter: session_id : Integer
 # Return: Nothing
 def setMarkerForSession(request, uid, session_id):
-    user = Person.objects.get(upId=request['user']['uid'][0])
+    user = Person.objects.get(upId=request.session['user']['uid'][0])
     person = Person.objects.get(upId=uid)
     session = Sessions.objects.get(id=session_id)
     assess = session.assessment

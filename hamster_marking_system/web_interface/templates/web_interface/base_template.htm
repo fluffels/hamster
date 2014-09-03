@@ -291,7 +291,7 @@
 		disableIfEmpty : true,
 		maxHeight : 350,
 		nonSelectedText : 'No User is selected',
-		//buttonWidth : '350px',
+		buttonWidth : '100%',
 		dropRight : true
 	});
 	
@@ -301,8 +301,28 @@
 		disableIfEmpty : true,
 		maxHeight : 350,
 		nonSelectedText : 'No User is selected',
-		//buttonWidth : '350px',
+		buttonWidth : '100%',
 		dropRight : true
+	});
+	
+	$('#multiselectRemoveStudentsForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : false
+	});
+	
+	$('#multiselectRemoveMarkerForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : false
 	});
 	
 	var exist = $( "#no-jumbotron" ).find('#rem-jumbotron').hasClass( "tree-finder" );	//Tests if inner div of jumbotron has class tree-finder
