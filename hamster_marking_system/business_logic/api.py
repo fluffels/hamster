@@ -1281,7 +1281,7 @@ def makeAggregateAssessmentALeaf(assess_id): #assumes agg_obj has no children
                     newLeafObj = insertLeafAssessment(name_,assessment_type_, module_code, published_, fullMarks_, parent)
                     manageSessions(agg_obj, newLeafObj)
                     
-                    agg_agg = Aggregators.objects.get(assessment=assess_id)
+                    agg_agg = Aggregator.objects.get(assessment=assess_id)
                     agg_agg.delete() #deleting the aggregator for the aggregate
                     
                     agg_obj.delete()

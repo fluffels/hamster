@@ -30,10 +30,10 @@ def isAuthenticated(function):
 def isMarker(function):
     def wrapper(request,*args,**kwargs):
         mod = request.POST['module']
-        userModuleLT = request.session['user']['lectureOf']
+        userModuleLT = request.session['user']['lecturerOf']
         userModuleTA = request.session['user']['teachingAssistantOf']
         userModuleTT = request.session['user']['tutorFor']
-        done = false
+        done = False
         
         for module in userModuleLT:
             if module == mod:
@@ -51,3 +51,4 @@ def isMarker(function):
             return function(request,*args,**kwargs)
         else:
             raise Http404()
+    return wrapper
