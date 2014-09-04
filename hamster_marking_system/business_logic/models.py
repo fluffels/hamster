@@ -98,7 +98,7 @@ class BestOfAggregator(Aggregator):
     
     if assess_obj.assessment_type == 'Aggregate':
       for child in children:
-        list_of_children.append(helperBestOfStudent(child.id, student_id))
+        list_of_children.append(aggregateChild(child.id, student_id))
       
       print "********************************************\n"
       print "full list: " + str(list_of_children)
@@ -147,13 +147,13 @@ class BestOfAggregator(Aggregator):
     return self.aggregator_name
 
 
-def helperBestOfStudent(assess_id, student_id ):
+def aggregateChild(assess_id, student_id ):
     root = Assessment.objects.get(id=assess_id)
-    children = Assessment.objects.filter(parent=assess_id)
-    sum_agg_of_children = 0.0
-    sum_total_of_children = 0
     student_obj = Person.objects.get(upId=student_id)
     if root.assessment_type == 'Aggregate':
+      children = Assessment.objects.filter(parent=assess_id)
+      sum_agg_of_children = 0.0
+      sum_total_of_children = 0
       for child in children:
         if child.assessment_type == 'Leaf':
           markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
@@ -164,7 +164,7 @@ def helperBestOfStudent(assess_id, student_id ):
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
           sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
       if sum_total_of_children == 0.0:
-        sum_total_of_children == 1
+        sum_total_of_children = 1
       percentage = (sum_agg_of_children/sum_total_of_children) *100
       list = []
       list.append(root.id)
@@ -237,25 +237,28 @@ class SimpleSumAggregator(Aggregator):
       
   def aggregateMarksStudent(self, assess_id, student_id):
     root = Assessment.objects.get(id=assess_id)
-    children = Assessment.objects.filter(parent=assess_id)
-    sum_agg_of_children = 0.0
-    sum_total_of_children = 0
 
     student_obj = Person.objects.get(upId=student_id)
     if root.assessment_type == 'Aggregate':
+      children = Assessment.objects.filter(parent=assess_id)
+      sum_agg_of_children = 0.0
+      sum_total_of_children = 0
       for child in children:
         if child.assessment_type == 'Leaf':
           markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
           mark = markAlloc.getMark()
           sum_agg_of_children += mark
           sum_total_of_children += child.full_marks
-  
+          
+          print "++++++++++++++++++++++++++++++++++++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          print "SUM TOTAL CHILDREN" + str(sum_total_of_children)
+          print "++++++++++++++++++++++++++++++++++++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"  
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
           sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
  
-      if sum_total_of_children == 0.0:
-        sum_total_of_children == 1
+      if sum_total_of_children == 0:
+        sum_total_of_children = 1
 
       percentage = (sum_agg_of_children/sum_total_of_children) *100
       list = []
@@ -345,7 +348,7 @@ def getSumAggOfChildrenForStudent(assess_id, student_id):
           mark = markAlloc.getMark()
           total += mark
         else:
-          total += getSumAggOfChildren(child.id, student_id)
+          total += getSumAggOfChildrenForStudent(child.id, student_id)
 
     return total
 

@@ -69,7 +69,7 @@ def getAssessment(mod):
     return final
 
 def getAssessmentForAssessment(assess_id):
-        root = getChildrenAssessmentsForAssessmemnt(assess_id)
+        root = getChildrenAssessmentsForAssessment(assess_id)
         final = []
         roots = []
         FirstChildren = []
@@ -152,7 +152,7 @@ def studentAssessmentFromModule(mod,student):
     final.append(ThirdChildren)
     return final
 
-def studentAssessmentForAssessment(assess_id,student, aggregator_name):
+def studentAssessmentForAssessment(assess_id,student):
         root = getPublishedChildrenAssessmentsForAssessment(assess_id)
         roots = []
         final = []
@@ -1842,12 +1842,16 @@ def getMarkForStudent(student_id, assess_id):
         list = agg.aggregateMarksStudent(assess_id, student_id)
     
         print "=====================================================\n"
+        print "the agg obj:" + str(assess_obj)
         print "the mark list: "
         print str(list)
         print "\n====================================================="
     elif assess_obj.assessment_type == 'Leaf':
-        leafAgg = SimpleSumAggregator('SimpleSum')
-        list = leafAgg.aggregateMarksStudent(assess_id, student_id)
+        print "=====================================================\n"
+        print "the agg obj:" + str(assess_obj)
+        print "ITS A LEAF"
+        print "\n====================================================="
+        list = aggregateChild(assess_obj.id, student_id)
 
     #formating the mark and percentage to 2 decimals
     mark = list[4]

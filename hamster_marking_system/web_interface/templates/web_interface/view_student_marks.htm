@@ -85,7 +85,7 @@
         {%for n in root%}<!-- Major point -->
           {% ifequal n.3 'Aggregate' %}
             <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-            <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{n.1}}</button>
+            <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{n.1}}</button>
             
             <!--<div class="btn-group btn-group-xs">-->
             <!--  <span class="badge">{{n.4}}</span>-->
@@ -116,24 +116,23 @@
             </div>
             
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-              <form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-                    class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-                {% csrf_token %}
-                <input type="hidden" name="mod" value={{ module }}>
+              <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+                    class="form-group-sm post-ass"> {% csrf_token %}
+                <input type="hidden" name="module" value={{ module }}>
                 <input type="hidden" name="assessment" value={{ n.0 }}>
               </form>
-              <button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-               class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-               data-module={{ module }} data-assessment_id={{ n.0 }}>
+              <button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+              data-placement="top" title="Export as PDF">
                 <span class="fa fa-file-pdf-o"></span> 
               </button>
               
-              <form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-                {% csrf_token %}
-                <input type="hidden" name="assessment" value={{n.0}}>
+              <form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-sess">{% csrf_token %}
+		<input type="hidden" name="module" value={{ module }}>
+		<input type="hidden" name="assessment" value={{n.0}}>
               </form>
               <button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-              data-placement="top" title="Export as ">
+              data-placement="top" title="Export as CSV">
                 <span class="fa fa-file-excel-o"></span> 
               </button>
             </div>
@@ -167,24 +166,23 @@
             </div>
             
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-              <form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-                    class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-                {% csrf_token %}
-                <input type="hidden" name="mod" value={{ module }}>
-                <input type="hidden" name="assessment" value={{ n.0 }}>
-              </form>
-              <button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-               class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-               data-module={{ module }} data-assessment_id={{ n.0 }}>
-                <span class="fa fa-file-pdf-o"></span> 
-              </button>
+              <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+		class="form-group-sm post-ass">{% csrf_token %}
+			<input type="hidden" name="module" value={{ module }}>
+			<input type="hidden" name="assessment" value={{ n.0 }}>
+		</form>
+		<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+		  data-placement="top" title="Export as PDF">
+		    <span class="fa fa-file-pdf-o"></span> 
+		</button>
               
-              <form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-                {% csrf_token %}
-                <input type="hidden" name="assessment" value={{n.0}}>
+               <form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-sess">{% csrf_token %}
+		<input type="hidden" name="module" value={{ module }}>
+		<input type="hidden" name="assessment" value={{n.0}}>
               </form>
               <button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-              data-placement="top" title="Export as ">
+              data-placement="top" title="Export as CSV">
                 <span class="fa fa-file-excel-o"></span> 
               </button>
             </div>
@@ -199,7 +197,7 @@
                   {% for y in value %}<!-- Major point 2-->
                     {% ifequal y.3 'Aggregate' %}
                       <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-                      <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{y.1}}</button>
+                      <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{y.1}}</button>
                       
 		      <div class="btn-group btn-group-xs">
 			<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
@@ -226,24 +224,23 @@
 		      </div>
 		      
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-			<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-			      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-			  {% csrf_token %}
-			  <input type="hidden" name="mod" value={{ module }}>
-			  <input type="hidden" name="assessment" value={{ n.0 }}>
+			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-ass">{% csrf_token %}
+				<input type="hidden" name="module" value={{ module }}>
+				<input type="hidden" name="assessment" value={{ y.0 }}>
 			</form>
-			<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-			 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-			 data-module={{ module }} data-assessment_id={{ n.0 }}>
-			  <span class="fa fa-file-pdf-o"></span> 
+			<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+			  data-placement="top" title="Export as PDF">
+			    <span class="fa fa-file-pdf-o"></span> 
 			</button>
 			
-			<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-			  {% csrf_token %}
-			  <input type="hidden" name="assessment" value={{n.0}}>
+			<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-sess">{% csrf_token %}
+				<input type="hidden" name="module" value={{ module }}>
+				<input type="hidden" name="assessment" value={{y.0}}>
 			</form>
 			<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-			data-placement="top" title="Export as ">
+			data-placement="top" title="Export as CSV">
 			  <span class="fa fa-file-excel-o"></span> 
 			</button>
 		      </div>
@@ -277,24 +274,23 @@
 		      </div>
 		      
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-			<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-			      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-			  {% csrf_token %}
-			  <input type="hidden" name="mod" value={{ module }}>
-			  <input type="hidden" name="assessment" value={{ n.0 }}>
+			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-ass">{% csrf_token %}
+				<input type="hidden" name="module" value={{ module }}>
+				<input type="hidden" name="assessment" value={{ y.0 }}>
 			</form>
-			<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-			 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-			 data-module={{ module }} data-assessment_id={{ n.0 }}>
-			  <span class="fa fa-file-pdf-o"></span> 
+			<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+			  data-placement="top" title="Export as PDF">
+			    <span class="fa fa-file-pdf-o"></span> 
 			</button>
 			
-			<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-			  {% csrf_token %}
-			  <input type="hidden" name="assessment" value={{n.0}}>
+			<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			class="form-group-sm post-sess">{% csrf_token %}
+				<input type="hidden" name="module" value={{ module }}>
+				<input type="hidden" name="assessment" value={{y.0}}>
 			</form>
 			<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-			data-placement="top" title="Export as ">
+			data-placement="top" title="Export as CSV">
 			  <span class="fa fa-file-excel-o"></span> 
 			</button>
 		      </div>
@@ -309,7 +305,7 @@
                             {%for e in value%}<!-- Major point 3-->
                               {% ifequal e.3 'Aggregate' %}
                                 <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-                                <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{e.1}}</button>
+                                <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{e.1}}</button>
                               
 				<div class="btn-group btn-group-xs">
 					<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
@@ -336,24 +332,23 @@
 				      </div>
 				      
 				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-					<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-					      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-					  {% csrf_token %}
-					  <input type="hidden" name="mod" value={{ module }}>
-					  <input type="hidden" name="assessment" value={{ n.0 }}>
+					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+					class="form-group-sm post-ass">{% csrf_token %}
+						<input type="hidden" name="module" value={{ module }}>
+						<input type="hidden" name="assessment" value={{ e.0 }}>
 					</form>
-					<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-					 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-					 data-module={{ module }} data-assessment_id={{ n.0 }}>
-					  <span class="fa fa-file-pdf-o"></span> 
+					<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+					  data-placement="top" title="Export as PDF">
+					    <span class="fa fa-file-pdf-o"></span> 
 					</button>
 					
-					<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-					  {% csrf_token %}
-					  <input type="hidden" name="assessment" value={{n.0}}>
+					<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+					class="form-group-sm post-sess">{% csrf_token %}
+						<input type="hidden" name="module" value={{ module }}>
+						<input type="hidden" name="assessment" value={{e.0}}>
 					</form>
 					<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-					data-placement="top" title="Export as ">
+					data-placement="top" title="Export as CSV">
 					  <span class="fa fa-file-excel-o"></span> 
 					</button>
 				</div>
@@ -387,24 +382,23 @@
 				      </div>
 				      
 				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-					<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-					      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-					  {% csrf_token %}
-					  <input type="hidden" name="mod" value={{ module }}>
-					  <input type="hidden" name="assessment" value={{ n.0 }}>
+					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+					class="form-group-sm post-ass">{% csrf_token %}
+						<input type="hidden" name="module" value={{ module }}>
+						<input type="hidden" name="assessment" value={{ e.0 }}>
 					</form>
-					<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-					 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-					 data-module={{ module }} data-assessment_id={{ n.0 }}>
-					  <span class="fa fa-file-pdf-o"></span> 
+					<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+					  data-placement="top" title="Export as PDF">
+					    <span class="fa fa-file-pdf-o"></span> 
 					</button>
 					
-					<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-					  {% csrf_token %}
-					  <input type="hidden" name="assessment" value={{n.0}}>
+					<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+					class="form-group-sm post-sess">{% csrf_token %}
+						<input type="hidden" name="module" value={{ module }}>
+						<input type="hidden" name="assessment" value={{e.0}}>
 					</form>
 					<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-					data-placement="top" title="Export as ">
+					data-placement="top" title="Export as CSV">
 					  <span class="fa fa-file-excel-o"></span> 
 					</button>
 				</div>
@@ -418,8 +412,14 @@
                                     {%ifequal key e.1%}
                                       {%for h in value%}<!-- Major point 4-->
                                         {% ifequal h.3 'Aggregate' %}
-                                          <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
-                                          <span id="icon-folder" class="glyphicon glyphicon-folder-close"></span>  {{h.1}}</button>
+                                          <li class="list-group-item">
+						<form action="student-assessment" method="post" hidden="hidden" class="last-agg">{% csrf_token %}
+							<input type="text" name="assess_id" value={{ h.0 }}>
+							<input type="text" name="module" value={{ module }}
+						</form>
+						<button class="tree-toggler nav-header btn btn-xs btn-primary"
+						onclick="$(this).parent().children('form.last-agg').submit();">
+                                          <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{h.1}}</button>
                                         
 					  <div class="btn-group btn-group-xs">
 						<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
@@ -446,24 +446,23 @@
 					      </div>
 					      
 					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-						<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-						      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-						  {% csrf_token %}
-						  <input type="hidden" name="mod" value={{ module }}>
-						  <input type="hidden" name="assessment" value={{ n.0 }}>
+						<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+						class="form-group-sm post-ass">{% csrf_token %}
+							<input type="hidden" name="module" value={{ module }}>
+							<input type="hidden" name="assessment" value={{ h.0 }}>
 						</form>
-						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-						 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-						 data-module={{ module }} data-assessment_id={{ n.0 }}>
-						  <span class="fa fa-file-pdf-o"></span> 
+						<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+						  data-placement="top" title="Export as PDF">
+						    <span class="fa fa-file-pdf-o"></span> 
 						</button>
 						
-						<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-						  {% csrf_token %}
-						  <input type="hidden" name="assessment" value={{n.0}}>
+						<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+						class="form-group-sm post-sess">{% csrf_token %}
+							<input type="hidden" name="module" value={{ module }}>
+							<input type="hidden" name="assessment" value={{h.0}}>
 						</form>
 						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-						data-placement="top" title="Export as ">
+						data-placement="top" title="Export as CSV">
 						  <span class="fa fa-file-excel-o"></span> 
 						</button>
 					</div>
@@ -497,24 +496,23 @@
 					      </div>
 					      
 					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-						<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
-						      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
-						  {% csrf_token %}
-						  <input type="hidden" name="mod" value={{ module }}>
-						  <input type="hidden" name="assessment" value={{ n.0 }}>
+						<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+						class="form-group-sm post-ass">{% csrf_token %}
+							<input type="hidden" name="module" value={{ module }}>
+							<input type="hidden" name="assessment" value={{ h.0 }}>
 						</form>
-						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
-						 class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export as "
-						 data-module={{ module }} data-assessment_id={{ n.0 }}>
-						  <span class="fa fa-file-pdf-o"></span> 
+						<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+						  data-placement="top" title="Export as PDF">
+						    <span class="fa fa-file-pdf-o"></span> 
 						</button>
 						
-						<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
-						  {% csrf_token %}
-						  <input type="hidden" name="assessment" value={{n.0}}>
+						<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+						class="form-group-sm post-sess">{% csrf_token %}
+							<input type="hidden" name="module" value={{ module }}>
+							<input type="hidden" name="assessment" value={{h.0}}>
 						</form>
 						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-						data-placement="top" title="Export as ">
+						data-placement="top" title="Export as CSV">
 						  <span class="fa fa-file-excel-o"></span> 
 						</button>
 					</div>
