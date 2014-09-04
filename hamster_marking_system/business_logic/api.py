@@ -1906,8 +1906,24 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
 
 '''
 '''
-#################### AGGREGATION FUNCTIONS ###################################
+#################### AGGREGATION FUNCTIONS ########################################
 '''
+# Name: getNumContributors(assess_id)
+# Description: Gets the number of contributors for the aggregate
+# Parameter: assess_id : String
+# Return: Integer
+
+def getNumChildren(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    if assess_obj.assessment_type == 'Aggregate':
+        agg_obj = Aggregator.objects.get(assessment=assess_obj)
+        agg_name = agg_obj.aggregator_name
+        children = Assessment.objects.filter(parent=assess_id)
+        numC = len(children)
+        return numC
+    else:
+        return 0
+    
 # Name: getAggregationInfo(assess_id, aggregator_name)
 # Description: Sets the specified aggregator to the aggregate assessment passed through
 # Parameter: assess_id : String
@@ -1916,9 +1932,7 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
 def getAggregationInfo(assess_id): 
     assess_obj = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
-    max_numContributors = len(children)
     list = []
-    list.append(max_numContributors)
     
     for child in children:
         sublist =[]
@@ -1931,12 +1945,11 @@ def getAggregationInfo(assess_id):
     else:
         return None
     
-
 # Name: setAggregationInfo(detailsList)
 # Description: Sets all the aggregation information to the relevant assessment
 # Parameter: detailsList : List[] (multidimensional)
 # Return: Boolean
-def setAggregationInfo(assess_id, agg_name, numContributors_, children):
+def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, children_weight):
     assess_obj = Assessment.objects.get(id=assess_id)
     
     print "============================="
@@ -1949,21 +1962,29 @@ def setAggregationInfo(assess_id, agg_name, numContributors_, children):
     assess_aggregator = Aggregator.objects.get(assessment=assess_obj)
     aggregator_name = assess_aggregator.getname()
     
-    assess_children = Assessment.objects.filter(parent=assess_id)
+    print "id array: " + str(children_id)
+    print "weight array: "+str(children_weight)
     
     if agg_name == 'SimpleSum':
-        pass
-    
+        assess_aggregator.delete()
+        agg = insertSimpleSumAggregator(assess_obj)
+ 
     elif agg_name == 'BestOf':
         assess_aggregator.delete()
         numc = int(numContributors_)
         agg = insertBestOfAggregator(assess_obj,numc )
-        assess_obj.aggregator = agg
-        assess_obj.save()
-    
+ 
     elif agg_name == 'WeightedSum':
-        pass
-    
+        for (id_,weight_) in zip(children_id, children_weight):
+            print "id: " + str(id_)
+            print "weight: "+str(weight_)
+            child = Assessment.objects.get(id=id_)
+            child.weight = float(weight_)
+            child.save()
+        
+        assess_aggregator.delete()
+        agg = insertWeightedSumAggregator(assess_obj)
+  
 '''
 #################### END AGGREGATION FUNCTIONS ###################################
 '''

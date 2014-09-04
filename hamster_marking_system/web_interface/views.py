@@ -1498,40 +1498,51 @@ def AuditLog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
+@isLecture
 @isAuthenticated
 def chooseAggregator(request):
     assess_id = request.POST['assess_id']
-    module = request.POST['mod']
+    module = request.POST['module']
     data ={
         'assess_id':assess_id,
     }
     result = views.chooseAggregator(request,json.dumps(data))
     res = json.loads(result.content)
     if res['type'] ==1:
-        numContributors = res['numContributors']
+        numChildren = res['numChildren']
         children = res['children']
+        assessmentName = res['assessmentName']
 
-        return render_to_response("web_interface/aggregate.htm",{'default_user':default_user,
+        return render_to_response("web_interface/choose_aggregator.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'numContributors':numContributors,
-                                                                        'children':children, 'assess_id':assess_id, 'module':module}, context_instance=RequestContext(request))
-
+                                                                        'user_roles':user_roles,'numChildren':numChildren,
+                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+@isLecture
 @isAuthenticated
 def aggregateMarkForAssessment(request):
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']
-    children = request.POST['children']
+    
+    
+    #Converting QueryDict to python dict
+    myDict = dict(request.POST.iterlists())
+    
+    child_weight = myDict['child_weight']
+    child_id = myDict['child_id']
+    
     assess_id = request.POST['assess_id']
     mod = request.POST['module']
+    
     data = {
         'assess_id':assess_id,
         'agg_name':agg_name,
-        'children':children,
         'numContributors':numContributors,
-        'module':mod
+        'module':mod,
+        'child_weight':child_weight,
+        'child_id':child_id
     }
     
     result = views.aggregateMarkForAssessment(request,json.dumps(data))

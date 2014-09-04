@@ -334,8 +334,8 @@
 												{% endif %}
 												<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
 													{% csrf_token %}
-													<input type="hidden" name="mod" value={{ module }}>
-													<input type="hidden" name="assess_id" value={{ n.0 }}>
+													<input type="hidden" name="module" value={{ module }}>
+													<input type="hidden" name="assess_id" value={{ y.0 }}>
 												</form>
 												<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
 												data-placement="top" title="Choose Aggregator">
@@ -510,8 +510,8 @@
 																	{% endif %}
 																	<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
 																		{% csrf_token %}
-																		<input type="hidden" name="mod" value={{ module }}>
-																		<input type="hidden" name="assess_id" value={{ n.0 }}>
+																		<input type="hidden" name="module" value={{ module }}>
+																		<input type="hidden" name="assess_id" value={{ e.0 }}>
 																	</form>
 																	<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
 																	data-placement="top" title="Choose Aggregator">
@@ -683,8 +683,8 @@
 																						{% endif %}
 																						<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
 																							{% csrf_token %}
-																							<input type="hidden" name="mod" value={{ module }}>
-																							<input type="hidden" name="assess_id" value={{ n.0 }}>
+																							<input type="hidden" name="module" value={{ module }}>
+																							<input type="hidden" name="assess_id" value={{ h.0 }}>
 																						</form>
 																						<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
 																						data-placement="top" title="Choose Aggregator">

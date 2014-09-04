@@ -53,10 +53,9 @@
 		<li><a href="#">Login</a></li>
 		<li ><a href="#">Home</a></li>
 		<li><a href="#">Assessments</a></li>
-		<li class="active"><a href="#">Sessions</a></li>
+		<li class="active"><a href="#">Aggregators</a></li>
 	</ol>
 {% endblock %}
-
 
 {% block jumbotron_header %} Choose Aggregator {% endblock %}
 
@@ -76,9 +75,15 @@
     <div id="simpleSumCollapse" class="panel-collapse collapse in">
       <div class="panel-body">
 	<!-- simplesum form -->
-	<form action="#" method="post" role="form">
-	  <input hidden="hidden" value="someValue">
-          <button type="submit" name="submit" class="btn btn-success">Submit</button>
+	<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+		<input type="hidden" value="SimpleSum" name="agg_name">
+		<input type="hidden" value="0" name="numC">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+		<input type="hidden" value={{module}} name="module">
+		<input type="hidden" value="0" name="child_weight" >
+		<input type="hidden" value="0" name="child_id"  >
+                
+		<button type="submit" name="submit" class="btn btn-success">Submit</button>
 	</form><!-- ./simplesum form -->
       </div>
     </div>
@@ -93,12 +98,17 @@
     </div>
     <div id="bestOfCollapse" class="panel-collapse collapse">
       <div class="panel-body">
-	<h5>Max contributors <span class="label label-default">10</span></h5>
+	<h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
 	<!-- bestof form -->
-	<form action="#" method="post" class="form-inline" role="form">
+	<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form"> {% csrf_token %}
           <div class="form-group">
 		<label class="sr-only" for="bestOfSelectedNumber">Email address</label>
-		<input type="number" class="form-control" id="bestOfSelectedNumber" placeholder="Number of contributors">
+		<input type="hidden" value="BestOf" name="agg_name">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+		<input type="hidden" value={{module}} name="module">
+		<input type="number" class="form-control" id="numC" name="numC" placeholder="Number of contributors">
+		<input type="hidden" value="0" name="child_weight" >
+		<input type="hidden" value="0" name="child_id"  >
 	  </div>
 	  <button class="btn btn-success" type="submit">Submit</button>
 	</form><!-- ./bestof form -->
@@ -115,25 +125,25 @@
     </div>
     <div id="weightedSumCollapse" class="panel-collapse collapse">
       <div class="panel-body">
-        <h5>Please assign weights to each assessment</h5>
+        <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
 	<!-- weightedsum form -->
-	<form action="#" method="post" class="form-inline" role="form">
-	{% for x in assessments %}
+	<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+		<input type="hidden" value="WeightedSum" name="agg_name">
+		<input type="hidden" value="0" name="numC">
+		<input type="hidden" value={{module}} name="module">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+	{% for child in children %}
 	  <div class="form-group">
-		<label class="sr-only col-md-3" for="weightedSumAssessment">Assessment Name</label>
-		<div class="col-md-3">
-			<p class="form-control-static">someAssessment</p>
+		<label class="col-md-2" for="weightedSumAssessment">{{ child.1 }}</label>
+		<div class="col-md-4">
+			<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}">
+			<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
 		</div>
-		<input type="number" class="form-control" id="bestOfSelectedNumber" placeholder="Number of contributors">
-	  </div>
-	  <div class="form-group">
-	    <div class="input-group">
-		<div class="input-group-addon"><span class="fa fa-pie-chart"></span></div>
-		<input type="number" class="form-control" id="weightOfAssessment" placeholder="Assign weight">
-	    </div>
 	  </div>
 	{% endfor %}
-	<button class="btn btn-success" type="submit">Submit</button>
+	<div class="clearfix">
+		<button class="btn btn-success pull-right" type="submit">Submit</button>
+	</div>
 	</form><!-- ./weightedsum form -->
       </div>
     </div>

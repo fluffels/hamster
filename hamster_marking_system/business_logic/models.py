@@ -144,8 +144,8 @@ class BestOfAggregator(Aggregator):
 
       
   def __unicode__(self):
-    return self.aggregator_name
-
+    assess = self.assessment
+    return self.aggregator_name + " " + assess.assess_name
 
 def aggregateChild(assess_id, student_id ):
     root = Assessment.objects.get(id=assess_id)
@@ -191,45 +191,49 @@ def aggregateChild(assess_id, student_id ):
 
 
 '''
-          WEIGHTED-SUM AGGGREGATOR
+          WEIGHTED-SUM AGGGREGATOR - FOR STUDENT
 '''
-class WeightedSumAggregator(Aggregator):        
-    def aggregateMarks(self,assessment_id):
-      root_assess = Assessment.objects.filter(id=assessment_id)
-      weight = root_assess.getWeight()
-      total = getTotals(assessment_id) #recursive function to get full marks of all leaves
-      agg_mark = self.getAggMark(assessment_id) #recursive function to get the aggregated marks of subassessments
-      
-      calculation = (agg_mark) * (weight/100)
-      return calculation
-
-    def getTotals(self, assess_id):
+class WeightedSumAggregator(Aggregator):
+  
+    def aggregateMarksStudent(self,assess_id, student_id):
+      contributors = []
+      root = Assessment.objects.get(id=assess_id)
       children = Assessment.objects.filter(parent=assess_id)
-      sumTotals = 0.0
       for child in children:
-        if child.getType() == 'Aggregate':
-          sumTotals += getTotals(child.id)
-        elif child.getType() == 'Leaf':
-          sumTotals += child.getFullMarks()
-          
-      return sumTotals
-          
+        child_marks = aggregateChild(child.id, student_id)
+        contributors.append(child_marks)
+        
+      root = Assessment.objects.get(id=assess_id)
+      #[id,assess_name,published,type,mark,total,perc]
+      totalPerc = 0
+      totalTotal = 0
+      totalAgg = 0
+      for cont in contributors:
+        perc = cont[6]
+        id_ = cont[0]
+        total = cont[5]
+        agg = cont[4]
+        assess_obj = Assessment.objects.get(id=id_)
+        weight = assess_obj.weight
+        totalPerc += (weight * perc) #where weight is 0.something
+        totalTotal += total
+        totalAgg += agg
       
-    def getAggMark(self, assess_id):
-      currAssessment = Assessment.objects.filter(id=assess_id)
-      children = Assessment.objects.filter(parent=assess_id)
-      sumAgg = 0.0
-      for child in children:
-        if child.getType() == 'Leaf':
-          sumAgg += child.get_mark_obtained()
-        elif child.getType() =='Aggregate':
-          subSum = getAggMark(child.id)
-          subTotal = getTotals(child.id)
-          weight = currAssessment.getWeight()
-          sumAgg += (subSum/sumTotal) * (weight/100)
+      list =[]
+      list.append(root.id)
+      list.append(root.assess_name)
+      list.append(root.published)
+      list.append(root.assessment_type)
+      list.append(totalAgg)
+      list.append(totalTotal)
+      list.append(totalPerc)
       
-      return sumAgg
-
+      return list
+       
+    def __unicode__(self):
+      assess = self.assessment
+      return self.aggregator_name + " " + assess.assess_name
+  
 '''
           SIMPLE-SUM AGGREGATOR - FOR STUDENT
 '''
@@ -237,28 +241,28 @@ class SimpleSumAggregator(Aggregator):
       
   def aggregateMarksStudent(self, assess_id, student_id):
     root = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_agg_of_children = 0.0
+    sum_total_of_children = 0
 
     student_obj = Person.objects.get(upId=student_id)
     if root.assessment_type == 'Aggregate':
-      children = Assessment.objects.filter(parent=assess_id)
-      sum_agg_of_children = 0.0
-      sum_total_of_children = 0
       for child in children:
         if child.assessment_type == 'Leaf':
           markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
           mark = markAlloc.getMark()
           sum_agg_of_children += mark
           sum_total_of_children += child.full_marks
-          
-          print "++++++++++++++++++++++++++++++++++++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-          print "SUM TOTAL CHILDREN" + str(sum_total_of_children)
-          print "++++++++++++++++++++++++++++++++++++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"  
+  
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
-          sum_total_of_children += getSumTotalOfChildren(child.id)
+          sum_total_of_children += float(getSumTotalOfChildrenForStudent(child.id))
+          print "The child : " + str(child.assess_name)
+          print "SUM TOT : " + str(sum_total_of_children)
  
-      if sum_total_of_children == 0:
-        sum_total_of_children = 1
+      if sum_total_of_children == 0.0:
+        print "Trying to change this MOFO..."
+        sum_total_of_children = 1.0
 
       percentage = (sum_agg_of_children/sum_total_of_children) *100
       list = []
@@ -305,7 +309,8 @@ class SimpleSumAggregator(Aggregator):
     return sum_total_of_children
   
   def __unicode__(self):
-    return self.aggregator_name
+    assess = self.assessment
+    return self.aggregator_name + " " + assess.assess_name
   
 def getSumTotalOfChildren(assess_id):
     total =0

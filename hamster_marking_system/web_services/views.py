@@ -1524,31 +1524,31 @@ def chooseAggregator(request, jsonObj):
 	json_data = json.loads(jsonObj)
 	assess_id = json_data['assess_id']
 	
-	info = api.getAggregationInfo(assess_id)
+	children = api.getAggregationInfo(assess_id)
+	numChildren = api.getNumChildren(assess_id)
+	assess_name = api.getAssessmentName(assess_id)
 
-	if info is not None:
-
-		numContributors = info[0]
-		children = info[1]
+	
+	if children is not None:
 		data = {
 			'type':1,
-			'numContributors':numContributors,
-			'children':children
+			'numChildren':numChildren,
+			'children':children,
+			'assessmentName':assess_name
 		}
 		return HttpResponse(json.dumps(data))
-	
 	else:
-		pass #trying to aggregate a leaf/error
+		print "ERROR: Trying to aggregate a leaf!"
 	
-
 def aggregateMarkForAssessment(request, jsonObj):
 	json_data = json.loads(jsonObj)
 	agg_name = json_data['agg_name']
 	assess_id = json_data['assess_id']
-	children = json_data['children']
+	child_weight = json_data['child_weight']
+	child_id = json_data['child_id']
 	numContributors = json_data['numContributors']
 	
-	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, children )
+	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, child_id, child_weight )
 	
 	mod = json_data['module']
 	array = api.getAssessment(mod)

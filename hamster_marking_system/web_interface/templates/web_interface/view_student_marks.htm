@@ -91,23 +91,15 @@
             <!--  <span class="badge">{{n.4}}</span>-->
             <!--</div>-->
 	    
-	    <div class="btn-group btn-group-xs">
+	    <!--<div class="btn-group btn-group-xs">
               <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 		      class="btn btn-primary grid-exp" data-toggle="tooltip"
 		      data-placement="top" title="View mark">
                 <span id="btn-grid-exp" class="fa fa-caret-right"></span>
               </button>
-            </div>
-            
-            <div  class="btn-group btn-group-xs mark-view-toggle">
-              <button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-              data-placement="top" title="Mark obtained">{{ n.4 }}</button>
-              <button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-              data-placement="top" title="Total obtainable mark">{{ n.5 }}</button>
-	      <button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-              data-placement="top" title="Total obtainable mark">{{ n.6 }} %</button>
-            </div>
-            
+            </div>-->
+	    
+	    <!-- Expand export btn -->
             <div class="btn-group btn-group-xs">
               <button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
               data-placement="top" title="Export marks as">
@@ -115,6 +107,7 @@
               </button>
             </div>
             
+	    <!-- Export PDF and CSV btns -->
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
               <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
                     class="form-group-sm post-ass"> {% csrf_token %}
@@ -137,27 +130,30 @@
               </button>
             </div>
             
-            <!--<span class="badge pull-right">{{n.4}}</span>-->
-          {% else %}
-            <li class="list-group-item"><button  type="button" class="btn btn-xs btn-info">{{n.1}}</button>
-            
-	    <div class="btn-group btn-group-xs">
-              <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
-		      class="btn btn-primary grid-exp" data-toggle="tooltip"
-		      data-placement="top" title="View mark">
-                <span id="btn-grid-exp" class="fa fa-caret-right"></span>
-              </button>
-            </div>
-	    
-            <div  class="btn-group btn-group-xs mark-view-toggle">
+	    <!-- Marks btn-group -->
+            <div  class="pull-right btn-group btn-group-xs mark-view-toggle">
               <button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
               data-placement="top" title="Mark obtained">{{ n.4 }}</button>
               <button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
               data-placement="top" title="Total obtainable mark">{{ n.5 }}</button>
 	      <button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-              data-placement="top" title="Total obtainable mark">{{ n.6 }} %</button>
+              data-placement="top" title="Percentage obtained">{{ n.6 }} %</button>
             </div>
             
+            
+            <!--<span class="badge pull-right">{{n.4}}</span>-->
+          {% else %}
+            <li class="list-group-item"><button  type="button" class="btn btn-xs btn-info">{{n.1}}</button>
+            
+	    <!--<div class="btn-group btn-group-xs">
+              <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+		      class="btn btn-primary grid-exp" data-toggle="tooltip"
+		      data-placement="top" title="View mark">
+                <span id="btn-grid-exp" class="fa fa-caret-right"></span>
+              </button>
+            </div>-->
+	    
+	    <!--Expand export btn-->
             <div class="btn-group btn-group-xs">
               <button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
               data-placement="top" title="Export marks as">
@@ -165,6 +161,7 @@
               </button>
             </div>
             
+	    <!--Export PDF and CSV btn-->
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
               <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
 		class="form-group-sm post-ass">{% csrf_token %}
@@ -186,6 +183,17 @@
                 <span class="fa fa-file-excel-o"></span> 
               </button>
             </div>
+	    
+	    <!--Marks btn-group-->
+            <div class="pull-right btn-group btn-group-xs mark-view-toggle">
+              <button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Mark obtained">{{ n.4 }}</button>
+              <button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Total obtainable mark">{{ n.5 }}</button>
+	      <button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+              data-placement="top" title="Percentage obtained">{{ n.6 }} %</button>
+            </div>
+            
             
             </li>
           {% endifequal %}
@@ -199,23 +207,15 @@
                       <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
                       <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{y.1}}</button>
                       
-		      <div class="btn-group btn-group-xs">
+		      <!--<div class="btn-group btn-group-xs">
 			<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 				class="btn btn-primary grid-exp" data-toggle="tooltip"
 				data-placement="top" title="View mark">
 			  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
 			</button>
-		      </div>
+		      </div>-->
 		      
-                      <div  class="btn-group btn-group-xs mark-view-toggle">
-			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
-			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
-			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Total obtainable mark">{{ y.6 }} %</button>
-		      </div>
-		      
+		      <!--Expand export btn-->
 		      <div class="btn-group btn-group-xs">
 			<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
 			data-placement="top" title="Export marks as">
@@ -223,6 +223,7 @@
 			</button>
 		      </div>
 		      
+		      <!--Export PDF and CSV btns-->
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
 			class="form-group-sm post-ass">{% csrf_token %}
@@ -243,29 +244,31 @@
 			data-placement="top" title="Export as CSV">
 			  <span class="fa fa-file-excel-o"></span> 
 			</button>
+		      </div>
+		      
+		      <!--Marks btn-group-->
+                      <div class="pull-right btn-group btn-group-xs mark-view-toggle">
+			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
+			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
+			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Percentage obtained">{{ y.6 }} %</button>
 		      </div>
                       
                       <!--<span class="badge pull-right">{{y.4}}</span>-->
                     {% else %}
                       <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{y.1}}</button>
                       
-		      <div class="btn-group btn-group-xs">
+		      <!--<div class="btn-group btn-group-xs">
 			<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 				class="btn btn-primary grid-exp" data-toggle="tooltip"
 				data-placement="top" title="View mark">
 			  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
 			</button>
-		      </div>
+		      </div>-->
 		      
-                      <div  class="btn-group btn-group-xs mark-view-toggle">
-			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
-			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
-			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-			data-placement="top" title="Total obtainable mark">{{ y.6 }} %</button>
-		      </div>
-		      
+		      <!--Expand export btn-->
 		      <div class="btn-group btn-group-xs">
 			<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
 			data-placement="top" title="Export marks as">
@@ -273,6 +276,7 @@
 			</button>
 		      </div>
 		      
+		      <!--Marks btn-group-->
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
 			class="form-group-sm post-ass">{% csrf_token %}
@@ -293,6 +297,16 @@
 			data-placement="top" title="Export as CSV">
 			  <span class="fa fa-file-excel-o"></span> 
 			</button>
+		      </div>
+		      
+		      <!--Marks btn-group-->
+                      <div class="pull-right btn-group btn-group-xs mark-view-toggle">
+			<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Mark obtained">{{ y.4 }}</button>
+			<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Total obtainable mark">{{ y.5 }}</button>
+			<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+			data-placement="top" title="Percentage obtained">{{ y.6 }} %</button>
 		      </div>
                       
                       </li>
@@ -307,31 +321,24 @@
                                 <li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
                                 <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{e.1}}</button>
                               
-				<div class="btn-group btn-group-xs">
+				<!--<div class="btn-group btn-group-xs">
 					<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 						class="btn btn-primary grid-exp" data-toggle="tooltip"
 						data-placement="top" title="View mark">
 					  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
 					</button>
-				</div>
+				</div>-->
 			      
-                                <div  class="btn-group btn-group-xs mark-view-toggle">
-					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
-					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
-					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Total obtainable mark">{{ e.6 }} %</button>
-				      </div>
-				      
-				      <div class="btn-group btn-group-xs">
+				<!--Expand export btn-->
+				<div class="btn-group btn-group-xs">
 					<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
 					data-placement="top" title="Export marks as">
 					  <span id="btn-grid-exp" class="fa fa-download"></span>
 					</button>
-				      </div>
+				</div>
 				      
-				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+				<!--Export PDF and CSV btn-->
+				<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
 					class="form-group-sm post-ass">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
@@ -351,37 +358,40 @@
 					data-placement="top" title="Export as CSV">
 					  <span class="fa fa-file-excel-o"></span> 
 					</button>
+				</div>
+				      
+				<!--Marks btn-group-->
+                                <div class="pull-right btn-group btn-group-xs mark-view-toggle">
+					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
+					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
+					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Percentage obtained">{{ e.6 }} %</button>
 				</div>
                               
                                 <!--<span class="badge pull-right">{{e.4}}</span>-->
                               {% else %}
                                 <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{e.1}}</button>
                                 
-				<div class="btn-group btn-group-xs">
+				<!--<div class="btn-group btn-group-xs">
 					<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 						class="btn btn-primary grid-exp" data-toggle="tooltip"
 						data-placement="top" title="View mark">
 					  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
 					</button>
-				</div>
+				</div>-->
 				
-                                <div  class="btn-group btn-group-xs mark-view-toggle">
-					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
-					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
-					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-					data-placement="top" title="Total obtainable mark">{{ e.6 }} %</button>
-				      </div>
-				      
-				      <div class="btn-group btn-group-xs">
+				<!--Expand export btn-->
+				<div class="btn-group btn-group-xs">
 					<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
 					data-placement="top" title="Export marks as">
 					  <span id="btn-grid-exp" class="fa fa-download"></span>
 					</button>
-				      </div>
+				</div>
 				      
-				      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+				<!--Marks btn-group-->
+				<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
 					class="form-group-sm post-ass">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
@@ -401,6 +411,16 @@
 					data-placement="top" title="Export as CSV">
 					  <span class="fa fa-file-excel-o"></span> 
 					</button>
+				</div>
+				      
+				<!--Marks btn-group-->
+                                <div class="pull-right btn-group btn-group-xs mark-view-toggle">
+					<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Mark obtained">{{ e.4 }}</button>
+					<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Total obtainable mark">{{ e.5 }}</button>
+					<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+					data-placement="top" title="Percentage obtained">{{ e.6 }} %</button>
 				</div>
                                 
                                 </li>
@@ -421,101 +441,107 @@
 						onclick="$(this).parent().children('form.last-agg').submit();">
                                           <span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>  {{h.1}}</button>
                                         
-					  <div class="btn-group btn-group-xs">
-						<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
-							class="btn btn-primary grid-exp" data-toggle="tooltip"
-							data-placement="top" title="View mark">
-						  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
-						</button>
-					  </div>
+						<!--<div class="btn-group btn-group-xs">
+						      <button type="button" id={{n.0}} onclick="mark_view_grid(this)"
+							      class="btn btn-primary grid-exp" data-toggle="tooltip"
+							      data-placement="top" title="View mark">
+							<span id="btn-grid-exp" class="fa fa-caret-right"></span>
+						      </button>
+						</div>-->
 					
-                                          <div  class="btn-group btn-group-xs mark-view-toggle">
-						<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Mark obtained">{{ h.4 }}</button>
-						<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
-						<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Total obtainable mark">{{ h.6 }} %</button>
-					      </div>
-					      
-					      <div class="btn-group btn-group-xs">
-						<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Export marks as">
-						  <span id="btn-grid-exp" class="fa fa-download"></span>
-						</button>
-					      </div>
-					      
-					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-						<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
-						class="form-group-sm post-ass">{% csrf_token %}
-							<input type="hidden" name="module" value={{ module }}>
-							<input type="hidden" name="assessment" value={{ h.0 }}>
-						</form>
-						<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
-						  data-placement="top" title="Export as PDF">
-						    <span class="fa fa-file-pdf-o"></span> 
-						</button>
-						
-						<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
-						class="form-group-sm post-sess">{% csrf_token %}
-							<input type="hidden" name="module" value={{ module }}>
-							<input type="hidden" name="assessment" value={{h.0}}>
-						</form>
-						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-						data-placement="top" title="Export as CSV">
-						  <span class="fa fa-file-excel-o"></span> 
-						</button>
-					</div>
+						<!--Expand export btn-->
+						<div class="btn-group btn-group-xs">
+							<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Export marks as">
+							  <span id="btn-grid-exp" class="fa fa-download"></span>
+							</button>
+						</div>
+						      
+						<!--Export PDF and CSV btns-->
+						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+							<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+							class="form-group-sm post-ass">{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ h.0 }}>
+							</form>
+							<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+							  data-placement="top" title="Export as PDF">
+							    <span class="fa fa-file-pdf-o"></span> 
+							</button>
+							
+							<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+							class="form-group-sm post-sess">{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assessment" value={{h.0}}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+							data-placement="top" title="Export as CSV">
+							  <span class="fa fa-file-excel-o"></span> 
+							</button>
+						</div>
+						      
+						<!--Marks btn-group-->
+						<div class="pull-right btn-group btn-group-xs mark-view-toggle">
+							<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Mark obtained">{{ h.4 }}</button>
+							<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
+							<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Percentage obtained">{{ h.6 }} %</button>
+						</div>
                                         
                                           <!--<span class="badge pull-right">{{h.4}}</span>-->
                                         {% else %}
                                           <li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{h.1}}</button>
                                           
-					    <div class="btn-group btn-group-xs">
+					    <!--<div class="btn-group btn-group-xs">
 						<button type="button" id={{n.0}} onclick="mark_view_grid(this)"
 							class="btn btn-primary grid-exp" data-toggle="tooltip"
 							data-placement="top" title="View mark">
 						  <span id="btn-grid-exp" class="fa fa-caret-right"></span>
 						</button>
-					    </div>
-					  
-                                            <div  class="btn-group btn-group-xs mark-view-toggle">
-						<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Mark obtained">{{ h.4 }}</button>
-						<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
-						<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Total obtainable mark">{{ h.6 }} %</button>
-					      </div>
-					      
+					    </div>-->
+					
+					      <!--Expand export btn-->
 					      <div class="btn-group btn-group-xs">
-						<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
-						data-placement="top" title="Export marks as">
-						  <span id="btn-grid-exp" class="fa fa-download"></span>
-						</button>
+							<button type="button" id={{n.0}} onclick="plus_export_opts(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Export marks as">
+							  <span id="btn-grid-exp" class="fa fa-download"></span>
+							</button>
 					      </div>
 					      
+					      <!--Export PDF and CSV btn-->
 					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-						<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
-						class="form-group-sm post-ass">{% csrf_token %}
-							<input type="hidden" name="module" value={{ module }}>
-							<input type="hidden" name="assessment" value={{ h.0 }}>
-						</form>
-						<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
-						  data-placement="top" title="Export as PDF">
-						    <span class="fa fa-file-pdf-o"></span> 
-						</button>
-						
-						<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
-						class="form-group-sm post-sess">{% csrf_token %}
-							<input type="hidden" name="module" value={{ module }}>
-							<input type="hidden" name="assessment" value={{h.0}}>
-						</form>
-						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
-						data-placement="top" title="Export as CSV">
-						  <span class="fa fa-file-excel-o"></span> 
-						</button>
-					</div>
+							<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+							class="form-group-sm post-ass">{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ h.0 }}>
+							</form>
+							<button onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-danger" data-toggle="tooltip"
+							  data-placement="top" title="Export as PDF">
+							    <span class="fa fa-file-pdf-o"></span> 
+							</button>
+							
+							<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+							class="form-group-sm post-sess">{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assessment" value={{h.0}}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-success" data-toggle="tooltip"
+							data-placement="top" title="Export as CSV">
+							  <span class="fa fa-file-excel-o"></span> 
+							</button>
+						</div>
+					      
+						<!--Marks btn-group-->
+						<div class="pull-right btn-group btn-group-xs mark-view-toggle">
+							<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Mark obtained">{{ h.4 }}</button>
+							<button type="button"  class="btn btn-info grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Total obtainable mark">{{ h.5 }}</button>
+							<button type="button"  class="btn btn-default grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Percentage obtained">{{ h.6 }} %</button>
+						</div>
                                           
                                           </li>
                                         {% endifequal %}
