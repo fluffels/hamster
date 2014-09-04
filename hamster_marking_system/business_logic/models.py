@@ -162,7 +162,7 @@ def aggregateChild(assess_id, student_id ):
           sum_total_of_children += child.full_marks
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
-          sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
+          sum_total_of_children += getSumTotalOfChildren(child.id)
       if sum_total_of_children == 0.0:
         sum_total_of_children = 1
       percentage = (sum_agg_of_children/sum_total_of_children) *100
@@ -255,7 +255,7 @@ class SimpleSumAggregator(Aggregator):
           print "++++++++++++++++++++++++++++++++++++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"  
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
-          sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
+          sum_total_of_children += getSumTotalOfChildren(child.id)
  
       if sum_total_of_children == 0:
         sum_total_of_children = 1
@@ -320,20 +320,7 @@ def getSumTotalOfChildren(assess_id):
           total += getSumTotalOfChildren(child.id)
 
     return total
-def getSumTotalOfChildrenForStudent(assess_id):
-    total =0
-    assess = Assessment.objects.get(id=assess_id)
-    children = Assessment.objects.filter(parent=assess_id)
 
-    for child in children:
-      if child.published == True:
-        if child.assessment_type == 'Leaf':
-          mark = child.full_marks
-          total += mark
-        else:
-          total += getSumTotalOfChildren(child.id)
-
-    return total
   
 def getSumAggOfChildrenForStudent(assess_id, student_id):
     student_obj = Person.objects.get(upId=student_id)

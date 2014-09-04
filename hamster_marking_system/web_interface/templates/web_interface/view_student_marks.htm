@@ -415,7 +415,7 @@
                                           <li class="list-group-item">
 						<form action="student-assessment" method="post" hidden="hidden" class="last-agg">{% csrf_token %}
 							<input type="text" name="assess_id" value={{ h.0 }}>
-							<input type="text" name="module" value={{ module }}
+							<input type="text" name="module" value={{ module }}>
 						</form>
 						<button class="tree-toggler nav-header btn btn-xs btn-primary"
 						onclick="$(this).parent().children('form.last-agg').submit();">

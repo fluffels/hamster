@@ -79,7 +79,7 @@ def login(request):
     except Exception  as e:
         raise Http404()
     
-
+@isAuthenticated
 def backHome(request):
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
@@ -87,7 +87,7 @@ def backHome(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
-
+@isAuthenticated
 def use_as(request,role):
     if role == 'Student':
         lect = 'LT'
@@ -566,7 +566,7 @@ def getAllPersonOfSession(request):
                                                                         'marker':[]},context_instance = RequestContext(request))
 
 @isAuthenticated
-def getAllChildrenOfAssessment(request):
+def getLeafAssessmentPage(request):
     assess_id = request.POST['assessment']
     mod = request.POST['mod']
     
@@ -577,23 +577,11 @@ def getAllChildrenOfAssessment(request):
     results = views.getAllChildrenOfAssessment(request,json.dumps(data))
     res = json.loads(results.content)
     if res[0]['type'] == 1:
-        if res[0]['message'] == 'Aggregate':
-            child = res[0]['child']
-            name = res[0]['name']
-            return render_to_response("web_interface/view_aggregate_assessments.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'child':child,
-                                                                        'module':mod,'assessmentName':name,'assess_id':assess_id,
-                                                                        'type':1},context_instance = RequestContext(request))
-        
-        else:
-            studentMark = res[0]['studentMark']
-            name = res[0]['name']
-            fullmark = res[0]['fullmark']
-            return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+
+        studentMark = res[0]['studentMark']
+        name = res[0]['name']
+        fullmark = res[0]['fullmark']
+        return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -1329,10 +1317,11 @@ def viewAssessmentsForStudent(request):
                                                                         'assessmentId':assessmentId,'module':mod,
                                                                         'type':-1},context_instance=RequestContext(request))
 
-@isAuthenticated
+#@isAuthenticated
+@csrf_exempt
 def getAllChildrenOfAssessmentForStudent(request):
-        mod = request.POST['studB']
-        assessment = 8
+        mod = request.POST['module']
+        assessment = request.POST['assess_id']
         data ={
             'assess_id':assessment
         }
@@ -1342,9 +1331,13 @@ def getAllChildrenOfAssessmentForStudent(request):
         if res[0]['type'] == '1':
             print "something"
             root = res[0]['root']
+            print "root: " + str(root)
             first = res[0]['first']
+            print "first: " + str(first)
             second = res[0]['second']
+            print "second: " + str(second)
             third = res[0]['third']
+            print "third: "+ str(third)
             name = res[0]['assess_name']
             return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
@@ -1366,7 +1359,7 @@ def getAllChildrenOfAssessmentForStudent(request):
 
 ################################################ END STUDENT VIEWS ################################################################
 @isAuthenticated
-def testingAssessment(request):
+def getAllAssessmentOfAssessment(request):
     mod = request.POST['mod']
     assessment = request.POST['assessment']
     data ={
@@ -1403,40 +1396,6 @@ def testingAssessment(request):
                                                                         'user_roles':user_roles,'root':root},
                                                                         context_instance=RequestContext(request))
 
-
-#@csrf_exempt
-#def testingStudnetAssessment(request):
-#    mod = request.POST['studB']
-#    assessment = 8
-#    data ={
-#        'assess_id':assessment
-#    }
-#    result = views.testingStudentAssessment(request,json.dumps(data))
-#    res = json.loads(result.content)
-#    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
-#    if res[0]['type'] == '1':
-#        print "something"
-#        root = res[0]['root']
-#        first = res[0]['first']
-#        second = res[0]['second']
-#        third = res[0]['third']
-#        name = res[0]['assess_name']
-#        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
-#                                                                        'user_lect':user_lect,
-#                                                                        'user_stud':user_stud,
-#                                                                        'user_tut':user_tut,
-#                                                                        'user_ta':user_ta,
-#                                                                        'user_roles':user_roles,'root':root,'first':first,
-#                                                                        'module':mod, 'assessment':name,'second':second,'third':third,'assessmentName':assessment})
-#    else:
-#        print "NONE"
-#        root = "NONE";
-#        return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
-#                                                                        'user_lect':user_lect,
-#                                                                        'user_stud':user_stud,
-#                                                                        'user_tut':user_tut,
-#                                                                        'user_ta':user_ta,
-#                                                                        'user_roles':user_roles,'root':root})
 @isAuthenticated
 def ChangeSessionTime(request):
     mod = request.POST['module']

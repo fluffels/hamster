@@ -161,8 +161,7 @@ def studentAssessmentForAssessment(assess_id,student):
         ThirdChildren = []
         for nrs in root:
             mark = getMarkForStudent(student,nrs[0])
-            nrs.append(mark)
-            roots.append(nrs)
+            roots.append(mark)
             children1 = Assessment.objects.filter(parent=nrs[0])
             firstChildren = []
             firstChildren = getMarksOfChildrenAssessments(nrs[0],student)
