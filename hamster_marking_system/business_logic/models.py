@@ -448,7 +448,8 @@ class AggregateAssessment(Assessment):
       
     def get_aggregator_name(self):
       #get the name from the database
-      return self.aggregator_name
+      #return self.aggregator_name
+      pass
     
     def choose_aggregator(self, aggregatorname_chosen):
       statement = 'Aggregator changed to: '
@@ -461,7 +462,7 @@ class AggregateAssessment(Assessment):
         statement += 'BestOf Aggrgator'
         
       elif aggregatorname_chosen == 'WeightedSum':
-        self.aggregator = WeightedSumAggregator(aggregator_name='WeightedSum')
+        self.aggregator = WeightedSeumAggregator(aggregator_name='WeightedSum')
         statement += 'WeightedSum Aggregator'
         
       else:

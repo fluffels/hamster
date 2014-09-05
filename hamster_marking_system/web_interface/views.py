@@ -571,7 +571,7 @@ def getAllPersonOfSession(request):
 @isAuthenticated
 def getLeafAssessmentPage(request):
     assess_id = request.POST['assessment']
-    mod = request.POST['mod']
+    mod = request.POST['module']
     
     data = {
         'assess_id':assess_id,
