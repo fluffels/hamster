@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-multiselect.css">
+	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="/static/web_interface/css/style.css">
+</head>
+<body>
+
+	<!--Navigation bar-->
+	<div class = "navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			
+			<a href="#" class = "navbar-brand">Hamster Marking System</a>
+
+			<button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+			<div class="collapse navbar-collapse navHeaderCollapse">
+				
+			<ul class="nav navbar-nav navbar-right">
+				<li class="active"><a href="/hamster_home">Home</a></li>
+
+					
+				{% block logout_button %}{% endblock %}
+				{% block person_details %}{% endblock %}
+				
+				<!--Courses dropdown-->
+				<li>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					{% block courses_dropdown %}{% endblock %}
+				</ul>
+				</li>
+				<!-- End of Courses dropdown-->
+
+				<!--Use as dropdown-->
+				<li>
+					
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					{% block courses_use_as %}{% endblock %}
+				</ul>
+
+				</li>
+				<!-- End of Use as dropdown-->
+				
+				<li><a href="#query" data-toggle="modal">Query</a></li>
+				<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
+
+			</ul>
+
+			</div>
+		</div>
+
+	</div><!--End of Navigation bar-->
+
+	<!--Jumbotron-->
+	<div class="container">
+		<div class="jumbotron text-center" id="no-jumbotron">
+			{% block breadcrumbs %}{% endblock %}
+			<h2>{% block jumbotron_header %}{% endblock %}</h2>
+			<p>{% block jumbotron_sub_header %}{% endblock %}</p>
+			
+			{% block jumbotron_content %}{% endblock %}
+		</div>
+	</div><!--End of jumbotron-->
+
+	<!-- Under jumbotron -->
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6" >
+				{% block left_under_jumbotron-col-6 %}{% endblock %}
+			</div>
+	
+			<div class="col-md-6" >
+				{% block right_under_jumbotron-col-6 %}{% endblock %}
+			</div>
+		</div>
+	</div><!-- End of Under jumbotron -->
+
+	<!--Footer bar-->
+	<div class="navbar navbar-inverse navbar-fixed-bottom">
+		
+		<div class="container">
+			
+			<p class="navbar-text pull-left">Created by DEV_OID</p>
+			<a class="navbar-btn btn-primary btn pull-right" href="http://www.cs.up.ac.za">Go to CS website</a>
+
+		</div>
+	</div><!--End of footer-->
+
+	<!--Modal for ContactUs-->
+	<div class="modal fade" id="contact" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal">{% csrf_token %}
+					<div class="modal-header">
+						<h4>Contact Tech Team</h4>
+					</div>
+					<div class="modal-body">
+						
+						<div class="form-group">
+							
+							<label for="contact-name" class="col-lg-2 control-label">Name:</label>
+							<div class="col-lg-8">
+								<input type="text" class="form-control" id="contact-name" placeholder="Full name">
+
+							</div>
+
+						</div>
+
+						<div class="form-group">
+							
+							<label for="contact-email" class="col-lg-2 control-label">Email:</label>
+							<div class="col-lg-8">
+								<input type="email" class="form-control" id="contact-email" placeholder="you@example.com">
+
+							</div>
+
+						</div>
+
+						<div class="form-group">
+							
+							<label for="contact-msg" class="col-lg-2 control-label">Message:</label>
+							<div class="col-lg-8">
+							<textarea class="form-control" rows="6"></textarea>
+
+
+							</div>
+
+						</div>
+
+
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+						<button class="btn btn-primary" type="submit">Send message</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div><!--End of Modal for ContactUs-->
+
+	<!--Modal for Query-->
+	<div class="modal fade" id="query" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal">
+					{% csrf_token %}
+					<div class="modal-header">
+						<h4>Query system</h4>
+					</div>
+					<div class="modal-body">
+						
+						<div class="form-group">
+							
+							<label for="student-number" class="col-lg-2 control-label">Name:</label>
+							<div class="col-lg-8">
+								<input type="text" class="form-control" id="student-number" placeholder="Username">
+
+							</div>
+
+						</div>
+
+						<div class="form-group">
+							
+							<label for="contact-email" class="col-lg-2 control-label">Email:</label>
+							<div class="col-lg-8">
+								<input type="email" class="form-control" id="contact-email" placeholder="you@example.com">
+
+							</div>
+
+						</div>
+
+						<div class="form-group">
+
+							<label for="student-module" class="col-lg-2 control-label">Module:</label>
+							<div class="col-lg-8">
+								<div class="btn-group">
+								  <button type="button" class="btn btn-default">Modules</button>
+								  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								    <span class="caret"></span>
+								    <span class="sr-only">Toggle Dropdown</span>
+								  </button>
+								  <ul class="dropdown-menu">
+								    <li><a href="#"> COS 301</a></li>
+									<li><a href="#"> COS 332</a></li>
+									<li><a href="#"> COS 314</a></li>
+									<li><a href="#"> COS 341</a></li>
+								    <li><a href="#"> COS 344</a></li>
+								    <!--In cases like this, sever side will feed through modules student is registered in-->
+								  </ul>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="form-group">
+							
+							<label for="student-query" class="col-lg-2 control-label">Query:</label>
+							<div class="col-lg-8">
+							<textarea class="form-control" rows="6" placeholder="Give a detailed description of assemsment, the question being addressed if applicable and your problem."></textarea>
+							</div>
+						</div>
+
+
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+						<button class="btn btn-primary" type="submit">Send query</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div><!--End of Modal for Query-->
+	
+<!-- ################### Modal for create assessment ################# -->
+
+<!--Modal for Creating assessment-->
+<div class="modal fade" id="create_ass" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="create-leaf-assessment" method="post">
+				{% csrf_token %}
+				<div class="modal-header text-center">
+					<h4>Create an Assessment for</h4>
+					<h4>{{ assessment }} </h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						
+						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+						<div class="col-lg-8">
+							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
+
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						
+						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+						<div class="col-lg-8">
+							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+
+						</div>
+
+					</div>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }} placeholder={{ module }}>
+							<input type="hidden" class="form-control" name="assess_id" value={{ assessmentName }}>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button class="btn btn-success" type="submit" >Create</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="/static/web_interface/js/bootstrap-multiselect.js"></script>
+<script src="/static/web_interface/js/moment.js"></script>
+<script src="/static/web_interface/js/bootstrap-datetimepicker.js"></script>
+
+<script>
+      $(document).ready(function () {
+	$('#multiselectStudentsForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : true
+	});
+	
+	$('#multiselectMarkerForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : true
+	});
+	
+	$('#multiselectRemoveStudentsForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : false
+	});
+	
+	$('#multiselectRemoveMarkerForSession').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : false
+	});
+	
+	var exist = $( "#no-jumbotron" ).find('#rem-jumbotron').hasClass( "tree-finder" );	//Tests if inner div of jumbotron has class tree-finder
+												//this is done to disable the text-center for the tree page
+												//as it disables indenation in the tree.
+	if (exist) {
+		$('#no-jumbotron').attr('class', 'jumbotron');	//Removes text-center from page
+	}
+	//Toggle is OFF initially
+	var Tree = 'button.tree-toggler';
+	//$(Tree).parent().children('ul.tree').toggle(300);	//Makes tree load with children un-expended
+	$(Tree).click(function () {
+		$(this).parent().children('ul.tree').toggle(300);
+		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-open").animate(300);
+		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-close").animate(300);
+	});
+	
+	
+	
+	//var btn_grid = 'button.grid-exp';
+	
+	//$(btn_grid).click(function () {
+		//$('#btn-grid-exp').toggleClass("glyphicon glyphicon-plus").animate(300);
+		//$('#btn-grid-exp').toggleClass("glyphicon glyphicon-minus").animate(300);
+	//});
+	
+	//Hide assessment options on page load
+	$('.grid-toggle-opts').hide();
+	
+	//Hide student marks on page load
+	//$('.mark-view-toggle').hide();
+	//$('button.grid-exp').click( function(){
+		//$('.grid-toggle-opts').toggle('slow');
+	//});
+	
+	//Confirm delete modal javascript
+	/*
+	$('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.danger').attr('href', $(e.relatedTarget).data('href'));
+            
+            //$('.debug-url').html('Delete URL: <strong>' + $(this).find('.danger').attr('href') + '</strong>');
+        });
+        */
+	
+	//Toggle is ON initialy
+	/*
+	$('label.tree-toggler').click(function () {
+		$(this).parent().children('ul.tree').toggle(300);
+		$(this).toggleClass("icon-folder-open").animate(300);
+		$(this).toggleClass("icon-folder-close").animate(300);
+	});
+	*/
+      });
+	  
+	  /*Function for changing the sign of the expansion button in the tree structure
+	   *Second part shows the button group with options next to the expansion button
+	   */
+	function plus_minus_sign(this_btn) {
+		jQuery(this_btn).children("span").toggleClass("fa fa-ellipsis-h").animate(300);
+		jQuery(this_btn).children("span").toggleClass("fa fa-minus-circle").animate(300);
+		
+		$(this_btn).parent().parent().children('div.grid-toggle-opts').toggle('slow');
+	}
+	
+	/*
+	 *Function for changing the sign of the expansion button in the STUDENTs tree structure view
+	 *Second part shows the button group with options next to the expansion button
+	 */
+	function plus_export_opts(this_btn) {
+		jQuery(this_btn).children("span").toggleClass("fa fa-download").animate(300);
+		jQuery(this_btn).children("span").toggleClass("fa fa-minus-circle").animate(300);
+		
+		$(this_btn).parent().parent().children('div.grid-toggle-opts').toggle('slow');
+	}
+	
+	/*
+	 *Function for changing the sign of the expansion button in the STUDENTs tree structure view
+	 *Second part shows the button group with options next to the expansion button
+	 */
+	function mark_view_grid(this_btn) {
+		jQuery(this_btn).children("span").toggleClass("fa fa-caret-right").animate(300);
+		jQuery(this_btn).children("span").toggleClass("fa fa-caret-left").animate(300);
+		
+		$(this_btn).parent().parent().children('div.mark-view-toggle').toggle('slow');
+	}
+	
+	//Called when create leaf assessment modal is called
+	//Replaces information in modal before it is posted
+	$(document).on('click', '#addAssessmentBtn', function() {
+		//Retrieve data from page
+		var thisModule = $(this).data('module');
+		var thisAssessmentId = $(this).data('assessment_id');
+		
+		//Overide data in modal
+		$('.modal-body #leaf_assessment_id').val(thisModule);
+		$('.modal-footer #parent_assess_id').val(thisAssessmentId);
+		
+	});
+</script>
+
+</body>
+</html>

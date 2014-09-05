@@ -1,0 +1,998 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Assessments {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li>
+		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+			{% csrf_token %}
+			<input type="text" name="id" value={{ role }}>
+		</form>
+		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs_2 %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a  href="/use_as/{{ role }}">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %}
+	<div class="text-center">Assessments</div>
+	
+	{% ifequal assessment '' %}
+		
+	{% else %}
+		<div class="text-center"><div class="label label-default">{{ assessment }}</div></div>
+	{% endifequal %}
+{% endblock %}
+
+{% block jumbotron_sub_header %}
+	<div class="text-center">{{ module }}</div>
+{% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		
+		<button class="btn btn-info btn-lg btn-block"  data-target="#create_ass" data-toggle="modal">Create an Assessment</button><br>
+		
+		
+		<div id="rem-jumbotron" class="well tree-finder">
+			<ul class="nav nav-list list-group">
+				
+				{% ifequal root.0 empty %}
+					<div class="alert alert-warning text-center" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+				{%endifequal%}
+				{%for n in root%}<!-- Major point -->
+					{% ifequal n.3 'Aggregate' %}
+						<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+						<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{n.1}}</button>
+						
+						<div class="btn-group btn-group-xs">
+							<span class="label label-default">{{n.4}}</span>
+						</div>
+						
+						<div class="btn-group btn-group-xs">
+							<button type="button" id={{n.0}} onclick="plus_minus_sign(this)" class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Expand/Close Menu">
+								<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+							</button>
+						</div>
+						
+						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+							      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
+								{% csrf_token %}
+								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ n.0 }}>
+							</form>
+							<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+							 class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+							 data-module={{ module }} data-assessment_id={{ n.0 }}>
+								<span class="fa fa-plus"></span>
+							</button>
+							
+							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+								{% csrf_token %}
+								<input type="hidden" name="assessment" value={{n.0}}>
+								<input tyep="hidden" name="module" value={{module}}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="View/Edit Sessions">
+								<span class="glyphicon glyphicon-time"></span>
+							</button>
+							
+							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+								{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assess_id" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');"
+								data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+							data-placement="top" title="Delete Assessment">
+								<span class="glyphicon glyphicon-trash"></span>
+							</button>
+							
+							{% if n.2 == False %}
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+									{% csrf_token %}
+									<input type="hidden" name="module" value={{ module }}>
+									<input type="hidden" name="assess_id" value={{ n.0 }}>
+									<input type="hidden" name="publish_state" value='0'>
+								</form>
+								<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+								data-placement="top" title="Publish Assessment">
+									<span class="glyphicon glyphicon-volume-off"></span>
+								</button>
+							{% else %}
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+									{% csrf_token %}
+									<input type="hidden" name="module" value={{ module }}>
+									<input type="hidden" name="assess_id" value={{ n.0 }}>
+									<input type="hidden" name="publish_state" value='1'>
+								</form>
+								<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+								data-placement="top" title="Un-publish Assessment">
+								<span class="glyphicon glyphicon-volume-up"></span>
+								</button>
+							{% endif %}
+							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+								{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assess_id" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="Choose Aggregator">
+								<span class="glyphicon glyphicon-stats"></span>
+							</button>
+						</div>
+						
+						<!--<span class="label label-default pull-right">{{n.4}}</span>-->
+					{% else %}
+						<li class="list-group-item"><button  type="button" class="btn btn-xs btn-info">{{n.1}}</button>
+						
+						<div  class="btn-group btn-group-xs">
+							<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Assessment mark">{{n.4}}</button>
+						</div>
+						
+						<div id={{n.0}} class="btn-group btn-group-xs">
+							<button type="button" onclick="plus_minus_sign(this)" class="btn btn-info grid-exp" data-toggle="tooltip"
+							data-placement="top" title="Expand/Close Menu">
+								<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+							</button>
+						</div>
+						
+						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
+							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+								{% csrf_token %}
+								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ n.0 }}>
+							</form>
+							<button  id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+							 class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+							 data-module={{ module }} data-assessment_id={{ n.0 }}>
+								<span class="fa fa-plus"></span>
+							</button>
+							
+							<form action="/courses/{{ module }}/{{ n.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+								{% csrf_token %}
+								<input type="hidden" name="assessment" value={{n.0}}>
+								<input type="hidden" name="module" value={{module}}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="View/Edit Sessions">
+								<span class="glyphicon glyphicon-time"></span>
+							</button>
+							
+							<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+								{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assess_id" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');"
+								data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+							data-placement="top" title="Delete Assessment">
+								<span class="glyphicon glyphicon-trash"></span>
+							</button>
+							
+							{% if n.2 == False %}
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+									{% csrf_token %}
+									<input type="hidden" name="module" value={{ module }}>
+									<input type="hidden" name="assess_id" value={{ n.0 }}>
+									<input type="hidden" name="publish_state" value='0'>
+								</form>
+								<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+								data-placement="top" title="Publish Assessment">
+									<span class="glyphicon glyphicon-volume-off"></span>
+								</button>
+							{% else %}
+								<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+									{% csrf_token %}
+									<input type="hidden" name="module" value={{ module }}>
+									<input type="hidden" name="assess_id" value={{ n.0 }}>
+									<input type="hidden" name="publish_state" value='1'>
+								</form>
+								<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+								data-placement="top" title="Un-publish Assessment">
+								<span class="glyphicon glyphicon-volume-up"></span>
+								</button>
+							{% endif %}
+							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+								{% csrf_token %}
+								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="assessment" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+								class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="Mark Assessment">
+								<span class="fa fa-check"></span>
+							</button>
+						</div>
+						
+						</li>
+					{% endifequal %}
+					<!--<h1>{{n.3}}</h1>-->
+					{%for m in first%}
+						<ul class="nav nav-list tree">
+							{% for key, value in m.items %}
+								{% ifequal key n.1 %}
+									{% for y in value %}<!-- Major point 2-->
+										{% ifequal y.3 'Aggregate' %}
+											<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+											<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{y.1}}</button>
+											
+											<div class="btn-group btn-group-xs">
+												<span class="label label-default">{{y.4}}</span>
+											</div>
+											
+											<div id={{y.0}} class="btn-group btn-group-xs">
+												<button type="button" onclick="plus_minus_sign(this)" id={{y.0}} class="btn btn-primary grid-exp" data-toggle="tooltip"
+												data-placement="top" title="Expand/Close Menu">
+													<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+												</button>
+											</div>
+											
+											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
+												<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+													{% csrf_token %}
+													<input type="hidden" name="mod" value={{ module }}>
+													<input type="hidden" name="assessment" value={{ y.0 }}>
+												</form>
+												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+													class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+													data-module={{ module }} data-assessment_id={{ y.0 }}>
+													<span class="fa fa-plus"></span>
+												</button>
+												
+												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+													{% csrf_token %}
+													<input type="hidden" name="assessment" value={{y.0}}>
+													<input type="hidden" name="module" value{{module}}>
+												</form>
+												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+												data-placement="top" title="View/Edit Sessions">
+													<span class="glyphicon glyphicon-time"></span>
+												</button>
+												
+												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+													{% csrf_token %}
+													<input type="hidden" name="module" value={{ module }}>
+													<input type="hidden" name="assess_id" value={{ y.0 }}>
+												</form>
+												<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+													data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+												data-placement="top" title="Delete Assessment">
+													<span class="glyphicon glyphicon-trash"></span>
+												</button>
+												
+												{% if y.2 == False %}
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+														<input type="hidden" name="publish_state" value='0'>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Publish Assessment">
+														<span class="glyphicon glyphicon-volume-off"></span>
+													</button>
+												{% else %}
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+														<input type="hidden" name="publish_state" value='1'>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Un-publish Assessment">
+													<span class="glyphicon glyphicon-volume-up"></span>
+													</button>
+												{% endif %}
+												<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+													{% csrf_token %}
+													<input type="hidden" name="module" value={{ module }}>
+													<input type="hidden" name="assess_id" value={{ y.0 }}>
+												</form>
+												<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+												data-placement="top" title="Choose Aggregator">
+													<span class="glyphicon glyphicon-stats"></span>
+												</button>
+											</div>
+											
+											<!--<span class="label label-default pull-right">{{y.4}}</span>-->
+										{% else %}
+											<li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{y.1}}</button>
+											
+											<div  class="btn-group btn-group-xs">
+												<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+												data-placement="top" title="Assessment mark">{{y.4}}</button>
+											</div>
+											
+											<div id={{y.0}} class="btn-group btn-group-xs">
+												<button type="button" onclick="plus_minus_sign(this)" id={{y.0}} class="btn btn-info grid-exp" data-toggle="tooltip"
+												data-placement="top" title="Expand/Close Menu">
+													<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+												</button>
+											</div>
+											
+											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
+												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+													{% csrf_token %}
+													<input type="hidden" name="mod" value={{ module }}>
+													<input type="hidden" name="assessment" value={{ y.0 }}>
+												</form>
+												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+													class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+													data-module={{ module }} data-assessment_id={{ y.0 }}>
+													<span class="fa fa-plus"></span>
+												</button>
+												
+												<form action="/courses/{{ module }}/{{ y.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+													{% csrf_token %}
+													<input type="hidden" name="assessment" value={{y.0}}>
+													<input type="hidden" name="module" value{{module}}>
+												</form>
+												<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+												data-placement="top" title="View/Edit Sessions">
+													<span class="glyphicon glyphicon-time"></span>
+												</button>
+												
+												<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+													{% csrf_token %}
+													<input type="hidden" name="module" value={{ module }}>
+													<input type="hidden" name="assess_id" value={{ y.0 }}>
+												</form>
+												<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+													data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+												data-placement="top" title="Delete Assessment">
+													<span class="glyphicon glyphicon-trash"></span>
+												</button>
+												
+												{% if y.2 == False %}
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+														<input type="hidden" name="publish_state" value='0'>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Publish Assessment">
+														<span class="glyphicon glyphicon-volume-off"></span>
+													</button>
+												{% else %}
+													<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+														{% csrf_token %}
+														
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+														<input type="hidden" name="publish_state" value='1'>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Un-publish Assessment">
+													<span class="glyphicon glyphicon-volume-up"></span>
+													</button>
+												{% endif %}
+													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+														{% csrf_token %}
+														<input type="hidden" name="mod" value={{ module }}>
+														<input type="hidden" name="assessment" value={{ y.0 }}>
+													</form>
+													<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+														class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Mark Assessment">
+														<span class="fa fa-check"></span>
+													</button>
+											</div>
+											
+											</li>
+										{% endifequal %}
+										<!--<h2 style="color:red">{{ y.1}}</h2>-->
+										{%for s in second%}
+											<ul class="nav nav-list tree">
+												{%for key, value in s.items%}
+													{%ifequal key y.1%}
+														{%for e in value%}<!-- Major point 3-->
+															{% ifequal e.3 'Aggregate' %}
+																<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+																<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{e.1}}</button>
+															
+																<div class="btn-group btn-group-xs">
+																	<span class="label label-default">{{e.4}}</span>
+																</div>
+															
+																<div id={{e.0}} class="btn-group btn-group-xs">
+																	<button type="button" onclick="plus_minus_sign(this)" id={{e.0}} class="btn btn-primary grid-exp" data-toggle="tooltip"
+																	data-placement="top" title="Expand/Close Menu">
+																		<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+																	</button>
+																</div>
+																
+																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
+																	<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																		{% csrf_token %}
+																		<input type="hidden" name="mod" value={{ module }}>
+																		<input type="hidden" name="assessment" value={{ e.0 }}>
+																	</form>
+																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																		class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																		data-module={{ module }} data-assessment_id={{ e.0 }}>
+																		<span class="fa fa-plus"></span>
+																	</button>
+																	
+																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																		{% csrf_token %}
+																		
+																		<input type="hidden" name="assessment" value={{e.0}}>
+																		<input type="hidden" name="module" value{{module}}>
+																	</form>
+																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+																	data-placement="top" title="View/Edit Sessions">
+																		<span class="glyphicon glyphicon-time"></span>
+																	</button>
+																	
+																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																		{% csrf_token %}
+																		<input type="hidden" name="module" value={{ module }}>
+																		<input type="hidden" name="assess_id" value={{ e.0 }}>
+																	</form>
+																	<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+																		data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+																	data-placement="top" title="Delete Assessment">
+																		<span class="glyphicon glyphicon-trash"></span>
+																	</button>
+																	
+																	{% if e.2 == False %}
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																			<input type="hidden" name="publish_state" value='0'>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Publish Assessment">
+																			<span class="glyphicon glyphicon-volume-off"></span>
+																		</button>
+																	{% else %}
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																			<input type="hidden" name="publish_state" value='1'>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Un-publish Assessment">
+																		<span class="glyphicon glyphicon-volume-up"></span>
+																		</button>
+																	{% endif %}
+																	<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																		{% csrf_token %}
+																		<input type="hidden" name="module" value={{ module }}>
+																		<input type="hidden" name="assess_id" value={{ e.0 }}>
+																	</form>
+																	<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																	data-placement="top" title="Choose Aggregator">
+																		<span class="glyphicon glyphicon-stats"></span>
+																	</button>
+																</div>
+															
+																<!--<span class="label label-default pull-right">{{e.4}}</span>-->
+															{% else %}
+																<li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{e.1}}</button>
+																
+																<div  class="btn-group btn-group-xs">
+																	<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+																	data-placement="top" title="Assessment mark">{{e.4}}</button>
+																</div>
+																
+																<div id={{e.0}} class="btn-group btn-group-xs">
+																	<button type="button" onclick="plus_minus_sign(this)" id={{e.0}} class="btn btn-info grid-exp" data-toggle="tooltip"
+																	data-placement="top" title="Expand/Close Menu">
+																		<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+																	</button>
+																</div>
+																
+																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
+																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																		{% csrf_token %}
+																		<input type="hidden" name="mod" value={{ module }}>
+																		<input type="hidden" name="assessment" value={{ e.0 }}>
+																	</form>
+																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																		class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																		data-module={{ module }} data-assessment_id={{ e.0 }}>
+																		<span class="fa fa-plus"></span>
+																	</button>
+																	
+																	<form action="/courses/{{ module }}/{{ e.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																		{% csrf_token %}
+																		<input type="hidden" name="assessment" value={{e.0}}>
+																		<input type="hidden" name="module" value{{module}}>
+																	</form>
+																	<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+																	data-placement="top" title="View/Edit Sessions">
+																		<span class="glyphicon glyphicon-time"></span>
+																	</button>
+																	
+																	<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																		{% csrf_token %}
+																		<input type="hidden" name="module" value={{ module }}>
+																		<input type="hidden" name="assess_id" value={{ e.0 }}>
+																	</form>
+																	<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+																		data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+																	data-placement="top" title="Delete Assessment">
+																		<span class="glyphicon glyphicon-trash"></span>
+																	</button>
+																	
+																	{% if e.2 == False %}
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																			<input type="hidden" name="publish_state" value='0'>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Publish Assessment">
+																			<span class="glyphicon glyphicon-volume-off"></span>
+																		</button>
+																	{% else %}
+																		<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																			<input type="hidden" name="publish_state" value='1'>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Un-publish Assessment">
+																		<span class="glyphicon glyphicon-volume-up"></span>
+																		</button>
+																	{% endif %}
+																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																			{% csrf_token %}
+																			<input type="hidden" name="mod" value={{ module }}>
+																			<input type="hidden" name="assessment" value={{ e.0 }}>
+																		</form>
+																		<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+																			class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Mark Assessment">
+																			<span class="fa fa-check"></span>
+																		</button>
+																</div>
+																
+																</li>
+															{% endifequal %}
+															<!--<h4  style="color:yellow">{{e.1}}</h4>-->
+															{%for t in third%}
+																<ul class="nav nav-list tree">
+																	{%for key, value in t.items%}
+																		{%ifequal key e.1%}
+																			{%for h in value%}<!-- Major point 4-->
+																				{% ifequal h.3 'Aggregate' %}
+																					<li class="list-group-item"><button class="tree-toggler nav-header btn btn-xs btn-primary">
+																					<span id="icon-folder" class="glyphicon glyphicon-folder-open"></span>	{{h.1}}</button>
+																				
+																					<div class="btn-group btn-group-xs">
+																						<span class="label label-default">{{h.4}}</span>
+																					</div>
+																				
+																					<div id={{h.0}} class="btn-group btn-group-xs">
+																						<button type="button" onclick="plus_minus_sign(this)" id={{h.0}} class="btn btn-primary grid-exp" data-toggle="tooltip"
+																						data-placement="top" title="Expand/Close Menu">
+																							<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+																						</button>
+																					</div>
+																					
+																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
+																						<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																							{% csrf_token %}
+																							<input type="hidden" name="mod" value={{ module }}>
+																							<input type="hidden" name="assessment" value={{ h.0 }}>
+																						</form>
+																						<button type="button" onclick="$(this).parent().children('form.post-ass').submit();" class="btn btn-info" data-toggle="tooltip"
+																						data-placement="top" title="Create new Assessment">
+																							<span class="fa fa-plus"></span>
+																						</button>
+																						
+																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																							{% csrf_token %}
+																							<input type="hidden" name="assessment" value={{h.0}}>
+																							<input type="hidden" name="module" value{{module}}>
+																						</form>
+																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+																						data-placement="top" title="View/Edit Sessions">
+																							<span class="glyphicon glyphicon-time"></span>
+																						</button>
+																						
+																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																							{% csrf_token %}
+																							<input type="hidden" name="module" value={{ module }}>
+																							<input type="hidden" name="assess_id" value={{ h.0 }}>
+																						</form>
+																						<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+																							data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+																						data-placement="top" title="Delete Assessment">
+																							<span class="glyphicon glyphicon-trash"></span>
+																						</button>
+																						
+																						{% if h.2 == False %}
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																								<input type="hidden" name="publish_state" value='0'>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Publish Assessment">
+																								<span class="glyphicon glyphicon-volume-off"></span>
+																							</button>
+																						{% else %}
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																								<input type="hidden" name="publish_state" value='1'>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Un-publish Assessment">
+																							<span class="glyphicon glyphicon-volume-up"></span>
+																							</button>
+																						{% endif %}
+																						<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																							{% csrf_token %}
+																							<input type="hidden" name="module" value={{ module }}>
+																							<input type="hidden" name="assess_id" value={{ h.0 }}>
+																						</form>
+																						<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																						data-placement="top" title="Choose Aggregator">
+																							<span class="glyphicon glyphicon-stats"></span>
+																						</button>
+																					</div>
+																				
+																					<!--<span class="label label-default pull-right">{{h.4}}</span>-->
+																				{% else %}
+																					<li class="list-group-item"><button type="button" class="btn btn-xs btn-info">{{h.1}}</button>
+																					
+																					<div  class="btn-group btn-group-xs">
+																						<button type="button"  class="btn btn-primary grid-exp" data-toggle="tooltip"
+																						data-placement="top" title="Assessment mark">{{h.4}}</button>
+																					</div>
+																					
+																					<div id={{h.0}} class="btn-group btn-group-xs">
+																						<button type="button" onclick="plus_minus_sign(this)" id={{h.0}} class="btn btn-info grid-exp" data-toggle="tooltip"
+																						data-placement="top" title="Expand/Close Menu">
+																							<span id="btn-grid-exp" class="fa fa-ellipsis-h"></span>
+																						</button>
+																					</div>
+																					
+																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
+																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																							{% csrf_token %}
+																							<input type="hidden" name="mod" value={{ module }}>
+																							<input type="hidden" name="assessment" value={{ h.0 }}>
+																						</form>
+																						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
+																							class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Create new Assessment"
+																							data-module={{ module }} data-assessment_id={{ h.0 }}>
+																							<span class="fa fa-plus"></span>
+																						</button>
+																						
+																						<form action="/courses/{{ module }}/{{ h.0 }}/sessions" method="post" hidden="hidden" class="form-group-sm post-sess">
+																							{% csrf_token %}
+																							<input type="hidden" name="assessment" value={{h.0}}>
+																							<input type="hidden" name="module" value{{module}}>
+																						</form>
+																						<button type="button" onclick="$(this).parent().children('form.post-sess').submit();" class="btn btn-default" data-toggle="tooltip"
+																						data-placement="top" title="View/Edit Sessions">
+																							<span class="glyphicon glyphicon-time"></span>
+																						</button>
+																						
+																						<form action="remove" hidden="hidden" method="post" class="form-group-sm post-rem">
+																							{% csrf_token %}
+																							<input type="hidden" name="module" value={{ module }}>
+																							<input type="hidden" name="assess_id" value={{ h.0 }}>
+																						</form>
+																						<button type="button" onclick="$(this).parent().children('form.post-rem').attr( 'id', 'to_be_removed');" 
+																							data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger" data-toggle="tooltip"
+																						data-placement="top" title="Delete Assessment">
+																							<span class="glyphicon glyphicon-trash"></span>
+																						</button>
+																						
+																						{% if h.2 == False %}
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-0">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																								<input type="hidden" name="publish_state" value='0'>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-pub-0').submit();" class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Publish Assessment">
+																								<span class="glyphicon glyphicon-volume-off"></span>
+																							</button>
+																						{% else %}
+																							<form action="published" hidden="hidden" method="post" class="form-group-sm post-pub-1">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																								<input type="hidden" name="publish_state" value='1'>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-pub-1').submit();" class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Un-publish Assessment">
+																							<span class="glyphicon glyphicon-volume-up"></span>
+																							</button>
+																						{% endif %}
+																							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assessment" value={{ h.0 }}>
+																							</form>
+																							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
+																								class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Mark Assessment">
+																								<span class="fa fa-check"></span>
+																							</button>
+																					</div>
+																					
+																					</li>
+																				{% endifequal %}
+																				<!--<h6  style="color:pink">{{h.1}}</h6>-->
+																			{%endfor%}
+																			{% ifequal h.3 'Aggregate' %}
+																				</li>
+																			{% endifequal %}
+																		{%endifequal%}
+																	{%endfor%}
+																</ul>
+															{%endfor%}
+															{% ifequal e.3 'Aggregate' %}
+																</li>
+															{% endifequal %}
+														{%endfor%}
+													{%endifequal%}
+												{%endfor%}
+											</ul>
+										{%endfor%}
+										{% ifequal y.3 'Aggregate' %}
+											</li>
+										{% endifequal %}
+									{% endfor %}
+								{% endifequal %}
+							{% endfor %}
+						</ul>
+					{%endfor%}
+					{% ifequal n.3 'Aggregate' %}
+						</li>
+						<li class="nav-divider"></li>
+					{% else %}
+						<li class="nav-divider"></li>
+					{% endifequal %}
+				{%endfor%}
+				
+			</ul>
+		</div>
+			
+<div class="modal fade" id="create_leaf" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="/create_assessment" method="post">{% csrf_token %}
+				<div class="modal-header">
+					<h4>Create an Assessment</h4>
+					<h4>{{ module }}</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						
+						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+						<div class="col-lg-8">
+							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
+
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						
+						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+						<div class="col-lg-8">
+							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+
+						</div>
+
+					</div>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="mod" value={{ module }} placeholder={{ module }}>
+
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button id="submit" class="btn btn-default" type="submit" name="leaf" value={{ass.0}}>{{ass.0}}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
+	
+<!-- Confirm delete modal -->
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <p>You are about to delete an assessment. This procedure is irreversible.</p>
+                    <p>Do you want to proceed?</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" onclick="$('#to_be_removed').submit();"
+			    class="btn btn-danger danger">Delete</button>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- End confirm delete modal -->
+
+<!--Modal for Create Leaf assessment-->
+<div class="modal fade" id="create_leaf_ass" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
+					<div class="modal-header">
+						<h4>Create a Leaf Assessment</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+							<div class="col-lg-8">
+								<input type="text" class="form-control" name="name" placeholder="Project 1 Phase 1">
+							</div>
+						</div>
+	
+						<div class="form-group">
+							<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+							<div class="col-lg-8">
+								<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="col-lg-8">
+								<input type="hidden" class="form-control" id="leaf_assessment_id" name="module" value="" placeholder={{ module }}>
+							</div>
+						</div>
+	
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+						<button id="parent_assess_id" class="btn btn-success" type="submit" name="assess_id" value="">Create</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div><!--End of Modal for Create Leaf assessment-->
+
+
+	</div>
+	<div class="col-md-2"></div>
+	</script>
+</div>
+
+<div class="modal fade" id="confirm-publish-unpublish" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm publish operation</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <h5>You are about to publish/unpublish an assessment that has other dependencies. This procedure is irreversible.</h5>
+                    <h5>Do you want to proceed?</h5>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" onclick="$('#change_pub_state').submit();"
+			    class="btn btn-warning warning">Continue</button>
+                </div>
+            </div>
+        </div>
+</div>
+
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

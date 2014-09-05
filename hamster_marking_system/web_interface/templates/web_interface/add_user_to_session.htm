@@ -1,0 +1,156 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Add user {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li>
+		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+			{% csrf_token %}
+			<input type="text" name="id" value={{ role }}>
+		</form>
+		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+	<ol class="breadcrumb">
+		<li><a href="#">Login</a></li>
+		<li ><a href="#">Home</a></li>
+		<li><a href="#">Assessments</a></li>
+		<li class="active"><a href="#">Sessions</a></li>
+	</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %} Add user to Session {% endblock %}
+
+{% block jumbotron_sub_header %} {{ sessionName }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+
+<div class="row">
+	<div class="col-md-6"><!--Left of jumbotron showing students in module -->
+		
+		<h3><span class="label label-default">Select students to add</span></h3>
+		<form role="form" method="post" action="update-info">{% csrf_token %}
+			<div class="form-group">
+				<select multiple class="form-control" name="userS" id="multiselectStudentsForSession">
+					{% for per in students %}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
+					{% endfor %}
+				</select>
+				<input type="hidden" name="session" value={{ session_id }}><br>
+				<input type="hidden" name="userM" value=""/><br>
+			</div>
+			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>
+				<span class="glyphicon glyphicon-plus"></span> Add Student(s)</button>
+		</form>			
+	</div>
+	
+	<div class="col-md-6"><!-- Right of jumbotron showing markers for module -->
+			
+		<h3><span class="label label-default">Select markers to add</span></h3>
+		{%if tutor%}
+		<form role="form" method="post" action="update-info">{% csrf_token %}
+			<div class="form-group">
+				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession">
+					{%for per in tutor%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+					{%for per in teachingA%}
+						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						</option>
+					{%endfor%}
+				</select>
+				<input type="hidden" name="session" value={{ session_id }}><br>
+				<input type="hidden" name="userS" value=""/><br>
+			</div>
+			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>
+			<span class="glyphicon glyphicon-plus"></span> Add Marker(s)</button>
+		</form>
+		{%else%}
+			<div class="alert alert-info" role="alert">
+				<strong>There are currently no markers for this module<strong>
+			</div>
+			
+		{%endif%}
+	</div>
+</div>
+
+
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################--> 
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

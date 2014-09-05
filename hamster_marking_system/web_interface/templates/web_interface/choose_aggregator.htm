@@ -1,0 +1,159 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Add user {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li><a id={{ role }} href="/use_as/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+	<ol class="breadcrumb">
+		<li><a href="#">Login</a></li>
+		<li ><a href="#">Home</a></li>
+		<li><a href="#">Assessments</a></li>
+		<li class="active"><a href="#">Aggregators</a></li>
+	</ol>
+{% endblock %}
+
+{% block jumbotron_header %} Choose Aggregator {% endblock %}
+
+{% block jumbotron_sub_header %} {{ assessmentName }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#simpleSumCollapse">
+          Simple Sum
+        </a>
+      </h4>
+    </div>
+    <div id="simpleSumCollapse" class="panel-collapse collapse in">
+      <div class="panel-body">
+	<!-- simplesum form -->
+	<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+		<input type="hidden" value="SimpleSum" name="agg_name">
+		<input type="hidden" value="0" name="numC">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+		<input type="hidden" value={{module}} name="module">
+		<input type="hidden" value="0" name="child_weight" >
+		<input type="hidden" value="0" name="child_id"  >
+                
+		<button type="submit" name="submit" class="btn btn-success">Submit</button>
+	</form><!-- ./simplesum form -->
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#bestOfCollapse">
+          Best of #
+        </a>
+      </h4>
+    </div>
+    <div id="bestOfCollapse" class="panel-collapse collapse">
+      <div class="panel-body">
+	<h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
+	<!-- bestof form -->
+	<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form"> {% csrf_token %}
+          <div class="form-group">
+		<label class="sr-only" for="bestOfSelectedNumber">Email address</label>
+		<input type="hidden" value="BestOf" name="agg_name">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+		<input type="hidden" value={{module}} name="module">
+		<input type="number" class="form-control" id="numC" name="numC" placeholder="Number of contributors">
+		<input type="hidden" value="0" name="child_weight" >
+		<input type="hidden" value="0" name="child_id"  >
+	  </div>
+	  <button class="btn btn-success" type="submit">Submit</button>
+	</form><!-- ./bestof form -->
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#weightedSumCollapse">
+          Weighted Sum
+        </a>
+      </h4>
+    </div>
+    <div id="weightedSumCollapse" class="panel-collapse collapse">
+      <div class="panel-body">
+        <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
+	<!-- weightedsum form -->
+	<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+		<input type="hidden" value="WeightedSum" name="agg_name">
+		<input type="hidden" value="0" name="numC">
+		<input type="hidden" value={{module}} name="module">
+		<input type="hidden" value={{assess_id}} name="assess_id">
+	{% for child in children %}
+	  <div class="form-group">
+		<label class="col-md-2" for="weightedSumAssessment">{{ child.1 }}</label>
+		<div class="col-md-4">
+			<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}">
+			<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
+		</div>
+	  </div>
+	{% endfor %}
+	<div class="clearfix">
+		<button class="btn btn-success pull-right" type="submit">Submit</button>
+	</div>
+	</form><!-- ./weightedsum form -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################--> 
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Assessments {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a href="#">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %} {{assessmentName}} {% endblock %}
+
+{% block jumbotron_sub_header %} {{ module }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+
+<div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<button class="btn btn-info btn-lg btn-block"  data-target="#create_child" data-toggle="modal">Create Leaf Assessment</button><br>
+		
+		<!-- Python is used here to list all the assessments -->
+		{% if type == -1 %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+		{% else %}
+		{% for ass in child %}
+			<div class="dropdown">
+				<input type="hidden" name="mod" value={{ module }}>
+				<button  class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown" value={{ass.0}}>
+					{{ ass.1 }} <b class="caret"></b></button>
+				<ul class="dropdown-menu" role="menu">
+					<li>
+						<form action={{ass.1|urlencode}} method="post" class="form-group-sm">
+							{% csrf_token %}
+							<input type="hidden" name="mod" value={{ module }}>
+							<button type="submit" class="btn btn-default btn-md btn-block" name="assessment" value={{ass.0}}>View Assessments</button>
+						</form>
+					</li><li>
+						<form action=/courses/{{module}}/{{ass.1|urlencode}}/sessions method="post" class="form-group-sm">
+							{% csrf_token %}
+							<input type="hidden" name="mod" value={{ module }}>
+							<button type="submit" class="btn btn-primary btn-md btn-block" name="assessment" value={{ass.0}}>View Sessions</button>
+						</form>
+					</li><li>
+						<form action="remove" method="post" class="form-group-sm">
+							{% csrf_token %}
+							<input type="hidden" name="mod" value={{ module }}>
+							<button type="submit" class="btn btn-danger btn-md btn-block" name="assess_id" value={{ass.0}}>Delete Assessment</button>
+						</form>
+					</li>
+					{% if ass.2 == False %}<!-- Not published, so publish -->
+					<li>
+						<form action="published" method="post" class="form-group-sm">
+							{% csrf_token %}
+							<input type="hidden" name="mod" value={{ module }}>
+							<input type="hidden" name="assess_id" value={{ ass.0 }}>
+							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="0"
+							data-toggle="tooltip" data-placement="right" title="Not published"
+							><span class="glyphicon glyphicon-volume-off"></span>  Publish Assessment</button>
+						</form>
+					</li>
+					{% else %}<!-- Already published, so un-publish -->
+					<li>
+						<form action="published" method="post" class="form-group-sm">
+							{% csrf_token %}
+							<input type="hidden" name="mod" value={{ module }}>
+							<input type="hidden" name="assess_id" value={{ ass.0 }}>
+							<button type="submit" class="btn btn-default btn-md btn-block" name="publish_state" value="1"
+							data-toggle="tooltip" data-placement="right" title="Already published"
+							><span class="glyphicon glyphicon-volume-up"></span>  Un-Publish Assessment</button>
+						</form>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endfor %}
+		{% endif %}
+		<!-- End python jQuery code -->
+	</div>
+	<div class="col-md-3"></div>
+</div>
+
+<div class="modal fade" id="create_child" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="create-leaf-assessment" method="post">
+				{% csrf_token %}
+				<div class="modal-header">
+					<h4>Create an Assessment for</h4>
+					<h4>{{ assessmentName }}</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						
+						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+						<div class="col-lg-8">
+							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Assessment Name">
+
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						
+						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+						<div class="col-lg-8">
+							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="The Mark">
+
+						</div>
+
+					</div>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="mod" value={{ module }} placeholder={{ module }}>
+
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button id="submit" class="btn btn-success" type="submit" name="leaf" value={{assess_id}}>Create</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

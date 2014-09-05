@@ -1,0 +1,287 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Sessions {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li>
+		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+			{% csrf_token %}
+			<input type="text" name="id" value={{ role }}>
+		</form>
+		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+	<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li><a href="#">Assessments</a></li>
+	<li class="active"><a href="#">Sessions</a></li>
+	</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %} Sessions {% endblock %}
+
+{% block jumbotron_sub_header %} {{ assessmentName }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+
+<div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+	
+	{% if message == None %}
+		<!-- Do nothing, not reloading -->
+	{% else %}
+		{% if message == 1 %}
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Session deleted successfully.
+		</div>
+		{% if message == 0 %}
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Problem!</strong> Session was not deleted, something went wrong.
+		</div>
+		{% endif %}
+		{% endif %}
+
+	{% endif %}
+	
+	<button class="btn btn-info btn-lg btn-block" data-target="#create_sess" data-toggle="modal">Create Session</button><br>
+	{% for x in sessions%}
+	<div class="dropdown">
+		{% if x.0 == '-1' %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no sessions available.</div>
+		{% else %}
+			{% if x.2 == 0 %}
+				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ban-circle"></span>
+					  {{x.1}}   <b class="caret"></b></button>
+				<form action="change-time" method="post">
+					{% csrf_token %}
+					{{x.3}}<input type='datetime' name='open'/><br/>
+					{{x.4}}<input type='datetime' name='close' />
+					<input type="hidden" name='module' value={{moduleName}} />
+					<input type='hidden' name="session" value={{x.0}} />
+					<input type='hidden' name='assess' value={{assessment_id}} />
+					<input type='submit' name='submit' value=submit/>
+				</form>
+			{% elif x.2 == 1 %}
+				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ok-circle"></span>
+					  {{x.1}}   <b class="caret"></b></button>
+				<form action="change-time" method="post">
+					{% csrf_token %}
+					{{x.3}}<input type='datetime' name='open'/><br/>
+					{{x.4}}<input type='datetime' name='close' />
+					<input type="hidden" name='module' value={{moduleName}} />
+					<input type='hidden' name="session" value={{x.0}} />
+					<input type='hidden' name='assess' value={{assessment_id}} />
+					<input type='submit' name='submit' value=submit/>
+				</form>
+			{% else %}
+				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown">
+					  {{x.1}}   <b class="caret"></b></button>
+			{% endif %}
+		<ul class="dropdown-menu" role="menu">
+			<li>
+				<form action="view-students" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<input type="hidden" id="session" name='session' value={{ x.0 }} >
+					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student</button>
+					
+				</form>
+				<form action="session-info" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>View Students</button>
+					<input type="hidden" name="module" value={{ moduleName }}>
+
+				</form>
+				<form action="remove-session" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<input type="hidden" name="module" value={{ moduleName }}>
+					<input type="hidden" name="assessment" value={{ assessment_id }}>
+					<button type="submit" class="btn btn-danger btn-md btn-block" name="session" value={{x.0}}>Delete Session</button>
+				</form>
+				{% if x.2 == 1 %}
+				<form action="change-status" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<input type="hidden" name="mod" value={{ moduleName }}>
+					<input type="hidden" name="status" value=0>
+					<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Close Session</button>
+				</form>
+				{% else %}
+				<form action="change-status" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<input type="hidden" name="mod" value={{ moduleName }}>
+					<input type="hidden" name="status" value=1>
+					<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Open Session</button>
+				</form>
+				{% endif %}
+			</li>
+		</ul>
+		{% endif %}
+	</div>
+	{%endfor%}
+	</div>
+	<div class="col-md-3"></div>
+</div><!--End of Modal for ContactUs-->
+
+
+
+<!--Modal for Creating assessment-->
+<div class="modal fade" id="create_sess" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="create-session" method="post">
+				{% csrf_token %}
+				<div class="modal-header">
+					<h4>Create a Session for</h4>
+					<h4>{{ assessmentName }}</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						
+						<label for="session-name" class="col-lg-3 control-label">Session Name:</label>
+						<div class="col-lg-7">
+							<input type="text" class="form-control" id="session-name" name="name" placeholder="Class Test 1 perusal">
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						<label for="open-time" class="col-lg-3 control-label">Open time:</label>
+						<div class="col-lg-7">
+							<div class="input-group date" id="datetimepickerOpenTime">
+							    <input onclick="callDateTimePopup(this);" type='text' class="form-control" id="open-time"
+								       name="open_time">
+							    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+							    </span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="close-time" class="col-lg-3 control-label">Close time:</label>
+						<div class="col-lg-7">
+							<div class="input-group date" id="datetimepickerCloseTime">
+								<input onclick="callDateTimePopup(this);" type="text" class="form-control" id="close-time"
+								       name="close_time">
+								<span class="input-group-addon"><span  class="glyphicon glyphicon-calendar"></span></span>
+							</div>
+						</div>
+					</div>
+
+					<script type="text/javascript">
+						//Datetime popup
+						function callDateTimePopup(this_attr) {
+							$(this_attr).datetimepicker({
+								format: 'YYYY-MM-DD HH:mm:ss',
+								language: 'en',
+								showToday: true
+								});
+						}
+					</script>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="assess_id" value={{ assessment_id }} placeholder={{ assessment_id }}>
+							<input type="hidden" class="form-control" name="module" value={{moduleName}}>
+						</div>
+
+					</div>
+					
+
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button class="btn btn-success" type="submit" name="session" value='leaf'>Create</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
+
+
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

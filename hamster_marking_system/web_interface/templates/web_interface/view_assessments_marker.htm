@@ -1,0 +1,101 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Assessments {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li><a id={{ role }} href="/use_as/{{ role }}"> {{ role }}</a></li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a  href="/use_as/{{ role }}">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %} {{session.1}} {% endblock %}
+
+{% block jumbotron_sub_header %} {{ module }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+
+<div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		
+		<!-- Python is used here to list all the assessments -->
+		{% if type == -1 %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+		{% else %}
+		<ul class="nav nav-pills nav-stacked">
+			<li class="active"><a><strong> Assessment available </strong></a></li><br>
+		</ul>
+		{% for x in assessmentName %}
+			<div class="dropdown">
+				<form action="view-student" method="post" class="form-group-sm">
+					{% csrf_token %}
+					<input type="hidden" name="assessment" value={{ x.0 }}>
+					<button type="submit" class="btn btn-default btn-lg btn-block" name="session" value={{session.0}}>{{x.1}}</button>
+					<input type="hidden" name="mod" value={{ module }}>
+				</form>
+			</div>
+		{% endfor %}
+		<!-- End python jQuery code -->
+		{% endif %}
+	</div>
+	<div class="col-md-3"></div>
+</div>
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}

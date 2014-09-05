@@ -1,0 +1,265 @@
+{% extends "web_interface/base_template.htm" %}
+
+{% block title %} Modify Marks {% endblock %}
+
+<!--###########################  Nav bar settings ############################-->
+
+{% block logout_button %}
+	<li><a href="/">Logout</a></li>
+{% endblock %}
+	
+{% block person_details %}
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
+{% endblock %}
+
+<!--###########################  End Nav bar settings ############################-->
+
+<!--###########################  Courses dropdown ############################-->
+<!-- Courses button -->
+{% block courses_dropdown %}
+{% for role in user_lect.0.LC %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_stud.0.ST %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_tut.0.TT %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+<li class="divider"></li>
+{% for role in user_ta.0.TA %}
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Courses button -->
+
+<!-- Use as button -->
+{% block courses_use_as %}
+{% for role in user_roles %}
+	<li>
+		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+			{% csrf_token %}
+			<input type="text" name="id" value={{ role }}>
+		</form>
+		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+	</li>
+{% endfor %}
+{% endblock %}
+<!-- End of Use as button -->
+
+<!--###########################  End Courses dropdown ############################-->
+
+
+<!--###########################  jumbotron part ############################-->
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li class="active"><a href="#">Assessments</a></li>
+</ol>
+{% endblock %}
+
+
+{% block jumbotron_header %}
+	{{ assessmentName }} <span class="label label-default">{{ fullmark }}</span>	
+{% endblock %}
+
+{% block jumbotron_sub_header %} {{ module }} {% endblock %}
+
+<!-- jumbotron content -->
+{% block jumbotron_content %}
+
+{% if message == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+	{% if message == 0 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> The mark could not be updated, please try again.
+		</div>
+	{% elif message == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> The mark was updated successfully.
+		</div>
+
+	{% endif %}
+		
+{% endif %}
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td><strong> UserID </strong></td>
+				<td><strong> Name </strong></td>
+				<td><strong> Surname </strong></td>
+				<td><strong> Mark obtained </strong></td>
+			</tr>
+			{% for per in studentMark %}
+			<tr>
+				<td> {{per.0}} </td>
+				<td> {{per.1}} </td>
+				<td> {{per.2}} </td>
+				{% if per.3 < 0 %}
+				<td class="col-md-3">
+					<form method="post" action="update-marks" class="form-inline" role="form">
+						{% csrf_token %}
+						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
+						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
+						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+						<input hidden="hidden" name="uid" value={{ per.0 }}>
+						<input hidden="hidden" name="module" value={{ module }}>
+						<input hidden="hidden" name="session" value={{ session }}>
+
+					</form>
+				</td>
+				{% else %}
+				<td class="col-md-3"><!-- Edit button -->
+					<form  class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+						{% csrf_token %}
+						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
+						       name="mark" placeholder="Mark awarded" value={{ per.3 }}>
+						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
+						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+						<input hidden="hidden" name="uid" value={{ per.0 }}>
+						<input hidden="hidden" name="module" value={{ module }}>
+						<input hidden="hidden" name="session" value={{ session }}>
+					</form>
+				</td>
+				
+				<script>
+					function to_submit(stud_id) {
+						alert(stud_id);
+						var data_nyana = document.getElementById('form_edit').name;
+						alert(data_nyana);
+						var class_data = document.getElementById(data_nyana);
+						alert(class_data.className);
+						if (class_data.className == "btn btn-warning") {
+							alert(data_nyana);
+							class_data.className="btn btn-success";
+							class_data.span.className="glyphicon glyphicon-ok"
+							alert("changed button");
+							document.getElementById(data_nyana).disabled=false;
+							alert("editable");
+							return false;
+						}
+						else{
+							class_data.class="btn btn-warning";
+							document.getElementById('edit_input').disabled=true;
+							class_data.form.submit();
+							
+						}
+
+					}
+					
+					function makeEditable(curr) {
+						
+						//Make input editable
+						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						
+						//Change button color
+						$(curr).parent().children('button').attr('class', 'btn btn-success');
+						
+						//Change icon of button
+						$(curr).parent().children('button').children('span').attr('class', 'glyphicon glyphicon-ok');
+						
+						var btnInnerHTML = $(curr).parent().children('button').get(0).innerHTML;
+						
+						//Change button type to submit
+						if (btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-edit"></span>' ||
+						    btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-ok"></span>') {
+							//Dont make the form postable, we only needed to change the button
+							//Add method and action to form
+							$(curr).parent().attr('method', 'post');
+							$(curr).parent().attr('action', 'update-marks');
+						}
+						else {
+							//Finaly submit
+							$(curr).parent().children('button').attr('type', 'submit');
+						}
+						
+						//Change html on button
+						$(curr).parent().children('button').get(0).innerHTML = 'Submit  <span class="glyphicon glyphicon-ok"></span>';
+						
+						
+					}
+					
+			       </script>
+				
+				<!-- Confirm modify mark modal -->
+
+				<div class="modal fade" id="confirm_mark_modification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Confirm Modification</h4>
+				</div>
+				
+				<div class="modal-body">
+				<p>You are about to modify the mark already assigned to a student.</p>
+				<p>Do you want to proceed?</p>
+				</div>
+				
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" onclick="makeEditable(this);"
+				class="btn btn-warning danger">Modify</button>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				<!-- End confirm modify mark modal -->
+				
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+{% endblock %}
+<!-- End of jumbotron content -->
+<!--###########################  End of jumbotron part ############################-->
+
+
+{% block left_under_jumbotron-col-6 %}{% endblock %}
+
+{% block right_under_jumbotron-col-6 %}{% endblock %}
