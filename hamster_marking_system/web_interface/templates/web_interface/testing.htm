@@ -18,19 +18,43 @@
 <!-- Courses button -->
 {% block courses_dropdown %}
 {% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
 {% endfor %}
 <li class="divider"></li>
 {% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/view_assessment/{{ role }}"> {{ role }}</a></li>
+	<li>
+		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+			{% csrf_token %}
+			<input type="text" value={{ role }} name="id">
+		</form>
+		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+	</li>
 {% endfor %}
 {% endblock %}
 <!-- End of Courses button -->
@@ -38,7 +62,13 @@
 <!-- Use as button -->
 {% block courses_use_as %}
 {% for role in user_roles %}
-	<li><a id={{ role }}  href="/use_as/{{ role }}"> {{ role }}</a></li>
+	<li>
+		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+			{% csrf_token %}
+			<input type="text" name="id" value={{ role }}>
+		</form>
+		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+	</li>
 {% endfor %}
 {% endblock %}
 <!-- End of Use as button -->
@@ -934,6 +964,30 @@
 	<div class="col-md-2"></div>
 	</script>
 </div>
+
+<div class="modal fade" id="confirm-publish-unpublish" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm publish operation</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <h5>You are about to publish/unpublish an assessment that has other dependencies. This procedure is irreversible.</h5>
+                    <h5>Do you want to proceed?</h5>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" onclick="$('#change_pub_state').submit();"
+			    class="btn btn-warning warning">Continue</button>
+                </div>
+            </div>
+        </div>
+</div>
+
 {% endblock %}
 <!-- End of jumbotron content -->
 <!--###########################  End of jumbotron part ############################-->

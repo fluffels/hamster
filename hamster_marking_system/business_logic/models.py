@@ -124,6 +124,7 @@ class BestOfAggregator(Aggregator):
         agg_total += child[5]
       
       if agg_total == 0:
+        print "AGG TOTAL IS 0 MAAAAN"
         agg_total = 1
         
       agg_perc = (agg_mark/agg_total) *100
@@ -162,7 +163,7 @@ def aggregateChild(assess_id, student_id ):
           sum_total_of_children += child.full_marks
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
-          sum_total_of_children += getSumTotalOfChildren(child.id)
+          sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
       if sum_total_of_children == 0.0:
         sum_total_of_children = 1
       percentage = (sum_agg_of_children/sum_total_of_children) *100
@@ -326,6 +327,20 @@ def getSumTotalOfChildren(assess_id):
 
     return total
 
+def getSumTotalOfChildrenForStudent(assess_id):
+    total =0
+    assess = Assessment.objects.get(id=assess_id)
+    children = Assessment.objects.filter(parent=assess_id)
+
+    for child in children:
+      if child.published == True:
+        if child.assessment_type == 'Leaf':
+          mark = child.full_marks
+          total += mark
+        else:
+          total += getSumTotalOfChildrenForStudent(child.id)
+
+    return total
   
 def getSumAggOfChildrenForStudent(assess_id, student_id):
     student_obj = Person.objects.get(upId=student_id)

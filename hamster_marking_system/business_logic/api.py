@@ -135,16 +135,18 @@ def studentAssessmentFromModule(mod,student):
             firstChildren = []
             firstChildren = getMarksOfChildrenAssessments(nrs.id,student)
             for nfs in children1:
-                children2 = Assessment.objects.filter(parent=nfs.id)
-                secondChildren = []
-                secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
-                for nss in children2:
-                    children3 = Assessment.objects.filter(parent=nss.id)
-                    thirdChildren = []
-                    thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
-                        
-                    ThirdChildren.append({nss.getname(): thirdChildren})
-                SecondChildren.append({nfs.getname():secondChildren})
+                if nfs.published ==True:
+                    children2 = Assessment.objects.filter(parent=nfs.id)
+                    secondChildren = []
+                    secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
+                    for nss in children2:
+                        if nss.published == True:
+                            children3 = Assessment.objects.filter(parent=nss.id)
+                            thirdChildren = []
+                            thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
+                            
+                            ThirdChildren.append({nss.getname(): thirdChildren})
+                    SecondChildren.append({nfs.getname():secondChildren})
             FirstChildren.append({nrs.getname():firstChildren})
     final.append(roots)
     final.append(FirstChildren)
@@ -160,22 +162,25 @@ def studentAssessmentForAssessment(assess_id,student):
         SecondChildren = []
         ThirdChildren = []
         for nrs in root:
-            mark = getMarkForStudent(student,nrs[0])
-            roots.append(mark)
-            children1 = Assessment.objects.filter(parent=nrs[0])
-            firstChildren = []
-            firstChildren = getMarksOfChildrenAssessments(nrs[0],student)
-            for nfs in children1:
-                children2 = Assessment.objects.filter(parent=nfs.id)
-                secondChildren = []
-                secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
-                for nss in children2:
-                    children3 = Assessment.objects.filter(parent=nss.id)
-                    thirdChildren = []
-                    thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
-                    ThirdChildren.append({nss.getname(): thirdChildren})
-                SecondChildren.append({nfs.getname():secondChildren})
-            FirstChildren.append({nrs[1]:firstChildren})
+            if nrs.published == True:
+                mark = getMarkForStudent(student,nrs[0])
+                roots.append(mark)
+                children1 = Assessment.objects.filter(parent=nrs[0])
+                firstChildren = []
+                firstChildren = getMarksOfChildrenAssessments(nrs[0],student)
+                for nfs in children1:
+                    if nfs.published == True:
+                        children2 = Assessment.objects.filter(parent=nfs.id)
+                        secondChildren = []
+                        secondChildren = getMarksOfChildrenAssessments(nfs.id,student)
+                        for nss in children2:
+                            if nss.published == True:
+                                children3 = Assessment.objects.filter(parent=nss.id)
+                                thirdChildren = []
+                                thirdChildren = getMarksOfChildrenAssessments(nss.id,student)
+                                ThirdChildren.append({nss.getname(): thirdChildren})
+                        SecondChildren.append({nfs.getname():secondChildren})
+                FirstChildren.append({nrs[1]:firstChildren})
         final.append(roots)
         final.append(FirstChildren)
         final.append(SecondChildren)
@@ -802,6 +807,7 @@ def publishAssessment(request, assess_id):
         assess_obj.published = True
         assess_obj.save()
         publishParent(assess_obj.parent)
+        return True
 
     elif assess_obj.assessment_type == 'Aggregate':
         children = Assessment.objects.filter(parent=assess_id)
@@ -812,6 +818,10 @@ def publishAssessment(request, assess_id):
     
         assess_obj.published = True
         assess_obj.save()
+    
+        publishParent(assess_obj.parent)
+    
+        return True
     
 # Name: publishParent(parent_id)
 # Description: recursive function that publishes the parent passed through
@@ -876,9 +886,17 @@ def unpublishAssessment(request, assess_id):
         assess_obj.save()
     
         siblings = Assessment.objects.filter(parent=assess_obj.parent)
+    
         if len(siblings) == 1: #tihs is the only child of the parent so the parent must be unpublished
             unpublishParent(assess_obj.parent)
-
+        else:
+            sib_published = False
+            for sib in siblings:
+                if sib.published == True:
+                    sib_published = True
+    
+            if sib_published == False:
+                unpublishParent(assess_obj.parent)
         return True
 
 # Name: removeSession(request,sess_id)

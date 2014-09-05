@@ -6,6 +6,8 @@ from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker
+from django.contrib.auth.models import User
+
 
 def home(request):
     return render_to_response("web_interface/login.htm",
@@ -68,6 +70,26 @@ def login(request):
                 else:
                     default_user = 'TA'
                 
+                username = request.session['user']['uid'][0]
+                name = request.session['user']['cn'][0]
+                surname = request.session['user']['sn'][0]
+                try:
+                    print User.objects.all()
+                    user = User.objects.get(username=username,first_name=name,last_name=surname)
+                    print "User : " + str(user)
+                    if user:
+                        if user.is_superuser:
+                            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+                except Exception, ex:
+                    print "Could not find user in User's"
+                    user = None
+                    print "User X: " + str(user)
+
                 return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
@@ -840,7 +862,7 @@ def setPublishedStatus(request):
     result = views.setPublishedStatus(request,json.dumps(data))
     res = json.loads(result.content)
     print "AFTER PARTY TIME!!!"
-    
+
     if res[0]['type'] == 1:
             data ={
                 'module':mod_code
@@ -959,37 +981,43 @@ def setPublishedStatusInLeaf(request):
 
 @isAuthenticated
 def viewAssessment(request,module):
-    if request.method == "POST":
-        data = [{
-            'mod_code':str(module)
-        }]
-        print "this is my module: " + module
-        result = views.getAllAssessmentOfModule(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res[0]['type'] == 1:
-                assessments = res[0]['assessments']
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles, 'assessmentName':assessments,
-                                                                            'module':module,'type':1},
-                                                                            context_instance = RequestContext(request))
-        else:
-                assessmentName = "There Are No Assessments."
-                assessmentId = 0
-                return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles,'assessmentName':assessmentName,
-                                                                            'assessmentId':assessmentId,'module':module,
-                                                                            'type':-1},context_instance = RequestContext(request))
+    data ={
+            'module':module
+    }
+    result = views.testing(request,json.dumps(data))
+    res = json.loads(result.content)
+    print "-=-=-=-=-=-=-=-=--=-=-=-=-"+str(res)
+    if res[0]['type'] == '1':
+        print "something"
+        root = res[0]['root']
+        print "ROOT : " + str(root)
+        first = res[0]['first']
+        print "FIRST : " + str(first)
+        second = res[0]['second']
+        print "SECOND : " + str(second)
+        third = res[0]['third']
+        print "THIRD : " + str(third)
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':module,'assessment':'',
+                                                                                'second':second,'third':third},
+                                                                                context_instance = RequestContext(request))
     else:
-        raise Http404()
-
+        print "NONE"
+        root = "NONE";
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,
+                                                                                'root':root},
+                                                                                context_instance = RequestContext(request))
+    
 @isLecture
 @isAuthenticated
 def openOrCloseSession(request):

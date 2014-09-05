@@ -959,20 +959,22 @@ def setPublishedStatus(request, jsonObj):
 	if status == '1':#True
 		print "I am visiting a publised assessment..."
 		info = api.unpublishAssessment(request, assess_id)
+		
 	elif status == '0':#False
 		print "I am visiting an un-published assessment..."
 		info = api.publishAssessment(request, assess_id)
+		
 	
 	if info:
 		data = [{
 			'type':1,
-			'message':'Successful'
+			'message':'Successful'	
 		}]
 		return HttpResponse(json.dumps(data))
 	else:
 	        data = [{
 	                'type':-1,
-	                'message':'Unsuccessful'
+	                'message':'Unsuccessful'       
 	        }]
 	        return HttpResponse(json.dumps(data))
 	
