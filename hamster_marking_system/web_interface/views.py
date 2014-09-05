@@ -1164,7 +1164,7 @@ def viewSessionForMarker(request):
     res = json.loads(result.content)
     if res[0]['type'] == 1:
         assessments = res[0]['session']
-        return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -1172,7 +1172,7 @@ def viewSessionForMarker(request):
                                                                         'user_roles':user_roles,'assessmentName':assessments,
                                                                         'module':mod,'type':1},context_instance=RequestContext(request))
     else:
-        return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
+        return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,

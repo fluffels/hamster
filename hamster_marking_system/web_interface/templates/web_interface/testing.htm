@@ -218,7 +218,7 @@
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
-								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
 							<button  id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -273,7 +273,7 @@
 							{% endif %}
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
-								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -392,7 +392,7 @@
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
 												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 													{% csrf_token %}
-													<input type="hidden" name="mod" value={{ module }}>
+													<input type="hidden" name="module" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
 												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -448,7 +448,7 @@
 												{% endif %}
 													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 														{% csrf_token %}
-														<input type="hidden" name="mod" value={{ module }}>
+														<input type="hidden" name="module" value={{ module }}>
 														<input type="hidden" name="assessment" value={{ y.0 }}>
 													</form>
 													<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -568,7 +568,7 @@
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																		{% csrf_token %}
-																		<input type="hidden" name="mod" value={{ module }}>
+																		<input type="hidden" name="module" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
 																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -623,7 +623,7 @@
 																	{% endif %}
 																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																			{% csrf_token %}
-																			<input type="hidden" name="mod" value={{ module }}>
+																			<input type="hidden" name="module" value={{ module }}>
 																			<input type="hidden" name="assessment" value={{ e.0 }}>
 																		</form>
 																		<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -741,7 +741,7 @@
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																							{% csrf_token %}
-																							<input type="hidden" name="mod" value={{ module }}>
+																							<input type="hidden" name="module" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
 																						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
