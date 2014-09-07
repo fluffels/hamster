@@ -23,38 +23,32 @@ def getAssessment(mod):
     SecondChildren = []
     ThirdChildren = []
     
-    module = Module.objects.get(module_code=mod)
-    dummy = insertAggregateAssessment('dummy',False,module,None,'Aggregate', 0)
-    agregator =  Aggregator.objects.get(assessment=dummy.id)
-    print "ROOT MUST HAVE NOTHING: " + str(root)
-    
     for nrs in root:
         list = getAssessmentDetails(nrs)
-        mark = agregator.aggregateTotalMarkForLecture(nrs.id)
+        mark = aggregateTotalMarkForLecture(nrs.id)
         list.append(mark)
         roots.append(list)
         children1 = Assessment.objects.filter(parent=nrs.id)
         firstChildren = []
         for nfs in children1:
             list = getAssessmentDetails(nfs)
-            mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+            mark = aggregateTotalMarkForLecture(nfs.id)
             list.append(mark)
             firstChildren.append(list)
             children2 = Assessment.objects.filter(parent=nfs.id)
             secondChildren = []
             for nss in children2:
                 list = getAssessmentDetails(nss)
-                mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                mark = aggregateTotalMarkForLecture(nss.id)
                 list.append(mark)
                 secondChildren.append(list)
                 children3 = Assessment.objects.filter(parent=nss.id)
                 thirdChildren = []
                 for nts in children3:
                     list = getAssessmentDetails(nts)
-                    mark = agregator.aggregateTotalMarkForLecture(nts.id)
+                    mark = aggregateTotalMarkForLecture(nts.id)
                     list.append(mark)
                     thirdChildren.append(list)
-                
                 ThirdChildren.append({nss.getname(): thirdChildren})
             SecondChildren.append({nfs.getname():secondChildren})
         FirstChildren.append({nrs.getname():firstChildren})
@@ -63,62 +57,50 @@ def getAssessment(mod):
     final.append(SecondChildren)
     final.append(ThirdChildren)
 
-    agregator.delete()
-    dummy.delete()
-    
     return final
 
 def getAssessmentForAssessment(assess_id):
-        root = getChildrenAssessmentsForAssessment(assess_id)
-        final = []
-        roots = []
-        FirstChildren = []
-        SecondChildren = []
-        ThirdChildren = []
-        
-        assess = Assessment.objects.get(id=assess_id)
-        mod = assess.mod_id
-        dummy = insertAggregateAssessment('dummy',False,mod,None,'Aggregate', 0)
-        agregator =  Aggregator.objects.get(assessment=dummy.id)
+    root = getChildrenAssessmentsForAssessment(assess_id)
+    final = []
+    roots = []
+    FirstChildren = []
+    SecondChildren = []
+    ThirdChildren = []
 
-        for nrs in root:
-            mark = agregator.aggregateTotalMarkForLecture(nrs[0])
-            nrs.append(mark)
-            roots.append(nrs)
-            children1 = Assessment.objects.filter(parent=nrs[0])
-            firstChildren = []
-            for nfs in children1:
-                list = getAssessmentDetails(nfs)
-                mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+    for nrs in root:
+        mark = aggregateTotalMarkForLecture(nrs[0])
+        nrs.append(mark)
+        roots.append(nrs)
+        children1 = Assessment.objects.filter(parent=nrs[0])
+        firstChildren = []
+        for nfs in children1:
+            list = getAssessmentDetails(nfs)
+            mark = aggregateTotalMarkForLecture(nfs.id)
+            list.append(mark)
+            firstChildren.append(list)
+            children2 = Assessment.objects.filter(parent=nfs.id)
+            secondChildren = []
+            for nss in children2:
+                list = getAssessmentDetails(nss)
+                mark = aggregateTotalMarkForLecture(nss.id)
                 list.append(mark)
-                firstChildren.append(list)
-                children2 = Assessment.objects.filter(parent=nfs.id)
-                secondChildren = []
-                for nss in children2:
-                    list = getAssessmentDetails(nss)
-                    mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                secondChildren.append(list)
+                children3 = Assessment.objects.filter(parent=nss.id)
+                thirdChildren = []
+                for nts in children3:
+                    list = getAssessmentDetails(nts)
+                    mark = aggregateTotalMarkForLecture(nts.id)
                     list.append(mark)
-                    secondChildren.append(list)
-                    children3 = Assessment.objects.filter(parent=nss.id)
-                    thirdChildren = []
-                    for nts in children3:
-                        list = getAssessmentDetails(nts)
-                        mark = agregator.aggregateTotalMarkForLecture(nts.id)
-                        list.append(mark)
-                        thirdChildren.append(list)
-                    
-                    ThirdChildren.append({nss.getname(): thirdChildren})
-                SecondChildren.append({nfs.getname():secondChildren})
-            FirstChildren.append({nrs[1]:firstChildren})
-        final.append(roots)
-        final.append(FirstChildren)
-        final.append(SecondChildren)
-        final.append(ThirdChildren)    
+                    thirdChildren.append(list)
+                ThirdChildren.append({nss.getname(): thirdChildren})
+            SecondChildren.append({nfs.getname():secondChildren})
+        FirstChildren.append({nrs[1]:firstChildren})
+    final.append(roots)
+    final.append(FirstChildren)
+    final.append(SecondChildren)
+    final.append(ThirdChildren)    
 
-        agregator.delete()
-        dummy.delete()
-    
-        return final
+    return final
 
 def studentAssessmentFromModule(mod,student):
     root = getAllAssessmentsForModule(mod)
