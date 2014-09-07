@@ -1540,13 +1540,14 @@ def chooseAggregator(request):
         numChildren = res['numChildren']
         children = res['children']
         assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
 
-        return render_to_response("web_interface/choose_aggregator.htm",{'default_user':default_user,
+        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'numChildren':numChildren,
+                                                                        'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
 @isLecture
 @isAuthenticated
@@ -1575,6 +1576,7 @@ def aggregateMarkForAssessment(request):
     
     result = views.aggregateMarkForAssessment(request,json.dumps(data))
     res = json.loads(result.content)
+    print "////////////\\\\\\\\\\\\"
 
     if res[0]['type'] == '1':
                 print "something"

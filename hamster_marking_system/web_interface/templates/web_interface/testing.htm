@@ -193,8 +193,9 @@
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
-							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-							data-placement="top" title="Choose Aggregator">
+							<button type="button"
+							data-target="#select_aggregator" data-toggle="modal"
+								class="btn btn-default" data-placement="top" title="Choose Aggregator">
 								<span class="glyphicon glyphicon-stats"></span>
 							</button>
 						</div>
@@ -362,15 +363,16 @@
 													<span class="glyphicon glyphicon-volume-up"></span>
 													</button>
 												{% endif %}
-												<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-													{% csrf_token %}
-													<input type="hidden" name="module" value={{ module }}>
-													<input type="hidden" name="assess_id" value={{ y.0 }}>
-												</form>
-												<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-												data-placement="top" title="Choose Aggregator">
-													<span class="glyphicon glyphicon-stats"></span>
-												</button>
+													<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+													</form>
+													<button type="button"
+													data-target="#select_aggregator" data-toggle="modal"
+														class="btn btn-default" data-placement="top" title="Choose Aggregator">
+														<span class="glyphicon glyphicon-stats"></span>
+													</button>
 											</div>
 											
 											<!--<span class="label label-default pull-right">{{y.4}}</span>-->
@@ -538,15 +540,16 @@
 																		<span class="glyphicon glyphicon-volume-up"></span>
 																		</button>
 																	{% endif %}
-																	<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-																		{% csrf_token %}
-																		<input type="hidden" name="module" value={{ module }}>
-																		<input type="hidden" name="assess_id" value={{ e.0 }}>
-																	</form>
-																	<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																	data-placement="top" title="Choose Aggregator">
-																		<span class="glyphicon glyphicon-stats"></span>
-																	</button>
+																		<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																		</form>
+																		<button type="button"
+																		data-target="#select_aggregator" data-toggle="modal"
+																			class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																			<span class="glyphicon glyphicon-stats"></span>
+																		</button>
 																</div>
 															
 																<!--<span class="label label-default pull-right">{{e.4}}</span>-->
@@ -711,15 +714,16 @@
 																							<span class="glyphicon glyphicon-volume-up"></span>
 																							</button>
 																						{% endif %}
-																						<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-																							{% csrf_token %}
-																							<input type="hidden" name="module" value={{ module }}>
-																							<input type="hidden" name="assess_id" value={{ h.0 }}>
-																						</form>
-																						<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																						data-placement="top" title="Choose Aggregator">
-																							<span class="glyphicon glyphicon-stats"></span>
-																						</button>
+																							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																							</form>
+																							<button type="button"
+																							data-target="#select_aggregator" data-toggle="modal"
+																								class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																								<span class="glyphicon glyphicon-stats"></span>
+																							</button>
 																					</div>
 																				
 																					<!--<span class="label label-default pull-right">{{h.4}}</span>-->
@@ -958,6 +962,98 @@
 			</div>
 		</div>
 	</div><!--End of Modal for Create Leaf assessment-->
+
+<!--Modal for Create Leaf assessment-->
+<div class="modal fade" id="select_aggregator" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
+					<div class="modal-header text-center">
+						<h4>Choose an Aggregator</h4>
+					</div>
+					<div class="modal-body">
+						<div class="tabbable">
+						<ul class="nav nav-tabs">
+						  <li class="active"><a href="#simple_sum" data-toggle="tab">Simple Sum</a></li>
+						  <li><a href="#best_of" data-toggle="tab">Best Of</a></li>
+						  <li><a href="#weighted_sum" data-toggle="tab">Weighted Sum</a></li>
+						  <li><a href="#agg_status" data-toggle="tab">Status</a></li>
+						</ul>
+						<div class="tab-content">
+						  <div id="simple_sum" class="tab-pane active">
+						    <h4>No information required. Click Complete button.</h4>
+						    <!-- simplesum form -->
+							<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+								<input type="hidden" value="SimpleSum" name="agg_name">
+								<input type="hidden" value="0" name="numC">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value="0" name="child_weight" >
+								<input type="hidden" value="0" name="child_id"  >
+								<div class="clearfix">
+									<button type="submit" name="submit" class="btn btn-success pull-right">Submit</button>
+								</div>
+							</form><!-- ./simplesum form -->
+						  </div>
+						  <div id="best_of" class="tab-pane">
+						  <h4>Give number of assessments to be used as the best of.</h4>
+						    <h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
+							<!-- bestof form -->
+							<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form"> {% csrf_token %}
+							  <div class="form-group">
+								<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of contributors</label>
+								<div class="col-sm-4">
+									<input type="number" class="form-control" id="numC" name="numC" placeholder="Number of contributors">
+								</div>
+								<input type="hidden" value="BestOf" name="agg_name">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value="0" name="child_weight" >
+								<input type="hidden" value="0" name="child_id"  >
+							  </div>
+							  <div class="clearfix">
+								<button class="btn btn-success pull-right" type="submit">Submit</button>
+							  </div>
+							</form><!-- ./bestof form -->
+						  </div>
+						  <div id="weighted_sum" class="tab-pane">
+						    <h4>Assign weights to each assessment</h4>
+						    <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
+							<!-- weightedsum form -->
+							<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+								<input type="hidden" value="WeightedSum" name="agg_name">
+								<input type="hidden" value="0" name="numC">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+							{% for child in children %}
+							  <div class="form-group">
+								<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
+								<div class="col-sm-5">
+									<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}">
+									<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
+								</div>
+							  </div>
+							{% endfor %}
+							<div class="clearfix">
+								<button class="btn btn-success pull-right" type="submit">Submit</button>
+							</div>
+							</form><!-- ./weightedsum form -->
+						  </div>
+						  <div id="agg_status" class="tab-pane">
+						    <h4>The currently used aggregator is : </h4>
+						    <h3><span class="label label-default">{{ agg_name }}</span></h3>
+						  </div>
+						</div><!-- /.tab-content -->
+					      </div><!-- /.tabbable -->
+	
+					</div>
+					<div class="modal-footer clearfix">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+					</div>
+				</form>
+			</div>
+		</div>
+</div><!--End of Modal for Create Leaf assessment-->
 
 
 	</div>

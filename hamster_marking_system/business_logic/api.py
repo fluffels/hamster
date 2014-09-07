@@ -1962,6 +1962,16 @@ def getAggregationInfo(assess_id):
         return list
     else:
         return None
+
+def getAggregatorName(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    if assess_obj.assessment_type == 'Aggregate':
+        agg = Aggregator.objects.get(assessment=assess_obj)
+        name = agg.aggregator_name
+        return name
+    else:
+        return None
+
     
 # Name: setAggregationInfo(detailsList)
 # Description: Sets all the aggregation information to the relevant assessment
