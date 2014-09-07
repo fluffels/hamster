@@ -291,28 +291,28 @@ class SimpleSumAggregator(Aggregator):
       list.append(perc)
   
     return list
-
-  def aggregateTotalMarkForLecture(self, assess_id):
-    root = Assessment.objects.get(id=assess_id)
-    if root.assessment_type == "Leaf":
-      sum_total_of_children = root.full_marks
-    else:
-      children = Assessment.objects.filter(parent=assess_id)
-      sum_total_of_children = 0.0
-  
-      for child in children:
-        if child.assessment_type == 'Leaf':
-          sum_total_of_children += child.full_marks
-          
-        elif child.assessment_type == 'Aggregate':
-          sum_total_of_children += getSumTotalOfChildren(child.id)
-          
-    return sum_total_of_children
   
   def __unicode__(self):
     assess = self.assessment
     return self.aggregator_name + " " + assess.assess_name
-  
+
+def aggregateTotalMarkForLecture( assess_id):
+  root = Assessment.objects.get(id=assess_id)
+  if root.assessment_type == "Leaf":
+    sum_total_of_children = root.full_marks
+  else:
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_total_of_children = 0.0
+
+    for child in children:
+      if child.assessment_type == 'Leaf':
+        sum_total_of_children += child.full_marks
+        
+      elif child.assessment_type == 'Aggregate':
+        sum_total_of_children += getSumTotalOfChildren(child.id)
+        
+  return sum_total_of_children
+ 
 def getSumTotalOfChildren(assess_id):
     total =0
     assess = Assessment.objects.get(id=assess_id)
