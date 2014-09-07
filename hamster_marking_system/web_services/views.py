@@ -1581,3 +1581,25 @@ def aggregateMarkForAssessment(request, jsonObj):
 '''
 ###################### End Aggregation Views ###############################
 '''
+
+def StudentAssessmentAggregated(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	print json_data
+	assess = json_data['assessment']
+	student =json_data['student']
+	info = None
+	info = api.StudentMarks(assess,student)
+	print "info : " + str(info)
+	if info:
+		data = [{
+			'type': 1,
+			'message': 'marks retrieved',
+			'assessment':info
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'marks not retrievd',
+		}]
+		return HttpResponse(json.dumps(data))

@@ -14,7 +14,21 @@ from django.shortcuts import render
 
 
 
-def generate_student_mark_pdf(marks, module):
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
+
+
+
+def generate_student_mark_pdf(data, student):
     """
     Generates a PDF document with a student's  marks,
     then allowes for it to be downloaded by the student.
@@ -43,12 +57,10 @@ def generate_student_mark_pdf(marks, module):
     c.setFont("Helvetica",24,leading=None)
     c.drawCentredString(300, 700, "Module : " + module)
     c.setFont("Helvetica", 18, leading=None)
-    writePoint = 750
-    ass2 = marks[0][0]
-    print "ass2-------------------: " + str(ass2[1]) +' '+ str(ass2[4]) +' '+ str(ass2[5]) +' '+ str(ass2[6])
-    data = [['Assessment','Final Mark','Mark obtained', 'Percentage'],
-            [str(ass2[1]), str(ass2[4]), str(ass2[5]), str(ass2[6])]]
-    table = Table(data, colWidths=None, rowHeights=None)
+    #print "ass2-------------------: " + str(ass2[1]) +' '+ str(ass2[4]) +' '+ str(ass2[5]) +' '+ str(ass2[6])
+    #data = [['Assessment','Final Mark','Mark obtained', 'Percentage'],
+    #        [str(ass2[1]), str(ass2[4]), str(ass2[5]), str(ass2[6])]]
+    #table = Table(data, colWidths=None, rowHeights=None)
     #table.setStyle(TableStyle([('GRID',(0,0), (1,-1),2)]))
     #t=Table(data, colWidths=100, rowHeights=50)
     table.wrapOn(c,300, 650)
@@ -65,17 +77,24 @@ def generate_student_mark_pdf(marks, module):
     response.write(pdf)
     return response
 
-def generate_student_mark_csv(marks,module):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Marks.csv"'
+def generate_student_mark_csv(data,student):
+    module = data[0]['assessment'][0]
+    filename = student + "_" + module + "_marks.csv"
     
-    ass2 = marks[0][0]
-    print "ass2-------------------: " + str(ass2[1]) +' '+ str(ass2[4]) +' '+ str(ass2[5]) +' '+ str(ass2[6])
-
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+    
+    #Extract user information
+    
     writer = csv.writer(response)
-    writer.writerow(['Student','u10534505'])
+    writer.writerow(['Student',student])
     writer.writerow(['Module',module])
-    writer.writerow(['Assessment','Final Mark','Mark obtained', 'Percentage'])
-    writer.writerow([str(ass2[1]), str(ass2[4]), str(ass2[5]), str(ass2[6])])
+    writer.writerow(['Assessment', 'Mark obtained', 'Total Mark', 'Percentage'])
+    for mark in data[0]['assessment'][1:]:
+        assessment_name = mark[0]
+        assessment_obtained_mark = mark[1]
+        assessment_total_mark = mark[2]
+        assessment_percenatge_obtained = '{0:.3g}'.format(mark[3])
+        writer.writerow([assessment_name, assessment_obtained_mark, assessment_total_mark, assessment_percenatge_obtained])
 
     return response
