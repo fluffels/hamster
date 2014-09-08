@@ -62,7 +62,7 @@ def generate_student_mark_pdf(data, student):
     assessment_clicked = data[0]['assessment'][1][0]
     assessment_clicked_obtained_mark = data[0]['assessment'][1][1]
     assessment_clicked_total_mark = data[0]['assessment'][1][2]
-    assessment_clicked_percenatge_obtained = '{0:.3}'.format(data[0]['assessment'][1][3])
+    assessment_clicked_percentage_obtained = '{0:.3}'.format(data[0]['assessment'][1][3])
     
     #create row above the table specifying the assessment clicked
     tdata = [[Paragraph('<b>' + assessment_clicked + '</b>',styleN)
@@ -124,7 +124,7 @@ def generate_student_mark_pdf(data, student):
     tdata = [[Paragraph('<b>' + assessment_clicked + '</b>',styleN),
               Paragraph('<b>' + str(assessment_clicked_obtained_mark) + '</b>',styleN),
               Paragraph('<b>' + str(assessment_clicked_total_mark) + '</b>',styleN),
-              Paragraph('<b>' + str(assessment_clicked_percenatge_obtained) + '</b>',styleN)
+              Paragraph('<b>' + str(assessment_clicked_percentage_obtained) + '</b>',styleN)
             ]]
     table = Table(tdata, colWidths=None, rowHeights=None)
     table.setStyle(TableStyle([
@@ -157,17 +157,34 @@ def generate_student_mark_csv(data,student):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=' + filename
     
-    #Extract user information
+    #Information on the assessment that was clicked
+    assessment_clicked = data[0]['assessment'][1][0]
+    assessment_clicked_obtained_mark = data[0]['assessment'][1][1]
+    assessment_clicked_total_mark = data[0]['assessment'][1][2]
+    assessment_clicked_percentage_obtained = '{0:.3}'.format(data[0]['assessment'][1][3])
     
+    
+    #Create writer object, this is what we use to append data to the file
     writer = csv.writer(response)
+    
+    #Write student information at the top
     writer.writerow(['Student',student])
     writer.writerow(['Module',module])
+    writer.writerow([]) #Skipping a row
+    
+    
     writer.writerow(['Assessment', 'Mark obtained', 'Total Mark', 'Percentage'])
-    for mark in data[0]['assessment'][1:]:
+    for mark in data[0]['assessment'][2:]:
         assessment_name = mark[0]
         assessment_obtained_mark = mark[1]
         assessment_total_mark = mark[2]
-        assessment_percentage_obtained = '{0:.3g}'.format(mark[3])
+        assessment_percentage_obtained = '{0:.3}'.format(mark[3])
         writer.writerow([assessment_name, assessment_obtained_mark, assessment_total_mark, assessment_percentage_obtained])
+        
+    #Finally write the total marks for the clicked assessment
+    writer.writerow([]) #Skip row
+    writer.writerow([assessment_clicked, assessment_clicked_obtained_mark,
+                     assessment_clicked_total_mark, assessment_clicked_percentage_obtained]
+                    )
 
     return response
