@@ -2144,8 +2144,8 @@ def StudentMarks(assess, student):
     
 def AggregateAssessmentForStudent(assessment,student):
     if assessment.assessment_type == 'Leaf':
-        mark = getMarkForStudent(assessment,student)
-        return mark.mark
+        mark = getMarkForStudent(student, assessment.id)
+        return mark
     else:
         aggregator = Aggregator.objects.get(assessment=assessment)
         mark = aggregator.aggregateMarksStudent(assessment.id, student)
