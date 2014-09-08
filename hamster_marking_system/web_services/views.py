@@ -48,6 +48,7 @@ def login(request,jsonObj):
 def logout(request):
 	#if request.method == 'POST':
 		try:
+			print "i am trying to logout hle"
 			api.logout(request)
 			data =[
 			{

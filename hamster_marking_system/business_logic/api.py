@@ -202,10 +202,10 @@ def getAllStudentsOfModule(mod_code):
     list = Person.objects.all()
     print "Size of list : " + str(len(list))
     module_list = []
-    module_needed = None
     modObj = Module.objects.get(id=mod_code)
     print "ModObj : " + str(modObj)
     for per in list:
+        module_needed = None
         print "OKAY!!!" + str(per)
 #        print "if " + str(per.studentOf_module) + "==" + str(modObj)
         try:
@@ -1645,7 +1645,9 @@ def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 
 def logout(request):
     try:
+        print "i am logging out now"
         del request.session['user']
+
     except Exception as e:
         print 'Error, key used is not already in the session.'
         raise e

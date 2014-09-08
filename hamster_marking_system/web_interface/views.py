@@ -155,9 +155,9 @@ def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
 	if user[0]['type'] == 1:
-		 return render_to_response("web_interface/base_template.htm",locals(),context_instance = RequestContext(request))
+		 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 	else:
-		return render_to_response("web_interface/success.htm",locals(),context_instance = RequestContext(request))
+		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 
 @isAuthenticated
 def getAllAssessmentOfModule(request,module):

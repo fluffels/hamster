@@ -1,4 +1,6 @@
 from django.http import *
+from django.shortcuts import render_to_response
+from django.template import loader, RequestContext
 import json
 
 def isLecture(function):
@@ -23,9 +25,12 @@ def isLecture(function):
 def isAuthenticated(function):
     def wrapper(request,*args,**kwargs):
         print "is authemticated"
-        if request.session['user']:
-            return function(request,*args,**kwargs)
-        else:
+        try:
+            if request.session['user']:
+                return function(request,*args,**kwargs)
+            else:
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        except:
             return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     return wrapper
 
