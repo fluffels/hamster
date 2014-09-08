@@ -187,8 +187,8 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                										'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod,'second':second,'third':third})
+                                                                                'user_roles':user_roles,'root':root,'first':first,
+                                                                                'module':mod,'second':second,'third':third,},context_instance = RequestContext(request))
             else:
                 print "NONE"
                 root = "NONE";
@@ -197,7 +197,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root})
+                                                                                'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
         elif request.POST.get('tutB'):
             print "IN TUTB"
             module = request.POST.get('tutB')

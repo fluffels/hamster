@@ -9,7 +9,9 @@
 {% endblock %}
 	
 {% block person_details %}
-	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
 {% endblock %}
 
 <!--###########################  End Nav bar settings ############################-->
