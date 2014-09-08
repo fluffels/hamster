@@ -2098,3 +2098,39 @@ def allocatePersonAuditLog():
         list.append(allocate)
     return list
 
+def StudentMarks(assess, student):
+    assessment = Assessment.objects.get(id=assess)
+    person = Person.objects.get(upId=student)
+    list = []
+    parent = []
+    list.append(assessment.mod_id.module_code)
+    parent.append(assessment.assess_name)
+    mark = AggregateAssessmentForStudent(assessment,student)
+    parent.append(mark[4])
+    parent.append(mark[5])
+    parent.append(mark[6])
+    list.append(parent)
+    if assessment.assessment_type == 'Aggregate':
+        children = Assessment.objects.filter(parent=assessment.id)
+        for child in children:
+            if child.published:
+                childy = []
+                mark = AggregateAssessmentForStudent(child,student)
+                print "mark :"+ str(mark)
+                childy.append(child.assess_name)
+                childy.append(mark[4])
+                childy.append(mark[5])
+                childy.append(mark[6])
+                list.append(childy)
+    return list
+        
+    
+    
+def AggregateAssessmentForStudent(assessment,student):
+    if assessment.assessment_type == 'Leaf':
+        mark = getMarkForStudent(student, assessment.id)
+        return mark
+    else:
+        aggregator = Aggregator.objects.get(assessment=assessment)
+        mark = aggregator.aggregateMarksStudent(assessment.id, student)
+        return mark
