@@ -1,8 +1,16 @@
 from django.http import *
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
+from timeit import default_timer
 import json
 
+def setTimer(function):
+    def wrapper(request,*args,**kwargs):
+        global start
+        start = default_timer()
+        return function(request,*args,**kwargs)
+    return wrapper
+    
 def isLecture(function):
     def wrapper(request,*args,**kwargs):
         return function(request,*args,**kwargs)
@@ -25,13 +33,21 @@ def isLecture(function):
 def isAuthenticated(function):
     def wrapper(request,*args,**kwargs):
         print "is authemticated"
-        try:
-            if request.session['user']:
-                return function(request,*args,**kwargs)
-            else:
+        print default_timer()
+        maxi = default_timer() - start
+        print maxi
+        if maxi < 600:
+            try:
+                if request.session['user']:
+                    return function(request,*args,**kwargs)
+            except:
                 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
-        except:
-            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        else:
+            try:
+               del request.session['user']
+               return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            except:
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     return wrapper
 
 def isMarker(function):

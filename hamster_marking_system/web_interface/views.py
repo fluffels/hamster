@@ -5,15 +5,15 @@ from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
-from .decorators import isAuthenticated, isLecture, isMarker
+from .decorators import isAuthenticated, isLecture, isMarker, setTimer
 from django.contrib.auth.models import User
 
-
+@setTimer
 def home(request):
     return render_to_response("web_interface/login.htm",
                               locals(),
                               context_instance = RequestContext(request))
-
+@setTimer
 def login(request):
     try:
         user = request.POST['username']
@@ -100,8 +100,10 @@ def login(request):
                 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     except Exception  as e:
         raise Http404()
-    
+
+
 @isAuthenticated
+@setTimer
 def backHome(request):
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
@@ -109,6 +111,8 @@ def backHome(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
+
+@setTimer
 @isAuthenticated
 def use_as(request,role):
     if role == 'Student':
@@ -151,6 +155,7 @@ def use_as(request,role):
                                                                        'user_tut':tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
+
 def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
@@ -160,6 +165,7 @@ def logout(request):
 		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 
 @isAuthenticated
+@setTimer
 def getAllAssessmentOfModule(request,module):
         if request.POST.get('studB'):
             mod = request.POST['studB'];
@@ -288,6 +294,7 @@ def getAllAssessmentOfModule(request,module):
             raise Http404()
 
 @isAuthenticated
+@setTimer
 def personDetails(request):
     if request.method == 'POST':
         web = views.personDetails(request)
@@ -318,6 +325,7 @@ def personDetails(request):
 
 @isLecture
 @isAuthenticated
+@setTimer
 def getAllSessionsForAssessment(request):
     #try:
         assess = request.POST['assessment']
@@ -402,6 +410,7 @@ def getAllSessionsForAssessment(request):
 
 @isLecture
 @isAuthenticated
+@setTimer
 def createSession(request):
     try:
         print "huh gane y"
@@ -450,6 +459,7 @@ def createSession(request):
        raise Http404()
     
 @isAuthenticated
+@setTimer
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -490,6 +500,7 @@ def getAllStudentOfModule(request):
                                                                         context_instance = RequestContext(request))
 @isLecture
 @isAuthenticated
+@setTimer
 def addStudentToSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -532,6 +543,7 @@ def addStudentToSession(request):
                                                                         context_instance = RequestContext(request))
 @isLecture
 @isAuthenticated
+@setTimer
 def getAllPersonOfSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -569,6 +581,7 @@ def getAllPersonOfSession(request):
                                                                         'marker':[]},context_instance = RequestContext(request))
 
 @isAuthenticated
+@setTimer
 def getLeafAssessmentPage(request):
     assess_id = request.POST['assessment']
     mod = request.POST['module']
@@ -595,6 +608,7 @@ def getLeafAssessmentPage(request):
 
 @isLecture
 @isAuthenticated
+@setTimer
 def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['module']
@@ -632,8 +646,10 @@ def createLeafAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
+
 @isMarker
 @isAuthenticated
+@setTimer
 def updateMarkForStudent(request):
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
@@ -676,6 +692,7 @@ def updateMarkForStudent(request):
 
 @isLecture
 @isAuthenticated
+@setTimer
 def deleteAssessment(request):
     #try:
         assess_id = request.POST['assess_id']
@@ -723,6 +740,7 @@ def deleteAssessment(request):
     #    raise Http404()
 
 @isLecture
+@setTimer
 @isAuthenticated  
 def deleteSession(request):
     sess_id = request.POST['session']
@@ -811,6 +829,7 @@ def deleteSession(request):
                                                                             'moduleName':moduleName,'message':0},
                                                                             context_instance = RequestContext(request))
 @isLecture
+@setTimer
 @isAuthenticated
 def changeAssessmentFullMark(request):
     assess_id = request.POST['assess_id']
@@ -846,6 +865,7 @@ def changeAssessmentFullMark(request):
                                                                                 context_instance = RequestContext(request))
 
 @isLecture
+@setTimer
 @isAuthenticated
 def setPublishedStatus(request):
     assess_id = request.POST['assess_id']
@@ -928,6 +948,7 @@ def setPublishedStatus(request):
                                                                                 context_instance = RequestContext(request))
 
 @isLecture
+@setTimer
 @isAuthenticated
 def setPublishedStatusInLeaf(request):
     assess_id = request.POST['assess_id']
@@ -979,6 +1000,7 @@ def setPublishedStatusInLeaf(request):
                                                                         'fullmark':fullmark,'type':-1},
                                                                         context_instance = RequestContext(request))
 
+@setTimer
 @isAuthenticated
 def viewAssessment(request,module):
     data ={
@@ -1019,6 +1041,7 @@ def viewAssessment(request,module):
                                                                                 context_instance = RequestContext(request))
     
 @isLecture
+@setTimer
 @isAuthenticated
 def openOrCloseSession(request):
     assess_id = request.POST['assess_id']
@@ -1114,6 +1137,7 @@ def openOrCloseSession(request):
 
 
 #marker view
+@setTimer
 @isAuthenticated
 def viewChildrenOfAssessments(request):
     assess_id = request.POST['assessment']
@@ -1153,6 +1177,7 @@ def viewChildrenOfAssessments(request):
                                                                         'assess_id':assess_id,'fullmark':fullmark}
                                                                         ,context_instance=RequestContext(request))
 
+@setTimer
 @isAuthenticated
 def viewSessionForMarker(request):
     mod = request.POST['studB']
@@ -1179,6 +1204,7 @@ def viewSessionForMarker(request):
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles,'type':-1},context_instance=RequestContext(request))
 
+@setTimer
 @isAuthenticated
 def viewAssessmentForMarker(request):
     mod = request.POST['mod']
@@ -1210,6 +1236,7 @@ def viewAssessmentForMarker(request):
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
+@setTimer
 @isAuthenticated
 def viewStudentsForAssessment(request):
     sess= request.POST['session']
@@ -1247,6 +1274,7 @@ def viewStudentsForAssessment(request):
                                                                         context_instance=RequestContext(request))
 
 @isMarker
+@setTimer
 @isAuthenticated
 def updateMarkForStudentMarker(request):
     session = request.POST['session']
@@ -1297,6 +1325,7 @@ def updateMarkForStudentMarker(request):
 
 ##################################### STUDENT VIEWS #############################################################################
 #student views
+@setTimer
 @isAuthenticated
 def viewAssessmentsForStudent(request):
     mod = request.POST['studB']
