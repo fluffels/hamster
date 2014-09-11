@@ -59,18 +59,18 @@ def isMarker(function):
             raise Http404()
     return wrapper
 
-#def isStudent(function):
-#    def wrapper(request,*args,**kwargs):
-#        mod = request.POST['module']
-#        userModuleST = request.session['user']['studentOf']
-#        done = False
-#    
-#        for module in userModuleST:
-#            if module == mod:
-#                done=True
-#        
-#        if done == True:
-#            return function(request,*args,**kwargs)
-#        else:
-#            return HttpResponseRedirect("web_interface/login.htm",locals(),context_instance = RequestContext(request))
-#    return wrapper
+def isStudent(function):
+    def wrapper(request,*args,**kwargs):
+        mod = request.POST['module']
+        userModuleST = request.session['user']['studentOf']
+        done = False
+    
+        for module in userModuleST:
+            if module == mod:
+                done=True
+        
+        if done == True:
+            return function(request,*args,**kwargs)
+        else:
+            return HttpResponseRedirect("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+    return wrapper

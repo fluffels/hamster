@@ -5,7 +5,7 @@ from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
-from .decorators import isAuthenticated, isLecture, isMarker
+from .decorators import isAuthenticated, isLecture, isMarker, isStudent
 from django.contrib.auth.models import User
 
 def home(request):
@@ -1312,6 +1312,7 @@ def updateMarkForStudentMarker(request):
 ##################################### STUDENT VIEWS #############################################################################
 #student views
 @isAuthenticated
+@isStudent
 def viewAssessmentsForStudent(request):
     mod = request.POST['studB']
     uid = request.session['user']['uid'][0]
@@ -1348,8 +1349,8 @@ def viewAssessmentsForStudent(request):
                                                                         'assessmentId':assessmentId,'module':mod,
                                                                         'type':-1},context_instance=RequestContext(request))
 
-#@isAuthenticated
-@csrf_exempt
+@isAuthenticated
+@isStudent
 def getAllChildrenOfAssessmentForStudent(request):
         mod = request.POST['module']
         assessment = request.POST['assess_id']
@@ -1390,6 +1391,7 @@ def getAllChildrenOfAssessmentForStudent(request):
 
 ################################################ END STUDENT VIEWS ################################################################
 @isAuthenticated
+@isLecture
 def getAllAssessmentOfAssessment(request):
     mod = request.POST['mod']
     assessment = request.POST['assessment']
@@ -1428,6 +1430,7 @@ def getAllAssessmentOfAssessment(request):
                                                                         context_instance=RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def ChangeSessionTime(request):
     mod = request.POST['module']
     session = request.POST['session']
