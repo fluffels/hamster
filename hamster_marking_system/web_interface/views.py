@@ -1623,3 +1623,42 @@ def aggregateMarkForAssessment(request):
 '''
 ###################### End Aggregation Views ###############################
 '''
+'''
+###################### Statistics views ###########################
+'''
+def getStats(request):
+    assess_id = request.POST['assess_id']
+
+    data = {
+        'assess_id':assess_id	
+    }
+    results = views.getStats(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == '1':
+        print "Stats Successfully"
+        average = res[0]['average']
+        frequency = res[0]['frequency']
+        stddev = res[0]['stddev']
+        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'frequency':frequency,
+                                                                        'stddev':stddev},context_instance=RequestContext(request))
+    else:
+        average = res[0]['average']
+        print "Stats UN Successfully"
+        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average
+                                                                        },context_instance=RequestContext(request))
+
+'''
+###################### End Statistics views ###########################
+'''

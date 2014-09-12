@@ -50,6 +50,8 @@ urlpatterns = patterns('',
     url(r'change-time$','web_interface.views.ChangeSessionTime', name='change-time'),
     url(r'remove-stud$','web_interface.views.removeUserfromSession', name='change-time'),
     url(r'audit_log$','web_interface.views.AuditLog', name='change-time'),
+    
+    url(r'getStats$','web_interface.views.getStats', name='get_stats'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

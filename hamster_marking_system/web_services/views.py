@@ -1582,7 +1582,39 @@ def aggregateMarkForAssessment(request, jsonObj):
 '''
 ###################### End Aggregation Views ###############################
 '''
+'''
+###################### Statistics views ###########################
+'''
+def getStats(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
 
+	try:
+		frequency = api.getFrequencyAnalysisForAssessment(assess_id)
+		#average = api.getAverageForAssessment(assess_id)
+		#stddev = api.getStandardDeviationForAssessment(assess_id)
+		average = 0.0
+		stddev = 0.0
+		
+		
+		data = [{
+			'type':'1',
+			'frequency':frequency,
+			'average':average,
+			'stddev':stddev
+			
+		}]
+		return HttpResponse(json.dumps(data))
+	except:
+		data = [{
+			'type':'-1',
+			'average':"Error Occured hey! Like its a problem tho",	
+		}]
+		return HttpResponse(json.dumps(data))
+
+'''
+###################### End Statistics views ###########################
+'''
 def StudentAssessmentAggregated(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	print json_data
