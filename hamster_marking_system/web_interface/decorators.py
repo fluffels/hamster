@@ -24,13 +24,12 @@ def isLecture(function):
 
 def isAuthenticated(function):
     def wrapper(request,*args,**kwargs):
-        print "is authemticated"
-        return function(request,*args,**kwargs)
+        print "is authenticated"
         try:
             if request.session['user']:
                 return function(request,*args,**kwargs)
         except:
-            return HttpResponseRedirect("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     return wrapper
 
 def isMarker(function):
@@ -61,6 +60,7 @@ def isMarker(function):
 
 def isStudent(function):
     def wrapper(request,*args,**kwargs):
+        print "Student is authenticated"
         mod = request.POST['module']
         userModuleST = request.session['user']['studentOf']
         done = False

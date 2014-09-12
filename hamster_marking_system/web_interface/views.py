@@ -96,7 +96,7 @@ def login(request):
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
         else:
-                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+                return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
     except Exception  as e:
         raise Http404()
 
@@ -453,6 +453,7 @@ def createSession(request):
        raise Http404()
     
 @isAuthenticated
+@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -574,6 +575,7 @@ def getAllPersonOfSession(request):
                                                                         'marker':[]},context_instance = RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def getLeafAssessmentPage(request):
     assess_id = request.POST['assessment']
     mod = request.POST['module']
@@ -641,7 +643,7 @@ def createLeafAssessment(request):
 
 
 @isAuthenticated
-@isMarker
+@isLecture
 def updateMarkForStudent(request):
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
@@ -992,6 +994,7 @@ def setPublishedStatusInLeaf(request):
                                                                         context_instance = RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def viewAssessment(request,module):
     data ={
             'module':module
