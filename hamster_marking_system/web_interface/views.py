@@ -5,7 +5,7 @@ from django.http import Http404, HttpResponse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
-from .decorators import isAuthenticated, isLecture, isMarker
+from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
 
 def home(request):
@@ -96,7 +96,7 @@ def login(request):
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
         else:
-                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+                return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
     except Exception  as e:
         raise Http404()
 
@@ -162,6 +162,7 @@ def logout(request):
 		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
 
 @isAuthenticated
+@isPartOfmodule
 def getAllAssessmentOfModule(request,module):
         if request.POST.get('studB'):
             mod = request.POST['studB'];
@@ -365,44 +366,6 @@ def getAllSessionsForAssessment(request):
    # except Exception as e:
    #     raise Http404()
 
-#@isLecture
-#@isAuthenticated
-#def createAssessment(request):
-#    try:
-#        assessName = request.POST['name']
-#        mod = request.POST['mod']
-#        fullmark = request.POST['fullmark']
-#        assess_id = request.POST['leaf']
-#        
-#        data = {
-#            'name':assessName,
-#            'mod':mod,
-#            'fullmark':fullmark,
-#            'assess_id': assess_id
-#        }
-#        res= views.createAssessment(request,json.dumps(data))
-#        results = json.loads(res.content)
-#        if results[0]['type'] == 1:
-#            assess = results[0]['assessment']
-#            return render_to_response("web_interface/create_assessments_lect.htm",{'default_user':default_user,
-#                                                                        'user_lect':user_lect,
-#                                                                        'user_stud':user_stud,
-#                                                                        'user_tut':user_tut,
-#                                                                        'user_ta':user_ta,
-#                                                                        'user_roles':user_roles,'assessmentName':assess,
-#                                                                        "module":mod,'type':1},
-#                                                                        context_instance = RequestContext(request))
-#        else:
-#            return render_to_response("web_interface/login.htm",{'default_user':default_user,
-#                                                                                'user_lect':user_lect,
-#                                                                                'user_stud':user_stud,
-#                                                                                'user_tut':user_tut,
-#                                                                                'user_ta':user_ta,
-#                                                                                'user_roles':user_roles},
-#                                                                                context_instance = RequestContext(request))
-#    except Exception as e:
-#        raise Http404()
-
 @isAuthenticated
 @isLecture
 def createSession(request):
@@ -453,6 +416,7 @@ def createSession(request):
        raise Http404()
     
 @isAuthenticated
+@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -574,6 +538,7 @@ def getAllPersonOfSession(request):
                                                                         'marker':[]},context_instance = RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def getLeafAssessmentPage(request):
     assess_id = request.POST['assessment']
     mod = request.POST['module']
@@ -641,7 +606,7 @@ def createLeafAssessment(request):
 
 
 @isAuthenticated
-@isMarker
+@isLecture
 def updateMarkForStudent(request):
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
@@ -992,6 +957,7 @@ def setPublishedStatusInLeaf(request):
                                                                         context_instance = RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def viewAssessment(request,module):
     data ={
             'module':module
@@ -1224,41 +1190,41 @@ def viewAssessmentForMarker(request):
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
-@isAuthenticated
-def viewStudentsForAssessment(request):
-    sess= request.POST['session']
-    assess = request.POST['assessment']
-    mod = request.POST['mod']
-    
-    data = {
-        'session':sess,
-        'assess_id':assess
-    }
-    results = views.viewStudentsForAssessment(request,json.dumps(data))
-    res = json.loads(results.content)
-    if res[0]['type'] == 1:
-        assessment = res[0]['assessment']
-        fullmark = res[0]['fullmark']
-        students = res[0]['students']
-        return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'studentMark':students,
-                                                                        'module':mod,'assessmentName':assessment,
-                                                                        'session':sess,'assess_id':assess,
-                                                                        'fullmark':fullmark},context_instance=RequestContext(request))
-    else:
-        students = []
-        return render_to_response("web_interface/success.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
-                                                                        'fullmark':fullmark,'module':mod},
-                                                                        context_instance=RequestContext(request))
+#@isAuthenticated
+#def viewStudentsForAssessment(request):
+#    sess= request.POST['session']
+#    assess = request.POST['assessment']
+#    mod = request.POST['mod']
+#    
+#    data = {
+#        'session':sess,
+#        'assess_id':assess
+#    }
+#    results = views.viewStudentsForAssessment(request,json.dumps(data))
+#    res = json.loads(results.content)
+#    if res[0]['type'] == 1:
+#        assessment = res[0]['assessment']
+#        fullmark = res[0]['fullmark']
+#        students = res[0]['students']
+#        return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
+#                                                                        'user_lect':user_lect,
+#                                                                        'user_stud':user_stud,
+#                                                                        'user_tut':user_tut,
+#                                                                        'user_ta':user_ta,
+#                                                                        'user_roles':user_roles,'studentMark':students,
+#                                                                        'module':mod,'assessmentName':assessment,
+#                                                                        'session':sess,'assess_id':assess,
+#                                                                        'fullmark':fullmark},context_instance=RequestContext(request))
+#    else:
+#        students = []
+#        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+#                                                                        'user_lect':user_lect,
+#                                                                        'user_stud':user_stud,
+#                                                                        'user_tut':user_tut,
+#                                                                        'user_ta':user_ta,
+#                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
+#                                                                        'fullmark':fullmark,'module':mod},
+#                                                                        context_instance=RequestContext(request))
 
 @isAuthenticated
 @isMarker
@@ -1312,6 +1278,7 @@ def updateMarkForStudentMarker(request):
 ##################################### STUDENT VIEWS #############################################################################
 #student views
 @isAuthenticated
+@isStudent
 def viewAssessmentsForStudent(request):
     mod = request.POST['studB']
     uid = request.session['user']['uid'][0]
@@ -1348,8 +1315,8 @@ def viewAssessmentsForStudent(request):
                                                                         'assessmentId':assessmentId,'module':mod,
                                                                         'type':-1},context_instance=RequestContext(request))
 
-#@isAuthenticated
-@csrf_exempt
+@isAuthenticated
+@isStudent
 def getAllChildrenOfAssessmentForStudent(request):
         mod = request.POST['module']
         assessment = request.POST['assess_id']
@@ -1390,6 +1357,7 @@ def getAllChildrenOfAssessmentForStudent(request):
 
 ################################################ END STUDENT VIEWS ################################################################
 @isAuthenticated
+@isLecture
 def getAllAssessmentOfAssessment(request):
     mod = request.POST['mod']
     assessment = request.POST['assessment']
@@ -1428,6 +1396,7 @@ def getAllAssessmentOfAssessment(request):
                                                                         context_instance=RequestContext(request))
 
 @isAuthenticated
+@isLecture
 def ChangeSessionTime(request):
     mod = request.POST['module']
     session = request.POST['session']

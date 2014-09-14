@@ -25,37 +25,10 @@
 			</button>
 
 			<div class="collapse navbar-collapse navHeaderCollapse">
-				
+			
 			<ul class="nav navbar-nav navbar-right">
-				<li class="active"><a href="/hamster_home">Home</a></li>
-
-					
-				{% block logout_button %}{% endblock %}
-				{% block person_details %}{% endblock %}
+				{% block header%}{%endblock%}
 				
-				<!--Courses dropdown-->
-				<li>
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% block courses_dropdown %}{% endblock %}
-				</ul>
-				</li>
-				<!-- End of Courses dropdown-->
-
-				<!--Use as dropdown-->
-				<li>
-					
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% block courses_use_as %}{% endblock %}
-				</ul>
-
-				</li>
-				<!-- End of Use as dropdown-->
-				
-				<li><a href="#query" data-toggle="modal">Query</a></li>
-				<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
-
 			</ul>
 
 			</div>
