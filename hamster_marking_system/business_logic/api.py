@@ -2093,7 +2093,7 @@ def allocatePersonAuditLog():
         allocate.append(logged.mod.module_code)
         allocate.append(logged.allocatePerson)
         allocate.append(logged.session.session_name)
-        alloctae.append(logged.action)
+        allocate.append(logged.action)
         allocate.append(str(logged.time))
         list.append(allocate)
     return list

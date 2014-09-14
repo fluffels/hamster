@@ -3,46 +3,74 @@
 {% block title %} Add user {% endblock %}
 
 <!--###########################  Nav bar settings ############################-->
-
-{% block logout_button %}
+{% block header%}
+	<li class="active"><a href="/hamster_home">Home</a></li>
 	<li><a href="/logout">Logout</a></li>
-{% endblock %}
-	
-{% block person_details %}
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
 	</form>
-{% endblock %}
-
-<!--###########################  End Nav bar settings ############################-->
-
-<!--###########################  Courses dropdown ############################-->
-<!-- Courses button -->
-{% block courses_dropdown %}
-{% for role in user_lect.0.LC %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_stud.0.ST %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_tut.0.TT %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_ta.0.TA %}
-	<li><a id={{ role }} href="/course/{{ role }}"> {{ role }}</a></li>
-{% endfor %}
-{% endblock %}
-<!-- End of Courses button -->
-
-<!-- Use as button -->
-{% block courses_use_as %}
-{% for role in user_roles %}
-	<li><a id={{ role }} href="/use_as/{{ role }}"> {{ role }}</a></li>
-{% endfor %}
-{% endblock %}
+	<li>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+		{% for role in user_lect.0.LC %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="id">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_stud.0.ST %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="id">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_tut.0.TT %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="id">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_ta.0.TA %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="id">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		</ul>
+	</li>
+	<li>
+					
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+			{% for role in user_roles %}
+			<li>
+				<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+					{% csrf_token %}
+					<input type="text" name="id" value={{ role }}>
+				</form>
+				<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</li>
+	<li><a href="#query" data-toggle="modal">Query</a></li>
+	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>	
+{%endblock%}
 <!-- End of Use as button -->
 
 <!--###########################  End Courses dropdown ############################-->
