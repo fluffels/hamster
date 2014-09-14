@@ -97,7 +97,7 @@ def login(request):
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
         else:
-                return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
+                 return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
     except Exception  as e:
         raise Http404()
 
