@@ -72,5 +72,61 @@ def isStudent(function):
         if done == True:
             return function(request,*args,**kwargs)
         else:
-            return HttpResponseRedirect("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+    return wrapper
+
+def isPartOfmodule(function):
+    def wrapper(request,*args,**kwargs):
+        print "is he part of the module"
+        if request.POST.get('studB'):
+            mod = request.POST['studB']
+            usermodules = request.session['user']['studentOf']
+            done = False
+            for module in usermodules:
+                if mod == module:
+                    done = True
+            if done:
+                return function(request,*args,**kwargs)
+            else:
+                del request.session['user']
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        elif request.POST.get('tutB'):
+            mod = request.POST['tutB']
+            usermodules = request.session['user']['tutorFor']
+            done = False
+            for module in usermodules:
+                if mod == module:
+                    done = True
+            if done:
+                return function(request,*args,**kwargs)
+            else:
+                del request.session['user']
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        elif request.POST.get('lectB'):
+            mod = request.POST['lectB']
+            usermodules = request.session['user']['lecturerOf']
+            done = False
+            for module in usermodules:
+                if mod == module:
+                    done = True
+            if done:
+                return function(request,*args,**kwargs)
+            else:
+                del request.session['user']
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        elif request.POST.get('taB'):
+            mod = request.POST['taB']
+            usermodules = request.session['user']['teachingAssistantOf']
+            done = False
+            for module in usermodules:
+                if mod == module:
+                    done = True
+            if done:
+                return function(request,*args,**kwargs)
+            else:
+                del request.session['user']
+                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+        else:
+            del request.session['user']
+            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
     return wrapper
