@@ -93,7 +93,7 @@
 		<div class="modal fade" id="update_leaf_mark" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="update-fullmark" method="post">
+			<form class="form-horizontal" action="update-fullmark" method="post" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h2><strong>Update Total Mark for</strong></h2>
@@ -114,7 +114,8 @@
 						</h4>
 						<div class="col-lg-5">
 							<input hidden="hidden" name="assess_id" value={{ assess_id }}>
-							<input type="number" class="form-control" id="new-full-mark" name="fullmark" placeholder="100">
+							<input type="number" class="form-control" id="new-full-mark" name="fullmark" placeholder="100"
+							data-parsley-min="0" data-parsley-max="100">
 						</div>
 					</div>
 					
@@ -181,10 +182,11 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="update_mark" class="form-inline" role="form">
+					<form method="post" action="update_mark" class="form-inline" role="form" data-parsley-validate>
 						{% csrf_token %}
 						
-						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
+						<input type="number" class="form-control" placeholder="Mark awarded"
+						       name="mark" data-parsley-min="0" data-parsley-max={{ fullmark }}>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -194,11 +196,13 @@
 				</td>
 				{% else %}
 				<td class="col-md-3">
-					<form  onsubmit='return to_submit({{ per.0 }});' class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+					<form method="post" onsubmit='return to_submit({{ per.0 }}, this);' action="update_mark" class="form-inline"
+					      name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
 						{% csrf_token %}
-						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" placeholder="Mark awarded" value={{ per.3 }}>
+						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control"
+						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }}>
 						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
-						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+						<input hidden="hidden" name="assessment" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
 						<input hidden="hidden" name="module" value={{ module }}>
 					</form>
@@ -206,18 +210,13 @@
 				
 				<script>
 					function to_submit(stud_id) {
-						alert(stud_id);
 						var data_nyana = document.getElementById('form_edit').name;
-						alert(data_nyana);
 						var class_data = document.getElementById(data_nyana);
 						alert(class_data.className);
 						if (class_data.className == "btn btn-warning") {
-							alert(data_nyana);
 							class_data.className="btn btn-success";
-							class_data.span.className="glyphicon glyphicon-ok"
-							alert("changed button");
+							class_data.span.className="glyphicon glyphicon-ok";
 							document.getElementById(data_nyana).disabled=false;
-							alert("editable");
 							return false;
 						}
 						else{
@@ -229,7 +228,68 @@
 
 					}
 					
+					function makeEditable(curr) {
+						
+						//Make input editable
+						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						
+						//Change button color
+						$(curr).parent().children('button').attr('class', 'btn btn-success');
+						
+						//Change icon of button
+						$(curr).parent().children('button').children('span').attr('class', 'glyphicon glyphicon-ok');
+						
+						var btnInnerHTML = $(curr).parent().children('button').get(0).innerHTML;
+						
+						//Change button type to submit
+						if (btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-edit"></span>' ||
+						    btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-ok"></span>') {
+							//Dont make the form postable, we only needed to change the button
+							//Add method and action to form
+							$(curr).parent().attr('method', 'post');
+							$(curr).parent().attr('action', 'update-marks');
+						}
+						else {
+							//Finaly submit
+							$(curr).parent().children('button').attr('type', 'submit');
+						}
+						
+						//Change html on button
+						$(curr).parent().children('button').get(0).innerHTML = 'Submit  <span class="glyphicon glyphicon-ok"></span>';
+						
+						
+					}
+					
 			       </script>
+				
+				<!-- Confirm modify mark modal -->
+
+				<div class="modal fade" id="confirm_mark_modification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Confirm Modification</h4>
+				</div>
+				
+				<div class="modal-body">
+				<p>You are about to modify the mark already assigned to a student.</p>
+				<p>Do you want to proceed?</p>
+				</div>
+				
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" onclick="makeEditable(this);"
+				class="btn btn-warning danger">Modify</button>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				<!-- End confirm modify mark modal -->
+				
+				
 				{% endif %}
 			</tr>
 			{% endfor %}

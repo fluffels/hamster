@@ -148,9 +148,10 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="update-marks" class="form-inline" role="form">
+					<form method="post" action="update-marks" class="form-inline" role="form"  data-parsley-validate>
 						{% csrf_token %}
-						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
+						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark"
+						required data-parsley-min="0" data-parsley-max={{ fullmark }}>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -161,10 +162,11 @@
 				</td>
 				{% else %}
 				<td class="col-md-3"><!-- Edit button -->
-					<form  class="form-inline" name={{ per.0 }} role="form" id="form_edit">
+					<form  class="form-inline" method="post" name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
 						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
-						       name="mark" placeholder="Mark awarded" value={{ per.3 }}>
+						       name="mark" placeholder="Mark awarded" value={{ per.3 }}
+						       required data-parsley-min="0" data-parsley-max={{ fullmark }}>
 						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -175,18 +177,13 @@
 				
 				<script>
 					function to_submit(stud_id) {
-						alert(stud_id);
 						var data_nyana = document.getElementById('form_edit').name;
-						alert(data_nyana);
 						var class_data = document.getElementById(data_nyana);
 						alert(class_data.className);
 						if (class_data.className == "btn btn-warning") {
-							alert(data_nyana);
 							class_data.className="btn btn-success";
-							class_data.span.className="glyphicon glyphicon-ok"
-							alert("changed button");
+							class_data.span.className="glyphicon glyphicon-ok";
 							document.getElementById(data_nyana).disabled=false;
-							alert("editable");
 							return false;
 						}
 						else{

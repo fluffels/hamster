@@ -112,7 +112,7 @@
 		</form>-->
 		
 		<h3><span class="label label-default">Select students to remove</span></h3>
-		<form role="form" method="post" action="remove-stud">{% csrf_token %}
+		<form id="remove_student_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
 				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession">
 					{% for per in students %}
@@ -126,7 +126,7 @@
 				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button>
 		</form>
 		
-		<form method="post" action="view-students">{% csrf_token %}
+		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
 			<div class="clearfix">
 				<button  type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add student to session
@@ -156,7 +156,7 @@
 		</form>-->
 		
 		<h3><span class="label label-default">Select markers to remove</span></h3>
-		<form role="form" method="post" action="remove-stud">{% csrf_token %}
+		<form id="remove_marker_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
 				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession">
 					{%for per in tutor%}
@@ -175,7 +175,7 @@
 			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button>
 		</form>
 		
-		<form method="post" action="view-students">{% csrf_token %}
+		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
 			<div class="clearfix">
 				<button type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add marker to session
