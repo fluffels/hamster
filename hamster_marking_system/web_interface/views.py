@@ -1,7 +1,8 @@
 import json
 import urllib2
 from django.shortcuts import render, render_to_response
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from web_services import views
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
@@ -157,9 +158,9 @@ def logout(request):
 	user_info = views.logout(request)
 	user = json.loads(user_info.content)
 	if user[0]['type'] == 1:
-		 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+		return HttpResponseRedirect(reverse('home'))
 	else:
-		return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+		return HttpResponseRedirect(reverse('home'))
 
 @isAuthenticated
 @isPartOfmodule

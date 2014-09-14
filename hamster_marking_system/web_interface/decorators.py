@@ -1,6 +1,7 @@
 from django.http import *
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
+from django.core.urlresolvers import reverse
 import json
     
 def isLecture(function):
@@ -18,7 +19,8 @@ def isLecture(function):
         if done == True:
             return function(request,*args,**kwargs)
         else:
-            raise Http404()
+            del request.session['user']
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
     
 
@@ -29,7 +31,7 @@ def isAuthenticated(function):
             if request.session['user']:
                 return function(request,*args,**kwargs)
         except:
-            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
 
 def isMarker(function):
@@ -55,7 +57,8 @@ def isMarker(function):
         if done == True:
             return function(request,*args,**kwargs)
         else:
-            raise Http404()
+            del request.session['user']
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
 
 def isStudent(function):
@@ -72,7 +75,8 @@ def isStudent(function):
         if done == True:
             return function(request,*args,**kwargs)
         else:
-            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            del request.session['user']
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
 
 def isPartOfmodule(function):
@@ -89,7 +93,7 @@ def isPartOfmodule(function):
                 return function(request,*args,**kwargs)
             else:
                 del request.session['user']
-                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+                return HttpResponseRedirect(reverse('home'))
         elif request.POST.get('tutB'):
             mod = request.POST['tutB']
             usermodules = request.session['user']['tutorFor']
@@ -101,7 +105,7 @@ def isPartOfmodule(function):
                 return function(request,*args,**kwargs)
             else:
                 del request.session['user']
-                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+                return HttpResponseRedirect(reverse('home'))
         elif request.POST.get('lectB'):
             mod = request.POST['lectB']
             usermodules = request.session['user']['lecturerOf']
@@ -113,7 +117,7 @@ def isPartOfmodule(function):
                 return function(request,*args,**kwargs)
             else:
                 del request.session['user']
-                return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+                return HttpResponseRedirect(reverse('home'))
         elif request.POST.get('taB'):
             mod = request.POST['taB']
             usermodules = request.session['user']['teachingAssistantOf']
@@ -128,5 +132,5 @@ def isPartOfmodule(function):
                 return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
         else:
             del request.session['user']
-            return render_to_response("web_interface/login.htm",locals(),context_instance = RequestContext(request))
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
