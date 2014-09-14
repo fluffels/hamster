@@ -1,9 +1,10 @@
 import datetime
+import numpy as np
 from django.db.models import get_model
 from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
-import numpy as np
+from numpy import *
 
 #general retrival functions
 # Name: getAllModules()
@@ -2148,7 +2149,9 @@ def getMeanForAssessment(assess_id):
         perc = mark_array[6]
         marks.append(perc)
     
-    mn = np.mean(marks)
+    arr = np.array(marks, dtype=float)
+
+    mn = np.mean(arr)
     mean = "{0:.2f}".format(mn)
     return mean
 
@@ -2160,14 +2163,17 @@ def getMedianForAssessment(assess_id):
     for markAlloc in all_markAllocs:
         stu = markAlloc.student
         mark_array = getMarkForStudent(stu.upId, assess_id)
-        perc = mark_array[6]    
+        perc = mark_array[6]
         marks.append(perc)
     
-    med = np.median(marks)
+    arr = np.array(marks, dtype=float)
+    med = np.median(arr)
+ 
     median = "{0:.2f}".format(med)
     return median
 
 def getAverageForAssessment(assess_id):
+    
     assess_obj = Assessment.objects.get(id=assess_id)
     all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
     marks = []
@@ -2178,9 +2184,9 @@ def getAverageForAssessment(assess_id):
         perc = mark_array[6]
         marks.append(perc)
     
-    print "Marks:  ---"+str(marks)
+    arr = np.array(marks, dtype=float)
+    ave = np.average(arr)
     
-    ave = np.average(marks, axis=1)
     average = "{0:.2f}".format(ave)
     return average
 
@@ -2188,16 +2194,17 @@ def getStandardDeviationForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
     marks = []
-    
+
     for markAlloc in all_markAllocs:
         stu = markAlloc.student
         mark_array = getMarkForStudent(stu.upId, assess_id)
         perc = mark_array[6]
         marks.append(perc)
-    
-    std = np.std(marks)
-    stddev = "{0:.2f}".format(std)
-    return stddev
+        
+    arr = np.array(marks, dtype=float)
+    stddev = np.std(arr)
+    deviation = "{0:.2f}".format(stddev)
+    return deviation
 
 def getFrequencyAnalysisForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
@@ -2212,25 +2219,17 @@ def getFrequencyAnalysisForAssessment(assess_id):
     
     for markAlloc in all_markAllocs:
         stu = markAlloc.student
-        print "HERE IS THE STUDENT:   " + str(stu)
         mark_array = getMarkForStudent(stu.upId, assess_id)
-        print "HERE IS THE STUDENT MARKS:   " + str(mark_array)
         perc = float(mark_array[6])        
-        print "HERE IS THE STUDENT PERC:   " + str(perc)
         if (perc >= 0.0)  & (perc < 40.0) :
-            print "in here--- 0-40"
             zerotoforty += 1
         elif (perc >= 40.0) & (perc < 50.0):
-            print "in here--- 40-50"
             fortytofifty += 1
         elif (perc >= 50.0) & (perc < 60.0):
-            print "in here--- 50-60"
             fiftytosixty += 1
         elif (perc >= 60.0) and (perc < 75.0):
-            print "in here--- 60-74"
             sixtytoseventyfour += 1
         elif ((perc >= 75.0) and (perc <= 100.0)):
-            print "in here--- dist"
             distinction += 1
     
     frequencies.append(zerotoforty)

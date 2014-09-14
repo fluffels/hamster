@@ -1591,11 +1591,8 @@ def getStats(request, jsonObj):
 
 	try:
 		frequency = api.getFrequencyAnalysisForAssessment(assess_id)
-		#average = api.getAverageForAssessment(assess_id)
-		#stddev = api.getStandardDeviationForAssessment(assess_id)
-		average = 0.0
-		stddev = 0.0
-		
+		average = api.getAverageForAssessment(assess_id)
+		stddev = api.getStandardDeviationForAssessment(assess_id)
 		
 		data = [{
 			'type':'1',
