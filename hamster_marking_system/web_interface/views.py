@@ -1639,6 +1639,7 @@ def getStats(request):
         average = res[0]['average']
         frequency = res[0]['frequency']
         stddev = res[0]['stddev']
+        studentlist = res[0]['studentlist']
         return render_to_response("web_interface/stats.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
@@ -1646,7 +1647,7 @@ def getStats(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,
                                                                         'average':average,'frequency':frequency,
-                                                                        'stddev':stddev},context_instance=RequestContext(request))
+                                                                        'stddev':stddev,'studentlist':studentlist},context_instance=RequestContext(request))
     else:
         average = res[0]['average']
         print "Stats UN Successfully"

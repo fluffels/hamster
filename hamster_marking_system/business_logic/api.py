@@ -2238,7 +2238,30 @@ def getFrequencyAnalysisForAssessment(assess_id):
     frequencies.append(sixtytoseventyfour)
     frequencies.append(distinction)
     
-    return frequencies  
+    return frequencies
+
+def getStudentListForStats(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    module = assess_obj.mod_id
+    #Constructing Student List
+    #students: uid,firstname,surname
+    students = getAllStudentsOfModule(module.module_code)
+    studentList = []
+    for stud in students:
+        list =[]
+        uid = stud[0]
+        name = stud[1]
+        surname = stud[2]
+        marklist = getMarkForStudent(uid,assess_id)
+        mark = marklist[4]
+        perc = marklist[6]
+        list.append(uid)
+        list.append(name)
+        list.append(surname)
+        list.append(mark)    
+        list.append(perc)
+        studentList.append(list)   
+    return studentList
 '''
 ################################### END STATISTICS FUNCTIONS #####################################
 '''

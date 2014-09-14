@@ -1593,22 +1593,22 @@ def getStats(request, jsonObj):
 		frequency = api.getFrequencyAnalysisForAssessment(assess_id)
 		average = api.getAverageForAssessment(assess_id)
 		stddev = api.getStandardDeviationForAssessment(assess_id)
-		
+		students = api.getStudentListForStats(assess_id)
+		print "BACK IN WEB SERVICES-----"
 		data = [{
 			'type':'1',
 			'frequency':frequency,
 			'average':average,
-			'stddev':stddev
-			
+			'stddev':stddev,
+			'studentlist':students	
 		}]
 		return HttpResponse(json.dumps(data))
 	except:
 		data = [{
 			'type':'-1',
-			'average':"Error Occured hey! Like its a problem tho",	
+			'average':"Error! - getStats View",	
 		}]
 		return HttpResponse(json.dumps(data))
-
 '''
 ###################### End Statistics views ###########################
 '''
