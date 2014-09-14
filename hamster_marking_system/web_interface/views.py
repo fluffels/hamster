@@ -1190,41 +1190,41 @@ def viewAssessmentForMarker(request):
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
-#@isAuthenticated
-#def viewStudentsForAssessment(request):
-#    sess= request.POST['session']
-#    assess = request.POST['assessment']
-#    mod = request.POST['mod']
-#    
-#    data = {
-#        'session':sess,
-#        'assess_id':assess
-#    }
-#    results = views.viewStudentsForAssessment(request,json.dumps(data))
-#    res = json.loads(results.content)
-#    if res[0]['type'] == 1:
-#        assessment = res[0]['assessment']
-#        fullmark = res[0]['fullmark']
-#        students = res[0]['students']
-#        return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
-#                                                                        'user_lect':user_lect,
-#                                                                        'user_stud':user_stud,
-#                                                                        'user_tut':user_tut,
-#                                                                        'user_ta':user_ta,
-#                                                                        'user_roles':user_roles,'studentMark':students,
-#                                                                        'module':mod,'assessmentName':assessment,
-#                                                                        'session':sess,'assess_id':assess,
-#                                                                        'fullmark':fullmark},context_instance=RequestContext(request))
-#    else:
-#        students = []
-#        return render_to_response("web_interface/success.htm",{'default_user':default_user,
-#                                                                        'user_lect':user_lect,
-#                                                                        'user_stud':user_stud,
-#                                                                        'user_tut':user_tut,
-#                                                                        'user_ta':user_ta,
-#                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
-#                                                                        'fullmark':fullmark,'module':mod},
-#                                                                        context_instance=RequestContext(request))
+@isAuthenticated
+def viewStudentsForAssessment(request):
+    sess= request.POST['session']
+    assess = request.POST['assessment']
+    mod = request.POST['mod']
+    
+    data = {
+        'session':sess,
+        'assess_id':assess
+    }
+    results = views.viewStudentsForAssessment(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type'] == 1:
+        assessment = res[0]['assessment']
+        fullmark = res[0]['fullmark']
+        students = res[0]['students']
+        return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'studentMark':students,
+                                                                        'module':mod,'assessmentName':assessment,
+                                                                        'session':sess,'assess_id':assess,
+                                                                        'fullmark':fullmark},context_instance=RequestContext(request))
+    else:
+        students = []
+        return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'assessment':assessment,'students':student,
+                                                                        'fullmark':fullmark,'module':mod},
+                                                                        context_instance=RequestContext(request))
 
 @isAuthenticated
 @isMarker
