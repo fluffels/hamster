@@ -230,7 +230,7 @@
 <div class="modal fade" id="create_ass" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="create-leaf-assessment" method="post">
+			<form class="form-horizontal" action="create-leaf-assessment" method="post" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header text-center">
 					<h4>Create an Assessment for</h4>
@@ -240,19 +240,21 @@
 					
 					<div class="form-group">
 						
-						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+						<label for="assessment-name" class="col-lg-2 control-label">Assessment Name:</label>
 						<div class="col-lg-8">
-							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
-
+							<input type="text" class="form-control" id="assessment-name" name="name"
+							       placeholder="Class Test 1" required
+							       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
 						</div>
 
 					</div>
 
 					<div class="form-group">
 						
-						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+						<label for="full-mark" class="col-lg-2 control-label">Full Mark:</label>
 						<div class="col-lg-8">
-							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100"
+							required required data-parsley-min="1" data-parsley-max="100">
 
 						</div>
 

@@ -136,9 +136,10 @@
 				<td> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
-					<form method="post" action="update-marks" class="form-inline" role="form">
+					<form method="post" action="update-marks" class="form-inline" role="form"  data-parsley-validate>
 						{% csrf_token %}
-						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark">
+						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark"
+						required data-parsley-min="0" data-parsley-max={{ fullmark }}>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>

@@ -182,19 +182,14 @@
 				</td>
 				
 				<script>
-					function to_submit(stud_id, this_attr) {
-						alert(stud_id);
+					function to_submit(stud_id) {
 						var data_nyana = document.getElementById('form_edit').name;
-						alert(data_nyana);
 						var class_data = document.getElementById(data_nyana);
 						alert(class_data.className);
 						if (class_data.className == "btn btn-warning") {
-							alert(data_nyana);
 							class_data.className="btn btn-success";
 							class_data.span.className="glyphicon glyphicon-ok";
-							alert("changed button");
 							document.getElementById(data_nyana).disabled=false;
-							alert("editable");
 							return false;
 						}
 						else{
@@ -206,7 +201,68 @@
 
 					}
 					
+					function makeEditable(curr) {
+						
+						//Make input editable
+						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						
+						//Change button color
+						$(curr).parent().children('button').attr('class', 'btn btn-success');
+						
+						//Change icon of button
+						$(curr).parent().children('button').children('span').attr('class', 'glyphicon glyphicon-ok');
+						
+						var btnInnerHTML = $(curr).parent().children('button').get(0).innerHTML;
+						
+						//Change button type to submit
+						if (btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-edit"></span>' ||
+						    btnInnerHTML == 'Edit  <span class="glyphicon glyphicon-ok"></span>') {
+							//Dont make the form postable, we only needed to change the button
+							//Add method and action to form
+							$(curr).parent().attr('method', 'post');
+							$(curr).parent().attr('action', 'update-marks');
+						}
+						else {
+							//Finaly submit
+							$(curr).parent().children('button').attr('type', 'submit');
+						}
+						
+						//Change html on button
+						$(curr).parent().children('button').get(0).innerHTML = 'Submit  <span class="glyphicon glyphicon-ok"></span>';
+						
+						
+					}
+					
 			       </script>
+				
+				<!-- Confirm modify mark modal -->
+
+				<div class="modal fade" id="confirm_mark_modification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Confirm Modification</h4>
+				</div>
+				
+				<div class="modal-body">
+				<p>You are about to modify the mark already assigned to a student.</p>
+				<p>Do you want to proceed?</p>
+				</div>
+				
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" onclick="makeEditable(this);"
+				class="btn btn-warning danger">Modify</button>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				<!-- End confirm modify mark modal -->
+				
+				
 				{% endif %}
 			</tr>
 			{% endfor %}

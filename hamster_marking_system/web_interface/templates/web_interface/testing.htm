@@ -849,55 +849,6 @@
 				
 			</ul>
 		</div>
-			
-<div class="modal fade" id="create_leaf" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form class="form-horizontal" action="/create_assessment" method="post">{% csrf_token %}
-				<div class="modal-header">
-					<h4>Create an Assessment</h4>
-					<h4>{{ module }}</h4>
-				</div>
-				<div class="modal-body">
-					
-					<div class="form-group">
-						
-						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
-						<div class="col-lg-8">
-							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
-
-						</div>
-
-					</div>
-
-					<div class="form-group">
-						
-						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
-						<div class="col-lg-8">
-							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
-
-						</div>
-
-					</div>
-					
-					<div class="form-group">
-						
-						<div class="col-lg-8">
-							<input type="hidden" class="form-control" id="assessment-name" name="mod" value={{ module }} placeholder={{ module }}>
-
-						</div>
-
-					</div>
-
-				</div>
-				<div class="modal-footer">
-					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button id="submit" class="btn btn-default" type="submit" name="leaf" value={{ass.0}}>{{ass.0}}</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div><!--End of Modal for ContactUs-->
 	
 <!-- Confirm delete modal -->
 
@@ -930,22 +881,25 @@
 <div class="modal fade" id="create_leaf_ass" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
-					<div class="modal-header">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post" data-parsley-validate>{% csrf_token %}
+					<div class="modal-header text-center">
 						<h4>Create a Leaf Assessment</h4>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
 							<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
 							<div class="col-lg-8">
-								<input type="text" class="form-control" name="name" placeholder="Project 1 Phase 1">
+								<input type="text" class="form-control" name="name"
+								       placeholder="Project 1 Phase 1" required
+								       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
 							</div>
 						</div>
 	
 						<div class="form-group">
 							<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
 							<div class="col-lg-8">
-								<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+								<input type="number" class="form-control" id="full-mark"
+								       name="fullmark" placeholder="100" required data-parsley-min="1" data-parsley-max="100">
 							</div>
 						</div>
 						
@@ -1001,11 +955,13 @@
 						  <h4>Give number of assessments to be used as the best of.</h4>
 						    <h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
 							<!-- bestof form -->
-							<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form"> {% csrf_token %}
+							<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form" data-parsley-validate> {% csrf_token %}
 							  <div class="form-group">
 								<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of contributors</label>
 								<div class="col-sm-4">
-									<input type="number" class="form-control" id="numC" name="numC" placeholder="Number of contributors">
+									<input type="number" class="form-control" id="numC"
+									       name="numC" placeholder="Number of contributors" required
+									       required data-parsley-min="1" data-parsley-max={{ numChildren }}>
 								</div>
 								<input type="hidden" value="BestOf" name="agg_name">
 								<input type="hidden" value={{assess_id}} name="assess_id">
@@ -1022,7 +978,7 @@
 						    <h4>Assign weights to each assessment</h4>
 						    <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
 							<!-- weightedsum form -->
-							<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+							<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form" data-parsley-validate> {% csrf_token %}
 								<input type="hidden" value="WeightedSum" name="agg_name">
 								<input type="hidden" value="0" name="numC">
 								<input type="hidden" value={{module}} name="module">
@@ -1031,7 +987,7 @@
 							  <div class="form-group">
 								<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
 								<div class="col-sm-5">
-									<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}">
+									<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}" required>
 									<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
 								</div>
 							  </div>
