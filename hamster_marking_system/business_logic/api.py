@@ -451,10 +451,13 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
         person = Person.objects.get(upId=request.session['user']['uid'][0])
         assess = Assessment.objects.get(id=assess_id)
         old = assess.full_marks
-        assess.full_marks = mark
-        assess.save()
-        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
-        return True
+        if mark > 0 and mark <= 100:
+            assess.full_marks = mark
+            assess.save()
+            insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
+            return True
+        else:
+            return False
     except Exception as e:
         raise e
 
@@ -474,30 +477,33 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 	print "==============="
 	print modObj
 	print "==============="
-	if parent_id is None:
-		print "I am None"
-		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
-		person = Person.objects.get(upId=request.session['user']['uid'][0])
-		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	if leaf_name_ != "" and full_marks != "":
+	    if parent_id is None:
+	            print "I am None"
+	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
+	            person = Person.objects.get(upId=request.session['user']['uid'][0])
+	            insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	    else:
+	            print "I am something"
+	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
+	            is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
+	            person = Person.objects.get(upId=request.session['user']['uid'][0])
+	            insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	            if is_parent_leaf: #means its a leaf and must be changed
+	                    changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
+	                    if changed == None:
+	                        return None
+	                    else: return changed
+	            else:
+	                obj.parent = parent_id
+	                obj.save()
+	    if obj:
+	        print "bubububububu"
+	        print obj
+	        return obj
+	    else: return None
 	else:
-		print "I am something"
-		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
-		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
-		person = Person.objects.get(upId=request.session['user']['uid'][0])
-		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
-		if is_parent_leaf: #means its a leaf and must be changed
-			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
-			if changed == None:
-			    return None
-			else: return changed
-		else:
-		    obj.parent = parent_id
-		    obj.save()
-	if obj:
-	    print "bubububububu"
-	    print obj
-	    return obj
-	else: return None
+	    return None
 	
 # Name: getAssessmentForModuleByName(mod_code, name)
 # Description: Returns all Assessments according to their name and the module that they belong to
@@ -1703,9 +1709,12 @@ def checkMarkAllocationExists(uid, ass_id):
 def createSession(request,session_name,assess_id, opentime, closetime ):
     sessionObj = Assessment.objects.get(id=assess_id)
     person = Person.objects.get(upId=request.session['user']['uid'][0])
-    obj = insertSessions(session_name,sessionObj,opentime,closetime)
-    insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
-    return True
+    if session_name !="" and opentime != "" and closetime != "":
+        obj = insertSessions(session_name,sessionObj,opentime,closetime)
+        insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
+        return True
+    else:
+        return False
 
 ######################### MARKER VIEW FUNCTIONS ################################
 
