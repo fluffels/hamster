@@ -15,7 +15,7 @@
 		<li>
 			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
 				{% csrf_token %}
-				<input type="text" value={{ role }} name="id">
+				<input type="text" value={{ role }} name="lectB">
 			</form>
 			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
 		</li>
@@ -25,7 +25,7 @@
 		<li>
 			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
 				{% csrf_token %}
-				<input type="text" value={{ role }} name="id">
+				<input type="text" value={{ role }} name="studB">
 			</form>
 			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
 		</li>
@@ -35,7 +35,7 @@
 		<li>
 			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
 				{% csrf_token %}
-				<input type="text" value={{ role }} name="id">
+				<input type="text" value={{ role }} name="tutB">
 			</form>
 			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
 		</li>
@@ -45,7 +45,7 @@
 		<li>
 			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
 				{% csrf_token %}
-				<input type="text" value={{ role }} name="id">
+				<input type="text" value={{ role }} name="taB">
 			</form>
 			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
 		</li>
@@ -58,9 +58,9 @@
 		<ul class="dropdown-menu">
 			{% for role in user_roles %}
 			<li>
-				<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
+				<form action="/user-mode" method="post" hidden="hidden" class="use-as">
 					{% csrf_token %}
-					<input type="text" name="id" value={{ role }}>
+					<input type="text" name="role" value={{ role }}>
 				</form>
 				<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
 			</li>
