@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 	<title>{% block title %}{% endblock %}</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-multiselect.css">
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
@@ -49,7 +50,7 @@
 	</div><!--End of jumbotron-->
 
 	<!-- Under jumbotron -->
-	<div class="container">
+	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-6" >
 				{% block left_under_jumbotron-col-6 %}{% endblock %}
@@ -64,7 +65,7 @@
 	<!--Footer bar-->
 	<div class="navbar navbar-inverse navbar-fixed-bottom">
 		
-		<div class="container">
+		<div class="container-fluid">
 			
 			<p class="navbar-text pull-left">Created by DEV_OID</p>
 			<a class="navbar-btn btn-primary btn pull-right" href="http://www.cs.up.ac.za">Go to CS website</a>
@@ -260,6 +261,7 @@
 <script src="/static/web_interface/js/bootstrap-datetimepicker.js"></script>
 <script src="/static/web_interface/js/Parsley.js-2.0.5/parsley.min.js"></script>
 <script src="/static/web_interface/js/Parsley.js-2.0.5/parsley.remote.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.5.1/jquery.nicescroll.min.js"></script>
 
 <script>
       $(document).ready(function () {
@@ -318,8 +320,8 @@
 		$(this).children('#icon-folder').toggleClass("glyphicon glyphicon-folder-close").animate(300);
 	});
 	
-	
-	
+	//Used to enable scrolling in the student's mark because the page does not adjust well to very small screens
+	$("div.well.student-content").niceScroll({cursorcolor:"#00F"});
 	//var btn_grid = 'button.grid-exp';
 	
 	//$(btn_grid).click(function () {

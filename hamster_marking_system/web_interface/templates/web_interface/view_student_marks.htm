@@ -102,11 +102,11 @@
 
 <!-- jumbotron content -->
 {% block jumbotron_content %}
-<div class="row">
-  <div class="col-md-2"></div>
-  <div class="col-md-8">
+<div class="row student-view">
+  <div class="col-xs-2 col-md-2"></div>
+  <div class="col-xs-16 col-md-8">
         
-    <div id="rem-jumbotron" class="well tree-finder">
+    <div id="rem-jumbotron" class="well tree-finder student-content">
       <ul class="nav nav-list list-group">
         
         {% ifequal root.0 empty %}
@@ -612,7 +612,7 @@
     </div>
 
   </div>
-  <div class="col-md-2"></div>
+  <div class="col-xs-2 col-md-2"></div>
 </div>
 {% endblock %}
 <!-- End of jumbotron content -->
