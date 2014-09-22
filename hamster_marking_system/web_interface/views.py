@@ -1555,15 +1555,34 @@ def chooseAggregator(request):
         children = res['children']
         assessmentName = res['assessmentName']
         agg_name = res['agg_name']
+        
+        average = res['average']
+        mean = res['mean']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
 
-        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+                                                                        'average':average,'mean':mean,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
-
+    else:
+        message = " Error occured, chooseAggregator view"
+        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+        
 @isAuthenticated
 @isLecture
 def aggregateMarkForAssessment(request):
@@ -1594,11 +1613,14 @@ def aggregateMarkForAssessment(request):
     print "////////////\\\\\\\\\\\\"
 
     if res[0]['type'] == '1':
-                print "something"
-                root = res[0]['root']
-                first = res[0]['first']
-                second = res[0]['second']
-                third = res[0]['third']
+                average = res[0]['average']
+                mean = res[0]['mean']
+                median = res[0]['median']
+                mode = res[0]['mode']
+                frequency = res[0]['frequency']
+                stddev = res[0]['stddev']
+                studentlist = res[0]['studentlist']
+                
                 return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,

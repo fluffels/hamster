@@ -1527,10 +1527,41 @@ def chooseAggregator(request, jsonObj):
 	json_data = json.loads(jsonObj)
 	assess_id = json_data['assess_id']
 	
+	#AGGREGATION
 	children = api.getAggregationInfo(assess_id)
 	numChildren = api.getNumChildren(assess_id)
 	assess_name = api.getAssessmentName(assess_id)
 	agg_name = api.getAggregatorName(assess_id)
+	
+	#STATISTICS
+	frequency = api.getFrequencyAnalysisForAssessment(assess_id)
+	print "*********************************************************"
+	print "frequency: " + str(frequency)
+	print "*********************************************************\n"
+	average = api.getAverageForAssessment(assess_id)
+	print "*********************************************************"
+	print "average: " + str(average)
+	print "*********************************************************\n"
+	stddev = api.getStandardDeviationForAssessment(assess_id)
+	print "*********************************************************"
+	print "stddev: " + str(stddev)
+	print "*********************************************************\n"
+	students = api.getStudentListForStats(assess_id)
+	
+	mean = api.getMeanForAssessment(assess_id)
+	print "*********************************************************"
+	print "mean: " + str(mean)
+	print "*********************************************************\n"
+	median = api.getMedianForAssessment(assess_id)
+	print "*********************************************************"
+	print "median: " + str(median)
+	print "*********************************************************\n"
+	mode = api.getModeForAssessment(assess_id)
+	print "*********************************************************"
+	print "mode: " + str(mode)
+	print "*********************************************************\n"
+	
+	#GRAPHS
 	
 	if children is not None:
 		data = {
@@ -1538,7 +1569,14 @@ def chooseAggregator(request, jsonObj):
 			'numChildren':numChildren,
 			'children':children,
 			'assessmentName':assess_name,
-			'agg_name':agg_name
+			'agg_name':agg_name,
+			'frequency':frequency,
+			'average':average,
+			'stddev':stddev,
+			'students':students,
+			'mean':mean,
+			'median':median,
+			'mode':mode
 		}
 		return HttpResponse(json.dumps(data))
 	else:
@@ -1560,6 +1598,11 @@ def aggregateMarkForAssessment(request, jsonObj):
 	first = array[1]
 	second = array[2]
 	third = array[3]
+	
+	frequency = api.getFrequencyAnalysisForAssessment(assess_id)
+	average = api.getAverageForAssessment(assess_id)
+	stddev = api.getStandardDeviationForAssessment(assess_id)
+	students = api.getStudentListForStats(assess_id)
 
 	if array :
 		data = [{
