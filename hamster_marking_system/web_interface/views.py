@@ -1598,13 +1598,13 @@ def AuditLog(request):
 '''
 @isAuthenticated
 @isLecture
-def chooseAggregator(request):
+def assessmentCenter(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
     data ={
         'assess_id':assess_id,
     }
-    result = views.chooseAggregator(request,json.dumps(data))
+    result = views.assessmentCenter(request,json.dumps(data))
     res = json.loads(result.content)
     if res['type'] ==1:
         numChildren = res['numChildren']
@@ -1620,7 +1620,7 @@ def chooseAggregator(request):
         stddev = res['stddev']
         studentlist = res['students']
 
-        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
@@ -1631,7 +1631,7 @@ def chooseAggregator(request):
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
     else:
         message = " Error occured, chooseAggregator view"
-        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
                                                                 'user_stud':user_stud,
                                                                 'user_tut':user_tut,

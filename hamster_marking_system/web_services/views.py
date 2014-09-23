@@ -1523,7 +1523,7 @@ def Auditlog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
-def chooseAggregator(request, jsonObj):
+def assessmentCenter(request, jsonObj):
 	json_data = json.loads(jsonObj)
 	assess_id = json_data['assess_id']
 	

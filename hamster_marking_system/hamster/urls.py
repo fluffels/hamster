@@ -52,7 +52,7 @@ urlpatterns = patterns('',
     url(r'audit_log$','web_interface.views.AuditLog', name='change-time'),
     
     # Assessment Centre
-    url(r'aggregate$','web_interface.views.chooseAggregator', name='aggregate'),
+    url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
     
     url(r'^admin/', include(admin.site.urls)),
 )
