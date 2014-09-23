@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-multiselect.css">
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="/static/web_interface/css/Parsley.js-2.0.5/parsley.css">
 	<link rel="stylesheet" href="/static/web_interface/css/style.css">
 </head>
 <body>
@@ -25,37 +26,10 @@
 			</button>
 
 			<div class="collapse navbar-collapse navHeaderCollapse">
-				
+			
 			<ul class="nav navbar-nav navbar-right">
-				<li class="active"><a href="/hamster_home">Home</a></li>
-
-					
-				{% block logout_button %}{% endblock %}
-				{% block person_details %}{% endblock %}
+				{% block header%}{%endblock%}
 				
-				<!--Courses dropdown-->
-				<li>
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% block courses_dropdown %}{% endblock %}
-				</ul>
-				</li>
-				<!-- End of Courses dropdown-->
-
-				<!--Use as dropdown-->
-				<li>
-					
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					{% block courses_use_as %}{% endblock %}
-				</ul>
-
-				</li>
-				<!-- End of Use as dropdown-->
-				
-				<li><a href="#query" data-toggle="modal">Query</a></li>
-				<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
-
 			</ul>
 
 			</div>
@@ -229,7 +203,7 @@
 <div class="modal fade" id="create_ass" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="create-leaf-assessment" method="post">
+			<form class="form-horizontal" action="create-leaf-assessment" method="post" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header text-center">
 					<h4>Create an Assessment for</h4>
@@ -239,19 +213,21 @@
 					
 					<div class="form-group">
 						
-						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
+						<label for="assessment-name" class="col-lg-2 control-label">Assessment Name:</label>
 						<div class="col-lg-8">
-							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
-
+							<input type="text" class="form-control" id="assessment-name" name="name"
+							       placeholder="Class Test 1" required
+							       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
 						</div>
 
 					</div>
 
 					<div class="form-group">
 						
-						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
+						<label for="full-mark" class="col-lg-2 control-label">Full Mark:</label>
 						<div class="col-lg-8">
-							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100"
+							required required data-parsley-min="1" data-parsley-max="100">
 
 						</div>
 
@@ -282,6 +258,8 @@
 <script src="/static/web_interface/js/bootstrap-multiselect.js"></script>
 <script src="/static/web_interface/js/moment.js"></script>
 <script src="/static/web_interface/js/bootstrap-datetimepicker.js"></script>
+<script src="/static/web_interface/js/Parsley.js-2.0.5/parsley.min.js"></script>
+<script src="/static/web_interface/js/Parsley.js-2.0.5/parsley.remote.min.js"></script>
 
 <script>
       $(document).ready(function () {
@@ -421,6 +399,29 @@
 		$('.modal-footer #parent_assess_id').val(thisAssessmentId);
 		
 	});
+	
+
+	var idleTime = 0;
+	$(document).ready(function () {
+	    //Increment the idle time counter every minute.
+	    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+	
+	    //Zero the idle timer on mouse movement.
+	    $(this).mousemove(function (e) {
+		idleTime = 0;
+	    });
+	    $(this).keypress(function (e) {
+		idleTime = 0;
+	    });
+	});
+	
+	function timerIncrement() {
+	    idleTime = idleTime + 1;
+	    if (idleTime > 9) { // 20 minutes
+		window.location.href = '/logout';
+	    }
+	}
+  
 </script>
 
 </body>

@@ -1,6 +1,6 @@
 {% extends "web_interface/base_template.htm" %}
 
-{% block title %} Assessments {% endblock %}
+{% block title %} Sessions {% endblock %}
 
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
@@ -12,7 +12,7 @@
 	<li>
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
 		<ul class="dropdown-menu">
-		{% for role in user_lect.0.LC %}
+{% for role in user_lect.0.LC %}
 		<li>
 			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
 				{% csrf_token %}
@@ -75,12 +75,18 @@
 
 <!--###########################  End Courses dropdown ############################-->
 
-
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}{% endblock %}
+{% block breadcrumbs %}
+	<ol class="breadcrumb">
+	<li><a href="#">Login</a></li>
+	<li ><a href="#">Home</a></li>
+	<li><a href="#">Assessments</a></li>
+	<li class="active"><a href="#">Sessions</a></li>
+	</ol>
+{% endblock %}
 
 
-{% block jumbotron_header %} Assessments {% endblock %}
+{% block jumbotron_header %} Sessions {% endblock %}
 
 {% block jumbotron_sub_header %} {{ module }} {% endblock %}
 
@@ -89,17 +95,92 @@
 
 <div class="row">
 	<div class="col-md-3"></div>
-	<div class="col-md-6">		
-		<!-- Python is used here to list all the assessments -->
-		{% for ass in assessmentName %}
-		<form action="/view_session" method="post">{% csrf_token %}
-			<button type="submit" class="btn btn-default btn-lg btn-block" name='assessment' value={{ass.0}}>{{ ass.1 }}</button>
+	<div class="col-md-6">
+		<ul class="nav nav-pills nav-stacked">
+			<li class="active"><a><strong> Sessions available </strong></a></li><br>
+		</ul>
+	{% if type == -1 %}
+			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no open sessions available.</div>
+	{% else %}
+	{% for x in assessmentName%}
+	<div class="dropdown">
+		<form action="view-assessments" method="post" class="form-group">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-default btn-lg btn-block" name="session" value={{x.0}}>{{x.1}}</button>
+			<input type="hidden" name="mod" value={{ module }}>
 		</form>
-		{% endfor %}
-		<!-- End python jQuery code -->
+	</div>
+	{%endfor%}
+	{%endif%}
 	</div>
 	<div class="col-md-3"></div>
 </div>
+
+
+
+<!--Modal for Creating assessment-->
+<div class="modal fade" id="create_sess" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="/create_session" method="post">
+				{% csrf_token %}
+				<div class="modal-header">
+					<h4>Create a Session for</h4>
+					<h5>{{ assessmentName }}</h5>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						
+						<label for="session-name" class="col-lg-3 control-label">Session Name:</label>
+						<div class="col-lg-7">
+							<input type="text" class="form-control" id="session-name" name="name" placeholder="Class Test 1 perusal">
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						<label for="open-time" class="col-lg-3 control-label">Open time:</label>
+						<div class="col-lg-7">
+							<div class="input-group date" id="datetimepicker">
+								<input type="text" class="form-control" id="open-time" name="open_time" />
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="close-time" class="col-lg-3 control-label">Close time:</label>
+						<div class="col-lg-7">
+							<div class="input-group date" id="datetimepicker">
+								<input type="text" class="form-control" id="close-time" name="close_time">
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+							</div>
+						</div>
+					</div>
+
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="assess_id" value={{ assessment_id }} placeholder={{ assessment_id }}>
+
+						</div>
+
+					</div>
+					
+
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button class="btn btn-success" type="submit" name="session" value='leaf'>Create</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
+
+
 {% endblock %}
 <!-- End of jumbotron content -->
 <!--###########################  End of jumbotron part ############################-->

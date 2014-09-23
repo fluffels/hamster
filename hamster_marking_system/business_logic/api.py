@@ -23,38 +23,32 @@ def getAssessment(mod):
     SecondChildren = []
     ThirdChildren = []
     
-    module = Module.objects.get(module_code=mod)
-    dummy = insertAggregateAssessment('dummy',False,module,None,'Aggregate', 0)
-    agregator =  Aggregator.objects.get(assessment=dummy.id)
-    print "ROOT MUST HAVE NOTHING: " + str(root)
-    
     for nrs in root:
         list = getAssessmentDetails(nrs)
-        mark = agregator.aggregateTotalMarkForLecture(nrs.id)
+        mark = aggregateTotalMarkForLecture(nrs.id)
         list.append(mark)
         roots.append(list)
         children1 = Assessment.objects.filter(parent=nrs.id)
         firstChildren = []
         for nfs in children1:
             list = getAssessmentDetails(nfs)
-            mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+            mark = aggregateTotalMarkForLecture(nfs.id)
             list.append(mark)
             firstChildren.append(list)
             children2 = Assessment.objects.filter(parent=nfs.id)
             secondChildren = []
             for nss in children2:
                 list = getAssessmentDetails(nss)
-                mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                mark = aggregateTotalMarkForLecture(nss.id)
                 list.append(mark)
                 secondChildren.append(list)
                 children3 = Assessment.objects.filter(parent=nss.id)
                 thirdChildren = []
                 for nts in children3:
                     list = getAssessmentDetails(nts)
-                    mark = agregator.aggregateTotalMarkForLecture(nts.id)
+                    mark = aggregateTotalMarkForLecture(nts.id)
                     list.append(mark)
                     thirdChildren.append(list)
-                
                 ThirdChildren.append({nss.getname(): thirdChildren})
             SecondChildren.append({nfs.getname():secondChildren})
         FirstChildren.append({nrs.getname():firstChildren})
@@ -63,62 +57,50 @@ def getAssessment(mod):
     final.append(SecondChildren)
     final.append(ThirdChildren)
 
-    agregator.delete()
-    dummy.delete()
-    
     return final
 
 def getAssessmentForAssessment(assess_id):
-        root = getChildrenAssessmentsForAssessment(assess_id)
-        final = []
-        roots = []
-        FirstChildren = []
-        SecondChildren = []
-        ThirdChildren = []
-        
-        assess = Assessment.objects.get(id=assess_id)
-        mod = assess.mod_id
-        dummy = insertAggregateAssessment('dummy',False,mod,None,'Aggregate', 0)
-        agregator =  Aggregator.objects.get(assessment=dummy.id)
+    root = getChildrenAssessmentsForAssessment(assess_id)
+    final = []
+    roots = []
+    FirstChildren = []
+    SecondChildren = []
+    ThirdChildren = []
 
-        for nrs in root:
-            mark = agregator.aggregateTotalMarkForLecture(nrs[0])
-            nrs.append(mark)
-            roots.append(nrs)
-            children1 = Assessment.objects.filter(parent=nrs[0])
-            firstChildren = []
-            for nfs in children1:
-                list = getAssessmentDetails(nfs)
-                mark = agregator.aggregateTotalMarkForLecture(nfs.id)
+    for nrs in root:
+        mark = aggregateTotalMarkForLecture(nrs[0])
+        nrs.append(mark)
+        roots.append(nrs)
+        children1 = Assessment.objects.filter(parent=nrs[0])
+        firstChildren = []
+        for nfs in children1:
+            list = getAssessmentDetails(nfs)
+            mark = aggregateTotalMarkForLecture(nfs.id)
+            list.append(mark)
+            firstChildren.append(list)
+            children2 = Assessment.objects.filter(parent=nfs.id)
+            secondChildren = []
+            for nss in children2:
+                list = getAssessmentDetails(nss)
+                mark = aggregateTotalMarkForLecture(nss.id)
                 list.append(mark)
-                firstChildren.append(list)
-                children2 = Assessment.objects.filter(parent=nfs.id)
-                secondChildren = []
-                for nss in children2:
-                    list = getAssessmentDetails(nss)
-                    mark = agregator.aggregateTotalMarkForLecture(nss.id)
+                secondChildren.append(list)
+                children3 = Assessment.objects.filter(parent=nss.id)
+                thirdChildren = []
+                for nts in children3:
+                    list = getAssessmentDetails(nts)
+                    mark = aggregateTotalMarkForLecture(nts.id)
                     list.append(mark)
-                    secondChildren.append(list)
-                    children3 = Assessment.objects.filter(parent=nss.id)
-                    thirdChildren = []
-                    for nts in children3:
-                        list = getAssessmentDetails(nts)
-                        mark = agregator.aggregateTotalMarkForLecture(nts.id)
-                        list.append(mark)
-                        thirdChildren.append(list)
-                    
-                    ThirdChildren.append({nss.getname(): thirdChildren})
-                SecondChildren.append({nfs.getname():secondChildren})
-            FirstChildren.append({nrs[1]:firstChildren})
-        final.append(roots)
-        final.append(FirstChildren)
-        final.append(SecondChildren)
-        final.append(ThirdChildren)    
+                    thirdChildren.append(list)
+                ThirdChildren.append({nss.getname(): thirdChildren})
+            SecondChildren.append({nfs.getname():secondChildren})
+        FirstChildren.append({nrs[1]:firstChildren})
+    final.append(roots)
+    final.append(FirstChildren)
+    final.append(SecondChildren)
+    final.append(ThirdChildren)    
 
-        agregator.delete()
-        dummy.delete()
-    
-        return final
+    return final
 
 def studentAssessmentFromModule(mod,student):
     root = getAllAssessmentsForModule(mod)
@@ -220,10 +202,10 @@ def getAllStudentsOfModule(mod_code):
     list = Person.objects.all()
     print "Size of list : " + str(len(list))
     module_list = []
-    module_needed = None
     modObj = Module.objects.get(id=mod_code)
     print "ModObj : " + str(modObj)
     for per in list:
+        module_needed = None
         print "OKAY!!!" + str(per)
 #        print "if " + str(per.studentOf_module) + "==" + str(modObj)
         try:
@@ -469,10 +451,13 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
         person = Person.objects.get(upId=request.session['user']['uid'][0])
         assess = Assessment.objects.get(id=assess_id)
         old = assess.full_marks
-        assess.full_marks = mark
-        assess.save()
-        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
-        return True
+        if mark > 0 and mark <= 100:
+            assess.full_marks = mark
+            assess.save()
+            insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
+            return True
+        else:
+            return False
     except Exception as e:
         raise e
 
@@ -492,30 +477,33 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 	print "==============="
 	print modObj
 	print "==============="
-	if parent_id is None:
-		print "I am None"
-		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
-		person = Person.objects.get(upId=request.session['user']['uid'][0])
-		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	if leaf_name_ != "" and full_marks != "":
+	    if parent_id is None:
+	            print "I am None"
+	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
+	            person = Person.objects.get(upId=request.session['user']['uid'][0])
+	            insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	    else:
+	            print "I am something"
+	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
+	            is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
+	            person = Person.objects.get(upId=request.session['user']['uid'][0])
+	            insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	            if is_parent_leaf: #means its a leaf and must be changed
+	                    changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
+	                    if changed == None:
+	                        return None
+	                    else: return changed
+	            else:
+	                obj.parent = parent_id
+	                obj.save()
+	    if obj:
+	        print "bubububububu"
+	        print obj
+	        return obj
+	    else: return None
 	else:
-		print "I am something"
-		obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
-		is_parent_leaf = checkIfAssessmentIsLeaf(parent_id)
-		person = Person.objects.get(upId=request.session['user']['uid'][0])
-		insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
-		if is_parent_leaf: #means its a leaf and must be changed
-			changed = makeLeafAssessmentAnAggregate(parent_id, obj.id)
-			if changed == None:
-			    return None
-			else: return changed
-		else:
-		    obj.parent = parent_id
-		    obj.save()
-	if obj:
-	    print "bubububububu"
-	    print obj
-	    return obj
-	else: return None
+	    return None
 	
 # Name: getAssessmentForModuleByName(mod_code, name)
 # Description: Returns all Assessments according to their name and the module that they belong to
@@ -1663,7 +1651,9 @@ def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
 
 def logout(request):
     try:
+        print "i am logging out now"
         del request.session['user']
+
     except Exception as e:
         print 'Error, key used is not already in the session.'
         raise e
@@ -1719,9 +1709,12 @@ def checkMarkAllocationExists(uid, ass_id):
 def createSession(request,session_name,assess_id, opentime, closetime ):
     sessionObj = Assessment.objects.get(id=assess_id)
     person = Person.objects.get(upId=request.session['user']['uid'][0])
-    obj = insertSessions(session_name,sessionObj,opentime,closetime)
-    insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
-    return True
+    if session_name !="" and opentime != "" and closetime != "":
+        obj = insertSessions(session_name,sessionObj,opentime,closetime)
+        insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
+        return True
+    else:
+        return False
 
 ######################### MARKER VIEW FUNCTIONS ################################
 
@@ -1962,6 +1955,16 @@ def getAggregationInfo(assess_id):
         return list
     else:
         return None
+
+def getAggregatorName(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    if assess_obj.assessment_type == 'Aggregate':
+        agg = Aggregator.objects.get(assessment=assess_obj)
+        name = agg.aggregator_name
+        return name
+    else:
+        return None
+
     
 # Name: setAggregationInfo(detailsList)
 # Description: Sets all the aggregation information to the relevant assessment
@@ -2099,8 +2102,44 @@ def allocatePersonAuditLog():
         allocate.append(logged.mod.module_code)
         allocate.append(logged.allocatePerson)
         allocate.append(logged.session.session_name)
-        alloctae.append(logged.action)
+        allocate.append(logged.action)
         allocate.append(str(logged.time))
         list.append(allocate)
     return list
 
+def StudentMarks(assess, student):
+    assessment = Assessment.objects.get(id=assess)
+    person = Person.objects.get(upId=student)
+    list = []
+    parent = []
+    list.append(assessment.mod_id.module_code)
+    parent.append(assessment.assess_name)
+    mark = AggregateAssessmentForStudent(assessment,student)
+    parent.append(mark[4])
+    parent.append(mark[5])
+    parent.append(mark[6])
+    list.append(parent)
+    if assessment.assessment_type == 'Aggregate':
+        children = Assessment.objects.filter(parent=assessment.id)
+        for child in children:
+            if child.published:
+                childy = []
+                mark = AggregateAssessmentForStudent(child,student)
+                print "mark :"+ str(mark)
+                childy.append(child.assess_name)
+                childy.append(mark[4])
+                childy.append(mark[5])
+                childy.append(mark[6])
+                list.append(childy)
+    return list
+        
+    
+    
+def AggregateAssessmentForStudent(assessment,student):
+    if assessment.assessment_type == 'Leaf':
+        mark = getMarkForStudent(student, assessment.id)
+        return mark
+    else:
+        aggregator = Aggregator.objects.get(assessment=assessment)
+        mark = aggregator.aggregateMarksStudent(assessment.id, student)
+        return mark

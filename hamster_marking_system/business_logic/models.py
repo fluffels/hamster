@@ -291,28 +291,28 @@ class SimpleSumAggregator(Aggregator):
       list.append(perc)
   
     return list
-
-  def aggregateTotalMarkForLecture(self, assess_id):
-    root = Assessment.objects.get(id=assess_id)
-    if root.assessment_type == "Leaf":
-      sum_total_of_children = root.full_marks
-    else:
-      children = Assessment.objects.filter(parent=assess_id)
-      sum_total_of_children = 0.0
-  
-      for child in children:
-        if child.assessment_type == 'Leaf':
-          sum_total_of_children += child.full_marks
-          
-        elif child.assessment_type == 'Aggregate':
-          sum_total_of_children += getSumTotalOfChildren(child.id)
-          
-    return sum_total_of_children
   
   def __unicode__(self):
     assess = self.assessment
     return self.aggregator_name + " " + assess.assess_name
-  
+
+def aggregateTotalMarkForLecture( assess_id):
+  root = Assessment.objects.get(id=assess_id)
+  if root.assessment_type == "Leaf":
+    sum_total_of_children = root.full_marks
+  else:
+    children = Assessment.objects.filter(parent=assess_id)
+    sum_total_of_children = 0.0
+
+    for child in children:
+      if child.assessment_type == 'Leaf':
+        sum_total_of_children += child.full_marks
+        
+      elif child.assessment_type == 'Aggregate':
+        sum_total_of_children += getSumTotalOfChildren(child.id)
+        
+  return sum_total_of_children
+ 
 def getSumTotalOfChildren(assess_id):
     total =0
     assess = Assessment.objects.get(id=assess_id)
@@ -448,7 +448,8 @@ class AggregateAssessment(Assessment):
       
     def get_aggregator_name(self):
       #get the name from the database
-      return self.aggregator_name
+      #return self.aggregator_name
+      pass
     
     def choose_aggregator(self, aggregatorname_chosen):
       statement = 'Aggregator changed to: '
@@ -461,7 +462,7 @@ class AggregateAssessment(Assessment):
         statement += 'BestOf Aggrgator'
         
       elif aggregatorname_chosen == 'WeightedSum':
-        self.aggregator = WeightedSumAggregator(aggregator_name='WeightedSum')
+        self.aggregator = WeightedSeumAggregator(aggregator_name='WeightedSum')
         statement += 'WeightedSum Aggregator'
         
       else:

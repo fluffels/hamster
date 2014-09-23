@@ -3,74 +3,74 @@
 {% block title %} Assessments {% endblock %}
 
 <!--###########################  Nav bar settings ############################-->
-
-{% block logout_button %}
-	<li><a href="/">Logout</a></li>
-{% endblock %}
-	
-{% block person_details %}
-	<li><a href="person_details" > <span class="glyphicon glyphicon-user"></span> </a></li>
-{% endblock %}
-
-<!--###########################  End Nav bar settings ############################-->
-
-<!--###########################  Courses dropdown ############################-->
-<!-- Courses button -->
-{% block courses_dropdown %}
-{% for role in user_lect.0.LC %}
+{% block header%}
+	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a href="/logout">Logout</a></li>
+	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
+	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
+	</form>
 	<li>
-		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
-			{% csrf_token %}
-			<input type="text" value={{ role }} name="id">
-		</form>
-		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Courses <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+		{% for role in user_lect.0.LC %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="lectB">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_stud.0.ST %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="studB">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_tut.0.TT %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="tutB">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		<li class="divider"></li>
+		{% for role in user_ta.0.TA %}
+		<li>
+			<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
+				{% csrf_token %}
+				<input type="text" value={{ role }} name="taB">
+			</form>
+			<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+		</li>
+		{% endfor %}
+		</ul>
 	</li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_stud.0.ST %}
 	<li>
-		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
-			{% csrf_token %}
-			<input type="text" value={{ role }} name="id">
-		</form>
-		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
+					
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+			{% for role in user_roles %}
+			<li>
+				<form action="/user-mode" method="post" hidden="hidden" class="use-as">
+					{% csrf_token %}
+					<input type="text" name="role" value={{ role }}>
+				</form>
+				<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
+			</li>
+			{% endfor %}
+		</ul>
 	</li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_tut.0.TT %}
-	<li>
-		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
-			{% csrf_token %}
-			<input type="text" value={{ role }} name="id">
-		</form>
-		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
-	</li>
-{% endfor %}
-<li class="divider"></li>
-{% for role in user_ta.0.TA %}
-	<li>
-		<form action="/courses/{{ role }}" method="post" hidden="hidden" class="user-role">
-			{% csrf_token %}
-			<input type="text" value={{ role }} name="id">
-		</form>
-		<a onclick="$(this).parent().children('form.user-role').submit();"> {{ role }}</a>
-	</li>
-{% endfor %}
-{% endblock %}
-<!-- End of Courses button -->
-
-<!-- Use as button -->
-{% block courses_use_as %}
-{% for role in user_roles %}
-	<li>
-		<form action="/use_as/{{ role }}" method="post" hidden="hidden" class="use-as">
-			{% csrf_token %}
-			<input type="text" name="id" value={{ role }}>
-		</form>
-		<a onclick="$(this).parent().children('form.use-as').submit();"> {{ role }}</a>
-	</li>
-{% endfor %}
-{% endblock %}
+	<li><a href="#query" data-toggle="modal">Query</a></li>
+	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
+{%endblock%}
 <!-- End of Use as button -->
 
 <!--###########################  End Courses dropdown ############################-->
@@ -193,9 +193,10 @@
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
-							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-							data-placement="top" title="Choose Aggregator">
-								<span class="glyphicon glyphicon-stats"></span>
+							<button type="button"
+							data-target="#select_aggregator" data-toggle="modal"
+								class="btn btn-default" data-placement="top" title="Choose Aggregator">
+								<span class="fa fa-cogs"></span>
 							</button>
 						</div>
 						
@@ -218,7 +219,7 @@
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
-								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
 							<button  id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -273,7 +274,7 @@
 							{% endif %}
 							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
-								<input type="hidden" name="mod" value={{ module }}>
+								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
 							</form>
 							<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -362,15 +363,16 @@
 													<span class="glyphicon glyphicon-volume-up"></span>
 													</button>
 												{% endif %}
-												<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-													{% csrf_token %}
-													<input type="hidden" name="module" value={{ module }}>
-													<input type="hidden" name="assess_id" value={{ y.0 }}>
-												</form>
-												<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-												data-placement="top" title="Choose Aggregator">
-													<span class="glyphicon glyphicon-stats"></span>
-												</button>
+													<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ y.0 }}>
+													</form>
+													<button type="button"
+													data-target="#select_aggregator" data-toggle="modal"
+														class="btn btn-default" data-placement="top" title="Choose Aggregator">
+														<span class="fa fa-cogs"></span>
+													</button>
 											</div>
 											
 											<!--<span class="label label-default pull-right">{{y.4}}</span>-->
@@ -392,7 +394,7 @@
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
 												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 													{% csrf_token %}
-													<input type="hidden" name="mod" value={{ module }}>
+													<input type="hidden" name="module" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
 												</form>
 												<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -448,7 +450,7 @@
 												{% endif %}
 													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 														{% csrf_token %}
-														<input type="hidden" name="mod" value={{ module }}>
+														<input type="hidden" name="module" value={{ module }}>
 														<input type="hidden" name="assessment" value={{ y.0 }}>
 													</form>
 													<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -538,15 +540,16 @@
 																		<span class="glyphicon glyphicon-volume-up"></span>
 																		</button>
 																	{% endif %}
-																	<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-																		{% csrf_token %}
-																		<input type="hidden" name="module" value={{ module }}>
-																		<input type="hidden" name="assess_id" value={{ e.0 }}>
-																	</form>
-																	<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																	data-placement="top" title="Choose Aggregator">
-																		<span class="glyphicon glyphicon-stats"></span>
-																	</button>
+																		<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ e.0 }}>
+																		</form>
+																		<button type="button"
+																		data-target="#select_aggregator" data-toggle="modal"
+																			class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																			<span class="fa fa-cogs"></span>
+																		</button>
 																</div>
 															
 																<!--<span class="label label-default pull-right">{{e.4}}</span>-->
@@ -568,7 +571,7 @@
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																		{% csrf_token %}
-																		<input type="hidden" name="mod" value={{ module }}>
+																		<input type="hidden" name="module" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
 																	</form>
 																	<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -623,7 +626,7 @@
 																	{% endif %}
 																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																			{% csrf_token %}
-																			<input type="hidden" name="mod" value={{ module }}>
+																			<input type="hidden" name="module" value={{ module }}>
 																			<input type="hidden" name="assessment" value={{ e.0 }}>
 																		</form>
 																		<button type="button" onclick="$(this).parent().children('form.post-ass').submit();"
@@ -711,15 +714,16 @@
 																							<span class="glyphicon glyphicon-volume-up"></span>
 																							</button>
 																						{% endif %}
-																						<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
-																							{% csrf_token %}
-																							<input type="hidden" name="module" value={{ module }}>
-																							<input type="hidden" name="assess_id" value={{ h.0 }}>
-																						</form>
-																						<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																						data-placement="top" title="Choose Aggregator">
-																							<span class="glyphicon glyphicon-stats"></span>
-																						</button>
+																							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ h.0 }}>
+																							</form>
+																							<button type="button"
+																							data-target="#select_aggregator" data-toggle="modal"
+																								class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																								<span class="fa fa-cogs"></span>
+																							</button>
 																					</div>
 																				
 																					<!--<span class="label label-default pull-right">{{h.4}}</span>-->
@@ -741,7 +745,7 @@
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
 																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
 																							{% csrf_token %}
-																							<input type="hidden" name="mod" value={{ module }}>
+																							<input type="hidden" name="module" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
 																						</form>
 																						<button id="addAssessmentBtn" data-target="#create_leaf_ass" data-toggle="modal"
@@ -843,55 +847,6 @@
 				
 			</ul>
 		</div>
-			
-<div class="modal fade" id="create_leaf" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form class="form-horizontal" action="/create_assessment" method="post">{% csrf_token %}
-				<div class="modal-header">
-					<h4>Create an Assessment</h4>
-					<h4>{{ module }}</h4>
-				</div>
-				<div class="modal-body">
-					
-					<div class="form-group">
-						
-						<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
-						<div class="col-lg-8">
-							<input type="text" class="form-control" id="assessment-name" name="name" placeholder="Class Test 1">
-
-						</div>
-
-					</div>
-
-					<div class="form-group">
-						
-						<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
-						<div class="col-lg-8">
-							<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
-
-						</div>
-
-					</div>
-					
-					<div class="form-group">
-						
-						<div class="col-lg-8">
-							<input type="hidden" class="form-control" id="assessment-name" name="mod" value={{ module }} placeholder={{ module }}>
-
-						</div>
-
-					</div>
-
-				</div>
-				<div class="modal-footer">
-					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button id="submit" class="btn btn-default" type="submit" name="leaf" value={{ass.0}}>{{ass.0}}</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div><!--End of Modal for ContactUs-->
 	
 <!-- Confirm delete modal -->
 
@@ -924,22 +879,25 @@
 <div class="modal fade" id="create_leaf_ass" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
-					<div class="modal-header">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post" data-parsley-validate>{% csrf_token %}
+					<div class="modal-header text-center">
 						<h4>Create a Leaf Assessment</h4>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
 							<label for="contact-name" class="col-lg-2 control-label">Assessment Name:</label>
 							<div class="col-lg-8">
-								<input type="text" class="form-control" name="name" placeholder="Project 1 Phase 1">
+								<input type="text" class="form-control" name="name"
+								       placeholder="Project 1 Phase 1" required
+								       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
 							</div>
 						</div>
 	
 						<div class="form-group">
 							<label for="contact-email" class="col-lg-2 control-label">Full Mark:</label>
 							<div class="col-lg-8">
-								<input type="number" class="form-control" id="full-mark" name="fullmark" placeholder="100">
+								<input type="number" class="form-control" id="full-mark"
+								       name="fullmark" placeholder="100" required data-parsley-min="1" data-parsley-max="100">
 							</div>
 						</div>
 						
@@ -958,6 +916,100 @@
 			</div>
 		</div>
 	</div><!--End of Modal for Create Leaf assessment-->
+
+<!--Modal for Create Leaf assessment-->
+<div class="modal fade" id="select_aggregator" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
+					<div class="modal-header text-center">
+						<h4>Choose an Aggregator</h4>
+					</div>
+					<div class="modal-body">
+						<div class="tabbable">
+						<ul class="nav nav-tabs">
+						  <li class="active"><a href="#simple_sum" data-toggle="tab">Simple Sum</a></li>
+						  <li><a href="#best_of" data-toggle="tab">Best Of</a></li>
+						  <li><a href="#weighted_sum" data-toggle="tab">Weighted Sum</a></li>
+						  <li><a href="#agg_status" data-toggle="tab">Status</a></li>
+						</ul>
+						<div class="tab-content">
+						  <div id="simple_sum" class="tab-pane active">
+						    <h4>No information required. Click Complete button.</h4>
+						    <!-- simplesum form -->
+							<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
+								<input type="hidden" value="SimpleSum" name="agg_name">
+								<input type="hidden" value="0" name="numC">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value="0" name="child_weight" >
+								<input type="hidden" value="0" name="child_id"  >
+								<div class="clearfix">
+									<button type="submit" name="submit" class="btn btn-success pull-right">Submit</button>
+								</div>
+							</form><!-- ./simplesum form -->
+						  </div>
+						  <div id="best_of" class="tab-pane">
+						  <h4>Give number of assessments to be used as the best of.</h4>
+						    <h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
+							<!-- bestof form -->
+							<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form" data-parsley-validate> {% csrf_token %}
+							  <div class="form-group">
+								<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of contributors</label>
+								<div class="col-sm-4">
+									<input type="number" class="form-control" id="numC"
+									       name="numC" placeholder="Number of contributors" required
+									       required data-parsley-min="1" data-parsley-max={{ numChildren }}>
+								</div>
+								<input type="hidden" value="BestOf" name="agg_name">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value="0" name="child_weight" >
+								<input type="hidden" value="0" name="child_id"  >
+							  </div>
+							  <div class="clearfix">
+								<button class="btn btn-success pull-right" type="submit">Submit</button>
+							  </div>
+							</form><!-- ./bestof form -->
+						  </div>
+						  <div id="weighted_sum" class="tab-pane">
+						    <h4>Assign weights to each assessment</h4>
+						    <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
+							<!-- weightedsum form -->
+							<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form" data-parsley-validate> {% csrf_token %}
+								<input type="hidden" value="WeightedSum" name="agg_name">
+								<input type="hidden" value="0" name="numC">
+								<input type="hidden" value={{module}} name="module">
+								<input type="hidden" value={{assess_id}} name="assess_id">
+							{% for child in children %}
+							  <div class="form-group">
+								<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
+								<div class="col-sm-5">
+									<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}" required>
+									<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
+								</div>
+							  </div>
+							{% endfor %}
+							<div class="clearfix">
+								<button class="btn btn-success pull-right" type="submit">Submit</button>
+							</div>
+							</form><!-- ./weightedsum form -->
+						  </div>
+						  <div id="agg_status" class="tab-pane">
+						    <h4>The currently used aggregator is : </h4>
+						    <h3><span class="label label-default">{{ agg_name }}</span></h3>
+						  </div>
+						</div><!-- /.tab-content -->
+					      </div><!-- /.tabbable -->
+	
+					</div>
+					<div class="modal-footer clearfix">
+						<a class="btn btn-default" data-dismiss="modal">Close</a>
+					</div>
+				</form>
+			</div>
+		</div>
+</div><!--End of Modal for Create Leaf assessment-->
 
 
 	</div>

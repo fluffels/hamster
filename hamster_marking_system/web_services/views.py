@@ -48,6 +48,7 @@ def login(request,jsonObj):
 def logout(request):
 	#if request.method == 'POST':
 		try:
+			print "i am trying to logout hle"
 			api.logout(request)
 			data =[
 			{
@@ -1529,14 +1530,15 @@ def chooseAggregator(request, jsonObj):
 	children = api.getAggregationInfo(assess_id)
 	numChildren = api.getNumChildren(assess_id)
 	assess_name = api.getAssessmentName(assess_id)
-
+	agg_name = api.getAggregatorName(assess_id)
 	
 	if children is not None:
 		data = {
 			'type':1,
 			'numChildren':numChildren,
 			'children':children,
-			'assessmentName':assess_name
+			'assessmentName':assess_name,
+			'agg_name':agg_name
 		}
 		return HttpResponse(json.dumps(data))
 	else:
@@ -1580,3 +1582,25 @@ def aggregateMarkForAssessment(request, jsonObj):
 '''
 ###################### End Aggregation Views ###############################
 '''
+
+def StudentAssessmentAggregated(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	print json_data
+	assess = json_data['assessment']
+	student =json_data['student']
+	info = None
+	info = api.StudentMarks(assess,student)
+	print "info : " + str(info)
+	if info:
+		data = [{
+			'type': 1,
+			'message': 'marks retrieved',
+			'assessment':info
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'marks not retrievd',
+		}]
+		return HttpResponse(json.dumps(data))

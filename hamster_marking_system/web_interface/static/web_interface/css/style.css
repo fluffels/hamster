@@ -1,5 +1,6 @@
+/* Specifies padding for tree structure, required in order to preserve hierarchy*/
 .nav-list {
-  padding-right: 15px;
+  padding-right: 0px;
   padding-left: 15px;
   margin-bottom: 0;
 }
@@ -12,4 +13,14 @@
 	background-color:#fff;
 	*/
 	border:0px;
+	padding-right: 0px;
 }
+
+/*
+Pushes marks to the right in order to alling them
+rather than having look like the opposite of the tree structure
+*/
+div.pull-right.btn-group.btn-group-xs.mark-view-toggle{
+  padding-right: 15px;
+}
+

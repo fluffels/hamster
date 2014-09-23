@@ -33,44 +33,31 @@ def hello_view(request):
 @csrf_exempt
 def get_student_marks_pdf(request):
     mod = request.POST['module']
+    assessment = request.POST['assessment']
+    student = request.session['user']['uid'][0]
     data ={
-        'module':mod
+        'module':mod,
+        'assessment':assessment,
+        'student':student
     }
-    arr = []
-    result = views.testingStudentAssessmentForModule(request,json.dumps(data))
+    result = views.StudentAssessmentAggregated(request,json.dumps(data))
     res = json.loads(result.content)
-    if res[0]['type'] == '1':
-        root = res[0]['root']
-        first = res[0]['first']
-        second = res[0]['second']
-        third = res[0]['third']
-        
-    arr.append(root)
-    arr.append(first)
-    arr.append(second)
-    arr.append(third)
     
-    return generate_student_mark_pdf(arr,mod)
+    return generate_student_mark_pdf(res,student)
 
 @csrf_exempt
 def get_student_marks_csv(request):
     mod = request.POST['module']
+    assessment = request.POST['assessment']
+    student = request.session['user']['uid'][0]
     data ={
-        'module':mod
+        'module':mod,
+        'assessment':assessment,
+        'student':student
     }
-    arr = []
-    result = views.testingStudentAssessmentForModule(request,json.dumps(data))
+    result = views.StudentAssessmentAggregated(request,json.dumps(data))
     res = json.loads(result.content)
-    if res[0]['type'] == '1':
-        root = res[0]['root']
-        first = res[0]['first']
-        second = res[0]['second']
-        third = res[0]['third']
-        
-    arr.append(root)
-    arr.append(first)
-    arr.append(second)
-    arr.append(third)
+    print "res : " + str(res)
     
-    return generate_student_mark_csv(arr,mod)
+    return generate_student_mark_csv(res,student)
     
