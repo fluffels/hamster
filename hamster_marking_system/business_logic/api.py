@@ -729,8 +729,13 @@ def getSessionDetails(session):
     list.append(session.id)
     list.append(session.getName())
     list.append(session.checkStatus())
-    list.append(str(session.open_time))
-    list.append(str(session.close_time))
+    #Changing time format to datetime.datetime then returning in stringified form
+    o_time = datetime.datetime.strftime(session.open_time, '%Y-%m-%d %H:%M:%S')
+    c_time = datetime.datetime.strftime(session.close_time, '%Y-%m-%d %H:%M:%S')
+    list.append(o_time)
+    list.append(c_time)
+    print "open_time:::::::::::::::::::" +  str(o_time)
+    print "close_time:::::::::::::::::::" +  str(c_time)
     return list
 
 def getSessionObject(sess):
