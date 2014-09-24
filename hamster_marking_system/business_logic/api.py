@@ -1,8 +1,10 @@
 import datetime
+import numpy as np
 from django.db.models import get_model
 from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
+from numpy import *
 
 #general retrival functions
 # Name: getAllModules()
@@ -1847,7 +1849,6 @@ def getAllPublishedAssessmentsForStudent(mod_code):
 # Parameter: assess_id : String
 # Returns: Float
 def getMarkForStudent(student_id, assess_id):
-    stud = student_id[0]
     stu_obj = Person.objects.get(upId=student_id) 
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
@@ -2148,3 +2149,225 @@ def AggregateAssessmentForStudent(assessment,student):
         aggregator = Aggregator.objects.get(assessment=assessment)
         mark = aggregator.aggregateMarksStudent(assessment.id, student)
         return mark
+'''
+################################### STATISTICS FUNCTIONS #####################################
+'''
+
+def getMeanForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    
+    if assess_obj.assessment_type == "Aggregate":
+        marks = []
+        student_list = getStudentListForStats(assess_id)
+        for student in student_list:
+            stu_mark = getMarkForStudent(student[0],assess_id)
+            perc = stu_mark[6]
+            marks.append(perc)
+        
+    else:
+        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+        marks = []
+        
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = mark_array[6]
+            marks.append(perc)
+    
+    arr = np.array(marks, dtype=float)
+
+    mn = np.mean(arr)
+    mean = "{0:.2f}".format(mn)
+    
+    return mean
+
+def getMedianForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    
+    if assess_obj.assessment_type == "Aggregate":
+        marks = []
+        student_list = getStudentListForStats(assess_id)
+        for student in student_list:
+            stu_mark = getMarkForStudent(student[0],assess_id)
+            perc = stu_mark[6]
+            marks.append(perc)
+    
+    else:
+        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+        marks = []
+        
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = mark_array[6]
+            marks.append(perc)
+    
+    arr = np.array(marks, dtype=float)
+
+    mn = np.median(arr)
+    mean = "{0:.2f}".format(mn)
+    
+    return mean
+
+def getAverageForAssessment(assess_id):
+    
+    assess_obj = Assessment.objects.get(id=assess_id)
+    
+    if assess_obj.assessment_type == "Aggregate":
+        marks = []
+        student_list = getStudentListForStats(assess_id)
+        for student in student_list:
+            stu_mark = getMarkForStudent(student[0],assess_id)
+            perc = stu_mark[6]
+            marks.append(perc)
+    
+    else:
+        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+        marks = []
+        
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = mark_array[6]
+            marks.append(perc)
+    
+    arr = np.array(marks, dtype=float)
+
+    mn = np.average(arr)
+    mean = "{0:.2f}".format(mn)
+    
+    return mean
+
+def getStandardDeviationForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    
+    if assess_obj.assessment_type == "Aggregate":
+        marks = []
+        student_list = getStudentListForStats(assess_id)
+        for student in student_list:
+            stu_mark = getMarkForStudent(student[0],assess_id)
+            perc = stu_mark[6]
+            marks.append(perc)
+    
+    else:
+        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+        marks = []
+        
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = mark_array[6]
+            marks.append(perc)
+    
+    arr = np.array(marks, dtype=float)
+
+    mn = np.std(arr)
+    mean = "{0:.2f}".format(mn)
+    
+    return mean
+
+def getFrequencyAnalysisForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+    zerotoforty = 0
+    fortytofifty = 0
+    fiftytosixty = 0
+    sixtytoseventyfour = 0
+    distinction = 0
+    
+    frequencies = []
+    
+    if assess_obj.assessment_type == "Aggregate":
+        studentlist = getStudentListForStats(assess_id)
+        for student in studentlist:
+            stu_mark = getMarkForStudent(student[0], assess_id)
+            perc = float(stu_mark[6])
+            if (perc >= 0.0)  & (perc < 40.0) :
+                zerotoforty += 1
+            elif (perc >= 40.0) & (perc < 50.0):
+                fortytofifty += 1
+            elif (perc >= 50.0) & (perc < 60.0):
+                fiftytosixty += 1
+            elif (perc >= 60.0) and (perc < 75.0):
+                sixtytoseventyfour += 1
+            elif ((perc >= 75.0) and (perc <= 100.0)):
+                distinction += 1
+            
+    else:
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = float(mark_array[6])
+            if (perc >= 0.0)  & (perc < 40.0) :
+                zerotoforty += 1
+            elif (perc >= 40.0) & (perc < 50.0):
+                fortytofifty += 1
+            elif (perc >= 50.0) & (perc < 60.0):
+                fiftytosixty += 1
+            elif (perc >= 60.0) and (perc < 75.0):
+                sixtytoseventyfour += 1
+            elif ((perc >= 75.0) and (perc <= 100.0)):
+                distinction += 1
+     
+    frequencies.append(zerotoforty)
+    frequencies.append(fortytofifty)
+    frequencies.append(fiftytosixty)
+    frequencies.append(sixtytoseventyfour)
+    frequencies.append(distinction)
+    
+    return frequencies
+
+def getStudentListForStats(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    module = assess_obj.mod_id
+    #Constructing Student List
+    #students: uid,firstname,surname
+    students = getAllStudentsOfModule(module.module_code)
+    studentList = []
+    for stud in students:
+        list =[]
+        uid = stud[0]
+        name = stud[1]
+        surname = stud[2]
+        marklist = getMarkForStudent(uid,assess_id)
+        mark = marklist[4]
+        perc = marklist[6]
+        list.append(uid)
+        list.append(name)
+        list.append(surname)
+        list.append(mark)    
+        list.append(perc)
+        studentList.append(list)   
+    return studentList
+
+def getModeForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    
+    if assess_obj.assessment_type == "Aggregate":
+        marks = []
+        student_list = getStudentListForStats(assess_id)
+        for student in student_list:
+            stu_mark = getMarkForStudent(student[0],assess_id)
+            perc = stu_mark[6]
+            marks.append(perc)
+    
+    else:
+        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+        marks = []
+        
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudent(stu.upId, assess_id)
+            perc = mark_array[6]
+            marks.append(perc)
+    
+    arr = np.array(marks, dtype=float)
+
+    mn = np.average(arr)
+    mean = "{0:.2f}".format(mn)
+    
+    return mean
+
+'''
+################################### END STATISTICS FUNCTIONS #####################################
+'''

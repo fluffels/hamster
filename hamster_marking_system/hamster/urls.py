@@ -43,14 +43,16 @@ urlpatterns = patterns('',
     url(r'view_student_assessment$','web_interface.views.viewAssessmentsForStudent', name='view_student_assessment'),
     url(r'student-assessment','web_interface.views.getAllChildrenOfAssessmentForStudent', name='view_children_assessment_student'),
     #url(r'testingAssess$','web_interface.views.testingStudentAssessmentForModule', name='view_children_assessment_student'),
-    url(r'aggregate$','web_interface.views.chooseAggregator', name='aggregate'),
+    
     url(r'aggregateMarkForAssessment$','web_interface.views.aggregateMarkForAssessment', name='aggregateMarkForAssessment'),
     url(r'print_pdf$','reporting.views.get_student_marks_pdf', name='generate_pdf_for_student'),
     url(r'print_csv$','reporting.views.get_student_marks_csv', name='generate_csv_for_student'),
     url(r'change-time$','web_interface.views.ChangeSessionTime', name='change-time'),
     url(r'remove-stud$','web_interface.views.removeUserfromSession', name='change-time'),
     url(r'audit_log$','web_interface.views.AuditLog', name='change-time'),
-    # url(r'^blog/', include('blog.urls')),
-
+    
+    # Assessment Centre
+    url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
+    
     url(r'^admin/', include(admin.site.urls)),
 )

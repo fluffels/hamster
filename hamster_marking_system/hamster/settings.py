@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     'polymorphic',
     'mptt',
     'south',
+    'numpy',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -124,7 +125,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hamster',
         'USER': 'postgres',
-        'PASSWORD': 'GothamCyborgDark009',
+        'PASSWORD': 'bububu',
         'HOST': 'localhost',
         'PORT': '5432'
     }

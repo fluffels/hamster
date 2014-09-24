@@ -193,9 +193,8 @@
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
-							<button type="button"
-							data-target="#select_aggregator" data-toggle="modal"
-								class="btn btn-default" data-placement="top" title="Choose Aggregator">
+							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="Choose Aggregator">
 								<span class="fa fa-cogs"></span>
 							</button>
 						</div>
@@ -368,9 +367,8 @@
 														<input type="hidden" name="module" value={{ module }}>
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 													</form>
-													<button type="button"
-													data-target="#select_aggregator" data-toggle="modal"
-														class="btn btn-default" data-placement="top" title="Choose Aggregator">
+													<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Choose Aggregator">
 														<span class="fa fa-cogs"></span>
 													</button>
 											</div>
@@ -545,9 +543,8 @@
 																			<input type="hidden" name="module" value={{ module }}>
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																		</form>
-																		<button type="button"
-																		data-target="#select_aggregator" data-toggle="modal"
-																			class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																		<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Choose Aggregator">
 																			<span class="fa fa-cogs"></span>
 																		</button>
 																</div>
@@ -719,9 +716,8 @@
 																								<input type="hidden" name="module" value={{ module }}>
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																							</form>
-																							<button type="button"
-																							data-target="#select_aggregator" data-toggle="modal"
-																								class="btn btn-default" data-placement="top" title="Choose Aggregator">
+																							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Choose Aggregator">
 																								<span class="fa fa-cogs"></span>
 																							</button>
 																					</div>
@@ -1045,6 +1041,11 @@
 <!--###########################  End of jumbotron part ############################-->
 
 
-{% block left_under_jumbotron-col-6 %}{% endblock %}
+{% block left_under_jumbotron-col-6 %}
+<form role="form" action="/getStats" method="post"> {% csrf_token %}
+	<input type="hidden" name="assess_id" value="210">
+	<button type="submit" class="btn btn-success">Get Statistics</button>
+</form>	
+{% endblock %}
 
 {% block right_under_jumbotron-col-6 %}{% endblock %}
