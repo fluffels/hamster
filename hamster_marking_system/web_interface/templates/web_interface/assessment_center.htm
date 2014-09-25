@@ -90,7 +90,7 @@
 	{% ifequal assessment '' %}
 		
 	{% else %}
-		<div class="text-center"><div class="label label-default">Assessment center</div></div>
+		<div class="text-center"><div class="label label-default">Assessment Center</div></div>
 	{% endifequal %}
 {% endblock %}
 
@@ -112,15 +112,30 @@
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
       <h4> <span class="label label-info">Assessment Aggregation</span></h4>
+		
+		<ul>
+		  <li class="nav-divider"></li>
+		</ul>
+		
 		<!-- Table1 -->
 		<table class="table table-hover table-bordered">
 			<tr>
 				<td><strong> Currently used aggregator : </strong></td>
-				<td> <span class="label label-default"> Simple sum </span></td>
+				<td> <span class="label label-default"> Simple Sum </span></td>
 			</tr>
 		</table>
 		<!-- ./Table1 -->
 		
+		<ul>
+		  <li class="nav-divider"></li>
+		</ul>
+		
+		<!--Aggregation panel-->
+		<div class="panel panel-primary">
+		  <div class="panel-heading">
+			<h3 class="panel-title">Change Aggregator</h3>
+		  </div>
+		  <div class="panel-body">
 		<!--Aggregator selection tabs-->
 		<div class="tabbable">
 		<ul class="nav nav-tabs">
@@ -192,6 +207,8 @@
 		  </div>
 		</div><!-- /.tab-content -->
 	      </div><!-- /.tabbable -->
+		  </div><!-- ./panel-body-->
+		</div><!-- ./panel-->
     </div>
     <div id="pane2" class="tab-pane">
     <h4> <span class="label label-info">Statistics</span></h4>
