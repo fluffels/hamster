@@ -1843,6 +1843,26 @@ def getAllPublishedAssessmentsForStudent(mod_code):
     assessments = Assessment.objects.filter(mod_id=mod_obj, published = True)
     return assessments
 
+def getMarkForStudentForLecturer(student_id, assess_id):
+    stu_obj = Person.objects.get(upId=student_id) 
+    assess_obj = Assessment.objects.get(id=assess_id)
+    if assess_obj.assessment_type == 'Aggregate':
+        agg = Aggregator.objects.get(assessment=assess_obj)
+        list = agg.aggregateMarksLecturer(assess_id, student_id)
+
+    elif assess_obj.assessment_type == 'Leaf':
+        list = aggregateChild(assess_obj.id, student_id)
+
+    #formating the mark and percentage to 2 decimals
+    mark = list[4]
+    perc = list[6]
+
+    list[4] = "{0:.2f}".format(mark)
+    list[6] = "{0:.2f}".format(perc)
+
+    return list
+
+
 # Name: getMarkForStudent(student_id, assess_id)
 # Description: Retrieves the student's mark for the assessment specified. (Whether aggregate or leaf)
 # Parameter: student_id : String
@@ -1888,35 +1908,16 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
     marksOfChildren = []
 
     if parent.assessment_type == 'Aggregate':
-        parent_agg = Aggregator.objects.get(assessment=parent)
-        if parent_agg.aggregator_name == 'SimpleSum': 
-            for child in children:
+        for child in children:
+            if child.published == True:
                 name = child.assess_name
                 student_obj = Person.objects.get(upId=student_id)
                 marks = getMarkForStudent(student_id,child.id)
                 marksOfChildren.append(marks)
-            return marksOfChildren
-        
-        elif parent_agg.aggregator_name == 'BestOf':
-            for child in children:
-                name = child.assess_name
-                student_obj = Person.objects.get(upId=student_id)
-                marks = getMarkForStudent(student_id,child.id)
-                marksOfChildren.append(marks)
-            return marksOfChildren
-        
-        elif parent_agg.aggregator_name == 'WeightedSum':
-            for child in children:
-                name = child.assess_name
-                student_obj = Person.objects.get(upId=student_id)
-                marks = getMarkForStudent(student_id,child.id)
-                marksOfChildren.append(marks)
-            return marksOfChildren
+        return marksOfChildren
 
     elif parent.assessment_type == 'Leaf':
         return marksOfChildren
-
-
 '''
 
 #################### END STUDENT VIEW FUNCTIONS ###################################
@@ -2160,7 +2161,7 @@ def getMeanForAssessment(assess_id):
         marks = []
         student_list = getStudentListForStats(assess_id)
         for student in student_list:
-            stu_mark = getMarkForStudent(student[0],assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
             perc = stu_mark[6]
             marks.append(perc)
         
@@ -2170,7 +2171,7 @@ def getMeanForAssessment(assess_id):
         
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = mark_array[6]
             marks.append(perc)
     
@@ -2188,7 +2189,7 @@ def getMedianForAssessment(assess_id):
         marks = []
         student_list = getStudentListForStats(assess_id)
         for student in student_list:
-            stu_mark = getMarkForStudent(student[0],assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
             perc = stu_mark[6]
             marks.append(perc)
     
@@ -2198,7 +2199,7 @@ def getMedianForAssessment(assess_id):
         
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = mark_array[6]
             marks.append(perc)
     
@@ -2217,7 +2218,7 @@ def getAverageForAssessment(assess_id):
         marks = []
         student_list = getStudentListForStats(assess_id)
         for student in student_list:
-            stu_mark = getMarkForStudent(student[0],assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
             perc = stu_mark[6]
             marks.append(perc)
     
@@ -2227,7 +2228,7 @@ def getAverageForAssessment(assess_id):
         
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = mark_array[6]
             marks.append(perc)
     
@@ -2245,7 +2246,7 @@ def getStandardDeviationForAssessment(assess_id):
         marks = []
         student_list = getStudentListForStats(assess_id)
         for student in student_list:
-            stu_mark = getMarkForStudent(student[0],assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
             perc = stu_mark[6]
             marks.append(perc)
     
@@ -2255,7 +2256,7 @@ def getStandardDeviationForAssessment(assess_id):
         
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = mark_array[6]
             marks.append(perc)
     
@@ -2280,7 +2281,7 @@ def getFrequencyAnalysisForAssessment(assess_id):
     if assess_obj.assessment_type == "Aggregate":
         studentlist = getStudentListForStats(assess_id)
         for student in studentlist:
-            stu_mark = getMarkForStudent(student[0], assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
             perc = float(stu_mark[6])
             if (perc >= 0.0)  & (perc < 40.0) :
                 zerotoforty += 1
@@ -2296,7 +2297,7 @@ def getFrequencyAnalysisForAssessment(assess_id):
     else:
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = float(mark_array[6])
             if (perc >= 0.0)  & (perc < 40.0) :
                 zerotoforty += 1
@@ -2329,7 +2330,7 @@ def getStudentListForStats(assess_id):
         uid = stud[0]
         name = stud[1]
         surname = stud[2]
-        marklist = getMarkForStudent(uid,assess_id)
+        marklist = getMarkForStudentForLecturer(uid,assess_id)
         mark = marklist[4]
         perc = marklist[6]
         list.append(uid)
@@ -2347,7 +2348,7 @@ def getModeForAssessment(assess_id):
         marks = []
         student_list = getStudentListForStats(assess_id)
         for student in student_list:
-            stu_mark = getMarkForStudent(student[0],assess_id)
+            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
             perc = stu_mark[6]
             marks.append(perc)
     
@@ -2357,7 +2358,7 @@ def getModeForAssessment(assess_id):
         
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
-            mark_array = getMarkForStudent(stu.upId, assess_id)
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = mark_array[6]
             marks.append(perc)
     
