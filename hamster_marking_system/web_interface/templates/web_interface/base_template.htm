@@ -307,6 +307,16 @@
 		dropRight : false
 	});
 	
+	$('#multiselectSelectAssessmentForMarksImport').multiselect({
+		includeSelectAllOption : false,
+		enableFiltering : false,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No Assessment selected',
+		buttonWidth : '50%',
+		dropRight : true
+	});
+	
 	var exist = $( "#no-jumbotron" ).find('#rem-jumbotron').hasClass( "tree-finder" );	//Tests if inner div of jumbotron has class tree-finder
 												//this is done to disable the text-center for the tree page
 												//as it disables indenation in the tree.
