@@ -2125,9 +2125,7 @@ def StudentMarks(assess, student):
                 childy.append(mark[6])
                 list.append(childy)
     return list
-        
-    
-    
+            
 def AggregateAssessmentForStudent(assessment,student):
     if assessment.assessment_type == 'Leaf':
         mark = getMarkForStudent(student, assessment.id)
@@ -2136,6 +2134,26 @@ def AggregateAssessmentForStudent(assessment,student):
         aggregator = Aggregator.objects.get(assessment=assessment)
         mark = aggregator.aggregateMarksStudent(assessment.id, student)
         return mark
+
+def generateAssessmentReport(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    assess_name = assess_obj.assess_name
+    module = assess_obj.mod_id.module_code
+    full_marks = 10
+    
+    list =[]
+    list.append(module)
+    list.append(assess_name)
+    list.append(full_marks)
+    list.append(getAverageForAssessment(assess_id))
+    list.append(getMedianForAssessment(assess_id))
+    list.append(getModeForAssessment(assess_id))
+    list.append(getStandardDeviationForAssessment(assess_id))
+    list.append(getFrequencyAnalysisForAssessment(assess_id))
+    list.append(getStudentListForStats(assess_id))
+    
+    return list
+
 '''
 ################################### STATISTICS FUNCTIONS #####################################
 '''

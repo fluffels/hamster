@@ -1655,6 +1655,26 @@ def getStats(request, jsonObj):
 '''
 ###################### End Statistics views ###########################
 '''
+def assessmentReport(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	
+	info = api.generateAssessmentReport(assess_id)
+	
+	
+	if info:
+		data = {
+			'type':1,
+			'data':info
+		}
+		return HttpResponse(json.dumps(data))
+	else:
+		data = {
+			'type':-1,
+			'data':None	
+		}
+		return HttpResponse(json.dumps(data))
+	
 def StudentAssessmentAggregated(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	print json_data
