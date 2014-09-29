@@ -90,7 +90,7 @@
 	{% ifequal assessment '' %}
 		
 	{% else %}
-		<div class="text-center"><div class="label label-default">Assessment center</div></div>
+		<div class="text-center"><div class="label label-default">Assessment Center</div></div>
 	{% endifequal %}
 {% endblock %}
 
@@ -111,18 +111,31 @@
   </ul>
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
-      <h4>Assessment Aggregation</h4>
+      <h4> <span class="label label-info">Assessment Aggregation</span></h4>
+		
+		<ul>
+		  <li class="nav-divider"></li>
+		</ul>
+		
 		<!-- Table1 -->
 		<table class="table table-hover table-bordered">
 			<tr>
 				<td><strong> Currently used aggregator : </strong></td>
-			</tr>
-			<tr>
-				<td> <span class="label label-default"> Simple sum </span></td>
+				<td> <span class="label label-default"> Simple Sum </span></td>
 			</tr>
 		</table>
 		<!-- ./Table1 -->
 		
+		<ul>
+		  <li class="nav-divider"></li>
+		</ul>
+		
+		<!--Aggregation panel-->
+		<div class="panel panel-primary">
+		  <div class="panel-heading">
+			<h3 class="panel-title">Change Aggregator</h3>
+		  </div>
+		  <div class="panel-body">
 		<!--Aggregator selection tabs-->
 		<div class="tabbable">
 		<ul class="nav nav-tabs">
@@ -194,27 +207,127 @@
 		  </div>
 		</div><!-- /.tab-content -->
 	      </div><!-- /.tabbable -->
+		  </div><!-- ./panel-body-->
+		</div><!-- ./panel-->
     </div>
     <div id="pane2" class="tab-pane">
-    <h4>Statistics</h4>
+    <h4> <span class="label label-info">Statistics</span></h4>
     
      <!--Add statistics-->
+     <!-- Table1 -->
+	<table class="table table-hover table-bordered">
+		<!--Class average-->
+		<tr>
+			<td>Class Average : </td>
+			<td> <span class="label label-default">{{ average }}</span></td>
+		</tr>
+		<!--Class median-->
+		<tr>
+			<td>Class Median : </td>
+			<td> <span class="label label-default">{{ median }}</span></td>
+		</tr>
+		<!--Class mode-->
+		<tr>
+			<td>Class Mode : </td>
+			<td> <span class="label label-default">{{ mode }}</span></td>
+		</tr>
+		<!--Class median-->
+		<tr>
+			<td>Class Std. deviation : </td>
+			<td> <span class="label label-default">{{ stddev }}</span></td>
+		</tr>
+		<!--Students in class-->
+		<tr>
+			<td>Show list of students in assessment here, clickable button</td>
+		</tr>
+	</table>
+     <!-- ./Table1 -->
+     <h4>Frequency</h4>
+     <table class="table table-hover table-bordered">
+	<tr>
+		<td>0 - 40 : </td>
+		<td>{{ frequency.0 }}</td>
+	</tr>
+	<tr>
+		<td>40 - 50 : </td>
+		<td>{{ frequency.1 }}</td>
+	</tr>
+	<tr>
+		<td>50 - 60 : </td>
+		<td>{{ frequency.2 }}</td>
+	</tr>
+	<tr>
+		<td>60 - 74 : </td>
+		<td>{{ frequency.3 }}</td>
+	</tr>
+	<tr>
+		<td>75 - 100 : </td>
+		<td>{{ frequency.4 }}</td>
+	</tr>
+     </table>
      
     </div>
     <div id="pane3" class="tab-pane">
-      <h4>Graph statistics</h4>
+      <h4> <span class="label label-info">Graph statistics</span></h4>
       
       <!--Add Graphs-->
       
     </div>
     <div id="pane4" class="tab-pane">
-      <h4>More Settings</h4>
+      <h4> <span class="label label-info">More Settings</span></h4>
       
       <!--More settings-->
+      <button type="button" class="btn btn-primary btn-md " data-target="#update_leaf_mark" data-toggle="modal"
+		>Change Full Mark  <span class="glyphicon glyphicon-cog"></span></button>
       
     </div>
   </div><!-- /.tab-content -->
 </div><!-- /.tabbable -->
+
+<div class="modal fade" id="update_leaf_mark" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="update-fullmark" method="post" data-parsley-validate>
+				{% csrf_token %}
+				<div class="modal-header">
+					<h4><strong>Update Total Mark for</strong></h4>
+					<h4><strong>{{ assessmentName }}</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<h4>
+						<label for="contact-name" class="col-lg-5 control-label">Previous Total Mark:</label>
+						</h4>
+						<div class="col-lg-5">
+							<input type="number" disabled="disabled" class="form-control" placeholder={{ fullmark }} value={{ fullmark }}>
+						</div>
+					</div>
+					<div class="form-group">
+						<h4>
+						<label for="contact-email" class="col-lg-5 control-label">New Total Mark:</label>
+						</h4>
+						<div class="col-lg-5">
+							<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+							<input type="number" class="form-control" id="new-full-mark" name="fullmark" placeholder="100"
+							data-parsley-min="0" data-parsley-max="100">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }} placeholder={{ module }}>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button id="submit" class="btn btn-success" type="submit">Update</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!-- ./change_full_mark -->
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 
