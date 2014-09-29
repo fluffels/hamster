@@ -111,11 +111,9 @@
   </ul>
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
-      <h4> <span class="label label-info">Assessment Aggregation</span></h4>
+      <h4> <span class="label label-info">Assessment Aggregation</span></h4><br>
 		
-		<ul>
-		  <li class="nav-divider"></li>
-		</ul>
+		<span class="nav-divider"></span>
 		
 		<!-- Table1 -->
 		<table class="table table-hover table-bordered">
@@ -126,9 +124,7 @@
 		</table>
 		<!-- ./Table1 -->
 		
-		<ul>
-		  <li class="nav-divider"></li>
-		</ul>
+		<span class="nav-divider"></span>
 		
 		<!--Aggregation panel-->
 		<div class="panel panel-primary">
@@ -211,12 +207,19 @@
 		</div><!-- ./panel-->
     </div>
     <div id="pane2" class="tab-pane">
-    <h4> <span class="label label-info">Statistics</span></h4>
+    <h4> <span class="label label-info">Statistics</span></h4><br>
     
      <!--Add statistics-->
-     <!-- Table1 -->
+     <div class="panel panel-primary">
+	<div class="panel-heading">Basic Statistics</div>
+	<div class="panel-body">
+	  <!-- Table1 -->
 	<table class="table table-hover table-bordered">
 		<!--Class average-->
+		<tr>
+			<td><strong>Statistic</strong></td>
+			<td><strong>Value</strong></td>
+		</tr>
 		<tr>
 			<td>Class Average : </td>
 			<td> <span class="label label-default">{{ average }}</span></td>
@@ -241,40 +244,153 @@
 			<td>Show list of students in assessment here, clickable button</td>
 		</tr>
 	</table>
-     <!-- ./Table1 -->
-     <h4>Frequency</h4>
-     <table class="table table-hover table-bordered">
-	<tr>
-		<td>0 - 40 : </td>
-		<td>{{ frequency.0 }}</td>
-	</tr>
-	<tr>
-		<td>40 - 50 : </td>
-		<td>{{ frequency.1 }}</td>
-	</tr>
-	<tr>
-		<td>50 - 60 : </td>
-		<td>{{ frequency.2 }}</td>
-	</tr>
-	<tr>
-		<td>60 - 74 : </td>
-		<td>{{ frequency.3 }}</td>
-	</tr>
-	<tr>
-		<td>75 - 100 : </td>
-		<td>{{ frequency.4 }}</td>
-	</tr>
-     </table>
+	<!-- ./Table1 -->
+	</div>
+     </div>
+     
+     <div class="panel panel-primary">
+	<div class="panel-heading">Frequency</div>
+	<div class="panel-body">
+	  <table class="table table-hover table-bordered">
+		<tr>
+			<td><strong>Range of marks</strong></td>
+			<td><strong>Number of Students</strong></td>
+		</tr>
+		<tr>
+			<td>0 - 40 </td>
+			<td>{{ frequency.0 }}</td>
+		</tr>
+		<tr>
+			<td>40 - 50 </td>
+			<td>{{ frequency.1 }}</td>
+		</tr>
+		<tr>
+			<td>50 - 60 </td>
+			<td>{{ frequency.2 }}</td>
+		</tr>
+		<tr>
+			<td>60 - 74 </td>
+			<td>{{ frequency.3 }}</td>
+		</tr>
+		<tr>
+			<td>75 - 100 </td>
+			<td>{{ frequency.4 }}</td>
+		</tr>
+	   </table>
+	</div>
+      </div>
+     
      
     </div>
     <div id="pane3" class="tab-pane">
-      <h4> <span class="label label-info">Graph statistics</span></h4>
+      <h4> <span class="label label-info">Graph statistics</span></h4><br>
       
       <!--Add Graphs-->
       
+	<div class="panel panel-primary">
+		<div class="panel-heading">Statistic Charts</div>
+		<div class="panel-body">
+		<!--Top Left chart-->
+		<div class="col-sm-6">
+		  <div class="panel panel-info">
+		      <div class="panel-heading">Frequency of Student Marks</div>
+		      <div class="panel-body">
+		      <canvas id="frequency_bar_chart">
+			  <!--Bar graph placed here-->
+		      </canvas>
+		      </div>
+		    </div>
+		</div><!--./Top Left chart-->
+	  
+		<!--Top Right chart-->
+		<div class="col-sm-6">
+		  <div class="panel panel-info">
+			<div class="panel-heading">Passed/Failed Students</div>
+			<div class="panel-body">
+			<canvas id="frequency_doughnut_chart">
+			      <!--Bar graph placed here-->
+			</canvas>
+			</div>
+		      </div>
+		</div><!--./Top Right chart-->
+		
+		<div class="clearfix"></div>
+		
+		<!--Bottom Left chart-->
+		<div class="col-sm-6">
+		  <div class="panel panel-info">
+		      <div class="panel-heading">Another Chart</div>
+		      <div class="panel-body">
+		      <canvas id="frequency_bar_chart">
+			  <!--Bar graph placed here-->
+		      </canvas>
+		      </div>
+		    </div>
+		</div><!--./Bottom Left chart-->
+	  
+		<!--Bottom Right chart-->
+		<div class="col-sm-6">
+		  <div class="panel panel-info">
+			<div class="panel-heading">Some Other Chart</div>
+			<div class="panel-body">
+			<canvas id="frequency_doughnut_chart">
+			      <!--Bar graph placed here-->
+			</canvas>
+			</div>
+		      </div>
+		</div><!--./Bottom Right chart-->
+	</div>
+      </div>
+	  
+	
+      
+      <script>
+
+	var barChartData = {
+		labels: ["0 - 39", "40 - 49", "50 - 59", "60 - 74", "75 - 100"],
+		datasets: [
+		    {
+			label: "Frequency of students",
+			fillColor: "rgba(220,220,220,0.5)",
+			strokeColor: "rgba(220,220,220,0.8)",
+			highlightFill: "rgba(220,220,220,0.75)",
+			highlightStroke: "rgba(220,220,220,1)",
+			data: [{{ frequency.0 }}, {{ frequency.1 }},{{ frequency.2 }},
+			       {{ frequency.3 }}, {{ frequency.4 }}]
+		    }
+		]
+
+	}
+	var doughnutData = [
+			{
+				value: 47,
+				color:"#F7464A",
+				highlight: "#FF5A5E",
+				label: "Failed"
+			},
+			{
+				value: 53,
+				color: "#46BFBD",
+				highlight: "#5AD3D1",
+				label: "Passed"
+			}
+
+		];
+	
+	window.onload = function(){
+		var ctx = document.getElementById("frequency_bar_chart").getContext("2d");
+		window.myBar = new Chart(ctx).Bar(barChartData, {
+			responsive : false
+		});
+		var ctx = document.getElementById("frequency_doughnut_chart").getContext("2d");
+		window.myDoughnut = new Chart(ctx).Doughnut(doughnutData, {responsive : false});
+	}
+
+      </script>
+      
     </div>
     <div id="pane4" class="tab-pane">
-      <h4> <span class="label label-info">More Settings</span></h4>
+      <h4> <span class="label label-info">More Settings</span></h4><br>
       
       <!--More settings-->
       <button type="button" class="btn btn-primary btn-md " data-target="#update_leaf_mark" data-toggle="modal"
