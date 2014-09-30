@@ -1534,32 +1534,13 @@ def assessmentCenter(request, jsonObj):
 	agg_name = api.getAggregatorName(assess_id)
 	
 	#STATISTICS
-	frequency = api.getFrequencyAnalysisForAssessment(assess_id)
-	print "*********************************************************"
-	print "frequency: " + str(frequency)
-	print "*********************************************************\n"
-	average = api.getAverageForAssessment(assess_id)
-	print "*********************************************************"
-	print "average: " + str(average)
-	print "*********************************************************\n"
-	stddev = api.getStandardDeviationForAssessment(assess_id)
-	print "*********************************************************"
-	print "stddev: " + str(stddev)
-	print "*********************************************************\n"
-	students = api.getStudentListForStats(assess_id)
-	
-	mean = api.getMeanForAssessment(assess_id)
-	print "*********************************************************"
-	print "mean: " + str(mean)
-	print "*********************************************************\n"
-	median = api.getMedianForAssessment(assess_id)
-	print "*********************************************************"
-	print "median: " + str(median)
-	print "*********************************************************\n"
-	mode = api.getModeForAssessment(assess_id)
-	print "*********************************************************"
-	print "mode: " + str(mode)
-	print "*********************************************************\n"
+	stats = api.getStatisticsForAssessment(assess_id)
+	average = stats[0]
+	median = stats[1]
+	mode = stats[2]
+	stddev = stats[3]
+	frequency = stats[4]
+	students = stats[5]
 	
 	#GRAPHS
 	
@@ -1574,7 +1555,6 @@ def assessmentCenter(request, jsonObj):
 			'average':average,
 			'stddev':stddev,
 			'students':students,
-			'mean':mean,
 			'median':median,
 			'mode':mode
 		}
@@ -1655,6 +1635,26 @@ def getStats(request, jsonObj):
 '''
 ###################### End Statistics views ###########################
 '''
+def assessmentReport(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	
+	info = api.generateAssessmentReport(assess_id)
+	
+	
+	if info:
+		data = {
+			'type':1,
+			'data':info
+		}
+		return HttpResponse(json.dumps(data))
+	else:
+		data = {
+			'type':-1,
+			'data':None	
+		}
+		return HttpResponse(json.dumps(data))
+	
 def StudentAssessmentAggregated(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	print json_data
