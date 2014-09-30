@@ -24,3 +24,23 @@ div.pull-right.btn-group.btn-group-xs.mark-view-toggle{
   padding-right: 15px;
 }
 
+/*
+ *For upload button in modal. Meant to make it more attractive and structured
+*/
+.CSVuploadFile {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+}
+.CSVuploadFile input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+

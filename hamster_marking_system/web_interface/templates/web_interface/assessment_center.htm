@@ -403,7 +403,7 @@
 <div class="modal fade" id="import_marks" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="update-fullmark" method="post" data-parsley-validate>
+			<form class="form-horizontal" action="update-fullmark" method="post" onsubmit="return Validate(this);" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Import CSV With Marks</strong></h4>
@@ -418,9 +418,45 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="exampleInputFile">File input</label>
-						<input type="file" id="exampleInputFile">
-						<h5 class="help-block">Select CSV File with Marks.</h5>
+						<input id="CSVuploadFile" placeholder="Choose File" disabled="disabled">
+						<div class="fileUpload btn btn-primary">
+						    <input id="CSVuploadBtn" type="file" class="upload">
+						</div>
+						<h5 class="help-block">Select CSV file with marks.</h5>
+						<script>
+							document.getElementById("CSVuploadBtn").onchange = function () {
+								document.getElementById("CSVuploadFile").value = this.value;
+							    };
+							    
+							var _validFileExtensions = [".ods", ".csv"];
+							
+							function Validate(oForm) {
+							    var arrInputs = oForm.getElementsByTagName("input");
+							    for (var i = 0; i < arrInputs.length; i++) {
+								var oInput = arrInputs[i];
+								if (oInput.type == "file") {
+								    var sFileName = oInput.value;
+								    if (sFileName.length > 0) {
+									var blnValid = false;
+									for (var j = 0; j < _validFileExtensions.length; j++) {
+									    var sCurExtension = _validFileExtensions[j];
+									    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+										blnValid = true;
+										break;
+									    }
+									}
+							
+									if (!blnValid) {
+									    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+									    return false;
+									}
+								    }
+								}
+							    }
+							
+							    return true;
+							}
+						</script>
 					</div>
 					
 					<div class="form-group">
