@@ -1555,9 +1555,7 @@ def chooseAggregator(request):
         children = res['children']
         assessmentName = res['assessmentName']
         agg_name = res['agg_name']
-        
         average = res['average']
-        mean = res['mean']
         median = res['median']
         mode = res['mode']
         frequency = res['frequency']
@@ -1570,7 +1568,7 @@ def chooseAggregator(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-                                                                        'average':average,'mean':mean,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
                                                                         'stddev':stddev,'studentlist':studentlist,
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
     else:
@@ -1582,7 +1580,7 @@ def chooseAggregator(request):
                                                                 'user_ta':user_ta,
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
-        
+ 
 @isAuthenticated
 @isLecture
 def aggregateMarkForAssessment(request):

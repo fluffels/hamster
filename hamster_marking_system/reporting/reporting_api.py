@@ -46,7 +46,8 @@ def generate_assessment_report(assess_name, full_marks, module, data, freq, stud
             ]]
     table = Table(tdata, colWidths=None, rowHeights=None)
     table.setStyle(TableStyle([
-                                ('GRID',(0,0), (-1,0),1, colors.black)
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.gray)#Give total a grey background
                               ]))
     table._argW[0]=7.0*inch
     table.wrapOn(c,100, 710)
@@ -91,7 +92,8 @@ def generate_assessment_report(assess_name, full_marks, module, data, freq, stud
             ]]
     table = Table(tdata, colWidths=None, rowHeights=None)
     table.setStyle(TableStyle([
-                                ('GRID',(0,0), (-1,0),1, colors.black)
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.gray)#Give total a grey background)
                               ]))
     table._argW[0]=7.0*inch
     table.wrapOn(c,100, currPos + 50)
@@ -139,12 +141,57 @@ def generate_assessment_report(assess_name, full_marks, module, data, freq, stud
     tdata = [[Paragraph('<b>' + 'Students Information' + '</b>',styleN)]]
     table = Table(tdata, colWidths=None, rowHeights=None)
     table.setStyle(TableStyle([
-                                ('GRID',(0,0), (-1,0),1, colors.black)
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.gray)#Give total a grey background)
                               ]))
     table._argW[0]=7.0*inch
     table.wrapOn(c,100, currPos + 50)
     currPos -= 50
     table.drawOn(c,50, currPos)
+    
+    currPos -= 30
+    tdata = [[Paragraph('<b>Uid</b>',styleN),
+              Paragraph('<b>Name</b>',styleN),
+              Paragraph('<b>Surname</b>',styleN),
+              Paragraph('<b>Mark</b>',styleN),
+              Paragraph('<b>Percentage</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,-1),1, colors.black)
+                              ]))
+    table._argW[0]=1.4*inch #Set the size(width) of the first column in the table
+    table._argW[1]=1.4*inch
+    table._argW[2]=1.4*inch
+    table._argW[3]=1.4*inch
+    table._argW[4]=1.4*inch
+    
+    #table=Table(tdata, colWidths=80, rowHeights=30)
+    table.wrapOn(c,100, currPos)
+    currPos -=20
+    table.drawOn(c,50, currPos)
+    
+    for student in student_list:
+        uid = student[0]
+        name = student[1]
+        surname = student[2]
+        mark = student[3]
+        percentage = student[4]
+        
+        tdata = [uid, name, surname, mark, percentage],
+        table = Table(tdata, colWidths=None, rowHeights=None)
+        table.setStyle(TableStyle([
+                                    ('GRID',(0,0), (-1,-1),1, colors.black)
+                                  ]))
+        #table=Table(tdata, colWidths=80, rowHeights=30)
+        table._argW[0]=1.4*inch #Set the size(width) of the first collumn in the table
+        table._argW[1]=1.4*inch
+        table._argW[2]=1.4*inch
+        table._argW[3]=1.4*inch
+        table._argW[4]=1.4*inch
+        table.wrapOn(c,75, currPos)
+        currPos -= 20
+        table.drawOn(c,50, currPos)
     
     # Close the PDF object cleanly.
     c.showPage()
