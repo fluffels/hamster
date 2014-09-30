@@ -2208,8 +2208,6 @@ def getStatisticsForAssessment(assess_id):
     frequency = getFrequencyAnalysisForAssessment(assess_id)
     list.append(frequency)
     
-    list.append(student_list)
-    
     return list
 
 def getFrequencyAnalysisForAssessment(assess_id):

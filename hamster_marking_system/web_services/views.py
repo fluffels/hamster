@@ -1540,7 +1540,7 @@ def assessmentCenter(request, jsonObj):
 	mode = stats[2]
 	stddev = stats[3]
 	frequency = stats[4]
-	students = stats[5]
+	
 	
 	#GRAPHS
 	
@@ -1554,7 +1554,6 @@ def assessmentCenter(request, jsonObj):
 			'frequency':frequency,
 			'average':average,
 			'stddev':stddev,
-			'students':students,
 			'median':median,
 			'mode':mode
 		}
