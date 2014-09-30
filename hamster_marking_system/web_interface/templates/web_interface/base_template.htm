@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="/static/web_interface/css/bootstrap-datetimepicker.min.css">
 	<link rel="stylesheet" href="/static/web_interface/css/Parsley.js-2.0.5/parsley.css">
 	<link rel="stylesheet" href="/static/web_interface/css/event_list.css">
+		<link rel="stylesheet" href="/static/web_interface/css/card_collapse.css">
 	<link rel="stylesheet" href="/static/web_interface/css/style.css">
 </head>
 <body>
@@ -264,6 +265,7 @@
 <script src="/static/web_interface/js/Parsley.js-2.0.5/parsley.remote.min.js"></script>
 <script src="/static/web_interface/js/Chart.js-master/Chart.min.js"></script>
 <script src="/static/web_interface/js/hamster_charts.js"></script>
+<script src="/static/web_interface/js/card_collapse.js"></script>
 
 <script>
       $(document).ready(function () {
@@ -313,6 +315,46 @@
 		disableIfEmpty : true,
 		maxHeight : 350,
 		nonSelectedText : 'No Assessment selected',
+		dropRight : true
+	});
+	
+	$('#multiselectModuleToAddTaTo').multiselect({
+		includeSelectAllOption : false,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : true
+	});
+	
+	$('#multiselectPersonToAddToTa').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : true
+	});
+	
+	$('#multiselectModuleToRemoveTaFrom').multiselect({
+		includeSelectAllOption : false,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
+		dropRight : true
+	});
+	
+	$('#multiselectPersonToRemoveFromTa').multiselect({
+		includeSelectAllOption : true,
+		enableFiltering : true,
+		disableIfEmpty : true,
+		maxHeight : 350,
+		nonSelectedText : 'No User is selected',
+		buttonWidth : '100%',
 		dropRight : true
 	});
 	
