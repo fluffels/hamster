@@ -1956,6 +1956,7 @@ def getAggregationInfo(assess_id):
         sublist =[]
         sublist.append(child.id)
         sublist.append(child.assess_name)
+        sublist.append(child.assessment_type)
         list.append(sublist)
 
     if assess_obj.assessment_type == 'Aggregate':
