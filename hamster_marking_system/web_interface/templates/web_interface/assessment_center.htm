@@ -397,7 +397,11 @@
 	<button type="button" class="btn btn-primary btn-md " data-target="#update_ass_name" data-toggle="modal"
 		  >Change Assessment Name  <span class="fa fa-floppy-o"></span></button>
 	<!--Export Statistics as PDF-->
-	<button type="button" class="btn btn-primary btn-md"
+	<form action="assessmentReport" hidden="hidden" method="post" class="export_stats_pdf">
+		{% csrf_token %}
+		<input name="assess_id" value={{ assess_id }}>
+	</form>
+	<button type="button" class="btn btn-primary btn-md" onclick='$(this).parent().children("form.export_stats_pdf").submit();'
 		  >Export Stats as PDF  <span class="fa fa-file-pdf-o"></span></button>
       </div>
       

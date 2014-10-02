@@ -52,6 +52,7 @@ urlpatterns = patterns('',
     url(r'remove-stud$','web_interface.views.removeUserfromSession', name='change-time'),
     url(r'audit_log$','web_interface.views.AuditLog', name='change-time'),
     
+    url(r'importCSV$','reporting.views.import_csv', name='import_csv'),
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
     

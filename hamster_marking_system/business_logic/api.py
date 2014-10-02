@@ -2161,11 +2161,7 @@ def generateAssessmentReport(assess_id):
     list.append(module)
     list.append(assess_name)
     list.append(fmarks)
-    list.append(getAverageForAssessment(assess_id))
-    list.append(getMedianForAssessment(assess_id))
-    list.append(getModeForAssessment(assess_id))
-    list.append(getStandardDeviationForAssessment(assess_id))
-    list.append(getFrequencyAnalysisForAssessment(assess_id))
+    list.append(getStatisticsForAssessment(assess_id))
     list.append(getStudentListForStats(assess_id))
     
     return list

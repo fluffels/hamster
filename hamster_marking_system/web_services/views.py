@@ -1524,63 +1524,54 @@ def Auditlog(request):
 ###################### Aggregation Views ####################################
 '''
 def assessmentCenter(request, jsonObj):
-	json_data = json.loads(jsonObj)
-	assess_id = json_data['assess_id']
 	
-	#AGGREGATION
-	children = api.getAggregationInfo(assess_id)
-	numChildren = api.getNumChildren(assess_id)
-	assess_name = api.getAssessmentName(assess_id)
-	agg_name = api.getAggregatorName(assess_id)
+	try:
+		json_data = json.loads(jsonObj)
+		assess_id = json_data['assess_id']
+		
+		#AGGREGATION
+		children = api.getAggregationInfo(assess_id)
+		numChildren = api.getNumChildren(assess_id)
+		assess_name = api.getAssessmentName(assess_id)
+		agg_name = api.getAggregatorName(assess_id)
+		
+		#STATISTICS
+		pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
+		print "*********************************************************"
+		print "pass_fail_percentage: " + str(pass_fail_percentage)
+		print "*********************************************************\n"
+		
+		students = api.getStudentListForStats(assess_id)
 	
-	#STATISTICS
-
-	frequency = api.getFrequencyAnalysisForAssessment(assess_id)
-	print "*********************************************************"
-	print "frequency: " + str(frequency)
-	print "*********************************************************\n"
-	average = api.getAverageForAssessment(assess_id)
-	print "*********************************************************"
-	print "average: " + str(average)
-	print "*********************************************************\n"
-	stddev = api.getStandardDeviationForAssessment(assess_id)
-	print "*********************************************************"
-	print "stddev: " + str(stddev)
-	print "*********************************************************\n"
-	pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
-	print "*********************************************************"
-	print "pass_fail_percentage: " + str(pass_fail_percentage)
-	print "*********************************************************\n"
-	
-	students = api.getStudentListForStats(assess_id)
-
-	stats = api.getStatisticsForAssessment(assess_id)
-	average = stats[0]
-	median = stats[1]
-	mode = stats[2]
-	stddev = stats[3]
-	frequency = stats[4]
-	
-	
-	#GRAPHS
-	
-	if children is not None:
-		data = {
-			'type':1,
-			'numChildren':numChildren,
-			'children':children,
-			'assessmentName':assess_name,
-			'agg_name':agg_name,
-			'frequency':frequency,
-			'average':average,
-			'stddev':stddev,
-			'median':median,
-			'mode':mode,
-			'pass_fail_percentage':pass_fail_percentage
-		}
-		return HttpResponse(json.dumps(data))
-	else:
-		print "ERROR: Trying to aggregate a leaf!"
+		stats = api.getStatisticsForAssessment(assess_id)
+		average = stats[0]
+		median = stats[1]
+		mode = stats[2]
+		stddev = stats[3]
+		frequency = stats[4]
+		
+		if children is not None:
+			data = {
+				'type':1,
+				'numChildren':numChildren,
+				'children':children,
+				'assessmentName':assess_name,
+				'agg_name':agg_name,
+				'frequency':frequency,
+				'average':average,
+				'stddev':stddev,
+				'median':median,
+				'mode':mode,
+				'pass_fail_percentage':pass_fail_percentage,
+				'students':students
+			}
+			return HttpResponse(json.dumps(data))
+		else:
+			print "ERROR: Trying to aggregate a leaf!"
+	except Exception as e:
+		print "+====================="
+		print "SOOMETHING WENT WRONG"
+		print "+====================="
 	
 def aggregateMarkForAssessment(request, jsonObj):
 	json_data = json.loads(jsonObj)
@@ -1625,42 +1616,11 @@ def aggregateMarkForAssessment(request, jsonObj):
 '''
 ###################### End Aggregation Views ###############################
 '''
-'''
-###################### Statistics views ###########################
-'''
-def getStats(request, jsonObj):
-	json_data = json.loads(jsonObj)
-	assess_id = json_data['assess_id']
-
-	try:
-		frequency = api.getFrequencyAnalysisForAssessment(assess_id)
-		average = api.getAverageForAssessment(assess_id)
-		stddev = api.getStandardDeviationForAssessment(assess_id)
-		students = api.getStudentListForStats(assess_id)
-		print "BACK IN WEB SERVICES-----"
-		data = [{
-			'type':'1',
-			'frequency':frequency,
-			'average':average,
-			'stddev':stddev,
-			'studentlist':students	
-		}]
-		return HttpResponse(json.dumps(data))
-	except:
-		data = [{
-			'type':'-1',
-			'average':"Error! - getStats View",	
-		}]
-		return HttpResponse(json.dumps(data))
-'''
-###################### End Statistics views ###########################
-'''
 def assessmentReport(request, jsonObj):
 	json_data = json.loads(jsonObj)
 	assess_id = json_data['assess_id']
 	
 	info = api.generateAssessmentReport(assess_id)
-	
 	
 	if info:
 		data = {

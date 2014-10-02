@@ -1625,7 +1625,7 @@ def assessmentCenter(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-                                                                        'average':average,'mean':mean,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
                                                                         'stddev':stddev,'studentlist':studentlist,
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
                                                                         'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
@@ -1701,44 +1701,4 @@ def aggregateMarkForAssessment(request):
 
 '''
 ###################### End Aggregation Views ###############################
-'''
-'''
-###################### Statistics views ###########################
-'''
-def getStats(request):
-    assess_id = request.POST['assess_id']
-
-    data = {
-        'assess_id':assess_id	
-    }
-    results = views.getStats(request,json.dumps(data))
-    res = json.loads(results.content)
-    if res[0]['type'] == '1':
-        print "Stats Successfully"
-        average = res[0]['average']
-        frequency = res[0]['frequency']
-        stddev = res[0]['stddev']
-        studentlist = res[0]['studentlist']
-        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'average':average,'frequency':frequency,
-                                                                        'stddev':stddev,'studentlist':studentlist},context_instance=RequestContext(request))
-    else:
-        average = res[0]['average']
-        print "Stats UN Successfully"
-        return render_to_response("web_interface/stats.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'average':average
-                                                                        },context_instance=RequestContext(request))
-
-'''
-###################### End Statistics views ###########################
 '''

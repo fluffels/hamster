@@ -42,14 +42,14 @@ def get_assessment_report(request):
     module = data[0]
     assess_name = data[1]
     full_marks = data[2]
-    stats = []
-    stats.append(data[3])
-    stats.append(data[4])
-    stats.append(data[5])
-    stats.append(data[6])
-    
-    freq = data[7]
-    student_list = data[8]
+    stats = data[3]
+    stat = []
+    stat.append(stats[0])
+    stat.append(stats[1])
+    stat.append(stats[2])
+    stat.append(stats[3])
+    freq = stats[4]
+    student_list = data[4]
     
     return generate_assessment_report(assess_name,full_marks,module, stats, freq, student_list)
 
@@ -83,4 +83,21 @@ def get_student_marks_csv(request):
     print "res : " + str(res)
     
     return generate_student_mark_csv(res,student)
+############################################### CSV IMPORT #############################
+
+@csrf_exempt
+def import_csv(request):
+    filepath = "C:/Users/Sipho/Documents/GitHub/hamster/hamster_marking_system/reporting/files/test.csv"
+    marker = request.session['user']['uid'][0]
+    assess_id = request.POST['assess_id']
+
+    marklist = read_from_csv_file(assess_id, filepath)
+    
+    data ={
+        'assess_id':assess_id,
+        'marklist':marklist,
+        'marker':marker,
+    }
+    result = views.studentMarksFromCSV(request,json.dumps(data))
+    return HttpResponseRedirect('assessment_center')
     
