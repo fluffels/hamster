@@ -11,9 +11,12 @@ def login(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	username =json_data['username']
 	password =json_data['password']
-
+	
 	try:
 		usr = api.login(request,username,password)
+		print "mamelo gane where did you go wrong"
+		result = api.getAllPersonInDatabase()
+		modules = api.getAllModules()
 		data = [{
 			"type":1,
 			"message":"User logged in",
@@ -25,8 +28,11 @@ def login(request,jsonObj):
 			"sn": usr.get('sn'), 
 			"tutorFor": usr.get('tutorFor'), 
 			"studentOf": usr.get('studentOf'),
-			"initials": usr.get('initials')
+			"initials": usr.get('initials'),
+			"Users": result,
+			"Modules":modules
 		}]
+		print "loldolololololololololololollolololololololololollololololololololollollloloololoololl"
 		return HttpResponse(json.dumps(data), content_type="application/json")
 	except Exception, e:
 		data =[
@@ -1694,5 +1700,198 @@ def StudentAssessmentAggregated(request,jsonObj):
 		data = [{
 			'type':-1,
 			'message':'marks not retrievd',
+		}]
+		return HttpResponse(json.dumps(data))
+
+def getUserInDataBase(request):
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	data = [{
+		'User':result
+	}]
+	
+	if len(result) > 0:
+	        data = [{
+	             'type':1,
+	             'message':'users retrieved',
+	             'User':result,
+	             'Modules':modules
+	        }]
+	        return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'users not retrieved'
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def addStudentToModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	students = json_data['student']
+	module = json_data['module']
+	info =api.addStudentToModule(students,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	if info:
+		
+		data = [{
+			'type':1,
+			'message':'data retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'data not retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def addLectureToModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	lecture = json_data['lecture']
+	module = json_data['module']
+	info =api.addLectureToModule(lecture,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	
+	if info:
+		
+		data = [{
+			'type':1,
+			'message':'data retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'data not retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	
+#def addTaToModule(request,jsonObj):
+#	json_data = json.loads(jsonObj)
+#	students = json_data['student']
+#	module = json_data['module']
+#	info =api.addTeachingAssistantToModule(students,module)
+#	
+#	if info:
+#		
+#		data = [{
+#			'type':1,
+#			'message':'data retrieved',
+#		}]
+#		return HttpResponse(json.dumps(data))
+#	else:
+#		data = [{
+#			'type':-1,
+#			'message':'data not retrieved',
+#		}]
+#		return HttpResponse(json.dumps(data))
+#	
+def addTtToModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	tutor = json_data['tutor']
+	module = json_data['module']
+	info =api.addTutorToModule(tutor,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	if info:
+		
+		data = [{
+			'type':1,
+			'message':'data retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data = [{
+			'type':-1,
+			'message':'data not retrieved',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def removeStudentFromModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	students = json_data['student']
+	module = json_data['module']
+	info = api.removeStudentFromModule(students,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	
+	if info:
+		data=[{
+			'type':1,
+			'message':'users deleted',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'users not deleted',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+
+def removeLectureFromModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	lecture = json_data['lecture']
+	module = json_data['module']
+	info = api.removeLectureFromModule(lecture,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	
+	if info:
+		data=[{
+			'type':1,
+			'message':'users deleted',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'users not deleted',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	
+def removeTutorFromModule(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	tutor = json_data['tutor']
+	module = json_data['module']
+	info = api.removeTutorFromModule(tutor,module)
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	
+	if info:
+		data=[{
+			'type':1,
+			'message':'users deleted',
+			'Users':result,
+			'Modules':modules
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'users not deleted',
+			'Users':result,
+			'Modules':modules
 		}]
 		return HttpResponse(json.dumps(data))

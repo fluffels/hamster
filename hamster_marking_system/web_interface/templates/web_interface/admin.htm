@@ -122,6 +122,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		    <form action="added-tutor" role="form" method="post">{% csrf_token %}
                     <div id="add_ta" class="kanban-centered">
 
 			<!--Instructions-->
@@ -139,7 +140,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToAddTa_TutorTo">
+                                    <select class="form-control" name="modules" id="multiselectModuleToAddTa_TutorTo">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -153,7 +154,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Tutor/TA</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToAddToTa_Tutor">
+                                    <select multiple class="form-control" name="tutor" id="multiselectPersonToAddToTa_Tutor">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -167,6 +168,7 @@
                 <div class="panel-footer">
                     <button class="btn btn-success">Add <span class="glyphicon glyphicon-plus"></span></button>
                 </div>
+		</form>
             </div><!--./Add Tutor/TA board-->
 	    
 	    <!--Remove Tutor/TA board-->
@@ -176,6 +178,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		    <form role="form" action="tutor-removed" method="post">{% csrf_token %}
                     <div id="remove_ta" class="kanban-centered">
 
                         <!--Instructions-->
@@ -193,7 +196,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToRemoveTa_TutorFrom">
+                                    <select class="form-control" name="module" id="multiselectModuleToRemoveTa_TutorFrom">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -207,7 +210,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Tutor/TA</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToRemoveFromTa_Tutor">
+                                    <select multiple class="form-control" name="tutor" id="multiselectPersonToRemoveFromTa_Tutor">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -221,6 +224,7 @@
                 <div class="panel-footer">
                     <button class="btn btn-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
                 </div>
+		</form>
             </div><!--./Remove Tutor/TA board-->
         </div>
     </div>
@@ -236,11 +240,13 @@
 
             <!--Add Tutor/TA board-->
             <div class="panel panel-primary kanban-col">
+		
                 <div class="panel-heading">
                     Add Lecturer to Module...
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		    <form role="form" action="added-lecture" method="post">{% csrf_token %}
                     <div id="add_ta" class="kanban-centered">
 
 			<!--Instructions-->
@@ -258,7 +264,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToAddLectureTo">
+                                    <select class="form-control" name="module" id="multiselectModuleToAddLectureTo">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -272,7 +278,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Lecturer</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToAddToLecture">
+                                    <select multiple class="form-control" name="lecture" id="multiselectPersonToAddToLecture">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -286,7 +292,8 @@
                 <div class="panel-footer">
                     <button class="btn btn-success">Add <span class="glyphicon glyphicon-plus"></span></button>
                 </div>
-            </div><!--./Add Tutor/TA board-->
+		</form>
+             </div><!--./Add Tutor/TA board-->
 	    
 	    <!--Remove Tutor/TA board-->
             <div class="panel panel-info kanban-col">
@@ -295,6 +302,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		    <form role="form" action="lecture-removed" method="post">{% csrf_token %}
                     <div id="remove_ta" class="kanban-centered">
 
                         <!--Instructions-->
@@ -312,7 +320,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToRemoveLectureFrom">
+                                    <select class="form-control" name="module" id="multiselectModuleToRemoveLectureFrom">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -326,7 +334,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Lecturer</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToRemoveFromLecture">
+                                    <select multiple class="form-control" name="lecture" id="multiselectPersonToRemoveFromLecture">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -340,6 +348,7 @@
                 <div class="panel-footer">
                     <button class="btn btn-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
                 </div>
+		</form>
             </div><!--./Remove Tutor/TA board-->
         </div>
     </div>
@@ -355,11 +364,14 @@
 
             <!--Add Tutor/TA board-->
             <div class="panel panel-primary kanban-col">
+		
                 <div class="panel-heading">
                     Add Student to Module...
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		<!--form-->
+		<form action='added-student' method='post' role="form"> {% csrf_token %}
                     <div id="add_ta" class="kanban-centered">
 
 			<!--Instructions-->
@@ -371,13 +383,13 @@
                                 </div>
                             </div>
                         </article>
-
+			
 			<!--Pick a module-->
                         <article class="kanban-entry grab" id="option_modules" draggable="true">
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToAddStudentTo">
+                                    <select class="form-control" name="module" id="multiselectModuleToAddStudentTo">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -391,7 +403,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Student</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToAddToStudent">
+                                    <select multiple class="form-control" name="student" id="multiselectPersonToAddToStudent">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -405,6 +417,7 @@
                 <div class="panel-footer">
                     <button class="btn btn-success">Add <span class="glyphicon glyphicon-plus"></span></button>
                 </div>
+		</form>
             </div><!--./Add Tutor/TA board-->
 	    
 	    <!--Remove Tutor/TA board-->
@@ -414,6 +427,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
+		    <form action="student-removed" method="post" role="form">{% csrf_token %}
                     <div id="remove_ta" class="kanban-centered">
 
                         <!--Instructions-->
@@ -431,7 +445,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectModuleToRemoveStudentFrom">
+                                    <select class="form-control" name="module" id="multiselectModuleToRemoveStudentFrom">
 					{% for mod in Modules %}
 						<option value={{ mod }}>{{ mod }}</option>
 					{% endfor %}
@@ -445,7 +459,7 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Student</a></h2>
-                                    <select class="form-control" name="add_tu_ta_admin" id="multiselectPersonToRemoveFromStudent">
+                                    <select multiple class="form-control" name="student" id="multiselectPersonToRemoveFromStudent">
 					{% for per in Person %}
 						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
 					{% endfor %}
@@ -459,6 +473,7 @@
                 <div class="panel-footer">
                     <button class="btn btn-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
                 </div>
+		</form>
             </div><!--./Remove Tutor/TA board-->
         </div>
     </div>
