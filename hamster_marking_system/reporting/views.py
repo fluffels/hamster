@@ -83,7 +83,9 @@ def get_student_marks_csv(request):
 @csrf_exempt
 def import_csv(request):
     #filepath = "C:/Users/Sipho/Documents/GitHub/hamster/hamster_marking_system/reporting/files/test.csv"
-    filepath = request.POST['filepath']
+
+    filepath = request.POST['filename']
+
     marker = request.session['user']['uid'][0]
     assess_id = request.POST['assess_id']
 

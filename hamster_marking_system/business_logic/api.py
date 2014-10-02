@@ -12,7 +12,12 @@ from numpy import *
 # Parameter: 
 # Return: Module[]
 def getAllModules():
-    return Module.objects.all()
+    module = Module.objects.all()
+    list = []
+    for mod in module:
+        list.append(mod.id)
+    
+    return list
 
 def getPersonDetails(username):
     return getPersonFromArr(username)
@@ -460,6 +465,18 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
             return True
         else:
             return False
+    except Exception as e:
+        raise e
+    
+def changeAssessmentName(request,assess_id,name):
+    try:
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        assess = Assessment.objects.get(id=assess_id)
+        old = assess.assess_name
+        assess.assess_name = name
+        assess.save()
+        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(name),assess.mod_id)
+        return True
     except Exception as e:
         raise e
 
@@ -1968,6 +1985,10 @@ def getAggregatorName(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
         agg = Aggregator.objects.get(assessment=assess_obj)
+        print "#########################################"
+        print "Aggregator:    "+ str(agg)
+        print "Agg's name:    "+ str(agg.aggregator_name)
+        print "#########################################"
         name = agg.aggregator_name
         return name
     else:
@@ -2314,3 +2335,100 @@ def getStudentListForStats(assess_id):
 '''
 ################################### END STATISTICS FUNCTIONS #####################################
 '''
+
+def addStudentToModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std)
+            modules= stud.lectureOf_module.all()
+            mod = Module.objects.get(id=module)
+            stud.studentOfInsert(mod)
+        return True
+    except:
+        return False
+
+def removeStudentFromModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.studentOfDelete(mod)
+        return True
+    except:
+        return False
+
+def addLectureToModule(lect,module):
+    try:
+        for std in lect:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            print stud
+            stud.lectureOfInsert(mod)
+        return True
+    except:
+        return False
+    
+def removeLectureFromModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.lectureOfDelete(mod)
+        return True
+    except:
+        return False
+
+#def addTeachingAssistantToModule(ta,module):
+#    try:
+#        for std in ta:
+#            stud = Person.objects.get(upId=std) 
+#            mod = Module.objects.get(id=module)
+#            stud.teachingAssistantOfInsert(mod)
+#        return True
+#    except:
+#        return False
+#    
+#def removeTeachingAssistantFromModule(ta,module):
+#    try:
+#        for std in ta:
+#            stud = Person.objects.get(upId=std) 
+#            mod = Module.objects.get(id=module)
+#            stud.teachingAssistantOfDelete(mod)
+#        return True
+#    except:
+#        return False
+    
+def addTutorToModule(tt,module):
+    try:
+        for std in tt:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            print "bathong hle help me " +std
+            stud.tutorOfInsert(mod)
+        return True
+    except:
+        return False
+    
+def removeTutorFromModule(tt,module):
+    try:
+        for std in tt:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.tutorOfDelete(mod)
+        return True
+    except:
+        return False
+    
+def getAllPersonInDatabase():
+    person = Person.objects.all()
+    list = []
+    print "Users in database"
+    for per in person:
+        data = []
+        data.append(per.upId)
+        data.append(per.firstName)
+        data.append(per.surname)
+        list.append(data)
+        print data
+    return list
+

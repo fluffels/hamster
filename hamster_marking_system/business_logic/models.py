@@ -707,24 +707,32 @@ class Person(models.Model):
             self.save()
             
     def lectureOfInsert(self,value):
-            self.lectureOf_module.append(value)
+            self.lectureOf_module.add(value)
+            self.save()
     def lectureOfDelete(self,value):
             self.lectureOf_module.remove(value)
+            self.save()
             
     def studentOfInsert(self,value):
-            self.studentOf_module.append(value)
+            self.studentOf_module.add(value)
+            self.save()
     def studentOfDelete(self,value):
             self.studentOf_module.remove(value)
+            self.save()
             
     def tutorOfInsert(self,value):
-            self.tutorOf_module.append(value)
+            self.tutorOf_module.add(value)
+            self.save()
     def tutorOfDelete(self,value):
             self.tutorOf_module.remove(value)
+            self.save()
             
     def teachingAssistantOfInsert(self,value):
-            self.teachingAssistantOf_module.append(value)
+            self.teachingAssistantOf_module.add(value)
+            self.save()
     def teachingAssistantOfDelete(self,value):
             self.teachingAssistantOf_module.remove(value)
+            self.save()
     
     def isEnrolled(self, mod_code):
             is_true = studentOf_module.objects.filter(module_id=mod_code)
