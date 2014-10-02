@@ -58,8 +58,11 @@ urlpatterns = patterns('',
     url(r'lecture-removed','web_interface.views.removeLectureFromModule', name='added-lecture'),
     url(r'tutor-removed','web_interface.views.removeTutorFromModule', name='tutor-removed'),
     
+    url(r'importCSV$','reporting.views.import_csv', name='import_csv'),
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
+    
+    url(r'update-name','web_interface.views.changeAssessmentName', name='update_assessment_name'),
     
     url(r'^admin/', include(admin.site.urls)),
 )
