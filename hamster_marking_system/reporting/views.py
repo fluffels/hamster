@@ -43,11 +43,6 @@ def get_assessment_report(request):
     assess_name = data[1]
     full_marks = data[2]
     stats = data[3]
-    stat = []
-    stat.append(stats[0])
-    stat.append(stats[1])
-    stat.append(stats[2])
-    stat.append(stats[3])
     freq = stats[4]
     student_list = data[4]
     
@@ -87,7 +82,8 @@ def get_student_marks_csv(request):
 
 @csrf_exempt
 def import_csv(request):
-    filepath = "C:/Users/Sipho/Documents/GitHub/hamster/hamster_marking_system/reporting/files/test.csv"
+    #filepath = "C:/Users/Sipho/Documents/GitHub/hamster/hamster_marking_system/reporting/files/test.csv"
+    filepath = request.POST['filepath']
     marker = request.session['user']['uid'][0]
     assess_id = request.POST['assess_id']
 
