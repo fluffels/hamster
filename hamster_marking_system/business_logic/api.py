@@ -462,6 +462,18 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
             return False
     except Exception as e:
         raise e
+    
+def changeAssessmentName(request,assess_id,name):
+    try:
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        assess = Assessment.objects.get(id=assess_id)
+        old = assess.assess_name
+        assess.assess_name = name
+        assess.save()
+        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(name),assess.mod_id)
+        return True
+    except Exception as e:
+        raise e
 
 
 # Name: createLeafAssessment(request, leaf_name_,assessment_type, module_code,published_, full_marks, parent_id)

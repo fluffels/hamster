@@ -412,7 +412,7 @@
 <div class="modal fade" id="import_marks" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="update-fullmark" method="post" onsubmit="return Validate(this);" data-parsley-validate>
+			<form class="form-horizontal" action="importCSV" method="post" role="form" onsubmit="return Validate(this);" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Import CSV With Marks</strong></h4>
@@ -429,7 +429,7 @@
 					<div class="form-group">
 						<input id="CSVuploadFile" placeholder="Choose File" disabled="disabled">
 						<div class="fileUpload btn btn-primary">
-						    <input id="CSVuploadBtn" type="file" class="upload">
+						    <input name="filename" id="CSVuploadBtn" type="file" class="upload">
 						</div>
 						<h5 class="help-block">Select CSV file with marks.</h5>
 						<script>
@@ -471,13 +471,13 @@
 					<div class="form-group">
 						
 						<div class="col-lg-8">
-							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }} placeholder={{ module }}>
+							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }}>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button id="submit" class="btn btn-success" type="submit">Upload</button>
+					<button class="btn btn-success" type="submit">Upload</button>
 				</div>
 			</form>
 		</div>
@@ -488,7 +488,7 @@
 <div class="modal fade" id="update_ass_name" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="update-assess-name" method="post" data-parsley-validate>
+			<form class="form-horizontal" action="update-name" method="post" role="form" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Update Assessment Name for</strong></h4>
@@ -497,7 +497,7 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<h4>
-						<label for="contact-name" class="col-lg-5 control-label">Previous Name:</label>
+						<label for="previous-name" class="col-lg-5 control-label">Previous Name:</label>
 						</h4>
 						<div class="col-lg-5">
 							<input type="text" disabled="disabled" class="form-control" value="{{ assessmentName }}">
@@ -505,25 +505,19 @@
 					</div>
 					<div class="form-group">
 						<h4>
-						<label for="contact-email" class="col-lg-5 control-label">New Name:</label>
+						<label for="new-name" class="col-lg-5 control-label">New Name:</label>
 						</h4>
 						<div class="col-lg-5">
 							<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 							<input type="text" class="form-control" id="new-assess-name" name="assess_name" placeholder="New Assessment Name"
 							required data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						
-						<div class="col-lg-8">
-							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }} placeholder={{ module }}>
+							<input type="hidden" name="module" value={{ module }}>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button id="submit" class="btn btn-success" type="submit">Update</button>
+					<button class="btn btn-success" type="submit">Update</button>
 				</div>
 			</form>
 		</div>

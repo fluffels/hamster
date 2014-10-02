@@ -56,5 +56,7 @@ urlpatterns = patterns('',
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
     
+    url(r'update-name','web_interface.views.changeAssessmentName', name='update_assessment_name'),
+    
     url(r'^admin/', include(admin.site.urls)),
 )

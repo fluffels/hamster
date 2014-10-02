@@ -923,6 +923,25 @@ def changeAssessmentFullMark(request,jsonObj):
 	                'message':'mark not changed'
 	        }]
 	        return HttpResponse(json.dumps(data))
+	
+def changeAssessmentName(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	name = json_data['assess_name']
+	
+	info = api.changeAssessmentName(request,assess_id,name)
+	if info:
+		data = [{
+			'type':1,
+			'message':'name changed'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+	        data = [{
+	                'type':-1,
+	                'message':'name not changed'
+	        }]
+	        return HttpResponse(json.dumps(data))
 
 def openOrCloseSession(request, jsonObj):
 	json_data = json.loads(jsonObj)

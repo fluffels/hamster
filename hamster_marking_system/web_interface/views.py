@@ -823,6 +823,51 @@ def changeAssessmentFullMark(request):
                                                                                 context_instance = RequestContext(request))
 
 
+#@isAuthenticated
+#@isLecture
+def changeAssessmentName(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    name = request.POST['assess_name']
+    
+    data = {
+        'assess_id':assess_id,
+        'assess_name':name
+    }
+    result = views.changeAssessmentName(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        data={
+                'assess_id':assess_id
+        }
+        result = views.assessmentCenter(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+
 @isAuthenticated
 @isLecture
 def setPublishedStatus(request):
