@@ -823,8 +823,8 @@ def changeAssessmentFullMark(request):
                                                                                 context_instance = RequestContext(request))
 
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def changeAssessmentName(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
@@ -1685,8 +1685,8 @@ def assessmentCenter(request):
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def aggregateMarkForAssessment(request):
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']
@@ -1699,13 +1699,13 @@ def aggregateMarkForAssessment(request):
     child_id = myDict['child_id']
     
     assess_id = request.POST['assess_id']
-    mod = request.POST['module']
+    module = request.POST['module']
     
     data = {
         'assess_id':assess_id,
         'agg_name':agg_name,
         'numContributors':numContributors,
-        'module':mod,
+        'module':module,
         'child_weight':child_weight,
         'child_id':child_id
     }
@@ -1714,34 +1714,30 @@ def aggregateMarkForAssessment(request):
     res = json.loads(result.content)
     print "////////////\\\\\\\\\\\\"
 
-    if res[0]['type'] == '1':
-                average = res[0]['average']
-                mean = res[0]['mean']
-                median = res[0]['median']
-                mode = res[0]['mode']
-                frequency = res[0]['frequency']
-                stddev = res[0]['stddev']
-                studentlist = res[0]['studentlist']
-                
-                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
-                                                                                'user_lect':user_lect,
-                                                                                'user_stud':user_stud,
-                                                                                'user_tut':user_tut,
-                                                                                'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod,'assessment':'',
-                                                                                'second':second,'third':third},
-                                                                                context_instance = RequestContext(request))
-    else:
-        root = "NONE";
-        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'root':root},
-                                                                        context_instance = RequestContext(request))
+    if res['type'] ==1:
+
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 '''
