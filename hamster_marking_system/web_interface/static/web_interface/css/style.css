@@ -18,11 +18,23 @@
 
 /*
  *Change nav-bar colour
- *Using CS Site colour
+ *Use CS Site colour
  */
 .navbar-inverse{
   background-color: #497AAA;
-  border-color: #497AAA;
+  border-color: #607EA3;
+}
+
+.navbar-inverse .navbar-brand{
+  color: rgba(243, 238, 238, 1);
+}
+
+.navbar-inverse .navbar-nav > li > a{
+  color: rgba(243, 238, 238, 1);
+}
+
+.navbar-inverse .navbar-text{
+  color: rgb(255, 255, 255);
 }
 
 /*
