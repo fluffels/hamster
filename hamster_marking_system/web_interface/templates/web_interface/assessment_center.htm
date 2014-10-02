@@ -304,7 +304,7 @@
 			<div class="panel-heading">Passed/Failed Students</div>
 			<div class="panel-body">
 			<canvas id="frequency_doughnut_chart">
-			      <!--Bar graph placed here-->
+			      <!--Pie graph placed here-->
 			</canvas>
 			</div>
 		      </div>
@@ -315,10 +315,10 @@
 		<!--Bottom Left chart-->
 		<div class="col-sm-6">
 		  <div class="panel panel-info">
-		      <div class="panel-heading">Another Chart</div>
+		      <div class="panel-heading">Normal Distribution</div>
 		      <div class="panel-body">
-		      <canvas id="frequency_bar_chart">
-			  <!--Bar graph placed here-->
+		      <canvas id="norm_dist_chart ">
+			  <!--Norm graph placed here-->
 		      </canvas>
 		      </div>
 		    </div>
@@ -373,15 +373,36 @@
 
 		];
 	
+	var lineChartData = {
+			labels : ["0 - 39", "40 - 49", "50 - 59", "60 - 74", "75 - 100"],
+			datasets : [
+				{
+					label: "Class Distribution",
+					fillColor : "rgba(220,220,220,0.2)",
+					strokeColor : "rgba(220,220,220,1)",
+					pointColor : "rgba(220,220,220,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(220,220,220,1)",
+					data : [{{ frequency.0 }}, {{ frequency.1 }},{{ frequency.2 }},
+						{{ frequency.3 }}, {{ frequency.4 }}]
+				}
+			]
+
+		}
+	
 	window.onload = function(){
 		var ctx = document.getElementById("frequency_bar_chart").getContext("2d");
-		window.myBar = new Chart(ctx).Bar(barChartData, {
-			responsive : false
-		});
+		window.myBar = new Chart(ctx).Bar(barChartData, {responsive : false});
+		
 		var ctx = document.getElementById("frequency_doughnut_chart").getContext("2d");
 		window.myDoughnut = new Chart(ctx).Doughnut(doughnutData, {responsive : false});
+		
+		var ctx = document.getElementById("norm_dist_chart").getContext("2d");
+		window.myLine = new Chart(ctx).Line(lineChartData, {responsive: false});
 	}
 
+	
       </script>
       
     </div>

@@ -1574,6 +1574,7 @@ def assessmentCenter(request, jsonObj):
 		mode = stats[2]
 		stddev = stats[3]
 		frequency = stats[4]
+		#norm_dist = stats[5]
 		
 		if children is not None:
 			data = {
@@ -1628,6 +1629,7 @@ def aggregateMarkForAssessment(request, jsonObj):
 	mode = stats[2]
 	stddev = stats[3]
 	frequency = stats[4]
+	#norm_dist = stats[5]
 	
 	if children is not None:
 		data = {
