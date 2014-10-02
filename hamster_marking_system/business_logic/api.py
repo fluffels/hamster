@@ -2340,9 +2340,25 @@ def addStudentToModule(student,module):
     try:
         for std in student:
             stud = Person.objects.get(upId=std)
-            modules= stud.lectureOf_module.all()
-            mod = Module.objects.get(id=module)
-            stud.studentOfInsert(mod)
+            moduleL= stud.lectureOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
         return True
     except:
         return False
@@ -2361,9 +2377,25 @@ def addLectureToModule(lect,module):
     try:
         for std in lect:
             stud = Person.objects.get(upId=std) 
-            mod = Module.objects.get(id=module)
-            print stud
-            stud.lectureOfInsert(mod)
+            moduleL= stud.studentOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
         return True
     except:
         return False
@@ -2402,9 +2434,25 @@ def addTutorToModule(tt,module):
     try:
         for std in tt:
             stud = Person.objects.get(upId=std) 
-            mod = Module.objects.get(id=module)
-            print "bathong hle help me " +std
-            stud.tutorOfInsert(mod)
+            moduleL= stud.studentOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
         return True
     except:
         return False
