@@ -1747,7 +1747,7 @@ def getStats(request):
 '''
 ###################### End Statistics views ###########################
 '''
-
+@isAuthenticated
 def addStudentToModule(request):
     lists = request.POST.lists()
     students =lists[2]
@@ -1784,6 +1784,7 @@ def addStudentToModule(request):
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
+@isAuthenticated
 def addLectureToModule(request):
     lists = request.POST.lists()
     lecture =lists[0]
@@ -1820,7 +1821,7 @@ def addLectureToModule(request):
                                                                        'Person':Person,
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
-    
+@isAuthenticated
 def addTutorToModule(request):
     lists = request.POST.lists()
     tutor =lists[3]
@@ -1857,6 +1858,7 @@ def addTutorToModule(request):
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
+@isAuthenticated
 def removeStudentFromModule(request):
     lists = request.POST.lists()
     students =lists[2]
@@ -1893,6 +1895,7 @@ def removeStudentFromModule(request):
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
+@isAuthenticated
 def removeLectureFromModule(request):
     lists = request.POST.lists()
     lecture =lists[0]
@@ -1928,7 +1931,8 @@ def removeLectureFromModule(request):
                                                                        'Person':Person,
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
-    
+
+@isAuthenticated
 def removeTutorFromModule(request):
     lists = request.POST.lists()
     tutor =lists[0]
