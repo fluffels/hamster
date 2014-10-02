@@ -1985,6 +1985,10 @@ def getAggregatorName(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
         agg = Aggregator.objects.get(assessment=assess_obj)
+        print "#########################################"
+        print "Aggregator:    "+ str(agg)
+        print "Agg's name:    "+ str(agg.aggregator_name)
+        print "#########################################"
         name = agg.aggregator_name
         return name
     else:

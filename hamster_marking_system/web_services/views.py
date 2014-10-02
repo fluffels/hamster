@@ -1608,35 +1608,46 @@ def aggregateMarkForAssessment(request, jsonObj):
 	
 	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, child_id, child_weight )
 	
-	mod = json_data['module']
-	array = api.getAssessment(mod)
-	root = array[0]
-	first = array[1]
-	second = array[2]
-	third = array[3]
+	#AGGREGATION
+	children = api.getAggregationInfo(assess_id)
+	numChildren = api.getNumChildren(assess_id)
+	assess_name = api.getAssessmentName(assess_id)
+	agg_name = api.getAggregatorName(assess_id)
 	
-	frequency = api.getFrequencyAnalysisForAssessment(assess_id)
-	average = api.getAverageForAssessment(assess_id)
-	stddev = api.getStandardDeviationForAssessment(assess_id)
+	#STATISTICS
+	pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
+	print "*********************************************************"
+	print "pass_fail_percentage: " + str(pass_fail_percentage)
+	print "*********************************************************\n"
+	
 	students = api.getStudentListForStats(assess_id)
 
-	if array :
-		data = [{
-			'type':'1',
-			'root':root,
-			'first':first,
-			'second':second,
-			'third':third
-			
-		}]
+	stats = api.getStatisticsForAssessment(assess_id)
+	average = stats[0]
+	median = stats[1]
+	mode = stats[2]
+	stddev = stats[3]
+	frequency = stats[4]
+	
+	if children is not None:
+		data = {
+			'type':1,
+			'numChildren':numChildren,
+			'children':children,
+			'assessmentName':assess_name,
+			'agg_name':agg_name,
+			'frequency':frequency,
+			'average':average,
+			'stddev':stddev,
+			'median':median,
+			'mode':mode,
+			'pass_fail_percentage':pass_fail_percentage,
+			'students':students
+		}
 		return HttpResponse(json.dumps(data))
 	else:
-		data = [{
-			'type':'-1',
-			'assessment':array,
-			
-		}]
-		return HttpResponse(json.dumps(data))
+		print "ERROR: Trying to aggregate a leaf!"
+
 
 '''
 ###################### End Aggregation Views ###############################
