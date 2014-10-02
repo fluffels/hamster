@@ -99,26 +99,13 @@ class BestOfAggregator(Aggregator):
     if assess_obj.assessment_type == 'Aggregate':
       for child in children:
           list_of_children.append(aggregateChild(child.id, student_id))
-      
-      print "********************************************\n"
-      print "full list: " + str(list_of_children)
-      print "********************************************\n"
-        
+ 
       list_of_children.sort(key=lambda x:x[6], reverse=True) 
-
-      print "********************************************\n"
-      print "full SORTED list: " + str(list_of_children)
-      print "\n numC:" + str(numContributors)
-      print "********************************************\n"
-     
+    
       list_of_chosen_children= []
       for i in range(0,numContributors):
         list_of_chosen_children.append(list_of_children[i])
-      
-      print "********************************************\n"
-      print "full CHOSEN list: " + str(list_of_chosen_children)
-      print "********************************************\n"
-      
+
       for child in list_of_chosen_children:
         agg_mark += child[4]
         agg_total += child[5]
@@ -157,27 +144,13 @@ class BestOfAggregator(Aggregator):
     if assess_obj.assessment_type == 'Aggregate':
       for child in children:
         if child.published == True:
-          list_of_children.append(aggregateChild(child.id, student_id))
-      
-      print "********************************************\n"
-      print "full list: " + str(list_of_children)
-      print "********************************************\n"
-        
+          list_of_children.append(aggregateChild(child.id, student_id)) 
       list_of_children.sort(key=lambda x:x[6], reverse=True) 
 
-      print "********************************************\n"
-      print "full SORTED list: " + str(list_of_children)
-      print "\n numC:" + str(numContributors)
-      print "********************************************\n"
-     
       list_of_chosen_children= []
       for i in range(0,numContributors):
         list_of_chosen_children.append(list_of_children[i])
-      
-      print "********************************************\n"
-      print "full CHOSEN list: " + str(list_of_chosen_children)
-      print "********************************************\n"
-      
+
       for child in list_of_chosen_children:
         agg_mark += child[4]
         agg_total += child[5]
@@ -201,8 +174,7 @@ class BestOfAggregator(Aggregator):
     
     elif assess_obj.assessment_type == 'Leaf':
       print "Error, trying best of on a leaf: " +str(assess_obj)
-
-      
+  
   def __unicode__(self):
     assess = self.assessment
     return self.aggregator_name + " " + assess.assess_name
@@ -216,10 +188,16 @@ def aggregateChild(assess_id, student_id ):
       sum_total_of_children = 0
       for child in children:
         if child.assessment_type == 'Leaf':
-          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-          mark = markAlloc.getMark()
-          sum_agg_of_children += mark
-          sum_total_of_children += child.full_marks
+          try:
+            markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+            mark = markAlloc.getMark()
+            sum_agg_of_children += mark
+            sum_total_of_children += child.full_marks
+          except Exception as e:
+            print "Exception in aggregateChild - No mark allocation for leaf"
+            mark = -1
+            sum_agg_of_children = -1
+            sum_total_of_children = child.full_marks
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
           sum_total_of_children += getSumTotalOfChildrenForStudent(child.id)
@@ -235,10 +213,17 @@ def aggregateChild(assess_id, student_id ):
       list.append(sum_total_of_children)
       list.append(percentage)
     else:
-      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
-      mark = markAlloc.getMark()
-      total = root.full_marks
-      perc = ((mark/total) *100)
+      try:
+        markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
+        mark = markAlloc.getMark()
+        total = root.full_marks
+        perc = ((mark/total) *100)
+      except Exception as e:
+        print "Exception in aggregateChild - No mark allocation for leaf root"
+        mark = -1
+        total = root.full_marks
+        perc = -1
+      
       list = []
       list.append(root.id)
       list.append(root.assess_name)
@@ -344,10 +329,16 @@ class SimpleSumAggregator(Aggregator):
     if root.assessment_type == 'Aggregate':
       for child in children:
         if child.assessment_type == 'Leaf':
-          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-          mark = markAlloc.getMark()
-          sum_agg_of_children += mark
-          sum_total_of_children += child.full_marks
+          try:
+            markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+            mark = markAlloc.getMark()
+            sum_agg_of_children += mark
+            sum_total_of_children += child.full_marks
+          except Exception as e:
+            print "Exception aggregateMarksLecturer - SimpleSum (No mark allocation exists)"
+            mark = -1
+            sum_agg_of_children = mark
+            sum_total_of_children += child.full_marks
   
         elif child.assessment_type == 'Aggregate':
           sum_agg_of_children += getSumAggOfChildrenForStudent(child.id, student_id)
@@ -367,11 +358,17 @@ class SimpleSumAggregator(Aggregator):
       list.append(percentage)
  
     else:
-      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
-      mark = markAlloc.getMark()
-      total = root.full_marks
-      perc = ((mark/total) *100)
-  
+      try:
+        markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
+        mark = markAlloc.getMark()
+        total = root.full_marks
+        perc = ((mark/total) *100)
+      except Exception as e:
+        print "Exception aggregateMarksLecturer - SimpleSum -- Leaf (No mark allocation exists)"
+        mark = -1
+        total = root.full_marks
+        perc = -1
+      
       list = []
       list.append(root.id)
       list.append(root.assess_name)
@@ -394,10 +391,16 @@ class SimpleSumAggregator(Aggregator):
       for child in children:
         if child.assessment_type == 'Leaf':
           if child.published == True:
-            markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-            mark = markAlloc.getMark()
-            sum_agg_of_children += mark
-            sum_total_of_children += child.full_marks
+            try:
+              markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+              mark = markAlloc.getMark()
+              sum_agg_of_children += mark
+              sum_total_of_children += child.full_marks
+            except Exception as e:
+              print "Exception aggregateMarksStudent - SimpleSum (No mark allocation exists)"
+              mark = -1
+              sum_agg_of_children = mark
+              sum_total_of_children = child.full_marks
   
         elif child.assessment_type == 'Aggregate':
           if child.published == True:
@@ -418,10 +421,16 @@ class SimpleSumAggregator(Aggregator):
       list.append(percentage)
  
     else:
-      markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
-      mark = markAlloc.getMark()
-      total = root.full_marks
-      perc = ((mark/total) *100)
+      try:
+        markAlloc = MarkAllocation.objects.get(assessment=root, student=student_obj)
+        mark = markAlloc.getMark()
+        total = root.full_marks
+        perc = (mark/total)*100
+      except Exception as e:
+        print "Exception aggregateMarksStudent - SimpleSum--- Leaf (No mark allocation exists)"
+        mark = -1
+        total = -1
+        sum_total_of_children = child.full_marks
   
       list = []
       list.append(root.id)
@@ -490,12 +499,15 @@ def getSumAggOfChildrenForStudent(assess_id, student_id):
     
     for child in children:
       if child.assessment_type == 'Leaf':
-        markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
-        mark = markAlloc.getMark()
-        total += mark
+        try:
+          markAlloc = MarkAllocation.objects.get(assessment=child, student=student_obj)
+          mark = markAlloc.getMark()
+          total += mark
+        except Exception as e:
+          mark = -1
+          total = -1
       else:
         total += getSumAggOfChildrenForStudent(child.id, student_id)
-
     return total
 
 
@@ -1084,3 +1096,5 @@ class Course(models.Model):
     
     marker_user = Group.objects.get_or_create(name='Marker Group')
 '''
+
+

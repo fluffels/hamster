@@ -2140,9 +2140,7 @@ def StudentMarks(assess, student):
                 childy.append(mark[6])
                 list.append(childy)
     return list
-        
-    
-    
+            
 def AggregateAssessmentForStudent(assessment,student):
     if assessment.assessment_type == 'Leaf':
         mark = getMarkForStudent(student, assessment.id)
@@ -2151,122 +2149,66 @@ def AggregateAssessmentForStudent(assessment,student):
         aggregator = Aggregator.objects.get(assessment=assessment)
         mark = aggregator.aggregateMarksStudent(assessment.id, student)
         return mark
+
+def generateAssessmentReport(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    assess_name = assess_obj.assess_name
+    module = assess_obj.mod_id.module_code
+    full_marks = aggregateTotalMarkForLecture(assess_id)
+    fmarks = int(full_marks)
+    
+    list =[]
+    list.append(module)
+    list.append(assess_name)
+    list.append(fmarks)
+    list.append(getAverageForAssessment(assess_id))
+    list.append(getMedianForAssessment(assess_id))
+    list.append(getModeForAssessment(assess_id))
+    list.append(getStandardDeviationForAssessment(assess_id))
+    list.append(getFrequencyAnalysisForAssessment(assess_id))
+    list.append(getStudentListForStats(assess_id))
+    
+    return list
 '''
 ################################### STATISTICS FUNCTIONS #####################################
 '''
-
-def getMeanForAssessment(assess_id):
+def getStatisticsForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
+    student_list = getStudentListForStats(assess_id)
+    marks = []
+    list = []
+    for student in student_list:
+        stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
+        perc = stu_mark[6]
+        marks.append(perc)
     
-    if assess_obj.assessment_type == "Aggregate":
-        marks = []
-        student_list = getStudentListForStats(assess_id)
-        for student in student_list:
-            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
-            perc = stu_mark[6]
-            marks.append(perc)
-        
-    else:
-        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-        marks = []
-        
-        for markAlloc in all_markAllocs:
-            stu = markAlloc.student
-            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
-            perc = mark_array[6]
-            marks.append(perc)
+    info = np.array(marks, dtype=float)
     
-    arr = np.array(marks, dtype=float)
-
-    mn = np.mean(arr)
-    mean = "{0:.2f}".format(mn)
+    #average
+    av = np.average(info)
+    average = "{0:.2f}".format(av)
+    list.append(average)
     
-    return mean
-
-def getMedianForAssessment(assess_id):
-    assess_obj = Assessment.objects.get(id=assess_id)
+    #median
+    md = np.median(info)
+    median = "{0:.2f}".format(md)
+    list.append(median)
     
-    if assess_obj.assessment_type == "Aggregate":
-        marks = []
-        student_list = getStudentListForStats(assess_id)
-        for student in student_list:
-            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
-            perc = stu_mark[6]
-            marks.append(perc)
+    #mode
+    md = np.var(info)
+    mode = "{0:.2f}".format(md)
+    list.append(mode)
     
-    else:
-        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-        marks = []
-        
-        for markAlloc in all_markAllocs:
-            stu = markAlloc.student
-            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
-            perc = mark_array[6]
-            marks.append(perc)
+    #std_dev
+    sd = np.std(info)
+    stddev = "{0:.2f}".format(sd)
+    list.append(stddev)
     
-    arr = np.array(marks, dtype=float)
-
-    mn = np.median(arr)
-    mean = "{0:.2f}".format(mn)
+    #freq
+    frequency = getFrequencyAnalysisForAssessment(assess_id)
+    list.append(frequency)
     
-    return mean
-
-def getAverageForAssessment(assess_id):
-    
-    assess_obj = Assessment.objects.get(id=assess_id)
-    
-    if assess_obj.assessment_type == "Aggregate":
-        marks = []
-        student_list = getStudentListForStats(assess_id)
-        for student in student_list:
-            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
-            perc = stu_mark[6]
-            marks.append(perc)
-    
-    else:
-        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-        marks = []
-        
-        for markAlloc in all_markAllocs:
-            stu = markAlloc.student
-            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
-            perc = mark_array[6]
-            marks.append(perc)
-    
-    arr = np.array(marks, dtype=float)
-
-    mn = np.average(arr)
-    mean = "{0:.2f}".format(mn)
-    
-    return mean
-
-def getStandardDeviationForAssessment(assess_id):
-    assess_obj = Assessment.objects.get(id=assess_id)
-    
-    if assess_obj.assessment_type == "Aggregate":
-        marks = []
-        student_list = getStudentListForStats(assess_id)
-        for student in student_list:
-            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
-            perc = stu_mark[6]
-            marks.append(perc)
-    
-    else:
-        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-        marks = []
-        
-        for markAlloc in all_markAllocs:
-            stu = markAlloc.student
-            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
-            perc = mark_array[6]
-            marks.append(perc)
-    
-    arr = np.array(marks, dtype=float)
-
-    mn = np.std(arr)
-    mean = "{0:.2f}".format(mn)
-    
-    return mean
+    return list
 
 def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
@@ -2372,34 +2314,6 @@ def getStudentListForStats(assess_id):
         list.append(perc)
         studentList.append(list)   
     return studentList
-
-def getModeForAssessment(assess_id):
-    assess_obj = Assessment.objects.get(id=assess_id)
-    
-    if assess_obj.assessment_type == "Aggregate":
-        marks = []
-        student_list = getStudentListForStats(assess_id)
-        for student in student_list:
-            stu_mark = getMarkForStudentForLecturer(student[0],assess_id)
-            perc = stu_mark[6]
-            marks.append(perc)
-    
-    else:
-        all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-        marks = []
-        
-        for markAlloc in all_markAllocs:
-            stu = markAlloc.student
-            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
-            perc = mark_array[6]
-            marks.append(perc)
-    
-    arr = np.array(marks, dtype=float)
-
-    mn = np.average(arr)
-    mean = "{0:.2f}".format(mn)
-    
-    return mean
 
 '''
 ################################### END STATISTICS FUNCTIONS #####################################

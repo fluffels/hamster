@@ -1611,9 +1611,7 @@ def assessmentCenter(request):
         children = res['children']
         assessmentName = res['assessmentName']
         agg_name = res['agg_name']
-        
         average = res['average']
-        mean = res['mean']
         median = res['median']
         mode = res['mode']
         frequency = res['frequency']
@@ -1631,6 +1629,7 @@ def assessmentCenter(request):
                                                                         'stddev':stddev,'studentlist':studentlist,
                                                                         'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
                                                                         'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
     else:
         message = " Error occured, chooseAggregator view"
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
@@ -1640,7 +1639,7 @@ def assessmentCenter(request):
                                                                 'user_ta':user_ta,
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
-        
+ 
 @isAuthenticated
 @isLecture
 def aggregateMarkForAssessment(request):

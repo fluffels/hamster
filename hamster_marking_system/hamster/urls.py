@@ -45,6 +45,7 @@ urlpatterns = patterns('',
     #url(r'testingAssess$','web_interface.views.testingStudentAssessmentForModule', name='view_children_assessment_student'),
     
     url(r'aggregateMarkForAssessment$','web_interface.views.aggregateMarkForAssessment', name='aggregateMarkForAssessment'),
+    url(r'assessmentReport$','reporting.views.get_assessment_report', name='assessment_report'),
     url(r'print_pdf$','reporting.views.get_student_marks_pdf', name='generate_pdf_for_student'),
     url(r'print_csv$','reporting.views.get_student_marks_csv', name='generate_csv_for_student'),
     url(r'change-time$','web_interface.views.ChangeSessionTime', name='change-time'),
