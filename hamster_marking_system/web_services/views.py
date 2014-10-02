@@ -1546,6 +1546,11 @@ def assessmentCenter(request, jsonObj):
 	print "*********************************************************"
 	print "stddev: " + str(stddev)
 	print "*********************************************************\n"
+	pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
+	print "*********************************************************"
+	print "pass_fail_percentage: " + str(pass_fail_percentage)
+	print "*********************************************************\n"
+	
 	students = api.getStudentListForStats(assess_id)
 	
 	mean = api.getMeanForAssessment(assess_id)
@@ -1576,7 +1581,8 @@ def assessmentCenter(request, jsonObj):
 			'students':students,
 			'mean':mean,
 			'median':median,
-			'mode':mode
+			'mode':mode,
+			'pass_fail_percentage':pass_fail_percentage
 		}
 		return HttpResponse(json.dumps(data))
 	else:

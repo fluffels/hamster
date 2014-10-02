@@ -17,6 +17,15 @@
 }
 
 /*
+ *Change nav-bar colour
+ *Using CS Site colour
+ */
+.navbar-inverse{
+  background-color: #497AAA;
+  border-color: #497AAA;
+}
+
+/*
 Pushes marks to the right in order to alling them
 rather than having look like the opposite of the tree structure
 */

@@ -1619,6 +1619,7 @@ def assessmentCenter(request):
         frequency = res['frequency']
         stddev = res['stddev']
         studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
 
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
@@ -1628,7 +1629,8 @@ def assessmentCenter(request):
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
                                                                         'average':average,'mean':mean,'median':median,'mode':mode,'frequency':frequency,
                                                                         'stddev':stddev,'studentlist':studentlist,
-                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
     else:
         message = " Error occured, chooseAggregator view"
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,

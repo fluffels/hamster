@@ -77,11 +77,16 @@
 
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs_2 %}
-<ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li class="active"><a  href="/use_as/{{ role }}">Assessments</a></li>
+{% block breadcrumbs %}
+<ol class="breadcrumb text-center">
+	<li><a href="/logout">Login</a></li>
+	<li >
+	  <form action="/courses" method="post" hidden="hidden" class="go-home">
+		{% csrf_token %}
+	  </form>
+	  <a onclick="$(this).parent().children('form.go-home').submit();">Home</a>
+	</li>
+	<li class="active"><a  href="#">Assessments</a></li>
 </ol>
 {% endblock %}
 
@@ -194,7 +199,7 @@
 								<input type="hidden" name="assess_id" value={{ n.0 }}>
 							</form>
 							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-							data-placement="top" title="Choose Aggregator">
+							data-placement="top" title="Assessment Center">
 								<span class="fa fa-cogs"></span>
 							</button>
 						</div>
@@ -280,6 +285,15 @@
 								class="btn btn-default" data-toggle="tooltip"
 							data-placement="top" title="Mark Assessment">
 								<span class="fa fa-check"></span>
+							</button>
+							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+								{% csrf_token %}
+								<input type="hidden" name="module" value={{ module }}>
+								<input type="hidden" name="assess_id" value={{ n.0 }}>
+							</form>
+							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+							data-placement="top" title="Assessment Center">
+								<span class="fa fa-cogs"></span>
 							</button>
 						</div>
 						
@@ -368,7 +382,7 @@
 														<input type="hidden" name="assess_id" value={{ y.0 }}>
 													</form>
 													<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-													data-placement="top" title="Choose Aggregator">
+													data-placement="top" title="Assessment Center">
 														<span class="fa fa-cogs"></span>
 													</button>
 											</div>
@@ -455,6 +469,15 @@
 														class="btn btn-default" data-toggle="tooltip"
 													data-placement="top" title="Mark Assessment">
 														<span class="fa fa-check"></span>
+													</button>
+													<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+														{% csrf_token %}
+														<input type="hidden" name="module" value={{ module }}>
+														<input type="hidden" name="assess_id" value={{ n.0 }}>
+													</form>
+													<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+													data-placement="top" title="Assessment Center">
+														<span class="fa fa-cogs"></span>
 													</button>
 											</div>
 											
@@ -544,7 +567,7 @@
 																			<input type="hidden" name="assess_id" value={{ e.0 }}>
 																		</form>
 																		<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																		data-placement="top" title="Choose Aggregator">
+																		data-placement="top" title="Assessment Center">
 																			<span class="fa fa-cogs"></span>
 																		</button>
 																</div>
@@ -630,6 +653,15 @@
 																			class="btn btn-default" data-toggle="tooltip"
 																		data-placement="top" title="Mark Assessment">
 																			<span class="fa fa-check"></span>
+																		</button>
+																		<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																			{% csrf_token %}
+																			<input type="hidden" name="module" value={{ module }}>
+																			<input type="hidden" name="assess_id" value={{ n.0 }}>
+																		</form>
+																		<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																		data-placement="top" title="Assessment Center">
+																			<span class="fa fa-cogs"></span>
 																		</button>
 																</div>
 																
@@ -717,7 +749,7 @@
 																								<input type="hidden" name="assess_id" value={{ h.0 }}>
 																							</form>
 																							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
-																							data-placement="top" title="Choose Aggregator">
+																							data-placement="top" title="Assessment Center">
 																								<span class="fa fa-cogs"></span>
 																							</button>
 																					</div>
@@ -803,6 +835,15 @@
 																								class="btn btn-default" data-toggle="tooltip"
 																							data-placement="top" title="Mark Assessment">
 																								<span class="fa fa-check"></span>
+																							</button>
+																							<form action="aggregate" hidden="hidden" method="post" class="form-group-sm post-agg">
+																								{% csrf_token %}
+																								<input type="hidden" name="module" value={{ module }}>
+																								<input type="hidden" name="assess_id" value={{ n.0 }}>
+																							</form>
+																							<button type="button" onclick='$(this).parent().children("form.post-agg").submit();' class="btn btn-default" data-toggle="tooltip"
+																							data-placement="top" title="Assessment Center">
+																								<span class="fa fa-cogs"></span>
 																							</button>
 																					</div>
 																					

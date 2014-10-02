@@ -345,7 +345,7 @@ def getModuleNameForAssessment(assess_id):
 #            print result.getModuleCode()
 #    print "------------------------------"
     return result.getModuleCode()
-	
+
 # Name: checkIfAssessmentIsLeaf(asssess_id)
 # Description: Checks if the assessment is a leaf assessment
 # Parameter: assess_id: String
@@ -2267,6 +2267,37 @@ def getStandardDeviationForAssessment(assess_id):
     mean = "{0:.2f}".format(mn)
     
     return mean
+
+def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+    passed_students = 0.0
+    perc_passed = 0.0
+    perc_failed = 0.0
+    result = []
+    
+    if assess_obj.assessment_type == "Aggregate":
+        studentlist = getStudentListForStats(assess_id)
+        for student in studentlist:
+            stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
+            perc = float(stu_mark[6])
+            if (perc >= 50.0) :
+                passed_students += 1
+            
+    else:
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
+            perc = float(mark_array[6])
+            if (perc >= 50.0) :
+                passed_students += 1
+                
+    perc_passed = passed_students/len(studentlist) * 100
+    perc_failed = 100.0 - (perc_passed)
+    result.append(perc_passed)
+    result.append(perc_failed)
+    return result
+
 
 def getFrequencyAnalysisForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)

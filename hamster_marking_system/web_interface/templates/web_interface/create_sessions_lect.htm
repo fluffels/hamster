@@ -78,9 +78,19 @@
 <!--###########################  jumbotron part ############################-->
 {% block breadcrumbs %}
 	<ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li><a href="#">Assessments</a></li>
+	<li><a href="/logout">Login</a></li>
+	<li >
+	  <form action="/courses" method="post" hidden="hidden" class="go-home">
+		{% csrf_token %}
+	  </form>
+	  <a onclick="$(this).parent().children('form.go-home').submit();">Home</a>
+	</li>
+	<li >
+	  <form action="courses/{{ moduleName }}/assessments/view" method="post" hidden="hidden" class="see-assessments">
+		{% csrf_token %}
+	  </form>
+	  <a onclick="$(this).parent().children('form.see-assessments').submit();">Assessments</a>
+	</li>
 	<li class="active"><a href="#">Sessions</a></li>
 	</ol>
 {% endblock %}

@@ -107,7 +107,7 @@
     <li class="active"><a href="#pane1" data-toggle="tab">Aggregation</a></li>
     <li><a href="#pane2" data-toggle="tab">Statistics</a></li>
     <li><a href="#pane3" data-toggle="tab">Graph stats</a></li>
-    <li><a href="#pane4" data-toggle="tab">Settings</a></li>
+    <li><a href="#pane4" data-toggle="tab">More Options</a></li>
   </ul>
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
@@ -239,10 +239,6 @@
 			<td>Class Std. deviation : </td>
 			<td> <span class="label label-default">{{ stddev }}</span></td>
 		</tr>
-		<!--Students in class-->
-		<tr>
-			<td>Show list of students in assessment here, clickable button</td>
-		</tr>
 	</table>
 	<!-- ./Table1 -->
 	</div>
@@ -257,15 +253,15 @@
 			<td><strong>Number of Students</strong></td>
 		</tr>
 		<tr>
-			<td>0 - 40 </td>
+			<td>0 - 39 </td>
 			<td>{{ frequency.0 }}</td>
 		</tr>
 		<tr>
-			<td>40 - 50 </td>
+			<td>40 - 49 </td>
 			<td>{{ frequency.1 }}</td>
 		</tr>
 		<tr>
-			<td>50 - 60 </td>
+			<td>50 - 59 </td>
 			<td>{{ frequency.2 }}</td>
 		</tr>
 		<tr>
@@ -363,13 +359,13 @@
 	}
 	var doughnutData = [
 			{
-				value: 47,
+				value: {{ pass_fail_percentage.1 }},
 				color:"#F7464A",
 				highlight: "#FF5A5E",
 				label: "Failed"
 			},
 			{
-				value: 53,
+				value: {{ pass_fail_percentage.0 }},
 				color: "#46BFBD",
 				highlight: "#5AD3D1",
 				label: "Passed"
@@ -390,11 +386,20 @@
       
     </div>
     <div id="pane4" class="tab-pane">
-      <h4> <span class="label label-info">More Settings</span></h4><br>
+      <h4> <span class="label label-info">More Options</span></h4><br>
       
       <!--More settings-->
-      <button type="button" class="btn btn-primary btn-md " data-target="#import_marks" data-toggle="modal"
-		>Import Marks (CSV)  <span class="glyphicon glyphicon-import"></span></button>
+      <div class="btn-group">
+	<!--Import Marks button-->
+	<button type="button" class="btn btn-primary btn-md " data-target="#import_marks" data-toggle="modal"
+		  >Import Marks (CSV)  <span class="glyphicon glyphicon-import"></span></button>
+	<!--Change Assessment Name Button-->
+	<button type="button" class="btn btn-primary btn-md " data-target="#update_ass_name" data-toggle="modal"
+		  >Change Assessment Name  <span class="fa fa-floppy-o"></span></button>
+	<!--Export Statistics as PDF-->
+	<button type="button" class="btn btn-primary btn-md"
+		  >Export Stats as PDF  <span class="fa fa-file-pdf-o"></span></button>
+      </div>
       
     </div>
   </div><!-- /.tab-content -->
@@ -428,7 +433,7 @@
 								document.getElementById("CSVuploadFile").value = this.value;
 							    };
 							    
-							var _validFileExtensions = [".ods", ".csv"];
+							var _validFileExtensions = [".csv"];
 							
 							function Validate(oForm) {
 							    var arrInputs = oForm.getElementsByTagName("input");
@@ -473,7 +478,53 @@
 			</form>
 		</div>
 	</div>
-</div><!-- ./change_full_mark -->
+</div><!-- ./import_marks -->
+
+<!--Change Assessment Name Modal-->
+<div class="modal fade" id="update_ass_name" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form class="form-horizontal" action="update-assess-name" method="post" data-parsley-validate>
+				{% csrf_token %}
+				<div class="modal-header">
+					<h4><strong>Update Assessment Name for</strong></h4>
+					<h4><strong>{{ assessmentName }}</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<h4>
+						<label for="contact-name" class="col-lg-5 control-label">Previous Name:</label>
+						</h4>
+						<div class="col-lg-5">
+							<input type="text" disabled="disabled" class="form-control" value="{{ assessmentName }}">
+						</div>
+					</div>
+					<div class="form-group">
+						<h4>
+						<label for="contact-email" class="col-lg-5 control-label">New Name:</label>
+						</h4>
+						<div class="col-lg-5">
+							<input hidden="hidden" name="assess_id" value={{ assess_id }}>
+							<input type="text" class="form-control" id="new-assess-name" name="assess_name" placeholder="New Assessment Name"
+							required data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						
+						<div class="col-lg-8">
+							<input type="hidden" class="form-control" id="assessment-name" name="module" value={{ module }} placeholder={{ module }}>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a class="btn btn-default" data-dismiss="modal">Close</a>
+					<button id="submit" class="btn btn-success" type="submit">Update</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div><!--End of Modal for ContactUs-->
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 

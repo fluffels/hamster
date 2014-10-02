@@ -186,7 +186,7 @@
 						{% csrf_token %}
 						
 						<input type="number" class="form-control" placeholder="Mark awarded"
-						       name="mark" data-parsley-min="0" data-parsley-max={{ fullmark }}>
+						       name="mark" data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
