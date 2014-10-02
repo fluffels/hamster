@@ -71,7 +71,7 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
 AUTH_LDAP_CACHE_GROUPS = True
 AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.56.101:389/"
+AUTH_LDAP_SERVER_URI = "ldap://192.168.56.102:389/"
 
 #End LDAP Settings
 
@@ -125,7 +125,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hamster',
         'USER': 'postgres',
-        'PASSWORD': 'mamelo',
+        'PASSWORD': 'GothamCyborgDark009',
         'HOST': 'localhost',
         'PORT': '5432'
     }
