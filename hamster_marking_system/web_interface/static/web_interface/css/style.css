@@ -17,10 +17,51 @@
 }
 
 /*
+ *Change nav-bar colour
+ *Use CS Site colour
+ */
+.navbar-inverse{
+  background-color: #497AAA;
+  border-color: #607EA3;
+}
+
+.navbar-inverse .navbar-brand{
+  color: rgba(243, 238, 238, 1);
+}
+
+.navbar-inverse .navbar-nav > li > a{
+  color: rgba(243, 238, 238, 1);
+}
+
+.navbar-inverse .navbar-text{
+  color: rgb(255, 255, 255);
+}
+
+/*
 Pushes marks to the right in order to alling them
 rather than having look like the opposite of the tree structure
 */
 div.pull-right.btn-group.btn-group-xs.mark-view-toggle{
   padding-right: 15px;
+}
+
+/*
+ *For upload button in modal. Meant to make it more attractive and structured
+*/
+.CSVuploadFile {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+}
+.CSVuploadFile input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
 }
 

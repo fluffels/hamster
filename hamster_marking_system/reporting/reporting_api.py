@@ -8,16 +8,215 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.units import cm, mm, inch
-from reportlab.platypus import Image #Might need to add images to the document
+from reportlab.platypus import Image, SimpleDocTemplate, Frame, Spacer
 from reportlab.platypus import Table, TableStyle, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER, TA_JUSTIFY
 
 from django.http import HttpResponse
 from django.shortcuts import render
 
 styles = getSampleStyleSheet()
 
+'''
+pdfReportPages = "C:\\Temp\\test.pdf"
+doc = SimpleDocTemplate(pdfReportPages, pagesize=A4)
 
+# container for the "Flowable" objects
+elements = []
+styles=getSampleStyleSheet()
+styleN = styles["Normal"]
+
+# Make heading for each column and start data list
+column1Heading = "COLUMN ONE HEADING"
+column2Heading = "COLUMN TWO HEADING"
+# Assemble data for each column using simple loop to append it into data list
+data = [[column1Heading,column2Heading]]
+for i in range(1,100):
+    data.append([str(i),str(i)])
+
+tableThatSplitsOverPages = Table(data, [6 * cm, 6 * cm], repeatRows=1)
+tableThatSplitsOverPages.hAlign = 'LEFT'
+tblStyle = TableStyle([('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                       ('VALIGN',(0,0),(-1,-1),'TOP'),
+                       ('LINEBELOW',(0,0),(-1,-1),1,colors.black),
+                       ('BOX',(0,0),(-1,-1),1,colors.black),
+                       ('BOX',(0,0),(0,-1),1,colors.black)])
+tblStyle.add('BACKGROUND',(0,0),(1,0),colors.lightblue)
+tblStyle.add('BACKGROUND',(0,1),(-1,-1),colors.white)
+tableThatSplitsOverPages.setStyle(tblStyle)
+elements.append(tableThatSplitsOverPages)
+
+doc.build(elements)
+
+'''
+
+def generate_assessment_report(assess_name, full_marks, module, data, freq, student_list):
+    filename = assess_name + "_"+module+"_report.pdf"
+    fileN = assess_name + "_"+module+"_report"
+    logo = os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/reporting/images/cs_header_image.jpg")
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename='+ filename
+ 
+    buffer = BytesIO()
+    my_pdf = SimpleDocTemplate(buffer, rightMarging=72, leftMargin=72, topMargin=15, bottomMargin=50)
+    
+    #container for the pdf elements
+    elements = []
+    f = Image(logo)
+    f.hAlign = 'CENTER'
+    f.drawHeight = 1.5*inch
+    f.drawWidth = 4 *inch
+    elements.append(f)
+    
+    styles=getSampleStyleSheet()
+    styleN = styles["Normal"]
+    styleH = styles["Heading1"]
+    styleH.alignment = TA_CENTER
+    
+    elements.append(Paragraph('<h1>'+'Module: '+ module+'</h1>',styleH))
+    elements.append(Paragraph('<h3>'+'Assessment: '+ assess_name+'</h3>',styleH))
+    elements.append(Paragraph('<h3>'+'Full Marks: '+ str(full_marks)+'</h3>',styleH))
+    elements.append(Spacer(width=0, height=0.1*cm))
+    tdata = [[Paragraph('<b>' + 'Statistics' + '</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.lightblue)#Give total a grey background)
+                              ]))
+    table._argW[0]=7.0*inch
+    elements.append(table)
+    elements.append(Spacer(width=0, height=1*cm))
+    
+    tdata = [[Paragraph('<b>Class Average</b>',styleN),
+              Paragraph('<b>Median</b>',styleN),
+              Paragraph('<b>Mode</b>',styleN),
+              Paragraph('<b>Standard Deviation</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,-1),1, colors.black)
+                              ]))
+    table._argW[0]=2.5*inch #Set the size(width) of the first column in the table
+    table._argW[1]=1.5*inch
+    table._argW[2]=1.5*inch
+    table._argW[3]=1.5*inch
+    elements.append(table)
+    
+    tdata = [data[0], data[1], data[2], data[3]],
+    table2 = Table(tdata, colWidths=None, rowHeights=None)
+    table2.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,-1),1, colors.black)
+                              ]))
+    #table=Table(tdata, colWidths=80, rowHeights=30)
+    table2._argW[0]=2.5*inch #Set the size(width) of the first collumn in the table
+    table2._argW[1]=1.5*inch
+    table2._argW[2]=1.5*inch
+    table2._argW[3]=1.5*inch
+    elements.append(table2)
+    elements.append(Spacer(width=0, height=1*cm))
+    
+    tdata = [[Paragraph('<b>' + 'Frequency Analysis' + '</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.lightblue)#Give total a grey background)
+                              ]))
+    table._argW[0]=7.0*inch
+    elements.append(table)
+    elements.append(Spacer(width=0, height=1*cm))
+    tdata = [[Paragraph('<b>[0 .. 40)</b>',styleN),
+              Paragraph('<b>[40 .. 50)</b>',styleN),
+              Paragraph('<b>[50 .. 60)</b>',styleN),
+              Paragraph('<b>[60 .. 75)</b>',styleN),
+              Paragraph('<b>[75 .. 100]</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,-1),1, colors.black)
+                              ]))
+    table._argW[0]=1.4*inch #Set the size(width) of the first column in the table
+    table._argW[1]=1.4*inch
+    table._argW[2]=1.4*inch
+    table._argW[3]=1.4*inch
+    table._argW[4]=1.4*inch
+    elements.append(table)
+    
+    tdata = [freq[0], freq[1], freq[2], freq[3], freq[4]],
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,-1),1, colors.black)
+                              ]))
+    #table=Table(tdata, colWidths=80, rowHeights=30)
+    table._argW[0]=1.4*inch #Set the size(width) of the first collumn in the table
+    table._argW[1]=1.4*inch
+    table._argW[2]=1.4*inch
+    table._argW[3]=1.4*inch
+    table._argW[4]=1.4*inch
+    elements.append(table)
+    elements.append(Spacer(width=0, height=1*cm))
+    tdata = [[Paragraph('<b>' + 'Students Information' + '</b>',styleN)]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('GRID',(0,0), (-1,0),1, colors.black),
+                                ('BACKGROUND',(0,0),(-1,-1),colors.lightblue)#Give total a grey background)
+                              ]))
+    table._argW[0]=7.0*inch
+    elements.append(table)
+    elements.append(Spacer(width=0, height=1*cm))
+    
+    tdata = [[Paragraph('<b>Uid</b>',styleN),
+              Paragraph('<b>Name</b>',styleN),
+              Paragraph('<b>Surname</b>',styleN),
+              Paragraph('<b>Mark</b>',styleN),
+              Paragraph('<b>Percentage</b>',styleN)
+            ]]
+    table = Table(tdata, colWidths=None, rowHeights=None)
+    table.setStyle(TableStyle([
+                                ('VALIGN',(0,0),(-1,-1),'TOP'),
+                                ('GRID',(0,0), (-1,-1),1, colors.black),
+                                ('LINEBELOW',(0,0),(-1,-1),1,colors.black),
+                                ('BOX',(0,0),(-1,-1),1,colors.black),                                
+                              ]))
+    table._argW[0]=1.4*inch #Set the size(width) of the first column in the table
+    table._argW[1]=1.4*inch
+    table._argW[2]=1.4*inch
+    table._argW[3]=1.4*inch
+    table._argW[4]=1.4*inch
+    elements.append(table)
+    
+    for student in student_list:
+        uid = student[0]
+        name = student[1]
+        surname = student[2]
+        mark = student[3]
+        percentage = student[4]
+        
+        tdata = [uid,name, surname, mark, percentage],
+        
+        table = Table(tdata, colWidths=None, rowHeights=None, repeatRows=1)
+        table.setStyle(TableStyle([
+                                    ('GRID',(0,0), (-1,-1),1, colors.black)
+                                  ]))
+        #table=Table(tdata, colWidths=80, rowHeights=30)
+        table._argW[0]=1.4*inch #Set the size(width) of the first collumn in the table
+        table._argW[1]=1.4*inch
+        table._argW[2]=1.4*inch
+        table._argW[3]=1.4*inch
+        table._argW[4]=1.4*inch
+        elements.append(table)
+    elements.append(Spacer(width=0, height=1*cm))
+    my_pdf.build(elements)
+    
+    # Get the value of the BytesIO buffer and write it to the response.
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+    
 def generate_student_mark_pdf(data, student):
     """
     Generates a PDF document with a student's  marks,
@@ -33,7 +232,6 @@ def generate_student_mark_pdf(data, student):
     logo = os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/reporting/images/cs_header_image.jpg")
     
     #Extract student information to paint onto the document
-    
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename='+ filename
@@ -52,7 +250,7 @@ def generate_student_mark_pdf(data, student):
     #Add image on the top right of document
     c.drawImage(logo, 400, 710, width=2.5*inch, height=1.0*inch)
     
-    
+
     c.line(180,710,380,710)
     
     c.setFont("Helvetica-Bold", 12, leading=None)
@@ -188,3 +386,68 @@ def generate_student_mark_csv(data,student):
                     )
 
     return response
+
+'''
+########################## READ CSV FILE ####################################
+'''
+#file that has only STUDENT NUMBER AND ONE MARK
+def read_from_csv_file(assess_id, filepath):
+    dataReader = csv.reader(open(filepath), delimiter=',', quotechar='"')
+    marklist = []
+    for row in dataReader:
+        list = []
+        #whatever the header will be
+        if row[0] != 'Marks': # Ignore the header row, import everything else 
+            studentNumber = row[0]
+            studentMark = row[1]
+            list.append(studentNumber)
+            list.append(studentMark)
+            marklist.append(list)
+     
+    #when do I close the reader?       
+    return marklist
+
+'''
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
+
+def parse_columns(ifile, columns, type_name="Bububu"):
+    try:
+        row_type = namedtuple(type_name, columns)
+        print "columns : " + str(columns)
+        print "row_type : " + str(row_type)
+    except ValueError:
+        row_type = tuple
+    rows = csv.reader(open(ifile), delimiter=',', quotechar='"')
+    header = rows.next()
+    print "ifile: " + str(ifile)
+    dataReader = csv.reader(open(ifile), delimiter=',', quotechar='"')
+
+    print "rows : " + str(rows)
+    print 'HEADER : ' + str(header)
+    mapping = [header.index(x) for x in columns]
+    print "MAPPING:    ----" + str(mapping)
+    for row in rows:
+        row = row_type(*[row[i] for i in mapping])
+     
+        yield row
+#file that has multiple columns to read from   
+def read_named_columns_csv(assess_id, filepath, columns):
+    student_marks_list = []    
+    ifile = StringIO(filepath)
+    print "StringIO: " + str(filepath)
+    
+    print "======== START printing CSV Contents ======\n"
+    for row in parse_columns(filepath, columns.split()):
+        list = []
+        length = len(row)
+        for i in range(length):
+            list.append(row[i])    
+        student_marks_list.append(list)
+    print "======== END printing CSV Contents ======\n"
+    
+    return student_marks_list
+
+########################## END READ CSV FILE ####################################
+'''

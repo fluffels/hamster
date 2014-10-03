@@ -69,26 +69,31 @@ def login(request):
                     default_user = 'TT'
                 else:
                     default_user = 'TA'
-                
-                username = request.session['user']['uid'][0]
-                name = request.session['user']['cn'][0]
-                surname = request.session['user']['sn'][0]
-                try:
-                    print User.objects.all()
-                    user = User.objects.get(username=username,first_name=name,last_name=surname)
-                    print "User : " + str(user)
-                    if user:
-                        if user.is_superuser:
-                            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
-                                                                       'user_lect':user_lect,
-                                                                       'user_stud':user_stud,
-                                                                       'user_tut':user_tut,
-                                                                       'user_ta':user_ta,
-                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
-                except Exception, ex:
-                    print "Could not find user in User's"
-                    user = None
-                    print "User X: " + str(user)
+
+		Users = user[0]['Users']
+		Modules = user[0]['Modules']
+		
+		username = request.session['user']['uid'][0]
+		name = request.session['user']['cn'][0]
+		surname = request.session['user']['sn'][0]
+		try:
+		    print User.objects.all()
+		    user = User.objects.get(username=username,first_name=name,last_name=surname)
+		    print "User : " + str(user)
+		    if user:
+		        if user.is_superuser:
+		            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+		                                                       'user_lect':user_lect,
+		                                                       'user_stud':user_stud,
+		                                                       'user_tut':user_tut,
+		                                                       'user_ta':user_ta,
+		                                                       'Person':Users,
+		                                                       'Modules':Modules,
+		                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+		except Exception, ex:
+		    print "Could not find user in User's"
+		    user = None
+		    print "User X: " + str(user)
 
                 return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
@@ -821,6 +826,51 @@ def changeAssessmentFullMark(request):
                                                                                 'module':mod,'assessmentName':name,
                                                                                 'assess_id':assess_id,'fullmark':fullmark},
                                                                                 context_instance = RequestContext(request))
+
+
+@isAuthenticated
+@isLecture
+def changeAssessmentName(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    name = request.POST['assess_name']
+    
+    data = {
+        'assess_id':assess_id,
+        'assess_name':name
+    }
+    result = views.changeAssessmentName(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] == 1:
+        data={
+                'assess_id':assess_id
+        }
+        result = views.assessmentCenter(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 @isAuthenticated
@@ -1598,30 +1648,50 @@ def AuditLog(request):
 '''
 @isAuthenticated
 @isLecture
-def chooseAggregator(request):
+def assessmentCenter(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
     data ={
         'assess_id':assess_id,
     }
-    result = views.chooseAggregator(request,json.dumps(data))
+    result = views.assessmentCenter(request,json.dumps(data))
     res = json.loads(result.content)
     if res['type'] ==1:
         numChildren = res['numChildren']
         children = res['children']
         assessmentName = res['assessmentName']
         agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
 
-        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
-@isAuthenticated
-@isLecture
+    else:
+        message = " Error occured, chooseAggregator view"
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+ 
+#@isAuthenticated
+#@isLecture
 def aggregateMarkForAssessment(request):
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']
@@ -1634,13 +1704,13 @@ def aggregateMarkForAssessment(request):
     child_id = myDict['child_id']
     
     assess_id = request.POST['assess_id']
-    mod = request.POST['module']
+    module = request.POST['module']
     
     data = {
         'assess_id':assess_id,
         'agg_name':agg_name,
         'numContributors':numContributors,
-        'module':mod,
+        'module':module,
         'child_weight':child_weight,
         'child_id':child_id
     }
@@ -1649,33 +1719,255 @@ def aggregateMarkForAssessment(request):
     res = json.loads(result.content)
     print "////////////\\\\\\\\\\\\"
 
-    if res[0]['type'] == '1':
-                print "something"
-                root = res[0]['root']
-                first = res[0]['first']
-                second = res[0]['second']
-                third = res[0]['third']
-                return render_to_response("web_interface/testing.htm",{'default_user':default_user,
-                                                                                'user_lect':user_lect,
-                                                                                'user_stud':user_stud,
-                                                                                'user_tut':user_tut,
-                                                                                'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod,'assessment':'',
-                                                                                'second':second,'third':third},
-                                                                                context_instance = RequestContext(request))
-    else:
-        root = "NONE";
-        return render_to_response("web_interface/testing.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'root':root},
-                                                                        context_instance = RequestContext(request))
+    if res['type'] ==1:
+
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 '''
 ###################### End Aggregation Views ###############################
 '''
+
+@isAuthenticated
+def addStudentToModule(request):
+    lists = request.POST.lists()
+    students =lists[2]
+    module = lists[3]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print students[1]
+    print module[1][0]
+    data ={
+        'student':students[1],
+        'module':module[1][0]
+    }
+    result = views.addStudentToModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+
+@isAuthenticated
+def addLectureToModule(request):
+    lists = request.POST.lists()
+    lecture =lists[0]
+    module = lists[2]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print lists
+    print lecture[1]
+    print module[1][0]
+    data ={
+        'lecture':lecture[1],
+        'module':module[1][0]
+    }
+    result = views.addLectureToModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+@isAuthenticated
+def addTutorToModule(request):
+    lists = request.POST.lists()
+    tutor =lists[3]
+    module = lists[2]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print tutor[1]
+    print module[1][0]
+    data ={
+        'tutor':tutor[1],
+        'module':module[1][0]
+    }
+    result = views.addTtToModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+
+@isAuthenticated
+def removeStudentFromModule(request):
+    lists = request.POST.lists()
+    students =lists[2]
+    module = lists[3]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print students[1]
+    print module[1][0]
+    data ={
+        'student':students[1],
+        'module':module[1][0]
+    }
+    result = views.removeStudentFromModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+
+@isAuthenticated
+def removeLectureFromModule(request):
+    lists = request.POST.lists()
+    lecture =lists[0]
+    module = lists[3]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print lecture[1]
+    print module[1][0]
+    data ={
+        'lecture':lecture[1],
+        'module':module[1][0]
+    }
+    result = views.removeLectureFromModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+
+@isAuthenticated
+def removeTutorFromModule(request):
+    lists = request.POST.lists()
+    tutor =lists[0]
+    module = lists[2]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print tutor[1]
+    print module[1][0]
+    data ={
+        'tutor':tutor[1],
+        'module':module[1][0]
+    }
+    result = views.removeTutorFromModule(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res[0]['type'] ==  1:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+    else:
+        Person = res[0]['Users']
+        Modules = res[0]['Modules']
+        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':Person,
+                                                                       'Modules':Modules,
+                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+

@@ -1,8 +1,10 @@
 import datetime
+import numpy as np
 from django.db.models import get_model
 from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
+from numpy import *
 
 #general retrival functions
 # Name: getAllModules()
@@ -10,7 +12,12 @@ from ldap_interface.ldap_api import *
 # Parameter: 
 # Return: Module[]
 def getAllModules():
-    return Module.objects.all()
+    module = Module.objects.all()
+    list = []
+    for mod in module:
+        list.append(mod.id)
+    
+    return list
 
 def getPersonDetails(username):
     return getPersonFromArr(username)
@@ -343,7 +350,7 @@ def getModuleNameForAssessment(assess_id):
 #            print result.getModuleCode()
 #    print "------------------------------"
     return result.getModuleCode()
-	
+
 # Name: checkIfAssessmentIsLeaf(asssess_id)
 # Description: Checks if the assessment is a leaf assessment
 # Parameter: assess_id: String
@@ -458,6 +465,18 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
             return True
         else:
             return False
+    except Exception as e:
+        raise e
+    
+def changeAssessmentName(request,assess_id,name):
+    try:
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        assess = Assessment.objects.get(id=assess_id)
+        old = assess.assess_name
+        assess.assess_name = name
+        assess.save()
+        insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(name),assess.mod_id)
+        return True
     except Exception as e:
         raise e
 
@@ -729,8 +748,13 @@ def getSessionDetails(session):
     list.append(session.id)
     list.append(session.getName())
     list.append(session.checkStatus())
-    list.append(str(session.open_time))
-    list.append(str(session.close_time))
+    #Changing time format to datetime.datetime then returning in stringified form
+    o_time = datetime.datetime.strftime(session.open_time, '%Y-%m-%d %H:%M:%S')
+    c_time = datetime.datetime.strftime(session.close_time, '%Y-%m-%d %H:%M:%S')
+    list.append(o_time)
+    list.append(c_time)
+    print "open_time:::::::::::::::::::" +  str(o_time)
+    print "close_time:::::::::::::::::::" +  str(c_time)
     return list
 
 def getSessionObject(sess):
@@ -1836,13 +1860,32 @@ def getAllPublishedAssessmentsForStudent(mod_code):
     assessments = Assessment.objects.filter(mod_id=mod_obj, published = True)
     return assessments
 
+def getMarkForStudentForLecturer(student_id, assess_id):
+    stu_obj = Person.objects.get(upId=student_id) 
+    assess_obj = Assessment.objects.get(id=assess_id)
+    if assess_obj.assessment_type == 'Aggregate':
+        agg = Aggregator.objects.get(assessment=assess_obj)
+        list = agg.aggregateMarksLecturer(assess_id, student_id)
+
+    elif assess_obj.assessment_type == 'Leaf':
+        list = aggregateChild(assess_obj.id, student_id)
+
+    #formating the mark and percentage to 2 decimals
+    mark = list[4]
+    perc = list[6]
+
+    list[4] = "{0:.2f}".format(mark)
+    list[6] = "{0:.2f}".format(perc)
+
+    return list
+
+
 # Name: getMarkForStudent(student_id, assess_id)
 # Description: Retrieves the student's mark for the assessment specified. (Whether aggregate or leaf)
 # Parameter: student_id : String
 # Parameter: assess_id : String
 # Returns: Float
 def getMarkForStudent(student_id, assess_id):
-    stud = student_id[0]
     stu_obj = Person.objects.get(upId=student_id) 
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
@@ -1882,35 +1925,16 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
     marksOfChildren = []
 
     if parent.assessment_type == 'Aggregate':
-        parent_agg = Aggregator.objects.get(assessment=parent)
-        if parent_agg.aggregator_name == 'SimpleSum': 
-            for child in children:
+        for child in children:
+            if child.published == True:
                 name = child.assess_name
                 student_obj = Person.objects.get(upId=student_id)
                 marks = getMarkForStudent(student_id,child.id)
                 marksOfChildren.append(marks)
-            return marksOfChildren
-        
-        elif parent_agg.aggregator_name == 'BestOf':
-            for child in children:
-                name = child.assess_name
-                student_obj = Person.objects.get(upId=student_id)
-                marks = getMarkForStudent(student_id,child.id)
-                marksOfChildren.append(marks)
-            return marksOfChildren
-        
-        elif parent_agg.aggregator_name == 'WeightedSum':
-            for child in children:
-                name = child.assess_name
-                student_obj = Person.objects.get(upId=student_id)
-                marks = getMarkForStudent(student_id,child.id)
-                marksOfChildren.append(marks)
-            return marksOfChildren
+        return marksOfChildren
 
     elif parent.assessment_type == 'Leaf':
         return marksOfChildren
-
-
 '''
 
 #################### END STUDENT VIEW FUNCTIONS ###################################
@@ -1949,6 +1973,7 @@ def getAggregationInfo(assess_id):
         sublist =[]
         sublist.append(child.id)
         sublist.append(child.assess_name)
+        sublist.append(child.assessment_type)
         list.append(sublist)
 
     if assess_obj.assessment_type == 'Aggregate':
@@ -1960,6 +1985,10 @@ def getAggregatorName(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
         agg = Aggregator.objects.get(assessment=assess_obj)
+        print "#########################################"
+        print "Aggregator:    "+ str(agg)
+        print "Agg's name:    "+ str(agg.aggregator_name)
+        print "#########################################"
         name = agg.aggregator_name
         return name
     else:
@@ -2132,9 +2161,7 @@ def StudentMarks(assess, student):
                 childy.append(mark[6])
                 list.append(childy)
     return list
-        
-    
-    
+            
 def AggregateAssessmentForStudent(assessment,student):
     if assessment.assessment_type == 'Leaf':
         mark = getMarkForStudent(student, assessment.id)
@@ -2143,3 +2170,313 @@ def AggregateAssessmentForStudent(assessment,student):
         aggregator = Aggregator.objects.get(assessment=assessment)
         mark = aggregator.aggregateMarksStudent(assessment.id, student)
         return mark
+
+def generateAssessmentReport(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    assess_name = assess_obj.assess_name
+    module = assess_obj.mod_id.module_code
+    full_marks = aggregateTotalMarkForLecture(assess_id)
+    fmarks = int(full_marks)
+    
+    list =[]
+    list.append(module)
+    list.append(assess_name)
+    list.append(fmarks)
+    list.append(getStatisticsForAssessment(assess_id))
+    list.append(getStudentListForStats(assess_id))
+    
+    return list
+'''
+################################### STATISTICS FUNCTIONS #####################################
+'''
+def getStatisticsForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    student_list = getStudentListForStats(assess_id)
+    marks = []
+    list = []
+    for student in student_list:
+        stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
+        perc = stu_mark[6]
+        marks.append(perc)
+    
+    info = np.array(marks, dtype=float)
+    
+    #average
+    av = np.average(info)
+    average = "{0:.2f}".format(av)
+    list.append(average)
+    
+    #median
+    md = np.median(info)
+    median = "{0:.2f}".format(md)
+    list.append(median)
+    
+    #mode
+    md = np.var(info)
+    mode = "{0:.2f}".format(md)
+    list.append(mode)
+    
+    #std_dev
+    sd = np.std(info)
+    stddev = "{0:.2f}".format(sd)
+    list.append(stddev)
+    
+    #freq
+    frequency = getFrequencyAnalysisForAssessment(assess_id)
+    list.append(frequency)
+    
+    return list
+
+def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+    passed_students = 0.0
+    perc_passed = 0.0
+    perc_failed = 0.0
+    result = []
+    
+    if assess_obj.assessment_type == "Aggregate":
+        studentlist = getStudentListForStats(assess_id)
+        for student in studentlist:
+            stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
+            perc = float(stu_mark[6])
+            if (perc >= 50.0) :
+                passed_students += 1
+            
+    else:
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
+            perc = float(mark_array[6])
+            if (perc >= 50.0) :
+                passed_students += 1
+                
+    perc_passed = passed_students/len(studentlist) * 100
+    perc_failed = 100.0 - (perc_passed)
+    result.append(perc_passed)
+    result.append(perc_failed)
+    return result
+
+
+def getFrequencyAnalysisForAssessment(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+    zerotoforty = 0
+    fortytofifty = 0
+    fiftytosixty = 0
+    sixtytoseventyfour = 0
+    distinction = 0
+    
+    frequencies = []
+    
+    if assess_obj.assessment_type == "Aggregate":
+        studentlist = getStudentListForStats(assess_id)
+        for student in studentlist:
+            stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
+            perc = float(stu_mark[6])
+            if (perc >= 0.0)  & (perc < 40.0) :
+                zerotoforty += 1
+            elif (perc >= 40.0) & (perc < 50.0):
+                fortytofifty += 1
+            elif (perc >= 50.0) & (perc < 60.0):
+                fiftytosixty += 1
+            elif (perc >= 60.0) and (perc < 75.0):
+                sixtytoseventyfour += 1
+            elif ((perc >= 75.0) and (perc <= 100.0)):
+                distinction += 1
+            
+    else:
+        for markAlloc in all_markAllocs:
+            stu = markAlloc.student
+            mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
+            perc = float(mark_array[6])
+            if (perc >= 0.0)  & (perc < 40.0) :
+                zerotoforty += 1
+            elif (perc >= 40.0) & (perc < 50.0):
+                fortytofifty += 1
+            elif (perc >= 50.0) & (perc < 60.0):
+                fiftytosixty += 1
+            elif (perc >= 60.0) and (perc < 75.0):
+                sixtytoseventyfour += 1
+            elif ((perc >= 75.0) and (perc <= 100.0)):
+                distinction += 1
+     
+    frequencies.append(zerotoforty)
+    frequencies.append(fortytofifty)
+    frequencies.append(fiftytosixty)
+    frequencies.append(sixtytoseventyfour)
+    frequencies.append(distinction)
+    
+    return frequencies
+
+def getStudentListForStats(assess_id):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    module = assess_obj.mod_id
+    #Constructing Student List
+    #students: uid,firstname,surname
+    students = getAllStudentsOfModule(module.module_code)
+    studentList = []
+    for stud in students:
+        list =[]
+        uid = stud[0]
+        name = stud[1]
+        surname = stud[2]
+        marklist = getMarkForStudentForLecturer(uid,assess_id)
+        mark = marklist[4]
+        perc = marklist[6]
+        list.append(uid)
+        list.append(name)
+        list.append(surname)
+        list.append(mark)    
+        list.append(perc)
+        studentList.append(list)   
+    return studentList
+
+'''
+################################### END STATISTICS FUNCTIONS #####################################
+'''
+
+def addStudentToModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std)
+            moduleL= stud.lectureOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
+        return True
+    except:
+        return False
+
+def removeStudentFromModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.studentOfDelete(mod)
+        return True
+    except:
+        return False
+
+def addLectureToModule(lect,module):
+    try:
+        for std in lect:
+            stud = Person.objects.get(upId=std) 
+            moduleL= stud.studentOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
+        return True
+    except:
+        return False
+    
+def removeLectureFromModule(student,module):
+    try:
+        for std in student:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.lectureOfDelete(mod)
+        return True
+    except:
+        return False
+
+#def addTeachingAssistantToModule(ta,module):
+#    try:
+#        for std in ta:
+#            stud = Person.objects.get(upId=std) 
+#            mod = Module.objects.get(id=module)
+#            stud.teachingAssistantOfInsert(mod)
+#        return True
+#    except:
+#        return False
+#    
+#def removeTeachingAssistantFromModule(ta,module):
+#    try:
+#        for std in ta:
+#            stud = Person.objects.get(upId=std) 
+#            mod = Module.objects.get(id=module)
+#            stud.teachingAssistantOfDelete(mod)
+#        return True
+#    except:
+#        return False
+    
+def addTutorToModule(tt,module):
+    try:
+        for std in tt:
+            stud = Person.objects.get(upId=std) 
+            moduleL= stud.studentOf_module.all()
+            moduleTt=stud.tutorOf_module.all()
+            moduleTa=stud.teachingAssistantOf_module.all()
+            done = False
+            for m in moduleL:
+                if m.id == module:
+                    done = True
+            
+            for n in moduleTa:
+                if n.id == module:
+                    done=True
+            
+            for n in moduleTt:
+                if n.id == module:
+                    done = True
+
+            if done == False:
+                mod = Module.objects.get(id=module)
+                stud.studentOfInsert(mod)
+        return True
+    except:
+        return False
+    
+def removeTutorFromModule(tt,module):
+    try:
+        for std in tt:
+            stud = Person.objects.get(upId=std) 
+            mod = Module.objects.get(id=module)
+            stud.tutorOfDelete(mod)
+        return True
+    except:
+        return False
+    
+def getAllPersonInDatabase():
+    person = Person.objects.all()
+    list = []
+    print "Users in database"
+    for per in person:
+        data = []
+        data.append(per.upId)
+        data.append(per.firstName)
+        data.append(per.surname)
+        list.append(data)
+        print data
+    return list
+

@@ -78,9 +78,19 @@
 <!--###########################  jumbotron part ############################-->
 {% block breadcrumbs %}
 	<ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li><a href="#">Assessments</a></li>
+	<li><a href="/logout">Login</a></li>
+	<li >
+	  <form action="/courses" method="post" hidden="hidden" class="go-home">
+		{% csrf_token %}
+	  </form>
+	  <a onclick="$(this).parent().children('form.go-home').submit();">Home</a>
+	</li>
+	<li >
+	  <form action="courses/{{ moduleName }}/assessments/view" method="post" hidden="hidden" class="see-assessments">
+		{% csrf_token %}
+	  </form>
+	  <a onclick="$(this).parent().children('form.see-assessments').submit();">Assessments</a>
+	</li>
 	<li class="active"><a href="#">Sessions</a></li>
 	</ol>
 {% endblock %}
@@ -94,8 +104,8 @@
 {% block jumbotron_content %}
 
 <div class="row">
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
 	
 	{% if message == None %}
 		<!-- Do nothing, not reloading -->
@@ -106,96 +116,179 @@
 			</span><span class="sr-only">Close</span></button>
 			<strong>Success!</strong> Session deleted successfully.
 		</div>
-		{% if message == 0 %}
+		{% endif %}
+		{%if message == 0 %}
 		<div class="alert alert-success alert-dismissible" role="alert">
 			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 			</span><span class="sr-only">Close</span></button>
 			<strong>Problem!</strong> Session was not deleted, something went wrong.
 		</div>
+		{% else %}
+			<!--Do nothing-->
 		{% endif %}
-		{% endif %}
-
 	{% endif %}
+	<button class="btn btn-info btn-lg btn-block"  data-target="#create_sess" data-toggle="modal">Create Session</button><br>
 	
-	<button class="btn btn-info btn-lg btn-block" data-target="#create_sess" data-toggle="modal">Create Session</button><br>
-	{% for x in sessions%}
+	</div>
+	<div class="col-md-2"></div>
+	
+	<!--Sovles the problem of the create session button being un-clickable-->
+	<div class="clearfix"></div>
+	
+	{% for x in sessions %}
 	<div class="dropdown">
 		{% if x.0 == '-1' %}
 			<div class="alert alert-warning" role="alert"><strong>Note!</strong> There are no sessions available.</div>
 		{% else %}
 			{% if x.2 == 0 %}
-				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ban-circle"></span>
-					  {{x.1}}   <b class="caret"></b></button>
-				<form action="change-time" method="post">
-					{% csrf_token %}
-					{{x.3}}<input type='datetime' name='open'/><br/>
-					{{x.4}}<input type='datetime' name='close' />
-					<input type="hidden" name='module' value={{moduleName}} />
-					<input type='hidden' name="session" value={{x.0}} />
-					<input type='hidden' name='assess' value={{assessment_id}} />
-					<input type='submit' name='submit' value=submit/>
-				</form>
+				<div class="container">
+				<div class="row">
+				  <div class="[ col-xs-12 col-sm-offset-2 col-sm-8 ]">
+				    <ul class="event-list">
+					<li>
+					<div class="info">
+					  <h2 class="title">{{x.1}}</h2>
+					  <p class="desc"> Marking session for the above assessment</p>
+					  <ul>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-add-student-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Add student(s)"><span class="fa fa-plus"></span>&nbsp;student</li>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-view-student-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="View student(s)"><span class="fa fa-eye"></span>&nbsp;students</li>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-delete-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Delete session"><span class="glyphicon glyphicon-trash"></span>&nbsp;session</li>
+					    {% if x.2 == 1  %}
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-close-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Close session"><span class="fa fa-times"></span>&nbsp;session</li>
+					    {% else %}
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-open-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top"  title="Open session"><span class="fa fa-circle-o"></span>&nbsp;session</li>
+					    {% endif %}
+					  </ul>
+						<!--Add Student form-->
+					    <form action="view-students" method="post" class="form-group-sm post-add-student-form" hidden="hidden">
+						{% csrf_token %}
+						<input name='session' value={{ x.0 }} >
+						<input name="module" value={{ moduleName }}>
+					    </form>
+					    <!--View Students form-->
+					    <form action="session-info" method="post" class="form-group-sm post-view-student-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="session" value={{ x.0 }}>
+						<input name="module" value={{ moduleName }}>
+					    </form>
+					    <!--Delete session form-->
+					    <form action="remove-session" method="post" class="form-group-sm post-delete-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="session" value={{ x.0 }}>
+						<input name="module" value={{ moduleName }}>
+						<input name="assessment" value={{ assessment_id }}>
+					    </form>
+					    <!--Close session form-->
+					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="sess_id" value={{ x.0 }}>
+						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="status" value=0>
+						<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					    </form>
+					    <!--Open session form-->
+					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="sess_id" value={{ x.0 }}>
+						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="status" value=1>
+						<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					    </form>
+					</div>
+				      </li>
+				    </ul>
+				  </div>
+				</div>
+			      </div>
 			{% elif x.2 == 1 %}
-				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-ok-circle"></span>
-					  {{x.1}}   <b class="caret"></b></button>
-				<form action="change-time" method="post">
-					{% csrf_token %}
-					{{x.3}}<input type='datetime' name='open'/><br/>
-					{{x.4}}<input type='datetime' name='close' />
-					<input type="hidden" name='module' value={{moduleName}} />
-					<input type='hidden' name="session" value={{x.0}} />
-					<input type='hidden' name='assess' value={{assessment_id}} />
-					<input type='submit' name='submit' value=submit/>
-				</form>
+				
+				<div class="container">
+				<div class="row">
+				  <div class="[ col-xs-12 col-sm-offset-2 col-sm-8 ]">
+				    <ul class="event-list">
+					<li>
+					<time datetime={{ x.3 }}>
+					  <span class="day">{{ x.3|slice:"8:10" }}</span>
+					  <span class="month">{{ x.3|slice:"5:7" }}</span>
+					  <span class="year">{{ x.3|slice:":4" }}</span>
+					  <span class="time">{{ x.3|slice:"11:19" }}</span>
+					</time>
+					<time datetime={{ x.4 }}>
+					  <span class="day">{{ x.4|slice:"8:10" }}</span>
+					  <span class="month">{{ x.4|slice:"5:7" }}</span>
+					  <span class="year">{{ x.4|slice:":4" }}</span>
+					  <span class="time">{{ x.4|slice:"11:19" }}</span>
+				        </time>
+					<div class="info">
+					  <h2 class="title">{{x.1}}</h2>
+					  <p class="desc"> Marking session for the above assessment</p>
+					  <ul>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-add-student-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Add student(s)"><span class="fa fa-plus"></span>&nbsp;student</li>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-view-student-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="View student(s)"><span class="fa fa-eye"></span>&nbsp;students</li>
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-delete-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Delete session"><span class="glyphicon glyphicon-trash"></span>&nbsp;session</li>
+					    {% if x.2 == 1  %}
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-close-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top" title="Close session"><span class="fa fa-times"></span>&nbsp;session</li>
+					    {% else %}
+					    <li style="width:25%;" onclick="$(this).parent().parent().children('form.post-open-session-form').submit();"
+						 data-toggle="tooltip" data-placement="top"  title="Open session"><span class="fa fa-circle-o"></span>&nbsp;session</li>
+					    {% endif %}
+					  </ul>
+						<!--Add Student form-->
+					    <form action="view-students" method="post" class="form-group-sm post-add-student-form" hidden="hidden">
+						{% csrf_token %}
+						<input name='session' value={{ x.0 }} >
+						<input name="module" value={{ moduleName }}>
+					    </form>
+					    <!--View Students form-->
+					    <form action="session-info" method="post" class="form-group-sm post-view-student-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="session" value={{ x.0 }}>
+						<input name="module" value={{ moduleName }}>
+					    </form>
+					    <!--Delete session form-->
+					    <form action="remove-session" method="post" class="form-group-sm post-delete-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="session" value={{ x.0 }}>
+						<input name="module" value={{ moduleName }}>
+						<input name="assessment" value={{ assessment_id }}>
+					    </form>
+					    <!--Close session form-->
+					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="sess_id" value={{ x.0 }}>
+						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="status" value=0>
+						<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					    </form>
+					    <!--Open session form-->
+					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
+						{% csrf_token %}
+						<input name="sess_id" value={{ x.0 }}>
+						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="status" value=1>
+						<input type="hidden" name="assess_id" value={{ assessment_id }}>
+					    </form>
+					</div>
+				      </li>
+				    </ul>
+				  </div>
+				</div>
+			      </div>
 			{% else %}
-				<button class="btn btn-default btn-lg btn-block dropdown-toggle" data-toggle="dropdown">
-					  {{x.1}}   <b class="caret"></b></button>
 			{% endif %}
-		<ul class="dropdown-menu" role="menu">
-			<li>
-				<form action="view-students" method="post" class="form-group-sm">
-					{% csrf_token %}
-					<input type="hidden" id="session" name='session' value={{ x.0 }} >
-					<button type='submit' class="btn btn-default btn-md btn-block"  name='module' value={{ moduleName }}>Add Student</button>
-					
-				</form>
-				<form action="session-info" method="post" class="form-group-sm">
-					{% csrf_token %}
-					<button type="submit" class="btn btn-default btn-md btn-block" name="session" value={{x.0}}>View Students</button>
-					<input type="hidden" name="module" value={{ moduleName }}>
-
-				</form>
-				<form action="remove-session" method="post" class="form-group-sm">
-					{% csrf_token %}
-					<input type="hidden" name="module" value={{ moduleName }}>
-					<input type="hidden" name="assessment" value={{ assessment_id }}>
-					<button type="submit" class="btn btn-danger btn-md btn-block" name="session" value={{x.0}}>Delete Session</button>
-				</form>
-				{% if x.2 == 1 %}
-				<form action="change-status" method="post" class="form-group-sm">
-					{% csrf_token %}
-					<input type="hidden" name="mod" value={{ moduleName }}>
-					<input type="hidden" name="status" value=0>
-					<input type="hidden" name="assess_id" value={{ assessment_id }}>
-					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Close Session</button>
-				</form>
-				{% else %}
-				<form action="change-status" method="post" class="form-group-sm">
-					{% csrf_token %}
-					<input type="hidden" name="mod" value={{ moduleName }}>
-					<input type="hidden" name="status" value=1>
-					<input type="hidden" name="assess_id" value={{ assessment_id }}>
-					<button type="submit" class="btn btn-default btn-md btn-block" name="sess_id" value={{x.0}}>Open Session</button>
-				</form>
-				{% endif %}
-			</li>
-		</ul>
 		{% endif %}
 	</div>
 	{%endfor%}
-	</div>
-	<div class="col-md-3"></div>
-</div><!--End of Modal for ContactUs-->
+</div><!-- ./row  -->
 
 
 
