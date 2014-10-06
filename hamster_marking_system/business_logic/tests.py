@@ -11,7 +11,7 @@ from business_logic import views
 =============Testing models===========
 ======================================
 '''
-
+'''
 class PersonTestCase(unittest.TestCase):
     def setUp(self):
         global foo, mock
@@ -330,6 +330,7 @@ class AggregateAssessmentTestCase(unittest.TestCase):
 		second = assess2.get_aggregator_name()
 		
 		assess.choose_aggregator.assertNOtEqual(first, second)
+'''
 
 class SessionTestCase(unittest.TestCase):
 	
@@ -483,7 +484,7 @@ class SessionTestCase(unittest.TestCase):
 		models.getSessions.assert_called_once_with(assessment)
 		models.getSessions.assert_return_value(session)
 
-
+'''
 class AssessmentTestCase(TestCase):
 	
 	def test_setModule(self):
@@ -553,7 +554,7 @@ class AssessmentTestCase(TestCase):
 		ass.setModule(mod)
 
 		ass.getModule.assertEqual(ass.getModule(), 'COS212')
-
+'''
 
 class TestMarkAllocation(unittest.TestCase):
 	def test_setcomment(self):
@@ -643,7 +644,7 @@ class TestMarkAllocation(unittest.TestCase):
 		models.deleteMarkAllocation()
 		models.deleteMarkAllocation.assert_called_once_with()
 		
-class TestAllocatePerson():
+class TestAllocatePerson(unittest.TestCase):
 	def test_is_Student(slef):
 		alloc = AllocatePerson()
 		alloc.is_Student = MagicMock(return_value = 1)
@@ -681,13 +682,13 @@ class TestAllocatePerson():
 	def test_set_isStudent(self):
 		alloc = AllocatePerson()
 		alloc.set_isStudent = MagicMock()
-		alloc.ste_isStudent(1)
+		alloc.set_isStudent(1)
 		alloc.set_isStudent.assert_called_once_with(1)
 		
 	def test_set_isMarker(self):
 		alloc = AllocatePerson()
 		alloc.set_isMarker = MagicMock()
-		alloc.ste_isMarker(1)
+		alloc.set_isMarker(1)
 		alloc.set_isMarker.assert_called_once_with(1)
 		
 	def test_set_personID(self):
@@ -700,7 +701,7 @@ class TestAllocatePerson():
 		
 	def test_set_sessionID(self):
 		alloc = AllocatePerson()
-		session = session()
+		session = Sessions()
 		alloc.set_sessionID = MagicMock()
 		alloc.set_sessionID(session)
 		alloc.set_sessionID.assert_called_once_with(session)
@@ -713,21 +714,55 @@ class TestAllocatePerson():
 		models.insertPersonToSession.assert_called_once_with(person,session,1,0)
 		
 	def test_getAllocatedPersonbyID(self):
-		alloc = AllocatedPerson()
+		alloc = AllocatePerson()
 		models.getAllocatedPerson = MagicMock(return_value = alloc)
 		models.getAllocatedPerson(1)
-		models.getAllocatedPerson.assert_called_once_with(alloc)
+		models.getAllocatedPerson.assert_called_once_with(1)
 		
 	def test_getAllocatedPerson(self):
 		models.getAllocatedPerson = MagicMock()
 		models.getAllocatedPerson()
-		models.getAllocatedperson.assert_called_once_with()
-		
+		models.getAllocatedPerson.assert_called_once_with()
+'''	
 	def test_deleteAllcoatedPerson(self):
 		models.deleteAllocatedPerson = MagicMock()
 		models.delelteAllocatedPerson(1)
 		models.deleteAllocatedPerson.assert_called_once_with(1)
-		
+'''
+
+class TestAuditLog(unittest.TestCase):
+    def test_insertAuditLogAssessment(self):
+        person = Person()
+        module = Module("COS333")
+        models.insertAuditLogAssessment = MagicMock()
+        models.insertAuditLogAssessment(person,"Practical 2","deleted",None,None,module)
+        models.insertAuditLogAssessment.assert_called_once_with(person,"Practical 2","deleted",None,None,module)
+    
+    def test_insertAuditLogSession(self):
+        person = Person()
+        module=Module("COS333")
+        models.insertAuditLogSession = MagicMock()
+        models.insertAuditLogSession(person,"Practical 1","Morning Session","deleted",None,None,module)
+        models.insertAuditLogSession.assert_called_once_with(person,"Practical 1","Morning Session","deleted",None,None,module)
+    
+    def test_insertAuditLogMarkAllocation(self):
+        person=Person()
+        module=Module("COS333")
+        allocation=MarkAllocation()
+        models.insertAuditLogMarkAllocation = MagicMock()
+        models.insertAuditLogMarkAllocation(person,allocation,"u12345678","update",4,12,module)
+        models.insertAuditLogMarkAllocation.assert_called_once_with(person,allocation,"u12345678","update",4,12,module)
+    
+    def test_insertAuditLogAllocatePerson(self):
+        person=Person()
+        module=Module("COS333")
+        session = Sessions()
+        models.insertAuditLogAllocatePerson=MagicMock()
+        models.insertAuditLogAllocatePerson(person,'u12345678',session,"added",module)
+        models.insertAuditLogAllocatePerson.assert_called_once_with(person,'u12345678',session,"added",module)
+
+
+'''		
 class TestLeafAssessment(unittest.TestCase):
 	def test_get_full_marks(self):
 		leaf = LeafAssessment()
@@ -770,15 +805,13 @@ class TestLeafAssessment(unittest.TestCase):
 
 
 '''
-=============End models===========
-======================================
-'''
+
+
     
-    
+ 
+
 '''
-=============Testing api===========
-===================================
-'''
+
 class ApiTestCase(unittest.TestCase):
 	
 	def test_getAllModules(self):
@@ -1385,16 +1418,17 @@ class ApiTestCase(unittest.TestCase):
 	    val =agg.checkLeafAssessmentExists()
 	    agg.checkLeafAssessmentExists.assertEqual(val, assess)
 	    pass
-
+'''
 '''
 =============End api tests===========
 =====================================
 '''
 
-
 '''
+
 =============Testing views==========
 ====================================
+'''
 '''
 class ViewsTestCase(unittest.TestCase):
     
@@ -1457,6 +1491,7 @@ class ViewsTestCase(unittest.TestCase):
         views.viewStudentForSession("http://www.hamster.com/viewStudentForSession")
         views.viewStudentForSession.assert_called_once_with("http://www.hamster.com/viewStudentForSession")
         views.viewStudentForSession.assert_return_value(200)
+'''
 '''
 =============End views=============
 ===================================
