@@ -1,6 +1,8 @@
 from django.test import TestCase
 import unittest
 from mock import MagicMock
+import datetime
+#import factory
 
 from .models import *
 from .api import *
@@ -805,11 +807,145 @@ class TestLeafAssessment(unittest.TestCase):
 
 
 '''
-
-
+class ApiTestCase(unittest.TestCase):
+    def test_publishParent(self):
+        api.publishParent = MagicMock(return_value=True)
+        api.publishParent(1)
+        api.publishParent.assert_called_once_with(1)
+        api.publishParent.assert_return_value(True)
     
- 
+    def test_unpublishParent(self):
+        api.unpublishParent = MagicMock(return_value=True)
+        api.unpublishParent(1)
+        api.unpublishParent.assert_called_once_with(1)
+        api.unpublishParent.assert_return_value(True)
+    
+    def test_unpublishAssessment(self):
+        api.unpublishAssessment = MagicMock(return_value=True)
+        api.unpublishAssessment("/published",1)
+        api.unpublishAssessment.assert_called_once_with("/published",1)
+        api.unpublishAssessment.assert_return_value(True)
+    
+        api.unpublishAssessment = MagicMock(return_value=False)
+        api.unpublishAssessment("/published",1)
+        api.unpublishAssessment.assert_called_once_with("/published",1)
+        api.unpublishAssessment.assert_return_value(False)
+    
+    def test_removeSession(self):
+        api.removeSession = MagicMock(return_value=True)
+        api.removeSession("/removeSessions",1)
+        api.removeSession.assert_called_once_with("/removeSessions",1)
+        api.removeSession.assert_return_value(True)
+    
+        api.removeSession = MagicMock(return_value=False)
+        api.removeSession("/removeSessions",1)
+        api.removeSession.assert_called_once_with("/removeSessions",1)
+        api.removeSession.assert_return_value(False)
+    
+    def test_removeMarkerFromSession(self):
+        api.removeMarkerFromSession = MagicMock(return_value=True)
+        api.removeMarkerFromSession("/remove",1,"u12345678")
+        api.removeMarkerFromSession.assert_called_once_with("/remove",1,"u12345678")
+        api.removeMarkerFromSession.assert_return_value(True)
+    
+    def test_login(self):
+        result = [{"user":{"cn":"inah","sn":"Hemmings","uid":"EHemmings","lectureOf":"COS333"}}]
+        api.login = MagicMock(return_value=result)
+        api.login("/login","EHemmings","Hemmings")
+        api.login.assert_called_once_with("/login","EHemmings","Hemmings")
+        api.login.assert_return_value(result)
+    
+    def test_setMarkerForSession(self):
+        api.setMarkerForSession = MagicMock()
+        api.setMarkerForSession("/setMarker","u12345678",2)
+        api.setMarkerForSession.asert_called_once_with("/setMarker","u12345678",2)
+    
+    def test_populateModules(self):
+        api.populateModules = MagicMock()
+        api.populateModules()
+        api.populateModules.assert_called_once_with()
+    
+    def test_createMarkAllocation(self):
+        markAllocation =MarkAllocation()
+        person = Person()
+        api.createMarkAllocation = MagicMock(return_value=markAllocation)
+        api.createMarkAllocation("/createMark",1,"no marker",person,datetime.datetime.now(),"no mark")
+        api.createMarkAllocation.assert_called_once_with("/createMark",1,"no marker",person,datetime.datetime.now(),"no mark")
+        api.createMarkAllocation.assert_return_value(markAllocation)
+    
+    def test_getFullMark(self):
+        api.getFullMark = MagicMock(return_value=10)
+        api.getFullMark(8)
+        api.getFullMark.assert_called_once_with(8)
+        api.getFullMark.assert_return_value(8)
+    
+    def test_updateMarkAllocation(self):
+        api.updateMarkAllocation = MagicMock(return_value=True)
+        api.updateMarkAllocation("/updateMark","u12345678",3,10)
+        api.updateMarkAllocation.assert_called_once_with("/updateMark","u12345678",3,10)
+        api.updateMarkAllocation.assert_return_value(True)
+    
+        api.updateMarkAllocation = MagicMock(return_value=False)
+        api.updateMarkAllocation("/updateMark","u12345678",3,-1)
+        api.updateMarkAllocation.assert_called_once_with("/updateMark","u12345678",3,-1)
+        api.updateMarkAllocation.assert_return_value(True)
+    
+    def test_makeAggregateAssessmentALeaf(self):
+        assessment = AggregateAssessment()
+        api.makeAggregateAssessmentALeaf = MagicMock(return_value=assessment)
+        api.makeAggregateAssessmentALeaf(4)
+        api.makeAggregateAssessmentALeaf.assert_called_once_with(4)
+        api.makeAggregateAssessmentALeaf.assert_return_value(assessment)
 
+    def test_removeAssessment(self):
+        assess = Assessment()
+        api.removeAssessment = MagicMock(return_value=assess)
+        api.removeAssessment("/removeAssessment",3)
+        api.removeAssessment.assert_called_once_with("/removeAssessment",3)
+        api.removeAssessment.assert_return_value(assess)
+        
+        api.removeAssessment = MagicMock(return_value=None)
+        api.removeAssessment("/removeAssessment",3)
+        api.removeAssessment.assert_called_once_with("/removeAssessment",3)
+        api.removeAssessment.assert_return_value(None)
+    
+    def test_deleteAssessmentSessions(self):
+        assess=Assessment()
+        api.deleteAssessmentSessions = MagicMock(return_value=True)
+        api.deleteAssessmentSessions(assess)
+        api.deleteAssessmentSessions.assert_called_once_with(assess)
+        api.deleteAssessmentSessions.assert_return_value(True)
+    
+    def test_isAggregate(self):
+        assess=Assessment()
+        api.isAggregate = MAgicMock(return_value=True)
+        api.isAggregate(assess)
+        api.isAggregate.assert_called-once_with(assess)
+        api.isAggregate.assert_return_value(True)
+    
+    def test_deleteAllChildren(self):
+        assess1 = Assessment()
+        assess2 = Assessment()
+        children = {assess1,assess2}
+        api.deleteAllChildren = MagicMock(return_value=True)
+        api.deleteAllChildren(children)
+        api.deleteAllChildren.assert_called_once_with(children)
+        api.deleteAllChildren.assert_return_value(True)
+    
+    def test_getAssessmentFromID(self):
+        assess1 = Assessment()
+        assess2 = Assessment()
+        list = {assess1,assess2}
+        api.getAssessmentFromID = MagicMock(return_value=list)
+        api.getAssessmentFromID(1)
+        api.getAssessmentFromID.assert_called_once_with(1)
+        api.getAssessmentFromID.assert_return_value(list)
+    
+    def test_getMarkerForSession(self):
+        pass
+    
+    
+    
 '''
 
 class ApiTestCase(unittest.TestCase):
