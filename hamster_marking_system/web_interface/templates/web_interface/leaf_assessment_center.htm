@@ -104,108 +104,11 @@
 <!-- Audit table -->
 <div class="tabbable">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#pane1" data-toggle="tab">Aggregation</a></li>
     <li><a href="#pane2" data-toggle="tab">Statistics</a></li>
     <li><a href="#pane3" data-toggle="tab">Graph stats</a></li>
     <li><a href="#pane4" data-toggle="tab">More Options</a></li>
   </ul>
   <div class="tab-content">
-    <div id="pane1" class="tab-pane active">
-      <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
-		
-		<span class="nav-divider"></span>
-		
-		<!-- Table1 -->
-		<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> Currently used aggregator : </strong></td>
-				<td> <span class="label label-default"> {{ agg_name }} </span></td>
-			</tr>
-		</table>
-		<!-- ./Table1 -->
-		
-		<span class="nav-divider"></span>
-		
-		<!--Aggregation panel-->
-		<div class="panel panel-primary leaf-assess-center">
-		  <div class="panel-heading">
-			<h3 class="panel-title">Change Aggregator</h3>
-		  </div>
-		  <div class="panel-body">
-		<!--Aggregator selection tabs-->
-		<div class="tabbable">
-		<ul class="nav nav-tabs">
-		  <li class="active"><a href="#simple_sum" data-toggle="tab">Simple Sum</a></li>
-		  <li><a href="#best_of" data-toggle="tab">Best Of</a></li>
-		  <li><a href="#weighted_sum" data-toggle="tab">Weighted Sum</a></li>
-		</ul>
-		<div class="tab-content">
-		  <div id="simple_sum" class="tab-pane active">
-		    <h4>No information required. Click Complete button to select.</h4>
-		    <!-- simplesum form -->
-			<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
-				<input type="hidden" value="SimpleSum" name="agg_name">
-				<input type="hidden" value="0" name="numC">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value="0" name="child_weight" >
-				<input type="hidden" value="0" name="child_id"  >
-				<div class="clearfix">
-					<button type="submit" name="submit" class="btn btn-success pull-right">Submit</button>
-				</div>
-			</form><!-- ./simplesum form -->
-		  </div>
-		  <div id="best_of" class="tab-pane">
-		  <h4>Give number of assessments to be used as the best of.</h4>
-		    <h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
-			<!-- bestof form -->
-			<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form" data-parsley-validate> {% csrf_token %}
-			  <div class="form-group">
-				<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of contributors</label>
-				<div class="col-sm-4">
-					<input type="number" class="form-control" id="numC"
-					       name="numC" placeholder="Number of contributors" required
-					       required data-parsley-min="1" data-parsley-max={{ numChildren }}>
-				</div>
-				<input type="hidden" value="BestOf" name="agg_name">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value="0" name="child_weight" >
-				<input type="hidden" value="0" name="child_id"  >
-			  </div>
-			  <div class="clearfix">
-				<button class="btn btn-success pull-right" type="submit">Submit</button>
-			  </div>
-			</form><!-- ./bestof form -->
-		  </div>
-		  <div id="weighted_sum" class="tab-pane">
-		    <h4>Assign weights to each assessment</h4>
-		    <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
-			<!-- weightedsum form -->
-			<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form" data-parsley-validate> {% csrf_token %}
-				<input type="hidden" value="WeightedSum" name="agg_name">
-				<input type="hidden" value="0" name="numC">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-			{% for child in children %}
-			  <div class="form-group">
-				<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
-				<div class="col-sm-5">
-					<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}" required>
-					<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
-				</div>
-			  </div>
-			{% endfor %}
-			<div class="clearfix">
-				<button class="btn btn-success pull-right" type="submit">Submit</button>
-			</div>
-			</form><!-- ./weightedsum form -->
-		  </div>
-		</div><!-- /.tab-content -->
-	      </div><!-- /.tabbable -->
-		  </div><!-- ./panel-body-->
-		</div><!-- ./panel-->
-    </div>
     <div id="pane2" class="tab-pane">
     <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
     

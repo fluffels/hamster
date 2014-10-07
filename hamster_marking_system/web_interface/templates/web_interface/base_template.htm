@@ -372,6 +372,10 @@
 		
 	});
 	
+	//Makes editable fields uneditable for the leaf assessment page where the user
+	//would pick an aggregator type in an aggregate assessment
+	$('leaf-assess-center').find('input, textarea, select').attr('readonly', true);
+	
 
 	var idleTime = 0;
 	$(document).ready(function () {
