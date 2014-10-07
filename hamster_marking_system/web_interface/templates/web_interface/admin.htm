@@ -99,13 +99,57 @@
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
       <h4>Assessments Audit Log</h4>
+      
+      <div class="panel panel-primary">
+		<div class="panel-heading">Search through audit log based on date and time</div>
+		<div class="panel-body">
+		<form action="audit_log" method="post" data-parsley-validate>{% csrf_token %}
+					  
+			  <div class="form-group">
+				  <label for="search-from" class="col-lg-1 control-label">From:</label>
+				  <div class="col-lg-3">
+					  <div class="input-group date" id="datetimepickerAuditFromDate">
+					      <input onclick="callDateTimePopup(this);" type='text' class="form-control" id="search-from"
+							 name="search_from" required>
+					      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+					      </span>
+					  </div>
+				  </div>
+			  </div>
+			  
+			  <div class="form-group">
+				  <label for="search-till" class="col-lg-1 control-label">Till:</label>
+				  <div class="col-lg-3">
+					  <div class="input-group date" id="datetimepickerAuditTillDate">
+						  <input onclick="callDateTimePopup(this);" type="text" class="form-control" id="search-till"
+							 name="search_till" required>
+						  <span class="input-group-addon"><span  class="glyphicon glyphicon-calendar"></span></span>
+					  </div>
+				  </div>
+			  </div>
+	  
+			  <script type="text/javascript">
+				  //Datetime popup
+				  function callDateTimePopup(this_attr) {
+					  $(this_attr).datetimepicker({
+						  format: 'YYYY-MM-DD HH:mm:ss',
+						  language: 'en',
+						  showToday: true
+						  });
+				  }
+			  </script>
+			  
+			  <button class="btn btn-success" type="submit" name="audit_search" value='leaf'>Search</button>
+		</form>
+		</div>
+	</div>
 	
-	<div class="panel panel-primary">
+<!--	<div class="panel panel-primary">
 		<div class="panel-heading">Click below to view audit log</div>
 		<div class="panel-body">
 		<a href="audit_log"><h4>Audit log</h4></a>
 		</div>
-	</div>
+	</div>-->
 	
     </div>
     <div id="pane2" class="tab-pane">

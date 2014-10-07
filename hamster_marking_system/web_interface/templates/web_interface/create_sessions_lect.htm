@@ -146,6 +146,18 @@
 				  <div class="[ col-xs-12 col-sm-offset-2 col-sm-8 ]">
 				    <ul class="event-list">
 					<li>
+					<time datetime={{ x.3 }}>
+					  <span class="day">{{ x.3|slice:"8:10" }}</span>
+					  <span class="month">{{ x.3|slice:"5:7" }}</span>
+					  <span class="year">{{ x.3|slice:":4" }}</span>
+					  <span class="time">{{ x.3|slice:"11:19" }}</span>
+					</time>
+					<time datetime={{ x.4 }}>
+					  <span class="day">{{ x.4|slice:"8:10" }}</span>
+					  <span class="month">{{ x.4|slice:"5:7" }}</span>
+					  <span class="year">{{ x.4|slice:":4" }}</span>
+					  <span class="time">{{ x.4|slice:"11:19" }}</span>
+				        </time>
 					<div class="info">
 					  <h2 class="title">{{x.1}}</h2>
 					  <p class="desc"> Marking session for the above assessment</p>
