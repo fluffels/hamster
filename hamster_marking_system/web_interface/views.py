@@ -1625,9 +1625,15 @@ def removeUserfromSession(request):
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':name,'marker':marker},context_instance=RequestContext(request))
 
-@isAuthenticated
+#@isAuthenticated
 def AuditLog(request):
-    result = views.Auditlog(request)
+    start = request.POST['search_from']
+    finish=request.POST['search_till']
+    data = {
+        'start':start,
+        'end':finish
+    }
+    result = views.Auditlog(request,json.dumps(data))
     res = json.loads(result.content)
     assess = res[0]['Assessment']
     session=res[0]['Session']
