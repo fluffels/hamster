@@ -11,6 +11,21 @@ from business_logic import views
 =============Testing models===========
 ======================================
 '''
+class AggregatorTestCase(unittest.TestCase):
+    def setUp(self ):
+        global foo, assess
+        foo = AggregateAssessment()
+        assess = AggregateAssessment()
+        assess = MagicMock()
+        
+    def test_setname(self):
+        pass
+    
+    def test_getname(self):
+        pass
+    
+    def test_getAssessmentId(self):
+        pass 
 
 class PersonTestCase(unittest.TestCase):
     def setUp(self):
@@ -135,60 +150,7 @@ class PersonTestCase(unittest.TestCase):
     #In addition, we need to test the inserts and deletes, but these are easily tested using the getters mensioned above.
     
     def tearDown(self):
-        pass
-    
-   
-class Person_dataTestCase(unittest.TestCase):
-    def setUp(self):
-        global foo
-        foo = Person_data()
-        Person_data.setuid(foo, 'u12345678')
-        
-    def test_setuid(self):
-        mock = Person_data()
-        mock.setuid = MagicMock(name = 'setuid')
-        mock.setuid(foo, 'u87654321')
-        mock.setuid.assert_called_once_with(foo, 'u87654321')
-    
-    def test_getuid(self):
-        uid = Person_data.getuid(foo)
-        self.assertEqual(uid, 'u12345678')
-        
-    def test_setData(self):
-        mock = Person_data()
-        mock.setData = MagicMock(name = 'setData')
-        mock.setData(foo, 'SomeData')
-        mock.setData.assert_called_with(foo, 'SomeData')
-        
-    def test_getData(self):
-        mock = Person_data()
-        mock.setData = MagicMock(name = 'setData')
-        mock.setData('myData')
-        mock.getData = MagicMock(name = 'getData', return_value = 'myData')
-        self.assertEqual(mock.getData(), 'myData')
-        
-    
-    def tearDown(self):
-        pass
-    
-    
-class Person_dataOuterFunctionsTestCase(unittest.TestCase):
-    def setUp(self):
-        global mockInsert, mockGet, mockDelete
-        mockInsert = MagicMock()
-        mockGet = MagicMock()
-        mockDelete = MagicMock()
-
-    def test_insertPerson_data(self):
-        mockInsert.insertPerson_data('u12345678', 'Some data')
-        mockInsert.insertPerson_data.assert_called_once()
-        
-    def test_getAllPerson_data(self):
-        mockGet.getAllPerson_data.assert_return_value_is('u12345678')
-        
-    def test_deletePerson_data(self):
-        mockDelete.deletePerson_data()
-        mockDelete.deletePerson_data.assert_called_once()
+        pass 
 
 class ModuleTestCase(unittest.TestCase):
     #Test get and set module code
@@ -329,7 +291,7 @@ class AggregateAssessmentTestCase(unittest.TestCase):
 		first = assess.get_aggregator_name()
 		second = assess2.get_aggregator_name()
 		
-		assess.choose_aggregator.assertNOtEqual(first, second)
+		assess.choose_aggregator.assertNotEqual(first, second)
 
 class SessionTestCase(unittest.TestCase):
 	
