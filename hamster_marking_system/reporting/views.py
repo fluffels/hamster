@@ -45,8 +45,9 @@ def get_assessment_report(request):
     stats = data[3]
     freq = stats[4]
     student_list = data[4]
+    agg_name = data[5]
     
-    return generate_assessment_report(assess_name,full_marks,module, stats, freq, student_list)
+    return generate_assessment_report(assess_name,full_marks,module, stats, freq, student_list, agg_name)
 
 @csrf_exempt
 def get_student_marks_pdf(request):

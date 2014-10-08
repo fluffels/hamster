@@ -2177,6 +2177,11 @@ def generateAssessmentReport(assess_id):
     list.append(fmarks)
     list.append(getStatisticsForAssessment(assess_id))
     list.append(getStudentListForStats(assess_id))
+    if assess_obj.assessment_type == "Aggregate":
+        agg = Aggregator.objects.get(assessment=assess_obj)
+        list.append(agg.aggregator_name)
+    else:
+        list.append(None)
     
     return list
 '''

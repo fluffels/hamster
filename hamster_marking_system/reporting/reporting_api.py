@@ -51,7 +51,7 @@ doc.build(elements)
 
 '''
 
-def generate_assessment_report(assess_name, full_marks, module, data, freq, student_list):
+def generate_assessment_report(assess_name, full_marks, module, data, freq, student_list, agg_name):
     filename = assess_name + "_"+module+"_report.pdf"
     fileN = assess_name + "_"+module+"_report"
     logo = os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/reporting/images/cs_header_image.jpg")
@@ -77,6 +77,11 @@ def generate_assessment_report(assess_name, full_marks, module, data, freq, stud
     
     elements.append(Paragraph('<h1>'+'Module: '+ module+'</h1>',styleH))
     elements.append(Paragraph('<h3>'+'Assessment: '+ assess_name+'</h3>',styleH))
+    if agg_name is not None:
+        elements.append(Paragraph('<h3>'+'Aggregator: '+ agg_name+'</h3>',styleH))
+    else:
+        elements.append(Paragraph('<h3>'+'Aggregator: None '+ '</h3>',styleH))
+        
     elements.append(Paragraph('<h3>'+'Full Marks: '+ str(full_marks)+'</h3>',styleH))
     elements.append(Spacer(width=0, height=0.1*cm))
     tdata = [[Paragraph('<b>' + 'Statistics' + '</b>',styleN)
