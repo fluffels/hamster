@@ -2225,14 +2225,15 @@ def getStatisticsForAssessment(assess_id):
 
 def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
+    print "HELLO i AM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
+    print "NOW I HAVE PASSED THERE YIPPEE"
     passed_students = 0.0
     perc_passed = 0.0
     perc_failed = 0.0
     result = []
-    
+    studentlist = getStudentListForStats(assess_id)
     if assess_obj.assessment_type == "Aggregate":
-        studentlist = getStudentListForStats(assess_id)
         for student in studentlist:
             stu_mark = getMarkForStudentForLecturer(student[0], assess_id)
             perc = float(stu_mark[6])
@@ -2240,15 +2241,19 @@ def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
                 passed_students += 1
             
     else:
+        print "OF COURSE IM HERE IM A LEAF"
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
             mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = float(mark_array[6])
             if (perc >= 50.0) :
                 passed_students += 1
-                
+        
+        print "DID I MAKE IT?????"    
     perc_passed = passed_students/len(studentlist) * 100
+    print "DID I MAKE IT?????"
     perc_failed = 100.0 - (perc_passed)
+    print "DID I MAKE IT?????"
     result.append(perc_passed)
     result.append(perc_failed)
     return result
