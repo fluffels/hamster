@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import  SimpleSumAggregator, BestOfAggregator, WeightedSumAggregator, Aggregator, Person, Assessment, Module, Sessions, Person_data, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment,  AuditLogAssessment, AuditLogAllocatePerson, AuditLogSession, AuditLogMarkAllocation
+from .models import  SimpleSumAggregator, BestOfAggregator, WeightedSumAggregator, Aggregator, Person, Assessment, Module, Sessions, MarkAllocation, AllocatePerson, AggregateAssessment, LeafAssessment,  AuditLogAssessment, AuditLogAllocatePerson, AuditLogSession, AuditLogMarkAllocation
 
 '''
 class CourseAdmin(admin.ModelAdmin):
@@ -89,12 +89,6 @@ class AuditLogMarkAllocationAdmin(admin.ModelAdmin):
         model = AuditLogMarkAllocation
 
 admin.site.register(AuditLogMarkAllocation, AuditLogMarkAllocationAdmin)
-
-class Person_dataAdmin(admin.ModelAdmin):
-    class Meta:
-        model = Person_data
-
-admin.site.register(Person_data, Person_dataAdmin)
 
 class AllocatePersonAdmin(admin.ModelAdmin):
     class Meta:
