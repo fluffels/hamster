@@ -613,7 +613,7 @@ def getAllStudentForModule(request,jsonObj):
 	tut = api.getAllTutorsOfModule(mod)
 	ta = api.getAllTAsOfModule(mod)
 	name = api.getSessionName(session)
-	if student != []:
+	if student != [] or tut != [] or ta != []:
 		data = [{
 			'type':1,
 			'message':'students retrieved',
@@ -628,6 +628,7 @@ def getAllStudentForModule(request,jsonObj):
 		data = [{
 			'type':-1,
 			'message':'students not retrieved',
+			'name':name
 		}]
 		return HttpResponse(json.dumps(data))
 

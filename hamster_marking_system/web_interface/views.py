@@ -422,8 +422,8 @@ def createSession(request):
     except Exception as e:
        raise Http404()
     
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -453,6 +453,7 @@ def getAllStudentOfModule(request):
         students = []
         ta = []
         tut = []
+        name = res[0]['name']
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
