@@ -144,12 +144,6 @@
 		</div>
 	</div>
 	
-<!--	<div class="panel panel-primary">
-		<div class="panel-heading">Click below to view audit log</div>
-		<div class="panel-body">
-		<a href="audit_log"><h4>Audit log</h4></a>
-		</div>
-	</div>-->
 	
     </div>
     <div id="pane2" class="tab-pane">
@@ -166,54 +160,57 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
-		    <form action="added-tutor" role="form" method="post">{% csrf_token %}
-                    <div id="add_ta" class="kanban-centered">
-
-			<!--Instructions-->
-                        <article class="kanban-entry grab" id="instructions" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">How to Add Tutor/TA</a></h2>
-                                    <p>Pick Module and Person from dropdown menu.</p>
-                                </div>
-                            </div>
-                        </article>
-
-			<!--Pick a module-->
-                        <article class="kanban-entry grab" id="option_modules" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="modules" id="multiselectModuleToAddTa_TutorTo">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
-                                </div>
-                            </div>
-                        </article><!--./Pick a module-->
-			
-			<!--Pick a Person-->
-			<article class="kanban-entry grab" id="option_modules" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">Select Tutor/TA</a></h2>
-                                    <select multiple class="form-control" name="tutor" id="multiselectPersonToAddToTa_Tutor">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
-                                </div>
-                            </div>
-                        </article><!--./Pick a Person-->
-
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <button class="btn btn-success">Add <span class="glyphicon glyphicon-plus"></span></button>
-                </div>
-		</form>
-            </div><!--./Add Tutor/TA board-->
+		    <form action="added-tutor" role="form" method="post"  data-parsley-validate>{% csrf_token %}
+			<div id="add_ta" class="kanban-centered">
+    
+			    <!--Instructions-->
+			    <article class="kanban-entry grab" id="instructions" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">How to Add Tutor/TA</a></h2>
+					<p>Pick Module and Person from dropdown menu.</p>
+				    </div>
+				</div>
+			    </article>
+    
+			    <!--Pick a module-->
+			    <article class="kanban-entry grab" id="option_modules" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">Select Module</a></h2>
+					<div class="form-group">
+						<select class="form-control" name="modules" id="multiselectModuleToAddTa_TutorTo" required>
+						    {% for mod in Modules %}
+							    <option value={{ mod }}>{{ mod }}</option>
+						    {% endfor %}
+						</select>
+					</div>
+				    </div>
+				</div>
+			    </article><!--./Pick a module-->
+			    
+			    <!--Pick a Person-->
+			    <article class="kanban-entry grab" id="option_modules" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">Select Tutor/TA</a></h2>
+					<div class="form-group">
+						<select multiple class="form-control" name="tutor" id="multiselectPersonToAddToTa_Tutor" required>
+						    {% for per in Person %}
+							    <option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+						    {% endfor %}
+						</select>
+					</div>
+				    </div>
+				</div>
+			    </article><!--./Pick a Person-->
+			</div>
+			</div>
+			<div class="panel-footer">
+			    <button class="btn btn-success">Add <span class="glyphicon glyphicon-plus"></span></button>
+			</div>
+		    </form>
+		</div><!--./Add Tutor/TA board-->
 	    
 	    <!--Remove Tutor/TA board-->
             <div class="panel panel-info kanban-col">
@@ -222,52 +219,55 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
-		    <form role="form" action="tutor-removed" method="post">{% csrf_token %}
-                    <div id="remove_ta" class="kanban-centered">
-
-                        <!--Instructions-->
-                        <article class="kanban-entry grab" id="instructions" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">How to Remove Tutor/TA</a></h2>
-                                    <p>Pick Module and Person from dropdown menu.</p>
-                                </div>
-                            </div>
-                        </article>
-
-			<!--Pick a module-->
-                        <article class="kanban-entry grab" id="option_modules" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="module" id="multiselectModuleToRemoveTa_TutorFrom">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
-                                </div>
-                            </div>
-                        </article><!--./Pick a module-->
-			
-			<!--Pick a Person-->
-			<article class="kanban-entry grab" id="option_modules" draggable="true">
-                            <div class="kanban-entry-inner">
-                                <div class="kanban-label">
-                                    <h2><a href="#">Select Tutor/TA</a></h2>
-                                    <select multiple class="form-control" name="tutor" id="multiselectPersonToRemoveFromTa_Tutor">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
-                                </div>
-                            </div>
-                        </article><!--./Pick a Person-->
-
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <button class="btn btn-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
-                </div>
+		    <form role="form" action="tutor-removed" method="post" data-parsley-validate>{% csrf_token %}
+			<div id="remove_ta" class="kanban-centered">
+    
+			    <!--Instructions-->
+			    <article class="kanban-entry grab" id="instructions" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">How to Remove Tutor/TA</a></h2>
+					<p>Pick Module and Person from dropdown menu.</p>
+				    </div>
+				</div>
+			    </article>
+    
+			    <!--Pick a module-->
+			    <article class="kanban-entry grab" id="option_modules" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">Select Module</a></h2>
+					<div class="form-group">
+					    <select class="form-control" name="module" id="multiselectModuleToRemoveTa_TutorFrom" required>
+						{% for mod in Modules %}
+							<option value={{ mod }}>{{ mod }}</option>
+						{% endfor %}
+					    </select>
+					</div>
+				    </div>
+				</div>
+			    </article><!--./Pick a module-->
+			    
+			    <!--Pick a Person-->
+			    <article class="kanban-entry grab" id="option_modules" draggable="true">
+				<div class="kanban-entry-inner">
+				    <div class="kanban-label">
+					<h2><a href="#">Select Tutor/TA</a></h2>
+					<div class="form-group">
+					    <select multiple class="form-control" name="tutor" id="multiselectPersonToRemoveFromTa_Tutor" required>
+						{% for per in Person %}
+							<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+						{% endfor %}
+					    </select>
+					</div>
+				    </div>
+				</div>
+			    </article><!--./Pick a Person-->
+			</div>
+		    </div>
+		    <div class="panel-footer">
+			<button class="btn btn-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
+		    </div>
 		</form>
             </div><!--./Remove Tutor/TA board-->
         </div>
@@ -290,7 +290,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
-		    <form role="form" action="added-lecture" method="post">{% csrf_token %}
+		    <form role="form" action="added-lecture" method="post" data-parsley-validate>{% csrf_token %}
                     <div id="add_ta" class="kanban-centered">
 
 			<!--Instructions-->
@@ -308,11 +308,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="module" id="multiselectModuleToAddLectureTo">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select class="form-control" name="module" id="multiselectModuleToAddLectureTo" required>
+					    {% for mod in Modules %}
+						    <option value={{ mod }}>{{ mod }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a module-->
@@ -322,11 +324,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Lecturer</a></h2>
-                                    <select multiple class="form-control" name="lecture" id="multiselectPersonToAddToLecture">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select multiple class="form-control" name="lecture" id="multiselectPersonToAddToLecture" required>
+					    {% for per in Person %}
+						    <option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a Person-->
@@ -346,7 +350,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
-		    <form role="form" action="lecture-removed" method="post">{% csrf_token %}
+		    <form role="form" action="lecture-removed" method="post" data-parsley-validate>{% csrf_token %}
                     <div id="remove_ta" class="kanban-centered">
 
                         <!--Instructions-->
@@ -364,11 +368,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="module" id="multiselectModuleToRemoveLectureFrom">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select class="form-control" name="module" id="multiselectModuleToRemoveLectureFrom" required>
+					    {% for mod in Modules %}
+						    <option value={{ mod }}>{{ mod }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a module-->
@@ -378,11 +384,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Lecturer</a></h2>
-                                    <select multiple class="form-control" name="lecture" id="multiselectPersonToRemoveFromLecture">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select multiple class="form-control" name="lecture" id="multiselectPersonToRemoveFromLecture" required>
+					    {% for per in Person %}
+						    <option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a Person-->
@@ -415,7 +423,7 @@
                 </div>
                 <div class="panel-body">
 		<!--form-->
-		<form action='added-student' method='post' role="form"> {% csrf_token %}
+		<form action='added-student' method='post' role="form" data-parsley-validate> {% csrf_token %}
                     <div id="add_ta" class="kanban-centered">
 
 			<!--Instructions-->
@@ -433,11 +441,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="module" id="multiselectModuleToAddStudentTo">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select class="form-control" name="module" id="multiselectModuleToAddStudentTo" required>
+					    {% for mod in Modules %}
+						    <option value={{ mod }}>{{ mod }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a module-->
@@ -447,11 +457,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Student</a></h2>
-                                    <select multiple class="form-control" name="student" id="multiselectPersonToAddToStudent">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select multiple class="form-control" name="student" id="multiselectPersonToAddToStudent" required>
+					    {% for per in Person %}
+						    <option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a Person-->
@@ -471,7 +483,7 @@
                     <i class="fa fa-2x fa-plus-circle pull-right"></i>
                 </div>
                 <div class="panel-body">
-		    <form action="student-removed" method="post" role="form">{% csrf_token %}
+		    <form action="student-removed" method="post" role="form" data-parsley-validate>{% csrf_token %}
                     <div id="remove_ta" class="kanban-centered">
 
                         <!--Instructions-->
@@ -489,11 +501,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Module</a></h2>
-                                    <select class="form-control" name="module" id="multiselectModuleToRemoveStudentFrom">
-					{% for mod in Modules %}
-						<option value={{ mod }}>{{ mod }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select class="form-control" name="module" id="multiselectModuleToRemoveStudentFrom" required>
+					    {% for mod in Modules %}
+						    <option value={{ mod }}>{{ mod }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a module-->
@@ -503,11 +517,13 @@
                             <div class="kanban-entry-inner">
                                 <div class="kanban-label">
                                     <h2><a href="#">Select Student</a></h2>
-                                    <select multiple class="form-control" name="student" id="multiselectPersonToRemoveFromStudent">
-					{% for per in Person %}
-						<option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
-					{% endfor %}
-				    </select>
+				    <div class="form-group">
+					<select multiple class="form-control" name="student" id="multiselectPersonToRemoveFromStudent" required>
+					    {% for per in Person %}
+						    <option value={{ per.0 }}>{{ per.1 }}, {{ per.2 }} {{ per.3 }}</option>
+					    {% endfor %}
+					</select>
+				    </div>
                                 </div>
                             </div>
                         </article><!--./Pick a Person-->

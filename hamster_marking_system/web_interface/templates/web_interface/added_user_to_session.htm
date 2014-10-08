@@ -114,7 +114,7 @@
 		<h3><span class="label label-default">Select students to remove</span></h3>
 		<form id="remove_student_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession">
+				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession" required>
 					{% for per in students %}
 						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
 					{% endfor %}
@@ -123,10 +123,10 @@
 				<input type="hidden" name="userM" value=""/><br>
 			</div>
 			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
-				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button>
+				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button><br>
 		</form>
 		
-		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
+		<form method="post" action="view-students">{% csrf_token %}
 			<div class="clearfix">
 				<button  type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add student to session
@@ -158,7 +158,7 @@
 		<h3><span class="label label-default">Select markers to remove</span></h3>
 		<form id="remove_marker_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession">
+				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession" required>
 					{%for per in tutor%}
 						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
 						</option>
@@ -172,10 +172,10 @@
 				<input type="hidden" name="userS" value=""/><br>
 			</div>
 			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
-			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button>
+			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button><br>
 		</form>
 		
-		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
+		<form method="post" action="view-students">{% csrf_token %}
 			<div class="clearfix">
 				<button type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add marker to session
