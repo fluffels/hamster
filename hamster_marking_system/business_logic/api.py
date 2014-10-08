@@ -12,6 +12,7 @@ from ldap_interface.ldap_api import *
 from numpy import *
 from collections import Counter, defaultdict
 
+
 #general retrival functions
 # Name: getAllModules()
 # Description: Returns all the module objects
@@ -2057,76 +2058,80 @@ def changeSessionTime(request,session,opn,close):
         return False
     return True
 
-def assessmentAuditLog():
+def assessmentAuditLog(start,end):
     log = AuditLogAssessment.objects.all()
     list = []
     
     for logged in log:
-        assesslog = []
-        assesslog.append(logged.id)
-        assesslog.append(logged.person_id.upId)
-        assesslog.append(logged.mod.module_code)
-        assesslog.append(logged.assessment)
-        assesslog.append(logged.action)
-        assesslog.append(str(logged.time))
-        assesslog.append(logged.old_value)
-        assesslog.append(logged.new_value)
-        list.append(assesslog)
+        if str(logged.time) >= str(start) and str(logged.time) <= str(end):
+            assesslog = []
+            assesslog.append(logged.id)
+            assesslog.append(logged.person_id.upId)
+            assesslog.append(logged.mod.module_code)
+            assesslog.append(logged.assessment)
+            assesslog.append(logged.action)
+            assesslog.append(str(logged.time))
+            assesslog.append(logged.old_value)
+            assesslog.append(logged.new_value)
+            list.append(assesslog)
     return list
 
-def sessionAuditLog():
+def sessionAuditLog(start,end):
     log = AuditLogSession.objects.all()
     list = []
     
     for logged in log:
-        sesslog = []
-        sesslog.append(logged.id)
-        sesslog.append(logged.person_id.upId)
-        sesslog.append(logged.mod.module_code)
-        sesslog.append(logged.assessment)
-        sesslog.append(logged.session)
-        sesslog.append(logged.action)
-        sesslog.append(str(logged.time))
-        sesslog.append(logged.old_value)
-        sesslog.append(logged.new_value)
-        list.append(sesslog)
+        if str(logged.time) >= str(start) and str(logged.time) <= str(end):
+            sesslog = []
+            sesslog.append(logged.id)
+            sesslog.append(logged.person_id.upId)
+            sesslog.append(logged.mod.module_code)
+            sesslog.append(logged.assessment)
+            sesslog.append(logged.session)
+            sesslog.append(logged.action)
+            sesslog.append(str(logged.time))
+            sesslog.append(logged.old_value)
+            sesslog.append(logged.new_value)
+            list.append(sesslog)
     return list
 
-def markAllocationAuditLog():
+def markAllocationAuditLog(start,end):
     log = AuditLogMarkAllocation.objects.all()
     print str(log)
     list = []
     
     for  logged in log:
-        markAlloc = []
-        print "Audit log: " + str(logged.old_value) + " ---> " + str(logged.new_value)
-        session = logged.markAllocation.assessment
-        markAlloc.append(logged.id)
-        markAlloc.append(logged.person_id.upId)
-        markAlloc.append(logged.student)
-        markAlloc.append(logged.mod.module_code)
-        markAlloc.append(logged.action)
-        markAlloc.append(str(logged.time))
-        markAlloc.append(logged.old_value)
-        markAlloc.append(logged.new_value)
-        markAlloc.append(session.assess_name)
-        list.append(markAlloc)
+        if str(logged.time) >= str(start) and str(logged.time) <= str(end):
+            markAlloc = []
+            print "Audit log: " + str(logged.old_value) + " ---> " + str(logged.new_value)
+            session = logged.markAllocation.assessment
+            markAlloc.append(logged.id)
+            markAlloc.append(logged.person_id.upId)
+            markAlloc.append(logged.student)
+            markAlloc.append(logged.mod.module_code)
+            markAlloc.append(logged.action)
+            markAlloc.append(str(logged.time))
+            markAlloc.append(logged.old_value)
+            markAlloc.append(logged.new_value)
+            markAlloc.append(session.assess_name)
+            list.append(markAlloc)
     return list
 
-def allocatePersonAuditLog():
+def allocatePersonAuditLog(start,end):
     log = AuditLogAllocatePerson.objects.all()
     list = []
     
     for logged in log:
-        allocate = []
-        allocate.append(logged.id)
-        allocate.append(logged.person_id.upId)
-        allocate.append(logged.mod.module_code)
-        allocate.append(logged.allocatePerson)
-        allocate.append(logged.session.session_name)
-        allocate.append(logged.action)
-        allocate.append(str(logged.time))
-        list.append(allocate)
+        if str(logged.time) >= str(start) and str(logged.time) <= str(end):
+            allocate = []
+            allocate.append(logged.id)
+            allocate.append(logged.person_id.upId)
+            allocate.append(logged.mod.module_code)
+            allocate.append(logged.allocatePerson)
+            allocate.append(logged.session.session_name)
+            allocate.append(logged.action)
+            allocate.append(str(logged.time))
+            list.append(allocate)
     return list
 
 def StudentMarks(assess, student):
