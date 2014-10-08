@@ -1528,12 +1528,15 @@ def removeUserfromSession(request,jsonObj):
 		}]
 	return HttpResponse(json.dumps(data))
 
-def Auditlog(request):
-	assess = api.assessmentAuditLog();
-	sess = api.sessionAuditLog();
-	mark = api.markAllocationAuditLog();
+def Auditlog(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	start=json_data['start']
+	end=json_data['end']
+	assess = api.assessmentAuditLog(start,end);
+	sess = api.sessionAuditLog(start,end);
+	mark = api.markAllocationAuditLog(start,end);
 	print "Mark alloc : " + str(mark)
-	alloc = api.allocatePersonAuditLog();
+	alloc = api.allocatePersonAuditLog(start,end);
 	
 	data =[{
 		'type':1,
