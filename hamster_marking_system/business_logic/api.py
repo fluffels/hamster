@@ -254,35 +254,59 @@ def getAllStudentsOfModule(mod_code):
 # Parameter: mod_code : String
 # Return: Person[],their uid,cn and sn
 def getAllTAsOfModule(mod_code):
-    list = getTAsOf(mod_code)
-   # return getPersonObjectListFromArrayList(list)
-    returnList = []
-    for item in list:
-        person = []
-        array = sourceDemographics(item)
-        person.append(array['uid'])
-        person.append(array['cn'])
-        person.append(array['sn'])
-        returnList.append(person)
-    return returnList
+    print "Mod code is : " + str(mod_code)
+    list = Person.objects.all()
+    print "Size of list : " + str(len(list))
+    module_list = []
+    modObj = Module.objects.get(id=mod_code)
+    print "ModObj : " + str(modObj)
+    for per in list:
+        module_needed = None
+        print "OKAY!!!" + str(per)
+#        print "if " + str(per.studentOf_module) + "==" + str(modObj)
+        try:
+            module_needed = per.teachingAssistantOf_module.get(module_code=mod_code)
+        except Exception as e:
+            print e
+        if module_needed:
+            module_list.append(getPersonInformation(per))
+            print "Added " + str(per)
+        else:
+            pass
+            
+    print "Module list :"
+    print module_list
+    return module_list
 
 # Name: getAllTutorsOfModule(mod_code)
 # Description: Returns all the Tutor's assigned to a module
 # Parameter: mod_code : String
 # Return: Person[],their uid,cn and sn
 def getAllTutorsOfModule(mod_code):
-    list = getTutorsOf(mod_code)
-    #return getPersonObjectListFromArrayList(list)
-    returnList = []
-    for item in list:
-        person = []
-        array = sourceDemographics(item)
-        person.append(array['uid'])
-        person.append(array['cn'])
-        person.append(array['sn'])
-        returnList.append(person)
+    print "Mod code is : " + str(mod_code)
+    list = Person.objects.all()
+    print "Size of list : " + str(len(list))
+    module_list = []
+    modObj = Module.objects.get(id=mod_code)
+    print "ModObj : " + str(modObj)
+    for per in list:
+        module_needed = None
+        print "OKAY!!!" + str(per)
+#        print "if " + str(per.studentOf_module) + "==" + str(modObj)
+        try:
+            module_needed = per.tutorOf_module.get(module_code=mod_code)
+        except Exception as e:
+            print e
+        if module_needed:
+            module_list.append(getPersonInformation(per))
+            print "Added " + str(per)
+        else:
+            pass
+            
+    print "Module list :"
+    print module_list
+    return module_list
     
-    return returnList
 
 def getPersonsInformation(uid):
     per = Person.objects.get(upId=uid)
