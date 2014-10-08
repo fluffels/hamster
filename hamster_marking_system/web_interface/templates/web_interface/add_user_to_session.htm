@@ -95,9 +95,10 @@
 	<div class="col-md-6"><!--Left of jumbotron showing students in module -->
 		
 		<h3><span class="label label-default">Select students to add</span></h3>
+		{% if students %}
 		<form id="add_student_to_session_form" role="form" method="post" action="update-info" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userS" id="multiselectStudentsForSession">
+				<select multiple class="form-control" name="userS" id="multiselectStudentsForSession" required>
 					{% for per in students %}
 						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
 					{% endfor %}
@@ -108,7 +109,13 @@
 			</div>
 			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>
 				<span class="glyphicon glyphicon-plus"></span> Add Student(s)</button>
-		</form>			
+		</form>
+		{%else%}
+			<div class="alert alert-info" role="alert">
+				<strong>There are currently no students for this module<strong>
+			</div>
+			
+		{%endif%}
 	</div>
 	
 	<div class="col-md-6"><!-- Right of jumbotron showing markers for module -->
@@ -117,7 +124,7 @@
 		{%if tutor%}
 		<form id="add_marker_to_session_form" role="form" method="post" action="update-info" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession">
+				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession" required>
 					{%for per in tutor%}
 						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
 						</option>
