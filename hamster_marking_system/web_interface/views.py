@@ -1646,6 +1646,46 @@ def AuditLog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
+#@isAuthenticated
+#@isLecture
+def assessmentCenterLeaf(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    data ={
+        'assess_id':assess_id,
+    }
+    result = views.assessmentCenterLeaf(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res['type'] ==1:
+        assessmentName = res['assessmentName']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
+
+        return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+    else:
+        return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+
 @isAuthenticated
 @isLecture
 def assessmentCenter(request):

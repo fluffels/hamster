@@ -1548,6 +1548,56 @@ def Auditlog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
+def assessmentCenterLeaf(request, jsonObj):
+	
+	try:
+		json_data = json.loads(jsonObj)
+		assess_id = json_data['assess_id']
+		
+		assess_name = api.getAssessmentName(assess_id)
+		print "****************************************************************"
+		print "Assess_name: " + str(assess_name)
+		print "****************************************************************"
+		#STATISTICS
+		pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
+		print "*********************************************************"
+		print "pass_fail_percentage: " + str(pass_fail_percentage)
+		print "*********************************************************\n"
+		
+		students = api.getStudentListForStats(assess_id)
+		print "*********************************************************"
+		print "Student List obtained: " 
+		print "*********************************************************\n"
+		stats = api.getStatisticsForAssessment(assess_id)
+		print "*********************************************************"
+		print "Stats obtained: " 
+		print "*********************************************************\n"
+		average = stats[0]
+		median = stats[1]
+		mode = stats[2]
+		stddev = stats[3]
+		frequency = stats[4]
+	
+		if stats is not None:
+			data = {
+				'type':1,
+				'assessmentName':assess_name,
+				'frequency':frequency,
+				'average':average,
+				'stddev':stddev,
+				'median':median,
+				'mode':mode,
+				'pass_fail_percentage':pass_fail_percentage,
+				'students':students
+			}
+			return HttpResponse(json.dumps(data))
+		else:
+			print "ERROR: Something went wrong "
+	except Exception as e:
+		print "+====================="
+		print "SOOMETHING WENT WRONG-- Leaf"
+		print "+====================="
+
 def assessmentCenter(request, jsonObj):
 	
 	try:

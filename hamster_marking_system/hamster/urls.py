@@ -61,6 +61,7 @@ urlpatterns = patterns('',
     url(r'importCSV$','reporting.views.import_csv', name='import_csv'),
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
+    url(r'assessmentCenterLeaf$','web_interface.views.assessmentCenterLeaf', name='assessment_center_leaf'),
     
     url(r'update-name','web_interface.views.changeAssessmentName', name='update_assessment_name'),
     

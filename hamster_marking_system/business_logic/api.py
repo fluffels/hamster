@@ -1,3 +1,8 @@
+from __future__ import division
+import time                     
+import json
+import __builtin__
+import __future__
 import datetime
 import numpy as np
 from django.db.models import get_model
@@ -5,6 +10,7 @@ from polymorphic import PolymorphicModel
 from .models import *
 from ldap_interface.ldap_api import *
 from numpy import *
+from collections import Counter, defaultdict
 
 #general retrival functions
 # Name: getAllModules()
@@ -2002,18 +2008,8 @@ def getAggregatorName(assess_id):
 def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, children_weight):
     assess_obj = Assessment.objects.get(id=assess_id)
     
-    print "============================="
-    print "in set agg info"
-    print "assess_obj: "+str(assess_obj)
-    print "numcontributors: " + numContributors_
-    print "agg_name: " + str(agg_name)
-    print "============================="
-    
     assess_aggregator = Aggregator.objects.get(assessment=assess_obj)
     aggregator_name = assess_aggregator.getname()
-    
-    print "id array: " + str(children_id)
-    print "weight array: "+str(children_weight)
     
     if agg_name == 'SimpleSum':
         assess_aggregator.delete()
@@ -2026,12 +2022,9 @@ def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, childr
  
     elif agg_name == 'WeightedSum':
         for (id_,weight_) in zip(children_id, children_weight):
-            print "id: " + str(id_)
-            print "weight: "+str(weight_)
             child = Assessment.objects.get(id=id_)
-            child.weight = float(weight_)
+            child.weight = (float(weight_)/100)
             child.save()
-        
         assess_aggregator.delete()
         agg = insertWeightedSumAggregator(assess_obj)
   
@@ -2212,8 +2205,11 @@ def getStatisticsForAssessment(assess_id):
     list.append(median)
     
     #mode
-    md = np.var(info)
-    mode = "{0:.2f}".format(md)
+    d = defaultdict(float)
+    for i in info:
+        d[i] += 1
+    most_frequent = sorted(d.iteritems(), key=lambda x: x[1], reverse=True)[0]
+    mode = "{0:.2f}".format(most_frequent[0])
     list.append(mode)
     
     #std_dev
