@@ -151,7 +151,7 @@
 					<form method="post" action="update-marks" class="form-inline" role="form"  data-parsley-validate>
 						{% csrf_token %}
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark"
-						required data-parsley-min="0" data-parsley-max={{ fullmark }}>
+						required data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -166,7 +166,7 @@
 						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
 						       name="mark" placeholder="Mark awarded" value={{ per.3 }}
-						       required data-parsley-min="0" data-parsley-max={{ fullmark }}>
+						       required data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
