@@ -126,16 +126,16 @@
 			<div class="form-group">
 				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession" required>
 					{%for per in tutor%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 					{%for per in teachingA%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}>
-				<input type="hidden" name="userS" value=""/>
+				<input type="hidden" name="userS" value="None"/>
 				<input type="hidden" name="module" value={{ module }}/>
 			</div>
 			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>

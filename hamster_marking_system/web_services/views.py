@@ -640,7 +640,9 @@ def addUserToSession(request,jsonObj):
 	name = api.getSessionName(session)
 	data = []
 	print "lol sipho is shouting at her parents via anele";
-	if students:
+	print students
+	if students != []:
+		print "what is happeningo bathong student"
 		for n in students:
 			api.addStudentToSession(request,n,session)
 		
@@ -657,8 +659,12 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':marker
 		}]
-	elif Markers:
+	elif Markers  != []:
+		print "what is happeningo bathong marker"
+		print Markers
 		for n in Markers:
+			print "fghdshgdsfhgsfdshgfgshfgdfjfdghffd"
+			print n
 			api.setMarkerForSession(request,n,session)
 		
 		student = api.getStudentsForASession(session)
@@ -673,6 +679,7 @@ def addUserToSession(request,jsonObj):
 			'marker':marker,
 		}]
 	else:
+		print "what is happeningo bathong no one"
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)

@@ -292,7 +292,6 @@ def getAllTutorsOfModule(mod_code):
     for per in list:
         module_needed = None
         print "OKAY!!!" + str(per)
-#        print "if " + str(per.studentOf_module) + "==" + str(modObj)
         try:
             module_needed = per.tutorOf_module.get(module_code=mod_code)
         except Exception as e:
@@ -303,7 +302,7 @@ def getAllTutorsOfModule(mod_code):
         else:
             pass
             
-    print "Module list :"
+    print "Module list :" + str(module_list)
     print module_list
     return module_list
     
@@ -1094,13 +1093,20 @@ def setTutorForModule(request, uid, mod_code):
 # Parameter: session_id : Integer
 # Return: Nothing
 def setMarkerForSession(request, uid, session_id):
-    user = Person.objects.get(upId=request.session['user']['uid'][0])
-    person = Person.objects.get(upId=uid)
-    session = Sessions.objects.get(id=session_id)
-    assess = session.assessment
-    obj = insertPersonToSession(person, session,0,1)
-    insertAuditLogAllocatePerson(user,person.upId,session,assess.mod_id)
-#    logAudit(request,"Inserted new marker for session","insert","dbModels_markersessions","id",None,obj.getId())
+    try:
+        user = Person.objects.get(upId=request.session['user']['uid'][0])
+        sessObj = Sessions.objects.get(id=session_id)
+        person = Person.objects.get(upId = uid)
+        assess= sessObj.assessment_id
+        list = []
+        if checkPersonInSession(person,sessObj):
+            return False
+        else:
+            insertPersonToSession(person,sessObj,0,1)
+            insertAuditLogAllocatePerson(user,person.upId,sessObj,"Added to session",assess.mod_id)
+    except Exception as e:
+        raise e
+    return True
 
 # Name: getOpenSessions(assessment_id_)
 # Description: Returns all the sessions that are open for marking

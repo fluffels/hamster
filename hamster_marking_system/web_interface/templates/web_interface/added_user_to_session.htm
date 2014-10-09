@@ -159,17 +159,13 @@
 		<form id="remove_marker_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
 				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession" required>
-					{%for per in tutor%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
-						</option>
-					{%endfor%}
-					{%for per in teachingA%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+					{%for per in marker %}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}><br>
-				<input type="hidden" name="userS" value=""/><br>
+				<input type="hidden" name="userS" value="None"/><br>
 			</div>
 			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
 			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button><br>

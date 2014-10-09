@@ -464,8 +464,8 @@ def getAllStudentOfModule(request):
                                                                         'sessionName':name},
                                                                         context_instance = RequestContext(request))
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def addStudentToSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -477,7 +477,7 @@ def addStudentToSession(request):
     print "users[5][1] = " + str(users[5][1])
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1 and str(users[0][1][0]) != "None")): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)
