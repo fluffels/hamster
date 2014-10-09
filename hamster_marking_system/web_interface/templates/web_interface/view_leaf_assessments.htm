@@ -200,7 +200,7 @@
 					      name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
 						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control"
-						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }}>
+						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }} required>
 						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assessment" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>

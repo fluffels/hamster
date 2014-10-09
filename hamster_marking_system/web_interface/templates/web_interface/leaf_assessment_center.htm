@@ -104,12 +104,12 @@
 <!-- Audit table -->
 <div class="tabbable">
   <ul class="nav nav-tabs">
-    <li><a href="#pane2" data-toggle="tab">Statistics</a></li>
+    <li class="active"><a href="#pane2" data-toggle="tab">Statistics</a></li>
     <li><a href="#pane3" data-toggle="tab">Graph stats</a></li>
     <li><a href="#pane4" data-toggle="tab">More Options</a></li>
   </ul>
   <div class="tab-content">
-    <div id="pane2" class="tab-pane">
+    <div id="pane2" class="tab-pane active">
     <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
     
      <!--Add statistics-->
@@ -344,7 +344,8 @@
 				<div class="modal-body">
 					<h3><span class="label label-default">Selected Assessment</span></h3>
 					<div class="form-group">
-						<input type="text" disabled="disabled" placeholder={{ assessmentName }} value={{ assess_id }}>
+						<input type="text" disabled="disabled" value={{ assessmentName }}>
+						<input type="hidden" value={{ assess_id }} name="assess_id">
 					</div>
 					<div class="form-group">
 						<input id="CSVuploadFile" placeholder="Choose File" disabled="disabled">
@@ -376,7 +377,7 @@
 									}
 							
 									if (!blnValid) {
-									    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+									    alert("Sorry, " + sFileName + " is has invalid file type, allowed extensions are: " + _validFileExtensions.join(", "));
 									    return false;
 									}
 								    }

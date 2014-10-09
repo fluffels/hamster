@@ -926,7 +926,7 @@
 							<div class="col-lg-8">
 								<input type="text" class="form-control" name="name"
 								       placeholder="Project 1 Phase 1" required
-								       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/">
+								       data-parsley-length="[2, 30]" data-parsley-pattern="/^[a-zA-Z0-9-_ -]+$/">
 							</div>
 						</div>
 	
@@ -953,100 +953,6 @@
 			</div>
 		</div>
 	</div><!--End of Modal for Create Leaf assessment-->
-
-<!--Modal for Create Leaf assessment-->
-<div class="modal fade" id="select_aggregator" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form class="form-horizontal" action="create-leaf-assessment" method="post">{% csrf_token %}
-					<div class="modal-header text-center">
-						<h4>Choose an Aggregator</h4>
-					</div>
-					<div class="modal-body">
-						<div class="tabbable">
-						<ul class="nav nav-tabs">
-						  <li class="active"><a href="#simple_sum" data-toggle="tab">Simple Sum</a></li>
-						  <li><a href="#best_of" data-toggle="tab">Best Of</a></li>
-						  <li><a href="#weighted_sum" data-toggle="tab">Weighted Sum</a></li>
-						  <li><a href="#agg_status" data-toggle="tab">Status</a></li>
-						</ul>
-						<div class="tab-content">
-						  <div id="simple_sum" class="tab-pane active">
-						    <h4>No information required. Click Complete button.</h4>
-						    <!-- simplesum form -->
-							<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
-								<input type="hidden" value="SimpleSum" name="agg_name">
-								<input type="hidden" value="0" name="numC">
-								<input type="hidden" value={{assess_id}} name="assess_id">
-								<input type="hidden" value={{module}} name="module">
-								<input type="hidden" value="0" name="child_weight" >
-								<input type="hidden" value="0" name="child_id"  >
-								<div class="clearfix">
-									<button type="submit" name="submit" class="btn btn-success pull-right">Submit</button>
-								</div>
-							</form><!-- ./simplesum form -->
-						  </div>
-						  <div id="best_of" class="tab-pane">
-						  <h4>Give number of assessments to be used as the best of.</h4>
-						    <h5>Max contributors: <span class="label label-default">{{ numChildren }}</span></h5>
-							<!-- bestof form -->
-							<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form" data-parsley-validate> {% csrf_token %}
-							  <div class="form-group">
-								<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of contributors</label>
-								<div class="col-sm-4">
-									<input type="number" class="form-control" id="numC"
-									       name="numC" placeholder="Number of contributors" required
-									       required data-parsley-min="1" data-parsley-max={{ numChildren }}>
-								</div>
-								<input type="hidden" value="BestOf" name="agg_name">
-								<input type="hidden" value={{assess_id}} name="assess_id">
-								<input type="hidden" value={{module}} name="module">
-								<input type="hidden" value="0" name="child_weight" >
-								<input type="hidden" value="0" name="child_id"  >
-							  </div>
-							  <div class="clearfix">
-								<button class="btn btn-success pull-right" type="submit">Submit</button>
-							  </div>
-							</form><!-- ./bestof form -->
-						  </div>
-						  <div id="weighted_sum" class="tab-pane">
-						    <h4>Assign weights to each assessment</h4>
-						    <h4><div class="label label-default">Please assign weights to each assessment</div></h4>
-							<!-- weightedsum form -->
-							<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form" data-parsley-validate> {% csrf_token %}
-								<input type="hidden" value="WeightedSum" name="agg_name">
-								<input type="hidden" value="0" name="numC">
-								<input type="hidden" value={{module}} name="module">
-								<input type="hidden" value={{assess_id}} name="assess_id">
-							{% for child in children %}
-							  <div class="form-group">
-								<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
-								<div class="col-sm-5">
-									<input class="form-control" type="text" name="child_weight" placeholder="Weight of {{ child.1 }}" required>
-									<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
-								</div>
-							  </div>
-							{% endfor %}
-							<div class="clearfix">
-								<button class="btn btn-success pull-right" type="submit">Submit</button>
-							</div>
-							</form><!-- ./weightedsum form -->
-						  </div>
-						  <div id="agg_status" class="tab-pane">
-						    <h4>The currently used aggregator is : </h4>
-						    <h3><span class="label label-default">{{ agg_name }}</span></h3>
-						  </div>
-						</div><!-- /.tab-content -->
-					      </div><!-- /.tabbable -->
-	
-					</div>
-					<div class="modal-footer clearfix">
-						<a class="btn btn-default" data-dismiss="modal">Close</a>
-					</div>
-				</form>
-			</div>
-		</div>
-</div><!--End of Modal for Create Leaf assessment-->
 
 
 	</div>
