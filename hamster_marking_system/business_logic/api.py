@@ -2005,15 +2005,15 @@ def getAggregationInfo(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     children = Assessment.objects.filter(parent=assess_id)
     list = []
-    
-    for child in children:
-        sublist =[]
-        sublist.append(child.id)
-        sublist.append(child.assess_name)
-        sublist.append(child.assessment_type)
-        list.append(sublist)
+    if assess_obj.assessment_type == "Aggregate":
+        for child in children:
+            sublist =[]
+            sublist.append(child.id)
+            sublist.append(child.assess_name)
+            sublist.append(child.assessment_type)
+            sublist.append(child.weight*100)
+            list.append(sublist)
 
-    if assess_obj.assessment_type == 'Aggregate':
         return list
     else:
         return None

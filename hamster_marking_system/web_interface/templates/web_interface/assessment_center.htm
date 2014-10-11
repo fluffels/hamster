@@ -195,7 +195,7 @@
 				<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
 				<div class="col-sm-5">
 					<input id="child_weights_id" class="form-control" type="number" name="child_weight"
-					       placeholder="Weight of {{ child.1 }} in percentages. Example 60"
+					       placeholder="Weight of {{ child.1 }} is {{child.3}} "
 					       required data-parsley-min="0" data-parsley-max="100">
 					<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
 				</div>
