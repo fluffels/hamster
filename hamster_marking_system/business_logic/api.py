@@ -2006,12 +2006,16 @@ def getAggregationInfo(assess_id):
     children = Assessment.objects.filter(parent=assess_id)
     list = []
     if assess_obj.assessment_type == "Aggregate":
+        agg= Aggregator.objects.get(assessment=assess_obj)
         for child in children:
             sublist =[]
             sublist.append(child.id)
             sublist.append(child.assess_name)
             sublist.append(child.assessment_type)
-            sublist.append(child.weight*100)
+            if agg.aggregator_name == "WeightedSum":
+                sublist.append(child.weight*100)
+            else:
+                sublist.append(0)
             list.append(sublist)
 
         return list
