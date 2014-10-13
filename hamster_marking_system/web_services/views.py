@@ -91,40 +91,40 @@ def getStudentModules(request):
 	else:
 		raise Http404()
 		
-def updateMarks(request):
-	data = [
-	{
-		'type':-1,
-		'message':'Request failed',
-		'success':'false'
-	}]
-	if request.method == 'POST':
-		try:
-			json_data =json.loads(request.body)
-			student = json_data['uid']
-			course = json_data['courseCode']
-			leafAssessmentID = json_data['leafAssessmentID']
-			mark = json_data['mark']
-			markAlloc = api.getMarkAllocationFromID(leafAssessmentID)
-			api.updateMarkAllocation(request, markAlloc, mark)
-			
-			data = [
-			{
-				'type':1,
-				'message':'Mark saved',
-				'success':'true'
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			data = [
-			{
-				'type':-1,
-				'message':'Failed to save mark',
-				'success':'false'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return HttpResponse(json.dumps(data))
+#def updateMarks(request):
+#	data = [
+#	{
+#		'type':-1,
+#		'message':'Request failed',
+#		'success':'false'
+#	}]
+#	if request.method == 'POST':
+#		try:
+#			json_data =json.loads(request.body)
+#			student = json_data['uid']
+#			course = json_data['courseCode']
+#			leafAssessmentID = json_data['leafAssessmentID']
+#			mark = json_data['mark']
+#			markAlloc = api.getMarkAllocationFromID(leafAssessmentID)
+#			api.updateMarkAllocation(request, markAlloc, mark)
+#			
+#			data = [
+#			{
+#				'type':1,
+#				'message':'Mark saved',
+#				'success':'true'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			data = [
+#			{
+#				'type':-1,
+#				'message':'Failed to save mark',
+#				'success':'false'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return HttpResponse(json.dumps(data))
 		
 def saveMarks(request):
 	data = [
@@ -184,63 +184,63 @@ def getLeafAssessmentMarkOfAssessment(request):
 		}]
 		return HttpResponse(json.dumps(data))
 		
-def getStudentsForSession(request):
-	if request.method == 'POST':
-		try:
-			json_data = json.loads(request.body)
-			sessionID = json_data['sessionID']
-			session = api.getSessionsFromID(sessionID)
-			st = api.getStudentsForASession(session)
-			person = api.getPersonObjectListFromArrayList(st)
-			name = api.getAllNamesOf(person)
-			surname = api.getAllSurnameOf(person)
-			
-			data = [{
-				'type':1,
-				'message': 'Retrieved student details',
-				'uid':st,
-				'name':name,
-				'surname':surname,
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			data = [{
-				'type':-1,
-				'message': 'Failed to get student'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
+#def getStudentsForSession(request):
+#	if request.method == 'POST':
+#		try:
+#			json_data = json.loads(request.body)
+#			sessionID = json_data['sessionID']
+#			session = api.getSessionsFromID(sessionID)
+#			st = api.getStudentsForASession(session)
+#			person = api.getPersonObjectListFromArrayList(st)
+#			name = api.getAllNamesOf(person)
+#			surname = api.getAllSurnameOf(person)
+#			
+#			data = [{
+#				'type':1,
+#				'message': 'Retrieved student details',
+#				'uid':st,
+#				'name':name,
+#				'surname':surname,
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			data = [{
+#				'type':-1,
+#				'message': 'Failed to get student'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
 
-def getOpenSessionsForMarker(request):
-	if request.method == 'POST':
-		try:
-			json_data = json.loads(request.body)
-			assessmentID = json_data['assessmentID']
-			marker = request.session['user']
-			openSessions = api.getOpenSessionsForMarker(assessmentID,marker['uid'])
-			
-			final = []
-			
-			for x in openSessions:
-				list = [] #contains the sessionID and the session name
-				list.append(getSessionIdFromObject(x))
-				list.append(getSessionNameFromObject(x))
-				final.append(list) #an array of all the session id's n manes
-			data = [{
-				'type':1,
-				'message' : 'sessions retrieved',
-				'sessions' :final,
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			return Http404()
-	else:
-		data = [{
-				'type':-1,
-				'message':'request failed'
-			}]
-		return HttpResponse(json.dumps(data))
+#def getOpenSessionsForMarker(request):
+#	if request.method == 'POST':
+#		try:
+#			json_data = json.loads(request.body)
+#			assessmentID = json_data['assessmentID']
+#			marker = request.session['user']
+#			openSessions = api.getOpenSessionsForMarker(assessmentID,marker['uid'])
+#			
+#			final = []
+#			
+#			for x in openSessions:
+#				list = [] #contains the sessionID and the session name
+#				list.append(getSessionIdFromObject(x))
+#				list.append(getSessionNameFromObject(x))
+#				final.append(list) #an array of all the session id's n manes
+#			data = [{
+#				'type':1,
+#				'message' : 'sessions retrieved',
+#				'sessions' :final,
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			return Http404()
+#	else:
+#		data = [{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#		return HttpResponse(json.dumps(data))
 
 def getAllMarkerOfModule(request):
 	if request.method == 'POST':
@@ -372,68 +372,68 @@ def closeSession(request):
 	else:
 		return Htpp404()
 		
-def removeMarkerFromModule(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		marker = json_data['uid']
-		mod_code = json_data['mod_code']
-		bool = api.removeMarkerFromModule(request,mod_code,marker)
-		if bool:
-			data =[{
-				'type':1,
-				'message': 'marker removed'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data =[{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
-
-def setTAforModule(request):
-	if request.method =='POST':
-		json_data = json.loads(request.body)
-		mod_code= json_data['mod_code']
-		uid = json_data['uid']
-		ta = api.setTeachingAssistantForModule(request,uid,mod_code)
-		if ta:
-			data =[{
-				'type':1,
-				'message':'ta inserted'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data =[{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
-		
-def setTutorForModule(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		mod = json_data['mode_code']
-		uid = json_data['uid']
-		ta = api.setTutorForModule(request,uid,mod)
-		if ta:
-			data = [{
-				'type':1,
-				'message':'tutor inserted'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
+#def removeMarkerFromModule(request):
+#	if request.method == 'POST':
+#		json_data = json.loads(request.body)
+#		marker = json_data['uid']
+#		mod_code = json_data['mod_code']
+#		bool = api.removeMarkerFromModule(request,mod_code,marker)
+#		if bool:
+#			data =[{
+#				'type':1,
+#				'message': 'marker removed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data =[{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
+#
+#def setTAforModule(request):
+#	if request.method =='POST':
+#		json_data = json.loads(request.body)
+#		mod_code= json_data['mod_code']
+#		uid = json_data['uid']
+#		ta = api.setTeachingAssistantForModule(request,uid,mod_code)
+#		if ta:
+#			data =[{
+#				'type':1,
+#				'message':'ta inserted'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data =[{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
+#		
+#def setTutorForModule(request):
+#	if request.method == 'POST':
+#		json_data = json.loads(request.body)
+#		mod = json_data['mode_code']
+#		uid = json_data['uid']
+#		ta = api.setTutorForModule(request,uid,mod)
+#		if ta:
+#			data = [{
+#				'type':1,
+#				'message':'tutor inserted'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data = [{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
 
 def personDetails(request):
 #	json_data = json.loads(jsonObject)
