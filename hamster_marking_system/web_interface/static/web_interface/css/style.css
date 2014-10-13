@@ -77,3 +77,8 @@ div.pull-right.btn-group.btn-group-xs.mark-view-toggle{
     display: none;
   }
 }
+
+/*
+ *Hide reCaptcha div on load
+ */
+.hidden { display: none; }

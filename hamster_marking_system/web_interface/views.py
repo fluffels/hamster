@@ -8,16 +8,145 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
+from recaptcha.client import captcha
 
 def home(request):
     return render_to_response("web_interface/login.htm",
                               locals(),
                               context_instance = RequestContext(request))
 
+def reCaptchaLogin(request):      
+    # talk to the reCAPTCHA service  
+    response = captcha.submit(  
+        request.POST.get('recaptcha_challenge_field'),  
+        request.POST.get('recaptcha_response_field'),  
+        '6Leu-PsSAAAAAFcLbrwJocmUAJDl4Vt62-CA1rnN',  
+        request.META['REMOTE_ADDR'],)
+    
+        
+    user_ip = request.POST['user_ip']
+    login_count = request.POST['login_count']
+    current_ip = request.META['REMOTE_ADDR']
+    
+    if (user_ip == current_ip):
+        login_count = login_count + 1
+    
+    print "LOGIN_COUNT : " + str(login_count)
+    # see if the user correctly entered CAPTCHA information  
+    # and handle it accordingly.  
+    if response.is_valid:
+        #User is human, so reset login count
+        try:
+            user = request.POST['username']
+            passw = request.POST['password']
+            data = {
+                    'username':user,
+                    'password':passw
+            }
+            user_info = views.login(request,json.dumps(data))
+            #user_info = urllib2.urlopen('/login',json.dumps(data))
+            user = json.loads(user_info.content)
+            user_type = ''
+            global default_user
+            default_user =''
+            global user_roles
+            user_roles = []
+
+            global user_lect
+            user_lect = []
+            global user_stud
+            user_stud = []
+            global user_tut
+            user_tut = []
+            global user_ta
+            user_ta = []
+            if user[0]['type'] == 1:
+                    if len(user[0]['lecturerOf']) != 0:
+                            user_type = 'LC'
+                            user_lect.append({user_type:user[0]['lecturerOf']})
+                            user_roles.append('Lecturer')
+                            
+                    if len(user[0]['studentOf']) != 0:
+                            user_type ='ST'
+                            user_stud.append({user_type:user[0]['studentOf']})
+                            user_roles.append('Student')
+                            
+                    if len(user[0]['tutorFor']) != 0:
+                            user_type = 'TT'
+                            user_tut.append({user_type:user[0]['tutorFor']})
+                            user_roles.append('Tutor')
+                            
+                    if len(user[0]['teachingAssistantOf']) != 0:
+                            user_type ='TA'
+                            user_ta.append({user_type:user[0]['teachingAssistantOf']})
+                            user_roles.append('Teaching ass')
+                            
+                    #choosing the default user based on the user type ie,lecturer
+                    if len(user[0]['lecturerOf']) != 0:
+                        default_user = 'LC'
+                    elif len(user[0]['studentOf']) != 0:
+                        default_user = 'ST'
+                    elif len(user[0]['tutorFor']) != 0:
+                        default_user = 'TT'
+                    else:
+                        default_user = 'TA'
+    
+                    Users = user[0]['Users']
+                    Modules = user[0]['Modules']
+                    
+                    username = request.session['user']['uid'][0]
+                    name = request.session['user']['cn'][0]
+                    surname = request.session['user']['sn'][0]
+                    try:
+                        print User.objects.all()
+                        user = User.objects.get(username=username,first_name=name,last_name=surname)
+                        print "User : " + str(user)
+                        if user:
+                            if user.is_superuser:
+                                return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'Person':Users,
+                                                                            'Modules':Modules,
+                                                                            'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
+                    except Exception, ex:
+                        print "Could not find user in User's"
+                        user = None
+                        print "User X: " + str(user)
+    
+                    return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
+            else:
+                    return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
+        except Exception  as e:
+            raise Http404()  
+    else:  
+        captcha_response = 'YOU MUST BE A ROBOT'  
+      
+    return render_to_response('web_interface/login.htm', {  
+                'type':-1,  
+                'captcha_response': captcha_response}
+                                ,context_instance = RequestContext(request))  
+
 def login(request):
-    try:
+    #try:
         user = request.POST['username']
         passw = request.POST['password']
+        user_ip = request.POST['user_ip']
+        login_count = request.POST['login_count']
+        current_ip = request.META['REMOTE_ADDR']
+
+        if (user_ip == current_ip):
+            login_count = login_count + 1
+
+        print "LOGIN_COUNT : " + str(login_count)
+
         data = {
                 'username':user,
                 'password':passw
@@ -89,7 +218,7 @@ def login(request):
 		                                                       'user_ta':user_ta,
 		                                                       'Person':Users,
 		                                                       'Modules':Modules,
-		                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+		                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
 		except Exception, ex:
 		    print "Could not find user in User's"
 		    user = None
@@ -100,11 +229,11 @@ def login(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+                                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
         else:
-                 return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
-    except Exception  as e:
-        raise Http404()
+                 return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
+    #except Exception  as e:
+        #raise Http404()
 
 
 @isAuthenticated
