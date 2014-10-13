@@ -869,8 +869,8 @@ class ApiTestCase(unittest.TestCase):
         markAllocation =MarkAllocation()
         person = Person()
         api.createMarkAllocation = MagicMock(return_value=markAllocation)
-        api.createMarkAllocation("/createMark",1,"no marker",person,datetime.datetime.now(),"no mark")
-        api.createMarkAllocation.assert_called_once_with("/createMark",1,"no marker",person,datetime.datetime.now(),"no mark")
+        api.createMarkAllocation("/createMark",1,"no marker",person,"2014-10-09 12:00:00","no mark")
+        api.createMarkAllocation.assert_called_once_with("/createMark",1,"no marker",person,"2014-10-09 12:00:00","no mark")
         api.createMarkAllocation.assert_return_value(markAllocation)
     
     def test_getFullMark(self):
@@ -918,9 +918,9 @@ class ApiTestCase(unittest.TestCase):
     
     def test_isAggregate(self):
         assess=Assessment()
-        api.isAggregate = MAgicMock(return_value=True)
+        api.isAggregate = MagicMock(return_value=True)
         api.isAggregate(assess)
-        api.isAggregate.assert_called-once_with(assess)
+        api.isAggregate.assert_called_once_with(assess)
         api.isAggregate.assert_return_value(True)
     
     def test_deleteAllChildren(self):
@@ -942,9 +942,84 @@ class ApiTestCase(unittest.TestCase):
         api.getAssessmentFromID.assert_return_value(list)
     
     def test_getMarkerForSession(self):
-        pass
+        person1 = ["sipho","manana","u89000477"]
+        person2 = ["cebo","makeleni","u89000567"]
+        list = [person1,person2]
+        api.getMarkerForSession = MagicMock(return_value=list)
+        api.getMarkerForSession(1)
+        api.getMarkerForSession.assert_called_once_with(1)
+        api.getMarkerForSession.assert_return_value(list)
     
+    def test_getUserInformation(self):
+        per = Person()
+        per1 = Person()
+        list = [per,per1]
+        person1 = ["sipho","manana","u89000477"]
+        person2 = ["cebo","makeleni","u89000567"]
+        results = [person1,person2]
+        api.getUserInformation = MagicMock(return_value=results)
+        api.getUserInformation(list)
+        api.getUserInformation.assert_called_once_with(list)
+        api.getUserInformation.assert_return_value(results)
     
+    def test_getStudentMarks(self):
+        per = Person()
+        per1 = Person()
+        list = [per,per1]
+        person1 = ["sipho","manana","u89000477",12]
+        person2 = ["cebo","makeleni","u89000567",11]
+        results = [person1,person2]
+        api.getStudentMarks = MagicMock(return_value=results)
+        api.getStudentMarks("http://getMark",list,1)
+        api.getStudentMarks.assert_called_once_with("http://getMark",list,1)
+        api.getStudentMarks.assert_return_value(results)
+    
+    def test_addStudentToSession(self):
+        api.addStudentToSession = MagicMock(return_value = True)
+        api.addStudentToSession("http://add-user","u89000447",1)
+        api.addStudentToSession.assert_called_once_with("http://add-user","u89000447",1)
+        api.addStudentToSession.assert_return_value(True)
+    
+    def test_checkPersonInSession(self):
+        person = Person()
+        session = Sessions()
+        api.checkPersonInSession = MagicMock(return_value=True)
+        api.checkPersonInSession(person,session)
+        api.checkPersonInSession.assert_called_once_with(person,session)
+        api.checkPersonInSession.assert_return_value(True)
+    
+    def test_removeStudentFromSession(self):
+        api.removeStudentFromSession = MagicMock(return_value=True)
+        api.removeStudentFromSession("http://remove-user","u89000477",1)
+        api.removeStudentFromSession.assert_called_once_with("http://remove-user","u89000477",1)
+        api.removeStudentFromSession.assert_return_vallue(True)
+    
+    def test_getMarkForStudents(self):
+        per = Person()
+        per1 = Person()
+        list = [per,per1]
+        person1 = ["sipho","manana","u89000477",12]
+        person2 = ["cebo","makeleni","u89000567",11]
+        results = [person1,person2]
+        api.getMarkForStudents = MagicMock(return_value=results)
+        api.getMarkForStudents("http://get-mark",list,1)
+        api.getMarkForStudents.assert_called_once_with("http://get-mark",list,1)
+        api.getMarkForStudents.assert_return_value(results)
+    
+    def test_isMarkGiven(self):
+        person = Person()
+        api.isMarkGiven = MagicMock(return_value=True)
+        api.isMarkGiven(person,1)
+        api.isMarkGiven.assert_called_once_with(person,1)
+        api.isMarkGiven.assert_return_value(True)
+    
+    def test_getMarkAllocationForLeafOfStudent(self):
+        person = Person()
+        assess = LeafAssessment()
+        api.getMarkAllocationForLeafOfStudent = MagicMock(return_value=True)
+        api.getMarkAllocationForLeafOfStudent(person,assess)
+        api.getMarkAllocationForLeafOfStudent.assert_called_once_with(person,assess)
+        api.getMarkAllocationForLeafOfStudent.assert_return_value(True)
     
 '''
 

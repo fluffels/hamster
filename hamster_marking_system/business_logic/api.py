@@ -1481,8 +1481,10 @@ def getMarkerForSession(sess_id_):
         list.append(uid)
     return list
     
-
-
+# Name: getUserInformation(sess_id_)
+# Description: retrieve's user information
+# Parameter: lists = person[]
+# Return: an array with the upId,name and surname of all users
 def getUserInformation(lists):
    
     user = []
@@ -1494,7 +1496,13 @@ def getUserInformation(lists):
         per.append(person.getSurname())
         user.append(per)
     return user
-        
+
+# Name: getStudentMarks(sess_id_)
+# Description: retrieve's students marks
+# Parameter: request = HttpRequest
+# Parameter: student = person[]
+# Parameter: assess = Integer
+# Return: an array with the upId,name and surname and marks of all users
 def getStudentMarks(request,student,assess):
     assessments = Assessment.objects.get(id = assess)
     students = []
@@ -1517,14 +1525,16 @@ def getStudentMarks(request,student,assess):
             students.append(array)
     return students
 
-def getAssessmentFullMark(assess_id):
-    assess = Assessment.objects.get(id=assess_id)
-    return assess.full_marks
+#def getAssessmentFullMark(assess_id):
+#    assess = Assessment.objects.get(id=assess_id)
+#    return assess.full_marks
 
-# Name: addStudentToSession
+# Name: addStudentToSession(request,uid, sess_id)
 # Description: Adds a student to the session
-# Parameter: uid:string, sess_id_:session Object
-# Return: None
+# Parameter: uid=string
+# Parameter: sess_id_=Integer
+# Parameter: request=HttpRequest
+# Return: Boolean value
 def addStudentToSession(request,uid, sess_id):
     try:
         user = Person.objects.get(upId=request.session['user']['uid'][0])
@@ -1541,16 +1551,24 @@ def addStudentToSession(request,uid, sess_id):
         raise e
     return True
 
+# Name: checkPersonInSession(request,uid, sess_id)
+# Description: It checks if a user is in a session specified
+# Parameter: person=Person Object
+# Parameter: sess=Session Objects
+# Return: Boolean value
 def checkPersonInSession(person,sess):
     allocate = AllocatePerson.objects.all()
     for n in allocate:
         if n.session_id == sess and n.person_id == person:
             return True
     return False
+
 # Name:removeStudentFromSession
 # Description: removes the student from the session
-# Parameter: uid:string, sess_id_:session Object
-# Return:  None
+# Parameter: uid=string
+# Parameter: sess_id_=Integer
+# Parameter: request=HttpRequest
+# Return:  Boolean value
 def removeStudentFromSession(request,uid, sess_id_):
 	try: 
 	        person = Person.objects.get(upId = uid)
@@ -1564,6 +1582,12 @@ def removeStudentFromSession(request,uid, sess_id_):
 		raise e
 	return True
 
+# Name:getMarkForStudents
+# Description: get Marks for student
+# Parameter: studentsArray=Person []
+# Parameter: leaf_id_=Integer
+# Parameter: request=HttpRequest
+# Return: am array with student details and their marks
 def getMarkForStudents(request, studentsArray, leaf_id):
     finalArray = []
     print 'NAAAAAAAZZZZZZZZZZZOOOOOOOOO'
@@ -1588,6 +1612,11 @@ def getMarkForStudents(request, studentsArray, leaf_id):
         finalArray.append(studentArray)
     return finalArray
 
+# Name:getMarkForStudents
+# Description: get Marks for student
+# Parameter: student =Person []
+# Parameter: leaf_id_=Integer
+# Return: boolean value
 def isMarkGiven(student,leaf_id):
     all_marks = MarkAllocation.objects.all()
     leafObj = Assessment.objects.get(id=leaf_id)
@@ -1599,6 +1628,11 @@ def isMarkGiven(student,leaf_id):
         print "Get all together"
     return False
 
+# Name:getMarkForStudents
+# Description: get Marks for student
+# Parameter: student =Person []
+# Parameter: leaf_id=LeafAssessment object
+# Return: boolean value
 def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_):
     try:
         return MarkAllocation.objects.get(student_id = student_id_, assessment_id = leaf_id_)
