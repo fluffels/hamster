@@ -1586,8 +1586,8 @@ def ChangeSessionTime(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def removeUserfromSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -1597,7 +1597,7 @@ def removeUserfromSession(request):
     # users[1][1][0]
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1) and str(users[0][1][0]) != "None" ): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)

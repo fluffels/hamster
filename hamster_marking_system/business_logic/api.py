@@ -976,16 +976,21 @@ def removeSession(request,sess_id):
 # Description: Removes a marker from a specific marking Session
 # Parameter: request : HTTPRequest
 # Parameter: sess_id : Integer
-# Parameter: uid : String
+# Parameter: uid : String 
 # Return: Boolean
 def removeMarkerFromSession(request, sess_id, uid):
     try:
-        person = Person.objects.get(request.session['user']['uid'][0])
-        MarkSess = AllocatePerson.objects.get(session_id_id=sess_id, person_id_id=uid)
-        marker_id = MarkSess.getId()
+        print uid
+        person = Person.objects.get(upId=request.session['user']['uid'][0])
+        print "i got to this point"
+        per = Person.objects.get(upId=uid)
+        MarkSess = AllocatePerson.objects.get(session_id=sess_id, person_id=per)
+        print "and this one too"
+        marker_id = MarkSess.person_id
+        print "huh gane y"
         sess= MarkSess.session_id
-        assess = sess.assessment
-        MarkSess.deleteAllocatedPerson()
+        assess = sess.assessment_id
+        MarkSess.delete()
         insertAuditLogAllocatePerson(person,marker_id.upId,sess,"Removed",assess.mod_id)
 #        logAuditDetail(request,"Deleted marker session","delete","business_logic_allocateperson","id",uid + "," + sess_id,None,marker_id)
     except Exception as e:

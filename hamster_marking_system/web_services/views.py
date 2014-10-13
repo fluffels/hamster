@@ -1509,7 +1509,7 @@ def removeUserfromSession(request,jsonObj):
 		}]
 	elif Markers:
 		for n in Markers:
-			api.removeMarkerFromSession(request,n,session)
+			api.removeMarkerFromSession(request,session,n)
 		
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
