@@ -785,8 +785,9 @@ def updateMarkForStudent(request,jsonObj):
 	student = json_data['student']
 	mark = json_data['mark']
 	mod = json_data['mod']
+	comment = json_data['reason']
 	
-	markID = api.updateMarkAllocation(request, student, leaf_id, mark)
+	markID = api.updateMarkAllocation(request, student, leaf_id, mark,comment)
 	students = api.getAllStudentsOfModule(mod)
 	studentMark = api.getMarkForStudents(request,students,leaf_id)
 	fullmark = api.getFullMark(leaf_id)
@@ -1119,8 +1120,9 @@ def updateMarkForStudentMarker(request,jsonObj):
 	student = json_data['student']
 	mark = json_data['mark']
 	mod = json_data['mod']
+	comment = json_data['reason']
 	
-	markID = api.updateMarkAllocation(request, student, leaf_id, mark)
+	markID = api.updateMarkAllocation(request, student, leaf_id, mark,comment)
 	students = api.getStudentsForASession(sess)
 	studentMark = api.getStudentMarks(request,students,leaf_id)
 	fullmark = api.getFullMark(leaf_id)

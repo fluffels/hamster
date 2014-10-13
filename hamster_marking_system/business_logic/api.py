@@ -1298,7 +1298,7 @@ def getFullMark(assess_id):
 # Parameter: markAlloc_id : Integer
 # Parameter: mark : Integer
 # Return: Boolean
-def updateMarkAllocation(request, student, leaf_id,mark):
+def updateMarkAllocation(request, student, leaf_id,mark,comment):
     marker = request.session['user']['uid'][0]
     try:
         #markAlloc = MarkAllocation.objects.get(id=markAlloc_id)
@@ -1311,6 +1311,7 @@ def updateMarkAllocation(request, student, leaf_id,mark):
                 old = markAlloc.getMark()
                 markAlloc.setMark(int(mark))
                 markAlloc.setmarker(marker)
+                markAlloc.setcomment(comment)
                 person = Person.objects.get(upId=request.session['user']['uid'][0])
                 insertAuditLogMarkAllocation(person,markAlloc,student,'update mark',old,mark,markAlloc.assessment.mod_id)
                 return True
@@ -1576,15 +1577,17 @@ def getStudentMarks(request,student,assess):
     for n in student:
         array = []
         per = Person.objects.get(upId=n)
-        mark = MarkAllocation.objects.get(student=per,assessment=assessments)
+        mark = MarkAllocation.objects.filter(student=per,assessment=assessments)
         if mark:
+            mark = MarkAllocation.objects.get(student=per,assessment=assessments)
             array.append(n)
             array.append(per.getFirstName())
             array.append(per.getSurname())
             array.append(mark.mark)
             students.append(array)
         else:
-            createMarkAllocation(request,assess,"no marker",n,datetime.datetime.now(),"no mark awarded")
+            per = Person.objects.get(upId=n)
+            createMarkAllocation(request,assess,"no marker",per,datetime.datetime.now(),"no mark awarded")
             array.append(n)
             array.append(per.getFirstName())
             array.append(per.getSurname())
