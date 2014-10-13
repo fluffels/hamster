@@ -26,8 +26,13 @@ def getAllModules():
     
     return list
 
+#Description: Gets person details of user passed in. Deatails include name, surname, title, modules they are students in etc
+#Name: getPersonDetails
+#Args: user id (student number) i.e u12345678
+#Return: Dict with information
 def getPersonDetails(username):
     return getPersonFromArr(username)
+
 
 def getAssessment(mod):
     root = getAllAssessmentsForModule(mod)

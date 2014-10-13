@@ -166,8 +166,7 @@
 {% endif %}
 
 <div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
+	<div class="col-md-12 col-sm-12 col-xs-12">
 		<table class="table table-hover table-bordered">
 			<tr>
 				<td><strong> UserID </strong></td>
@@ -196,20 +195,20 @@
 				</td>
 				{% else %}
 				<td class="col-md-3">
-					<form method="post" onsubmit='return to_submit({{ per.0 }}, this);' action="update_mark" class="form-inline"
+					<form method="post" action="update_mark" class="form-inline"
 					      name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
 						{% csrf_token %}
-						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control"
+						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" name="mark"
 						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }} required>
-						<button type="submit" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
-						<input hidden="hidden" name="assessment" value={{ assess_id }}>
+						<button onclick='makeEditable(this);' type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
+						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
 						<input hidden="hidden" name="module" value={{ module }}>
 					</form>
 				</td>
 				
 				<script>
-					function to_submit(stud_id) {
+					function to_submit(stud_id, this_attr) {
 						var data_nyana = document.getElementById('form_edit').name;
 						var class_data = document.getElementById(data_nyana);
 						alert(class_data.className);
@@ -231,7 +230,8 @@
 					function makeEditable(curr) {
 						
 						//Make input editable
-						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						//$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						//$(curr).parent().children('input').get(0).prop('disabled', false);
 						
 						//Change button color
 						$(curr).parent().children('button').attr('class', 'btn btn-success');
@@ -247,10 +247,23 @@
 							//Dont make the form postable, we only needed to change the button
 							//Add method and action to form
 							$(curr).parent().attr('method', 'post');
-							$(curr).parent().attr('action', 'update-marks');
+							$(curr).parent().attr('action', 'update_mark');
+							$(curr).parent().children('input').prop('disabled', false);
+							//$(curr).parent().children('input').get(0).prop('disabled', false);
 						}
 						else {
 							//Finaly submit
+							//$(curr).parent().children('button').attr('type', 'submit');
+							//$(this).parent().submit();
+							$('#re-submit-mark-modal').modal('show');
+							//Add input to html for reason and pass it in post request
+							//$(curr).parent().innerHTML += '<input type="text" name="reason" data-parsley-length="[20, 150]" required >';
+							$('<input type="text" name="reason" class="form-control" placeholder="Your reason" data-parsley-length="[20, 150]" required >').appendTo($(curr).parent());
+							
+							//Remove the call to this function to prevent recursive calls
+							$(curr).parent().children('button').removeAttr('onclick');
+							
+							//Make button type submit
 							$(curr).parent().children('button').attr('type', 'submit');
 						}
 						
@@ -261,6 +274,24 @@
 					}
 					
 			       </script>
+				
+				<!--Modal for error control-->
+				<div id="re-submit-mark-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-sm">
+				  <div class="modal-content">
+					 <div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">Re-submiting marks</h4>
+					      </div>
+					 <div class="modal-body">
+						You are about to over-write a student mark. Give a reason for re-submitting the mark.
+					</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				  </div>
+				</div>
+			      </div><!-- End Modal for error control-->
 				
 				<!-- Confirm modify mark modal -->
 
@@ -298,7 +329,6 @@
 		<!--<button type="submit" name="submit" class="btn btn-primary btn-block" data-target="#create_leaf_ass" data-toggle="modal">-->
 			<!--<span class="glyphicon glyphicon-plus"></span> Create Leaf Assessment </button>-->
 	</div>
-	<div class="col-md-2"></div>
 </div>
 
 	<div class="modal fade" id="create_leaf_ass" role="dialog">
