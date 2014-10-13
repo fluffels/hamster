@@ -103,14 +103,13 @@
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 <div class="row view_stud_marks_row">
-  <div class="col-md-2"></div>
-  <div class="col-md-8">
+  <div class="col-md-12 col-sm-12 col-xs-12">
         
     <div id="rem-jumbotron" class="well tree-finder">
       <ul class="nav nav-list list-group">
         
         {% ifequal root.0 empty %}
-          <div class="alert alert-warning text-center" role="alert"><strong>Note!</strong> There are no assessments available.</div>
+          <div class="alert alert-warning text-center student_tree" role="alert"><strong>Note!</strong> There are no assessments available.</div>
         {%endifequal%}
         {%for n in root%}<!-- Major point -->
           {% ifequal n.3 'Aggregate' %}
@@ -612,7 +611,6 @@
     </div>
 
   </div>
-  <div class="col-md-2"></div>
 </div>
 {% endblock %}
 <!-- End of jumbotron content -->

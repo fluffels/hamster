@@ -113,18 +113,6 @@
     <div id="pane1" class="tab-pane active">
       <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
 		
-		<span class="nav-divider"></span>
-		
-		<!-- Table1 -->
-		<!--<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> Currently used aggregator : </strong></td>
-				<td> <span class="label label-default"> {{ agg_name }} </span></td>
-			</tr>
-		</table>-->
-		<!-- ./Table1 -->
-		
-		<!--<span class="nav-divider"></span>-->
 		
 		<!--Aggregation panel-->
 		<div class="panel panel-primary">
@@ -141,7 +129,7 @@
 		</ul>
 		<div class="tab-content">
 		  <div id="simple_sum" class="tab-pane active">
-		    <h4>No information required. Click Complete button to select.</h4>
+		    <h4>No information required. Click Submit button to select.</h4>
 		    <!-- simplesum form -->
 			<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
 				<input type="hidden" value="SimpleSum" name="agg_name">
@@ -180,7 +168,7 @@
 		  </div>
 		  <div id="weighted_sum" class="tab-pane">
 		    <h4>Assign weights to each assessment</h4>
-		    <div class="alert alert-warning" role="alert">
+		    <div class="alert alert-warning col-md-6 col-sm-6" role="alert">
 			Weights are in percentages. Example: 60
 		    </div>
 			<!-- weightedsum form -->
@@ -207,11 +195,6 @@
 			
 			<!--Writing parsley validator to check if sum of distributed weights sums to 100-->
 			<script type="text/javascript">
-				//$(document).ready(function() {
-				//	$('#submit_weights').click(function() {
-				//	  alert($('#weights_form').val());
-				//	});
-				//    });
 				
 				function checkSumOfForm(this_attr) {
 					//alert($(this_attr).parent().parent().children('div.weights_div').get(0).$('child_weight').val());
@@ -260,8 +243,6 @@
 		      </div>
 			
 			</form><!-- ./weightedsum form -->
-			
-			
 			
 		  </div>
 		</div><!-- /.tab-content -->
@@ -350,7 +331,7 @@
 		<div class="panel-heading">Statistic Charts</div>
 		<div class="panel-body">
 		<!--Top Left chart-->
-		<div class="col-sm-6">
+		<div class="col-sm-6 col-xs-12">
 		  <div class="panel panel-info">
 		      <div class="panel-heading">Frequency of Student Marks</div>
 		      <div class="panel-body">
@@ -362,7 +343,7 @@
 		</div><!--./Top Left chart-->
 	  
 		<!--Top Right chart-->
-		<div class="col-sm-6">
+		<div class="col-sm-6 col-xs-12">
 		  <div class="panel panel-info">
 			<div class="panel-heading">Passed/Failed Students</div>
 			<div class="panel-body">
@@ -376,7 +357,7 @@
 		<div class="clearfix"></div>
 		
 		<!--Bottom Left chart-->
-		<div class="col-sm-6">
+		<div class="col-sm-6 col-xs-12">
 		  <div class="panel panel-info">
 		      <div class="panel-heading">Normal Distribution</div>
 		      <div class="panel-body">
@@ -388,7 +369,7 @@
 		</div><!--./Bottom Left chart-->
 	  
 		<!--Bottom Right chart-->
-		<div class="col-sm-6">
+		<div class="col-sm-6 col-xs-12">
 		  <div class="panel panel-info">
 			<div class="panel-heading">Some Other Chart</div>
 			<div class="panel-body">
@@ -398,9 +379,8 @@
 			</div>
 		      </div>
 		</div><!--./Bottom Right chart-->
-	</div>
-      </div>
-	  
+	</div> <!-- end panel body -->
+      </div> <!-- end panel -->
 	
       
       <script>
@@ -418,7 +398,6 @@
 			       {{ frequency.3 }}, {{ frequency.4 }}]
 		    }
 		]
-
 	}
 	var doughnutData = [
 			{
@@ -468,7 +447,7 @@
 	
       </script>
       
-    </div>
+    </div> <!-- end tab-pane -->
     <div id="pane4" class="tab-pane">
       <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
       
