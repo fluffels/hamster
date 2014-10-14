@@ -605,8 +605,8 @@ def getAllStudentOfModule(request):
                                                                         'sessionName':name},
                                                                         context_instance = RequestContext(request))
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def addStudentToSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -761,12 +761,14 @@ def updateMarkForStudent(request):
     mark = request.POST['mark']
     student = request.POST['uid']
     mod = request.POST['module']
+    comment = request.POST['reason']
     
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
         'student':student,
-        'mod':mod
+        'mod':mod,
+        'reason':comment
     }
     
     result = views.updateMarkForStudent(request,json.dumps(data))
@@ -1469,7 +1471,7 @@ def viewAssessmentForMarker(request):
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
-@isAuthenticated
+#@isAuthenticated
 def viewStudentsForAssessment(request):
     sess= request.POST['session']
     assess = request.POST['assessment']
@@ -1505,21 +1507,22 @@ def viewStudentsForAssessment(request):
                                                                         'fullmark':fullmark,'module':mod},
                                                                         context_instance=RequestContext(request))
 
-@isAuthenticated
-@isMarker
+#@isAuthenticated
+#@isMarker
 def updateMarkForStudentMarker(request):
     session = request.POST['session']
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
     student = request.POST['uid']
     mod = request.POST['module']
-    
+    comment = request.POST['reason']
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
         'student':student,
         'mod':mod,
-        'session':session
+        'session':session,
+        'reason':comment
     }
     
     result = views.updateMarkForStudentMarker(request,json.dumps(data))
@@ -1738,7 +1741,7 @@ def removeUserfromSession(request):
     # users[1][1][0]
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1) and str(users[0][1][0]) != "None" ): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)
@@ -1767,7 +1770,7 @@ def removeUserfromSession(request):
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':name,'marker':marker},context_instance=RequestContext(request))
 
-#@isAuthenticated
+@isAuthenticated
 def AuditLog(request):
     start = request.POST['search_from']
     finish=request.POST['search_till']

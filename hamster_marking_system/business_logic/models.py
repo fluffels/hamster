@@ -743,43 +743,6 @@ class Person(models.Model):
     def __unicode__(self):
             return u'%s %s %s' % (self.firstName, self.surname, self.upId)
 
-
-class Person_data(models.Model):
-    uid = models.CharField(max_length = 9,unique = True)
-    data = models.TextField()
-    
-    def setuid(self, value):
-      self.uid = value
-    def getuid(self):
-      return self.uid
-    def setData(self, value):
-      data = value
-      self.save()
-    def getData(self):
-      return self.data
-    
-    class Meta:
-      verbose_name_plural = "Person_data"
-    
-    def __unicode__(self):
-      return self.uid
-    
-
-#==========================Person_data===============================
-def insertPerson_data(upId_,data_):
-    session = Person_data(uid=upId_,data=data_)
-    session.save()
-    return session
-
-def getAllPerson_data():
-    person = Person_data.objects.all()
-    return person
-
-def deletePerson_data(self):
-    Person.delete(self)
-
-#==========================Person_data===============================
-
 class MarkAllocation(models.Model):
     comment =models.TextField()
     student = models.ForeignKey('Person')
@@ -924,16 +887,7 @@ class Sessions(models.Model):
     def setsessionStatus(self,value):
         self.status=value
         self.save()
-    """
-    def awardMark(self,value):
-        if datetime.datetime.now() >= self.getsessionStatus().getClosed(self):
-            self.markallocation.setmark(self,0)
-            self.markallocation.setcomment(self,"Assessment session is closed")
-            self.markallocation.settimeStamp(self,datetime.datetime.now())
-        else:
-            self.markallocation=value
-     """
-     
+
     class Meta:
       verbose_name_plural = "Sessions"
      
@@ -1008,8 +962,8 @@ def getAllocatedPerson():
 def getAllocatedPerson(sessionID):
 	return AllocatePerson.object.filter(session_id = id)
 	
-def deleteAllocatedPerson(self):
-	AllocatePerson.delete(self)
+#def deleteAllocatedPerson(self):
+#	AllocatePerson.delete(self)
 #==============================End of AllocatePerson Function==============================
 
 #----------------------------------------------------------
