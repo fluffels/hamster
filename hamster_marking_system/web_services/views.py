@@ -1091,6 +1091,7 @@ def viewAssessmentForMarker(request,jsonObj):
 def viewStudentsForAssessment(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	sess_id = json_data['session']
+	print "this is the session"+str(sess_id)
 	assess_id = json_data['assess_id']
 	students = api.getStudentsForASession(sess_id)
 	fullmark = api.getFullMark(assess_id)
@@ -1116,6 +1117,7 @@ def viewStudentsForAssessment(request,jsonObj):
 def updateMarkForStudentMarker(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	sess = json_data['session']
+	print "this is the session"+str(sess)
 	leaf_id = json_data['leaf_id']
 	student = json_data['student']
 	mark = json_data['mark']
@@ -1124,6 +1126,8 @@ def updateMarkForStudentMarker(request,jsonObj):
 	
 	markID = api.updateMarkAllocation(request, student, leaf_id, mark,comment)
 	students = api.getStudentsForASession(sess)
+	print "students ao................................."
+	print students
 	studentMark = api.getStudentMarks(request,students,leaf_id)
 	fullmark = api.getFullMark(leaf_id)
 	name = api.getAssessmentName(leaf_id)
