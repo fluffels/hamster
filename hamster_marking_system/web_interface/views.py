@@ -26,12 +26,18 @@ def reCaptchaLogin(request):
         
     user_ip = request.POST['user_ip']
     login_count = request.POST['login_count']
+    if(login_count == ''):
+        login_count = 0
     current_ip = request.META['REMOTE_ADDR']
-    
+    if(user_ip == ''):
+        user_ip = current_ip
+
     if (user_ip == current_ip):
-        login_count = login_count + 1
+        login_count = int(login_count) + 1
     
     print "LOGIN_COUNT : " + str(login_count)
+    print "IP ADDRESS : " + str(user_ip)
+    print "CURR IP ADDRES : " + str(current_ip)
     # see if the user correctly entered CAPTCHA information  
     # and handle it accordingly.  
     if response.is_valid:
@@ -128,11 +134,11 @@ def reCaptchaLogin(request):
             raise Http404()  
     else:  
         captcha_response = 'YOU MUST BE A ROBOT'  
-      
-    return render_to_response('web_interface/login.htm', {  
+        return render_to_response('web_interface/login.htm', {  
                 'type':-1,  
-                'captcha_response': captcha_response}
-                                ,context_instance = RequestContext(request))  
+                'captcha_response': captcha_response, 'user_ip':user_ip, 'login_count':login_count}
+                                ,context_instance = RequestContext(request))
+      
 
 def login(request):
     #try:
@@ -140,12 +146,18 @@ def login(request):
         passw = request.POST['password']
         user_ip = request.POST['user_ip']
         login_count = request.POST['login_count']
+        if(login_count == ''):
+            login_count = 0
         current_ip = request.META['REMOTE_ADDR']
+        if(user_ip == ''):
+            user_ip = current_ip
 
         if (user_ip == current_ip):
-            login_count = login_count + 1
+            login_count = int(login_count) + 1
 
         print "LOGIN_COUNT : " + str(login_count)
+        print "IP ADDRESS : " + str(user_ip)
+        print "CURR IP ADDRES : " + str(current_ip)
 
         data = {
                 'username':user,

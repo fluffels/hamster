@@ -73,11 +73,15 @@
 	    <input type="submit" value="Save"/>
 	</div>
 </div>-->
+<script>
+	//Updating the action once the user has made 3 incorrect login attempts.
+	//This is to check that the reCaptcha is correct and authenticate the user.
+	document.getElementById('login_form').action = '/courses';
+</script>
 {% else %}
 <div id="reCaptcha_div" class="form-group">
 	<label for="inputPassword3" class="col-sm-2 control-label">Are you human?</label>
 	<div class="col-sm-8">
-            <span class="validation_error">{{ captcha_response }}</span>
         
             <script type="text/javascript"
             src="http://api.recaptcha.net/challenge?k=6Leu-PsSAAAAAJrGGi9q_eltXUHPHylKo3OOZhHP">
@@ -97,7 +101,9 @@
 </div>
 
 <script>
-	$('login_form').attr('method', '/re-courses');
+	//Updating the action once the user has made 3 incorrect login attempts.
+	//This is to check that the reCaptcha is correct and authenticate the user.
+	document.getElementById('login_form').action = '/re-courses';
 </script>
 {% endif %}
 <div class="form-group">
@@ -113,7 +119,7 @@
   <div class="col-sm-offset-2 col-sm-8">
 	<input type="hidden" name="user_ip" value={{ user_ip }}>
 	<input type="hidden" name="login_count" value={{ login_count }}>
-    <button type="submit" class="btn btn-default">Sign in</button>
+    <button id="login_form_sbmt_btn" type="submit" class="btn btn-default">Sign in</button>
   </div>
 </div>
 </form><!--End of Login form-->
