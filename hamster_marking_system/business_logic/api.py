@@ -494,10 +494,18 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
         assess = Assessment.objects.get(id=assess_id)
         old = assess.full_marks
         if int(mark) > 0 and int(mark) <= 100:
-            assess.full_marks = mark
-            assess.save()
-            insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
-            return True
+            done = False
+            markAlloc = MarkAllocation.objects.filter(assessment=assess_id)
+            for n in markAlloc:
+                if n.mark != -1:
+                    done = True
+            if done == False:
+                assess.full_marks = mark
+                assess.save()
+                insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
+                return True
+            else:
+                return False
         else:
             return False
     except Exception as e:

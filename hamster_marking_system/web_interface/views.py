@@ -968,7 +968,7 @@ def changeAssessmentFullMark(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
-                                                                                'assess_id':assess_id,'fullmark':fullmark,'type':1},
+                                                                                'assess_id':assess_id,'fullmark':fullmark,'mark_update_response':1},
                                                                                 context_instance = RequestContext(request))
     else:
         data={
@@ -989,7 +989,7 @@ def changeAssessmentFullMark(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
-                                                                                'assess_id':assess_id,'fullmark':fullmark,"type":-1},
+                                                                                'assess_id':assess_id,'fullmark':fullmark,"mark_update_response":-1},
                                                                                 context_instance = RequestContext(request))
 
 

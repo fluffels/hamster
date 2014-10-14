@@ -165,14 +165,26 @@
 		
 {% endif %}
 
-{% if type == 1 %}
-	
-		<div class="alert alert-success alert-dismissible" role="alert">
-			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
-			</span><span class="sr-only">Close</span></button>
-			<strong>Success!</strong> The <strong>Total Mark</strong> was updated successfully.
+{% if mark_update_response == None %}
+	<!--Do nothing. Loading page initially-->
+{% else %}
+	{% if mark_update_response == 1 %}
+		
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> The <strong>Total Mark</strong> was updated successfully.
+			</div>
+	{% else %}
+		<div class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Warning!</strong> The <strong>Total Mark</strong> could not be updated.
 		</div>
+		
+	{% endif %}
 {% endif %}
+
 <div class="row">
 	<div class="col-md-12 col-sm-12 col-xs-12">
 		<table class="table table-hover table-bordered">
@@ -206,7 +218,7 @@
 				<td class="col-md-3">
 					<form method="post" action="update_mark" class="form-inline"
 					      name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
-						{% csrf_token %}
+				              {% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" name="mark"
 						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }} required>
 						<button onclick='makeEditable(this);' type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
