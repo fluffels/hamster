@@ -563,8 +563,8 @@ def createSession(request):
     except Exception as e:
        raise Http404()
     
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -762,7 +762,7 @@ def updateMarkForStudent(request):
     student = request.POST['uid']
     mod = request.POST['module']
     comment = request.POST['reason']
-    
+    print "i ma a lecture"
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
@@ -968,7 +968,28 @@ def changeAssessmentFullMark(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
-                                                                                'assess_id':assess_id,'fullmark':fullmark},
+                                                                                'assess_id':assess_id,'fullmark':fullmark,'type':1},
+                                                                                context_instance = RequestContext(request))
+    else:
+        data={
+                'assess_id':assess_id,
+                'mod':mod
+        }
+        children = views.getAllChildrenOfAssessment(request,json.dumps(data))
+        child = json.loads(children.content)
+        if child[0]['type'] == 1:
+            if child[0]['message'] == 'leaf':
+                studentMark = child[0]['studentMark']
+                name = child[0]['name']
+                fullmark = child[0]['fullmark']
+                return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'studentMark':studentMark,
+                                                                                'module':mod,'assessmentName':name,
+                                                                                'assess_id':assess_id,'fullmark':fullmark,"type":-1},
                                                                                 context_instance = RequestContext(request))
 
 
@@ -1152,8 +1173,8 @@ def setPublishedStatusInLeaf(request):
                                                                         'fullmark':fullmark,'type':-1},
                                                                         context_instance = RequestContext(request))
 
-#@isAuthenticated
-#@isPartOfmodule
+@isAuthenticated
+@isPartOfmodule
 def viewAssessment(request):
     module = ""
     if request.POST.get('studB'):
@@ -1471,12 +1492,12 @@ def viewAssessmentForMarker(request):
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
-#@isAuthenticated
+@isAuthenticated
 def viewStudentsForAssessment(request):
     sess= request.POST['session']
     assess = request.POST['assessment']
     mod = request.POST['mod']
-    
+    print "am fine"
     data = {
         'session':sess,
         'assess_id':assess
@@ -1507,8 +1528,8 @@ def viewStudentsForAssessment(request):
                                                                         'fullmark':fullmark,'module':mod},
                                                                         context_instance=RequestContext(request))
 
-#@isAuthenticated
-#@isMarker
+@isAuthenticated
+@isMarker
 def updateMarkForStudentMarker(request):
     session = request.POST['session']
     leaf_id = request.POST['assess_id']
@@ -1516,6 +1537,7 @@ def updateMarkForStudentMarker(request):
     student = request.POST['uid']
     mod = request.POST['module']
     comment = request.POST['reason']
+    print "am a marker"
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
@@ -1797,8 +1819,8 @@ def AuditLog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def assessmentCenterLeaf(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
@@ -1881,8 +1903,8 @@ def assessmentCenter(request):
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def aggregateMarkForAssessment(request):
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']

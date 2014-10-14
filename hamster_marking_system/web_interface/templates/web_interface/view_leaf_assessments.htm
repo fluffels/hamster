@@ -96,8 +96,8 @@
 			<form class="form-horizontal" action="update-fullmark" method="post" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
-					<h2><strong>Update Total Mark for</strong></h2>
-					<h2><strong>{{ assessmentName }}</strong></h2>
+					<h4><strong>Update Total Mark for</strong></h4>
+					<h4><strong>{{ assessmentName }}</strong></h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
@@ -128,7 +128,7 @@
 				</div>
 				<div class="modal-footer">
 					<a class="btn btn-default" data-dismiss="modal">Close</a>
-					<button id="submit" class="btn btn-success" type="submit">Update</button>
+					<button class="btn btn-success" type="submit">Update</button>
 				</div>
 			</form>
 		</div>
@@ -160,11 +160,19 @@
 			</span><span class="sr-only">Close</span></button>
 			<strong>Success!</strong> The mark was updated successfully.
 		</div>
-
+	
 	{% endif %}
 		
 {% endif %}
 
+{% if type == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> The <strong>Total Mark</strong> was updated successfully.
+		</div>
+{% endif %}
 <div class="row">
 	<div class="col-md-12 col-sm-12 col-xs-12">
 		<table class="table table-hover table-bordered">

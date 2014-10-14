@@ -493,7 +493,7 @@ def changeLeafAssessmentFullMark(request,assess_id,mark):
         person = Person.objects.get(upId=request.session['user']['uid'][0])
         assess = Assessment.objects.get(id=assess_id)
         old = assess.full_marks
-        if mark > 0 and mark <= 100:
+        if int(mark) > 0 and int(mark) <= 100:
             assess.full_marks = mark
             assess.save()
             insertAuditLogAssessment(person,assess.assess_name,'Update',str(old),str(mark),assess.mod_id)
