@@ -1954,3 +1954,24 @@ def removeTutorFromModule(request,jsonObj):
 			'Modules':modules
 		}]
 		return HttpResponse(json.dumps(data))
+
+def addModule(request,jsonObj):
+	json_data=json.loads(jsonObj)
+	name = json_data['name']
+	code = json_data['code']
+	
+	info = api.addModule(name,code)
+	if info:
+	        data=[{
+	              'type': 1,
+	              'message':'module added'
+	        }]
+	        return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+		       'type': 1,
+		       'message':'module added'
+		}]
+		return HttpResponse(json.dumps(data))
+
+	

@@ -95,6 +95,7 @@
     <li><a href="#pane2" data-toggle="tab">Manage Tutors/TA</a></li>
     <li><a href="#pane3" data-toggle="tab">Manage Lectures</a></li>
     <li><a href="#pane4" data-toggle="tab">Manage Students</a></li>
+    <li><a href="#pane5" data-toggle="tab">Add Module</a></li>
   </ul>
   <div class="tab-content">
     <div id="pane1" class="tab-pane active">
@@ -540,6 +541,41 @@
     <div class="col-md-2"></div>
       
     </div>
+     <div id="pane5" class="tab-pane">
+      <h4>Assessments Audit Log</h4>
+      
+      <div class="panel panel-primary">
+		<div class="panel-heading">Add a module by entering the module name and code.</div>
+		<div class="panel-body">
+		<form action="audit_add_module" method="post" data-parsley-validate>{% csrf_token %}
+					  
+			  <div class="form-group">
+				  <label for="module-code" class="col-md-2 control-label">Module Code:</label>
+				  <div class="col-md-3">
+					  <div class="input-group">
+					      <input type='text' class="form-control" id="module-code"
+							 name="code" data-parsley-pattern="/^[A-Z0-9]+$/" data-parsley-length="[6, 6]" required>
+					      </span>
+					  </div>
+				  </div>
+			  </div>
+			  
+			  <div class="form-group">
+				  <label for="module-name" class="col-md-2 control-label">Module Name:</label>
+				  <div class="col-md-3">
+					  <div class="input-group">
+					      <input type='text' class="form-control" id="module-name"
+							 name="name" data-parsley-pattern="/^[a-zA-Z0-9-_ ]+$/" data-parsley-length="[6, 32]" required>
+					      </span>
+					  </div>
+				  </div>
+			  </div>
+			  
+			  <button class="btn btn-success" type="submit" name="audit_search" value='leaf'>Submit</button>
+		</form>
+		</div>
+	</div>
+     </div>
   </div><!-- /.tab-content -->
 </div><!-- /.tabbable -->
 

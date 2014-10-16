@@ -2043,3 +2043,41 @@ def removeTutorFromModule(request):
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
+def addModule(request):
+    code = request.POST['code']
+    name = request.POST['name']
+    
+    data = {
+        'code':code,
+        'name':name
+    }
+    results = views.addModule(request,json.dumps(data))
+    res = json.loads(results.content)
+    
+    reslt = views.getUserInDataBase(request)
+    rslt = json.loads(reslt.content)
+    if res[0]['type'] == 1:
+        if rslt[0]['type'] == 1:
+            person = rslt[0]['User']
+            module = rslt[0]['Modules']
+            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':person,
+                                                                       'Modules':module,
+                                                                       'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
+    else:
+        if rslt[0]['type'] == 1:
+            person = rslt[0]['User']
+            module = rslt[0]['Module']
+            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':person,
+                                                                       'Modules':module,
+                                                                       'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
+

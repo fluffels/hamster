@@ -535,8 +535,8 @@ class Module(models.Model):
       
 #===============================Module Function================================
 
-def insertModule(code,name,year,assessments_):
-    module = Module(moduleCode=code,moduleName=name,presentationYear=year,assessments=assessments_)
+def insertModule(code,name,year):
+    module = Module(id=code,module_code=code,module_name=name,presentation_year=year)
     module.save()
     return module
 
