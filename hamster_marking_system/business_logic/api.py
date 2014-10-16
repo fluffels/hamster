@@ -2564,3 +2564,11 @@ def getAllPersonInDatabase():
         print data
     return list
 
+def addModule(name,code):
+    print datetime.datetime.now().year
+    mod  = insertModule(code,name,datetime.datetime.now().year)
+    if mod:
+        return True
+    else:
+        return False
+
