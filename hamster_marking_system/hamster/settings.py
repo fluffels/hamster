@@ -37,6 +37,7 @@ AUTH_LDAP_MIRROR_GROUPS = True
 
 
 AUTH_LDAP_BIND_DN = "ou=Computer Science,o=University of Pretoria,c=ZA"
+AUTH_LDAP_TECHTEAM_BIND_DN = "ou=TechTeam," + AUTH_LDAP_BIND_DN
 AUTH_LDAP_BIND_PASSWORD = ""
 AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Computer Science,o=University of Pretoria,c=ZA",ldap.SCOPE_SUBTREE, "(uid=%(user)s")
 

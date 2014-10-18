@@ -119,6 +119,7 @@ def constructPersonDetails(username):
     mPerson["studentOf"] = sourceEnrollments(username)
     mPerson["teachingAssistantOf"] = sourceTeachingAssistantDesignations(username)
     mPerson["tutorFor"] = sourceTutorDesignations(username)
+    mPerson["admin"] = getAdminPermission(username)
     return mPerson
 
 def getAllModuleCodes():
@@ -134,6 +135,15 @@ def getAllModuleCodes():
         else:
             resultArray.append(tmp[pos+1:])
     return resultArray
+
+def getAdminPermission(username):
+    ldapConnectionLocal = initialize_ldap()
+    results = ldapConnectionLocal.search_s(AUTH_LDAP_TECHTEAM_BIND_DN, ldap.SCOPE_SUBTREE, "(uid=*)")
+    member_list = []
+    for dn, entry in results:
+        if username in entry['uid']:
+            return ['admin']
+    return ""
 
 def getMembers(groupName):
     ldapConnectionLocal = initialize_ldap()

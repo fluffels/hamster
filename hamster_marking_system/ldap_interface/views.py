@@ -9,7 +9,7 @@ from hamster.settings import *
 
 
 def ldap_view_test(request):
-  return HttpResponse("Authenticate User Object" + str(sourceLecturerDesignations("BWingfield")))
+  return HttpResponse("Show members of admin" + str(getAdminPermission("u89000222")))
 
 
 
