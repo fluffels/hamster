@@ -1775,10 +1775,18 @@ class ApiTestCase(unittest.TestCase):
 	    api.removeTutorFromModule.assertTrue(f)
 	
 	def test_getAllPersonInDatabase(self, ):
-	    pass
+	    per = Person()
+	    api.getAllPersonInDatabase = MagicMock()
+	    f = api.getAllPersonInDatabase()
+	    api.getAllPersonInDatabase.assertEqual(f, per)
 	
 	def test_addModule(self, ):
-	    pass
+	    mod = Module()
+	    name = "COS33"
+	    mod.module_name = name
+	    api.addModule = MagicMock()
+	    f = api.addModule(name, mod)
+	    api.addModule.assert_called_once_with(name, mod)
 	
 	
 	def test_getLeafAssessmentOfAssessmentForModuleByName(self):

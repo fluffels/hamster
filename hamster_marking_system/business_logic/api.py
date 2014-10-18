@@ -2348,7 +2348,6 @@ def removeTutorFromModule(tt,module):
 def getAllPersonInDatabase():
     person = Person.objects.all()
     list = []
-    print "Users in database"
     for per in person:
         data = []
         data.append(per.upId)
@@ -2359,7 +2358,6 @@ def getAllPersonInDatabase():
     return list
 
 def addModule(name,code):
-    print datetime.datetime.now().year
     mod  = insertModule(code,name,datetime.datetime.now().year)
     if mod:
         return True
