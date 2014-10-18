@@ -1727,33 +1727,58 @@ class ApiTestCase(unittest.TestCase):
 	    api.getFrequencyAnalysisForAssessment.assertEqual(f, True)
 	
 	def test_getStudentListForStats(self, ):
-	    pass
+	    assess = LeafAssessment()
+	    api.getStudentListForStats = MagicMock(return_value = True)
+	    f = api.getStudentListForStats(assess)
+	    api.getStudentListForStats.assertEqual(f, True)
 	
 	def test_addStudentToModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.addStudentToModule = MagicMock()
+	    f = addStudentToModule(stu,mod)
+	    api.addStudentToModule.assertTrue(f)
 	
 	def test_removeStudentFromModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.removeStudentFromModule = MagicMock()
+	    f = api.removeStudentFromModule(stu,mod)
+	    api.removeStudentFromModule.assertTrue(f)
 	
 	def test_addLectureToModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.addLectureToModule = MagicMock()
+	    f = addLectureToModule(stu,mod)
+	    api.addLectureToModule.assertTrue(f)
 	
 	def test_removeLectureFromModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.removeLectureFromModule = MagicMock()
+	    f = api.removeLectureFromModule(stu,mod)
+	    api.removeLectureFromModule.assertTrue(f)
 	
 	def test_addTutorToModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.addTutorToModule = MagicMock()
+	    f = api.addTutorToModule(stu,mod)
+	    api.addTutorToModule.assertTrue(f)
 	
 	def test_removeTutorFromModule(self, ):
-	    pass
+	    stu = Person()
+	    mod = Module()
+	    api.removeTutorFromModule = MagicMock()
+	    f = api.removeTutorFromModule(stu,mod)
+	    api.removeTutorFromModule.assertTrue(f)
 	
 	def test_getAllPersonInDatabase(self, ):
 	    pass
 	
 	def test_addModule(self, ):
 	    pass
-	
-	
 	
 	
 	def test_getLeafAssessmentOfAssessmentForModuleByName(self):
