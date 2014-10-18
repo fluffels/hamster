@@ -134,13 +134,16 @@
 <div class="row">
 	<div class="col-md-12 col-sm-12 col-xs-12">
 		<div class="table-responsive">
-		<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> UserID </strong></td>
-				<td><strong> Name </strong></td>
-				<td><strong> Surname </strong></td>
-				<td><strong> Mark obtained </strong></td>
-			</tr>
+		<table id="table" class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<td><strong> UserID </strong></td>
+					<td><strong> Name </strong></td>
+					<td><strong> Surname </strong></td>
+					<td><strong> Mark obtained </strong></td>
+				</tr>
+			</thead>
+			<tbody>
 			{% for per in studentMark %}
 			<tr>
 				<td> {{per.0}} </td>
@@ -242,6 +245,29 @@
 						
 					}
 					
+					
+					//Searchable table
+					$(function () {
+						$( '#table' ).searchable({
+						    striped: true,
+						    oddRow: { 'background-color': '#f5f5f5' },
+						    evenRow: { 'background-color': '#fff' },
+						    searchType: 'fuzzy'
+						});
+						
+						$( '#searchable-container' ).searchable({
+						    searchField: '#container-search',
+						    selector: '.row',
+						    childSelector: '.col-xs-4',
+						    show: function( elem ) {
+							elem.slideDown(100);
+						    },
+						    hide: function( elem ) {
+							elem.slideUp( 100 );
+						    }
+						})
+					    });
+					
 			       </script>
 				
 				<!--Modal for error control-->
@@ -292,6 +318,7 @@
 				{% endif %}
 			</tr>
 			{% endfor %}
+			</tbody>
 		</table>
 		</div>
 	</div>

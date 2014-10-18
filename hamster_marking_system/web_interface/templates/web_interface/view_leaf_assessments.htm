@@ -184,16 +184,23 @@
 		
 	{% endif %}
 {% endif %}
-
+<div class="row">
+        <div class="col-lg-4 col-lg-offset-4">
+            <input type="search" id="search" value="" class="form-control" placeholder="Search for student">
+        </div>
+    </div>
 <div class="row">
 	<div class="col-md-12 col-sm-12 col-xs-12">
-		<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> UserID </strong></td>
-				<td><strong> Name </strong></td>
-				<td><strong> Surname </strong></td>
-				<td><strong> Mark obtained </strong></td>
-			</tr>
+		<table id="table" class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<td><strong> UserID </strong></td>
+					<td><strong> Name </strong></td>
+					<td><strong> Surname </strong></td>
+					<td><strong> Mark obtained </strong></td>
+				</tr>
+			</thead>
+			<tbody>
 			{% for per in studentMark %}
 			<tr>
 				<td> {{per.0}} </td>
@@ -220,7 +227,7 @@
 					      name={{ per.0 }} role="form" id="form_edit" data-parsley-validate>
 				              {% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control" name="mark"
-						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-min={{ fullmark }} required>
+						       placeholder="Mark awarded" value={{ per.3 }} data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button onclick='makeEditable(this);' type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -294,6 +301,28 @@
 						
 					}
 					
+					//Searchable table
+					$(function () {
+						$( '#table' ).searchable({
+						    striped: true,
+						    oddRow: { 'background-color': '#f5f5f5' },
+						    evenRow: { 'background-color': '#fff' },
+						    searchType: 'fuzzy'
+						});
+						
+						$( '#searchable-container' ).searchable({
+						    searchField: '#container-search',
+						    selector: '.row',
+						    childSelector: '.col-xs-4',
+						    show: function( elem ) {
+							elem.slideDown(100);
+						    },
+						    hide: function( elem ) {
+							elem.slideUp( 100 );
+						    }
+						})
+					    });
+					
 			       </script>
 				
 				<!--Modal for error control-->
@@ -345,6 +374,7 @@
 				{% endif %}
 			</tr>
 			{% endfor %}
+			</tbody>
 		</table>
 		
 		<!--<button type="submit" name="submit" class="btn btn-primary btn-block" data-target="#create_leaf_ass" data-toggle="modal">-->
