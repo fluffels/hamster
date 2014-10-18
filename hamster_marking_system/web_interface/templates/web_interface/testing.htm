@@ -92,6 +92,7 @@
 
 
 {% block jumbotron_header %}
+	<div class="assessment_center_spinner_class"></div>
 	<div class="text-center">Assessments</div>
 	
 	{% ifequal assessment '' %}
@@ -982,7 +983,13 @@
             </div>
         </div>
 </div>
-
+<script type="text/javascript">
+	//Add an id to the div at the top of the page in order to
+	//load a spinner once the assessment center button has been clicked.
+	$(document).on('submit','form.post-agg',function(){
+		$('.assessment_center_spinner_class').attr('id','assessment_center_spinner');
+	});
+</script>
 {% endblock %}
 <!-- End of jumbotron content -->
 <!--###########################  End of jumbotron part ############################-->
