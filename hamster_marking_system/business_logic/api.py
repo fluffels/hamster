@@ -2083,7 +2083,6 @@ def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, childr
     assess_obj = Assessment.objects.get(id=assess_id)
     
     assess_aggregator = Aggregator.objects.get(assessment=assess_obj)
-    aggregator_name = assess_aggregator.getname()
     
     if agg_name == 'SimpleSum':
         assess_aggregator.delete()

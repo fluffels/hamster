@@ -1675,7 +1675,7 @@ def aggregateMarkForAssessment(request, jsonObj):
 	numContributors = json_data['numContributors']
 	
 	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, child_id, child_weight )
-	
+	print "Success - SetAGG Info"
 	#AGGREGATION
 	children = api.getAggregationInfo(assess_id)
 	numChildren = api.getNumChildren(assess_id)

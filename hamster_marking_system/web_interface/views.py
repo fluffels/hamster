@@ -1935,7 +1935,6 @@ def aggregateMarkForAssessment(request):
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']
     
-    
     #Converting QueryDict to python dict
     myDict = dict(request.POST.iterlists())
     
@@ -1953,10 +1952,10 @@ def aggregateMarkForAssessment(request):
         'child_weight':child_weight,
         'child_id':child_id
     }
-    
+
     result = views.aggregateMarkForAssessment(request,json.dumps(data))
     res = json.loads(result.content)
-    print "////////////\\\\\\\\\\\\"
+
 
     if res['type'] ==1:
 
