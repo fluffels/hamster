@@ -4,7 +4,6 @@ from mock import MagicMock
 from reporting import views
 
 
-# Create your tests here.
 class testViews(unittest.TestCase):
     def test_get_assessment_report(self):
         mock_request = MagicMock()
@@ -42,5 +41,17 @@ class testViews(unittest.TestCase):
         views.import_csv.assert_return_value(mock_render_to_responce)
         
 
+class ReportingAPITestCase(unittest.TestCase):
+    def test_generate_assessment_report(self):
+        pass
+    
+    def test_generate_student_mark_pdf(self):
+        pass
+    
+    def test_generate_student_mark_csv(self):
+        pass
+    
+    def test_read_from_csv_file(self):
+        pass
         
         

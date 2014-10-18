@@ -23,39 +23,11 @@ def getSessionPerson(request) :
 def getPersonFromArr(uid) :
   person = sourceDemographics(uid)
   print person
-  
-  '''
-  information = request.session["user"]
-  
-  objPerson = Person(data["cn"],data["sn"],data["uid"])
-  
-  for x in data["studentOf"] :
-    sessionPerson.studentOfInsert(item[x])
-  
-  for x in data["tutorFor"] :
-    sessionPerson.tutorOfInsert(x)
-  
-  for x in data["teachingAssistantOf"] :
-    sessionPerson.teachingAssistantOfInsert(x)
-  
-  for x in data["lectureOf"] :
-    sessionPerson.lectureOfInsert(x)
-  '''
   return person
 
 class Aggregator(PolymorphicModel):
     aggregator_name = models.CharField(max_length=65)
     assessment = models.ForeignKey('Assessment')
-  
-    def setname(self, name):
-      self.aggregator_name = name
-      self.save()
- 
-    def getname(self):
-      return self.aggregator_name
-    
-    def getAssessmentId(self):
-      return self.assessment
  
     def __unicode__(self):
       return self.aggregator_name
@@ -156,7 +128,6 @@ class BestOfAggregator(Aggregator):
         agg_total += child[5]
       
       if agg_total == 0:
-        print "AGG TOTAL IS 0 MAAAAN"
         agg_total = 1
         
       agg_perc = (agg_mark/agg_total) *100
@@ -194,7 +165,6 @@ def aggregateChild(assess_id, student_id ):
             sum_agg_of_children += mark
             sum_total_of_children += child.full_marks
           except Exception as e:
-            print "Exception in aggregateChild - No mark allocation for leaf"
             mark = -1
             sum_agg_of_children = -1
             sum_total_of_children = child.full_marks
@@ -219,7 +189,6 @@ def aggregateChild(assess_id, student_id ):
         total = root.full_marks
         perc = ((mark/total) *100)
       except Exception as e:
-        print "Exception in aggregateChild - No mark allocation for leaf root"
         mark = -1
         total = root.full_marks
         perc = -1
@@ -312,8 +281,7 @@ class WeightedSumAggregator(Aggregator):
        
     def __unicode__(self):
       assess = self.assessment
-      return self.aggregator_name + " " + assess.assess_name
-  
+      return self.aggregator_name + " " + assess.assess_name 
 '''
           SIMPLE-SUM AGGREGATOR - FOR STUDENT
 '''
@@ -335,7 +303,6 @@ class SimpleSumAggregator(Aggregator):
             sum_agg_of_children += mark
             sum_total_of_children += child.full_marks
           except Exception as e:
-            print "Exception aggregateMarksLecturer - SimpleSum (No mark allocation exists)"
             mark = -1
             sum_agg_of_children = mark
             sum_total_of_children += child.full_marks
@@ -364,7 +331,6 @@ class SimpleSumAggregator(Aggregator):
         total = root.full_marks
         perc = ((mark/total) *100)
       except Exception as e:
-        print "Exception aggregateMarksLecturer - SimpleSum -- Leaf (No mark allocation exists)"
         mark = -1
         total = root.full_marks
         perc = -1
@@ -397,7 +363,6 @@ class SimpleSumAggregator(Aggregator):
               sum_agg_of_children += mark
               sum_total_of_children += child.full_marks
             except Exception as e:
-              print "Exception aggregateMarksStudent - SimpleSum (No mark allocation exists)"
               mark = -1
               sum_agg_of_children = mark
               sum_total_of_children = child.full_marks
@@ -427,7 +392,6 @@ class SimpleSumAggregator(Aggregator):
         total = root.full_marks
         perc = (mark/total)*100
       except Exception as e:
-        print "Exception aggregateMarksStudent - SimpleSum--- Leaf (No mark allocation exists)"
         mark = -1
         total = -1
         sum_total_of_children = child.full_marks

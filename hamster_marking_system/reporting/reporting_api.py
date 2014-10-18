@@ -18,39 +18,6 @@ from django.shortcuts import render
 
 styles = getSampleStyleSheet()
 
-'''
-pdfReportPages = "C:\\Temp\\test.pdf"
-doc = SimpleDocTemplate(pdfReportPages, pagesize=A4)
-
-# container for the "Flowable" objects
-elements = []
-styles=getSampleStyleSheet()
-styleN = styles["Normal"]
-
-# Make heading for each column and start data list
-column1Heading = "COLUMN ONE HEADING"
-column2Heading = "COLUMN TWO HEADING"
-# Assemble data for each column using simple loop to append it into data list
-data = [[column1Heading,column2Heading]]
-for i in range(1,100):
-    data.append([str(i),str(i)])
-
-tableThatSplitsOverPages = Table(data, [6 * cm, 6 * cm], repeatRows=1)
-tableThatSplitsOverPages.hAlign = 'LEFT'
-tblStyle = TableStyle([('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                       ('VALIGN',(0,0),(-1,-1),'TOP'),
-                       ('LINEBELOW',(0,0),(-1,-1),1,colors.black),
-                       ('BOX',(0,0),(-1,-1),1,colors.black),
-                       ('BOX',(0,0),(0,-1),1,colors.black)])
-tblStyle.add('BACKGROUND',(0,0),(1,0),colors.lightblue)
-tblStyle.add('BACKGROUND',(0,1),(-1,-1),colors.white)
-tableThatSplitsOverPages.setStyle(tblStyle)
-elements.append(tableThatSplitsOverPages)
-
-doc.build(elements)
-
-'''
-
 def generate_assessment_report(assess_name, full_marks, module, data, freq, student_list, agg_name):
     filename = assess_name + "_"+module+"_report.pdf"
     fileN = assess_name + "_"+module+"_report"
@@ -411,48 +378,3 @@ def read_from_csv_file(assess_id, filepath):
      
     #when do I close the reader?       
     return marklist
-
-'''
-def utf_8_encoder(unicode_csv_data):
-    for line in unicode_csv_data:
-        yield line.encode('utf-8')
-
-def parse_columns(ifile, columns, type_name="Bububu"):
-    try:
-        row_type = namedtuple(type_name, columns)
-        print "columns : " + str(columns)
-        print "row_type : " + str(row_type)
-    except ValueError:
-        row_type = tuple
-    rows = csv.reader(open(ifile), delimiter=',', quotechar='"')
-    header = rows.next()
-    print "ifile: " + str(ifile)
-    dataReader = csv.reader(open(ifile), delimiter=',', quotechar='"')
-
-    print "rows : " + str(rows)
-    print 'HEADER : ' + str(header)
-    mapping = [header.index(x) for x in columns]
-    print "MAPPING:    ----" + str(mapping)
-    for row in rows:
-        row = row_type(*[row[i] for i in mapping])
-     
-        yield row
-#file that has multiple columns to read from   
-def read_named_columns_csv(assess_id, filepath, columns):
-    student_marks_list = []    
-    ifile = StringIO(filepath)
-    print "StringIO: " + str(filepath)
-    
-    print "======== START printing CSV Contents ======\n"
-    for row in parse_columns(filepath, columns.split()):
-        list = []
-        length = len(row)
-        for i in range(length):
-            list.append(row[i])    
-        student_marks_list.append(list)
-    print "======== END printing CSV Contents ======\n"
-    
-    return student_marks_list
-
-########################## END READ CSV FILE ####################################
-'''
