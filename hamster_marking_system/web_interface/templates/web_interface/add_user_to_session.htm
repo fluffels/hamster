@@ -5,6 +5,7 @@
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
 	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a onclick="goBack();">Back</a></li>
 	<li><a href="/logout">Logout</a></li>
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
@@ -72,14 +73,6 @@
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
-	<ol class="breadcrumb">
-		<li><a href="#">Login</a></li>
-		<li ><a href="#">Home</a></li>
-		<li><a href="#">Assessments</a></li>
-		<li class="active"><a href="#">Sessions</a></li>
-	</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %} Add user to Session {% endblock %}

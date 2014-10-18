@@ -45,7 +45,6 @@
 	<!--Jumbotron-->
 	<div class="container">
 		<div class="jumbotron text-center" id="no-jumbotron">
-			{% block breadcrumbs %}{% endblock %}
 			<h2>{% block jumbotron_header %}{% endblock %}</h2>
 			<p>{% block jumbotron_sub_header %}{% endblock %}</p>
 			
@@ -280,6 +279,11 @@
 	    if (idleTime > 9) { // 20 minutes
 		window.location.href = '/logout';
 	    }
+	}
+	
+	function goBack() {
+
+		window.history.go(-1);
 	}
   
 </script>
