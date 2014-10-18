@@ -1309,8 +1309,11 @@ def updateMarkAllocation(request, student, leaf_id,mark,comment):
     try:
         per = Person.objects.get(upId=student)
         leaf = Assessment.objects.get(id=leaf_id)
+        print "heeeerrrreee"
         if int(mark) <=leaf.full_marks:
+            print "heeeerrrreee"
             if int(mark) >= 0:
+                print "heeeerrrreee"
                 markAlloc = MarkAllocation.objects.get(assessment=leaf_id,student=per.id)
                 old = markAlloc.getMark()
                 markAlloc.setMark(int(mark))
@@ -2016,6 +2019,34 @@ def getMarksOfChildrenAssessments(parent_id, student_id):
 #################### END STUDENT VIEW FUNCTIONS ###################################
 
 '''
+def studentMarksFromCSV(request, assess_id, marklist, marker):
+    assess_obj = Assessment.objects.get(id=assess_id)
+    module_obj = assess_obj.mod_id
+    comment = "Imported from CSV"
+    
+    
+    print "MarkAlloca:  ------======------"
+    #print str(markAlloca)
+    print "end markalloca ----====----"
+    for markset in marklist:
+        student_id = markset[0]
+        mark = markset[1]
+        student_obj = Person.objects.get(upId=student_id)
+        markAlloca = MarkAllocation.objects.filter(assessment=assess_obj, student=student_obj)
+        try: 
+            if len(markAlloca) >0:
+                print "should be empty"
+                print str(markAlloca)
+                res = updateMarkAllocation(request, student_id, assess_id, mark, comment)
+            else:
+                markAlloc=createMarkAllocation(request, assess_id, marker, student_obj, datetime.datetime.now(),comment)
+        except e as Exception:
+            markAlloc=createMarkAllocation(request, assess_id, marker, student_obj, datetime.datetime.now(),comment)
+            
+            
+            
+    return True
+
 '''
 #################### AGGREGATION FUNCTIONS ########################################
 '''

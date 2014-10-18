@@ -1251,6 +1251,24 @@ def viewStudentAssessment(request,jsonObj):
 			
 			return HttpResponse(json.dumps(data))
 
+def studentMarksFromCSV(request, jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data['assess_id']
+	marklist = json_data['marklist']
+	marker = json_data['marker']
+	
+	info = api.studentMarksFromCSV(request, assess_id, marklist, marker)
+	
+	if info:
+		data = {
+			"type":1
+		}
+	else:
+		data = {
+			"type":-1
+		}
+	return HttpResponse(json.dumps(data))
+
 #def getAllChildrenOfAssessmentForStudent(request,jsonObj):
 #	json_data = json.loads(jsonObj)
 #	parent = json_data['assess_id']
