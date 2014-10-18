@@ -94,6 +94,48 @@
 {% block jumbotron_content %}
 
 <div class="row">
+	{% if studentAdded == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if studentAdded == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> User's were not successfuly added to session, please try again.
+		</div>
+	{% elif studentAdded == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> User's were successfuly added to session.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
+	{% if studentRemoved == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if studentRemoved == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> User's were not successfuly removed from session, please try again.
+		</div>
+	{% elif studentRemoved == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> User's were successfuly removed from session.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
 	<div class="col-md-6">
 		
 		<!--<div class="list-group">
@@ -110,7 +152,7 @@
 			<input type="hidden" name="session" value={{session_id}}>
 			<input type="hidden" name="module" value={{ module }}>
 		</form>-->
-		
+
 		<h3><span class="label label-default">Select students to remove</span></h3>
 		<form id="remove_student_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">

@@ -127,6 +127,48 @@
 			<!--Do nothing-->
 		{% endif %}
 	{% endif %}
+	{% if SessionCreated == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if SessionCreated == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Session was not successfuly created, please try again.
+		</div>
+	{% elif SessionCreated == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Session was successfuly created.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
+	{% if type == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if type == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Session status was not successfuly updated, please try again.
+		</div>
+	{% elif type == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Session status was successfuly update.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
 	<button class="btn btn-info btn-lg btn-block"  data-target="#create_sess" data-toggle="modal">Create Session</button><br>
 	
 	</div>
@@ -199,7 +241,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=0>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -207,7 +249,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=1>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -277,7 +319,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=0>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -285,7 +327,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=1>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>

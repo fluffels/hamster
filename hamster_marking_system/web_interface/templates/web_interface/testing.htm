@@ -110,7 +110,69 @@
 <div class="row">
 	<div class="col-md-2"></div>
 	<div class="col-md-8">
+{% if AssessCreated == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+	{% if AssessCreated == -1 %}
 		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Assessment could not be created, please try again.
+		</div>
+	{% elif AssessCreated == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Assessment was successfuly created.
+		</div>
+
+	{% endif %}
+		
+{% endif %}
+{% if AssessDeleted == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+	{% if AssessDeleted == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Assessment could not be deleted, please try again.
+		</div>
+	{% elif AssessDeleted == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Assessment was successfuly deleted.
+		</div>
+
+	{% endif %}
+		
+{% endif %}
+{% if published == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+	{% if published == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Assessment publish status could not be changed, please try again.
+		</div>
+	{% elif published == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Assessment publish status was successfuly changed.
+		</div>
+
+	{% endif %}
+		
+{% endif %}
 		<button class="btn btn-info btn-lg btn-block"  data-target="#create_ass" data-toggle="modal">Create an Assessment</button><br>
 		
 		

@@ -544,7 +544,7 @@ def createSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
                                                                             'assessment_id':assess_id,
-                                                                            'moduleName':mod},
+                                                                            'moduleName':mod,'SessionCreated':1},
                                                                             context_instance = RequestContext(request))
     
         else:
@@ -558,7 +558,7 @@ def createSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
                                                                             'assessment_id':assess_id,
-                                                                            'moduleName':mod},
+                                                                            'moduleName':mod,'SessionCreated':-1},
                                                                             context_instance = RequestContext(request))
     except Exception as e:
        raise Http404()
@@ -645,7 +645,20 @@ def addStudentToSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':name,'marker':marker},
+                                                                        'sessionName':name,'marker':marker,'studentAdded':1},
+                                                                        context_instance = RequestContext(request))
+    else:
+        name = res[0]['name']
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker,'studentAdded':-1},
                                                                         context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -741,7 +754,7 @@ def createLeafAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,
+                                                                        'module':mod,'second':second,'AssessCreated':1,
                                                                         'third':third},context_instance = RequestContext(request))
     else:
         print "NONE"
@@ -751,6 +764,7 @@ def createLeafAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
+                                                                        'AssessCreated':-1,
                                                                         'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
 
 
@@ -832,7 +846,7 @@ def deleteAssessment(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod,'assessment':'',
-                                                                                'second':second,'third':third},
+                                                                                'second':second,'third':third,"AssessDeleted":1},
                                                                                 context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -842,7 +856,7 @@ def deleteAssessment(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,"AssessDeleted":-1,'root':root},
                                                                                 context_instance = RequestContext(request))
     #except Exception as e:
     #    raise Http404()
@@ -1075,7 +1089,7 @@ def setPublishedStatus(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod_code,'assessment':'','second':second,
+                                                                                'module':mod_code,'assessment':'','second':second,"published":1,
                                                                                 'third':third},context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -1085,7 +1099,7 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,"published":1,'root':root},
                                                                                 context_instance = RequestContext(request))
     else:
             data ={
@@ -1107,7 +1121,7 @@ def setPublishedStatus(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod_code,'assessment':'',
-                                                                                'second':second,'third':third},
+                                                                                'second':second,'third':third,"published":-1},
                                                                                 context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -1117,7 +1131,7 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,'root':root,"published":-1},
                                                                                 context_instance = RequestContext(request))
 
 
@@ -1375,7 +1389,7 @@ def openOrCloseSession(request):
                                                                             'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
-                                                                            'assessment_id':assess_id,'type':0},
+                                                                            'assessment_id':assess_id,'type':-1},
                                                                             context_instance = RequestContext(request))
         else:
             list = []
@@ -1790,7 +1804,19 @@ def removeUserfromSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':name,'marker':marker},context_instance=RequestContext(request))
+                                                                        'sessionName':name,'marker':marker,"studentRemoved":1},context_instance=RequestContext(request))
+    else:
+        name = res[0]['name']
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker,"studentRemoved":-1},context_instance=RequestContext(request))
 
 @isAuthenticated
 def AuditLog(request):
