@@ -169,26 +169,33 @@
 		  </div>
 		  <div id="weighted_sum" class="tab-pane">
 		    <h4>Assign weights to each assessment</h4>
-		    <div class="alert alert-warning col-md-6 col-sm-6" role="alert">
+		    <div class="col-md-4"></div>
+		    <div class="alert alert-warning col-md-4 text-center" role="alert">
 			Weights are in percentages. Example: 60
 		    </div>
+		    <div class="col-md-4"></div>
+		    
+		    <div class="clearfix"></div>
+		    
 			<!-- weightedsum form -->
-			<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"
+			<form class="form-inline" action="aggregateMarkForAssessment" method="post" role="form"
 			      id="weights_form" data-parsley-validate onsubmit="return checkSumOfForm(this);"> {% csrf_token %}
 				<input type="hidden" value="WeightedSum" name="agg_name">
 				<input type="hidden" value="0" name="numC">
 				<input type="hidden" value={{module}} name="module">
 				<input type="hidden" value={{assess_id}} name="assess_id">
 			{% for child in children %}
-			  <div class="form-group weights_div">
-				<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
-				<div class="col-sm-5">
+			<div class="col-md-2"></div>
+			  <div class="form-group weights_div col-md-8">
+				<label class="col-md-4 control-label" for="weightedSumAssessment">{{ child.1 }}[{{child.3}}]</label>
+				<div class="col-md-4">
 					<input id="child_weights_id" class="form-control" type="number" name="child_weight"
-					       placeholder="Weight of {{ child.1 }} is {{child.3}} "
+					       placeholder="Weight of {{ child.1 }}"
 					       required data-parsley-min="0" data-parsley-max="100">
 					<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
 				</div>
 			  </div>
+			<!--<div class="col-md-2"></div>-->
 			{% endfor %}
 			<div class="clearfix">
 				<button id="submit_weights" class="btn btn-success pull-right" type="submit">Submit</button>
@@ -355,10 +362,8 @@
 		      </div>
 		</div><!--./Top Right chart-->
 		
-		<div class="clearfix"></div>
-		
-		<!--Bottom Left chart-->
-		<div class="col-sm-6 col-xs-12">
+		<!--Bottom chart-->
+		<div class="col-sm-12 col-xs-12">
 		  <div class="panel panel-info">
 		      <div class="panel-heading">Normal Distribution</div>
 		      <div class="panel-body">
@@ -367,19 +372,7 @@
 		      </canvas>
 		      </div>
 		    </div>
-		</div><!--./Bottom Left chart-->
-	  
-		<!--Bottom Right chart-->
-		<div class="col-sm-6 col-xs-12">
-		  <div class="panel panel-info">
-			<div class="panel-heading">Some Other Chart</div>
-			<div class="panel-body">
-			<canvas id="frequency_doughnut_chart">
-			      <!--Bar graph placed here-->
-			</canvas>
-			</div>
-		      </div>
-		</div><!--./Bottom Right chart-->
+		</div><!--./Bottom chart-->
 	</div> <!-- end panel body -->
       </div> <!-- end panel -->
 	
