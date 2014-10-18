@@ -2385,6 +2385,7 @@ def removeTutorFromModule(request):
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 def addModule(request):
+    print request.lists
     code = request.POST['code']
     name = request.POST['name']
     
