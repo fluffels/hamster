@@ -28,6 +28,7 @@ def login(request,jsonObj):
 			"sn": usr.get('sn'), 
 			"tutorFor": usr.get('tutorFor'), 
 			"studentOf": usr.get('studentOf'),
+			"admin":usr.get('admin'),
 			"initials": usr.get('initials'),
 			"Users": result,
 			"Modules":modules
@@ -2012,4 +2013,11 @@ def addModule(request,jsonObj):
 		}]
 		return HttpResponse(json.dumps(data))
 
-	
+def getAdminDetails(request):
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	data = [{
+		'Users':result,
+		'modules':modules
+	}]
+	HttpResponse(json.dumps(data))
