@@ -27,42 +27,28 @@ def getPersonFromArr(uid) :
 class Aggregator(PolymorphicModel):
     aggregator_name = models.CharField(max_length=65)
     assessment = models.ForeignKey('Assessment')
-  
-    def setname(self, name):
-      self.aggregator_name = name
-      self.save()
- 
-    def getname(self):
-      return self.aggregator_name
-    
-    def getAssessmentId(self):
-      return self.assessment
- 
+     
     def __unicode__(self):
       return self.aggregator_name
 
 def insertSimpleSumAggregator(assess):
   a = SimpleSumAggregator(aggregator_name = 'SimpleSum', assessment=assess)
   a.save()
-  
   return a
 
 def insertBestOfAggregator(assess, numC):
   a = BestOfAggregator(aggregator_name = 'BestOf', assessment=assess, numContributors=numC)
-  a.save()
-  
+  a.save() 
   return a
 
 def insertWeightedSumAggregator(assess):
   a = WeightedSumAggregator(aggregator_name = 'WeightedSum', assessment=assess)
   a.save()
-  
   return a
 
 '''
         BEST-OF AGGREGATOR - FOR STUDENT
 '''
-
 class BestOfAggregator(Aggregator):
   numContributors = models.IntegerField()
   

@@ -2002,19 +2002,9 @@ def getAggregatorName(assess_id):
 def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, children_weight):
     assess_obj = Assessment.objects.get(id=assess_id)
     
-    print "============================="
-    print "in set agg info"
-    print "assess_obj: "+str(assess_obj)
-    print "numcontributors: " + numContributors_
-    print "agg_name: " + str(agg_name)
-    print "============================="
-    
     assess_aggregator = Aggregator.objects.get(assessment=assess_obj)
     aggregator_name = assess_aggregator.getname()
-    
-    print "id array: " + str(children_id)
-    print "weight array: "+str(children_weight)
-    
+        
     if agg_name == 'SimpleSum':
         assess_aggregator.delete()
         agg = insertSimpleSumAggregator(assess_obj)
@@ -2026,8 +2016,7 @@ def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, childr
  
     elif agg_name == 'WeightedSum':
         for (id_,weight_) in zip(children_id, children_weight):
-            print "id: " + str(id_)
-            print "weight: "+str(weight_)
+
             child = Assessment.objects.get(id=id_)
             child.weight = float(weight_)
             child.save()

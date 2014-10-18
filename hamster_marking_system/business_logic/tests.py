@@ -11,21 +11,56 @@ from business_logic import views
 =============Testing models===========
 ======================================
 '''
-class AggregatorTestCase(unittest.TestCase):
-    def setUp(self ):
-        global foo, assess
-        foo = AggregateAssessment()
-        assess = AggregateAssessment()
-        assess = MagicMock()
-        
-    def test_setname(self):
-        pass
+class BestOfAggregatorTestCase(unittest.TestCase):
     
-    def test_getname(self):
-        pass
+    def setUp(self):
+        agg = Assessment()
+        agg = MagicMock()
+        child1 = LeafAssessment(full_marks=10)
+        child1 = MagicMock()
+        child2 = LeafAssessment(full_marks=20)
+        child2 = MagicMock()
+        child3 = LeafAssessment(full_marks=30)
+        child3 = MagicMock()  
     
-    def test_getAssessmentId(self):
-        pass 
+    def test_aggregateMarksLecturer(self):
+        aggre = BestOfAggregator()
+        aggre = MagicMock()
+        aggre.aggregateMarksLecturer = MagicMock()
+        val = aggre.aggregateMarksLecturer()
+        aggre.aggregateMarksLecturer.assertEqual( val, 50 ) #best of shud be child1 and child2
+    
+    def test_aggregateMarksStudent(self):
+        aggre = BestOfAggregator()
+        aggre = MagicMock()
+        aggre.aggregateMarksLecturer = MagicMock()
+        val = aggre.aggregateMarksLecturer()
+        aggre.aggregateMarksLecturer.assertEqual( val, 50 ) #best of shud be child1 and child2
+    
+class WeightedSumAggregatorTestCase(unittest.TestCase):
+    def setUp(self):
+        agg = Assessment()
+        agg = MagicMock()
+        child1 = LeafAssessment(weight=0.75)
+        child1 = MagicMock()
+        child2 = LeafAssessment(weight=0.25)
+        child2 = MagicMock()
+        aggre = WeightedSumAggregator()
+        aggre = MagicMock()
+    
+    def test_aggregateMarksLecturer(self):
+        aggre = WeightedSumAggregator()
+        aggre = MagicMock()
+        aggre.aggregateMarksLecturer = MagicMock()
+        val = aggre.aggregateMarksLecturer(return_value=7.5)
+        aggre.aggregateMarksLecturer.assertEqual( val, 10*0.75 )  
+    
+    def test_aggregateMarksStudent(self, ):
+        aggre = WeightedSumAggregator()
+        aggre = MagicMock()
+        aggre.aggregateMarksLecturer = MagicMock()
+        val = aggre.aggregateMarksLecturer(return_value=7.5)
+        aggre.aggregateMarksLecturer.assertEqual( val, 10*0.75 )
 
 class PersonTestCase(unittest.TestCase):
     def setUp(self):
@@ -730,7 +765,6 @@ class TestLeafAssessment(unittest.TestCase):
 		models.getLeafAssessment()
 		models.getLeafAssessment.assert_called_once_with()
 
-
 '''
 =============End models===========
 ======================================
@@ -741,6 +775,7 @@ class TestLeafAssessment(unittest.TestCase):
 =============Testing api===========
 ===================================
 '''
+
 class ApiTestCase(unittest.TestCase):
 	
 	def test_getAllModules(self):
@@ -1423,6 +1458,7 @@ class ViewsTestCase(unittest.TestCase):
 =============End views=============
 ===================================
 '''
+
 
 if __name__ == '__main__':
     unittest.main()
