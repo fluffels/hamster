@@ -195,8 +195,8 @@
 			<thead>
 				<tr>
 					<td><strong> UserID </strong></td>
-					<td><strong> Name </strong></td>
-					<td><strong> Surname </strong></td>
+					<td class="hidden-xs"><strong> Name </strong></td>
+					<td class="hidden-xs"><strong> Surname </strong></td>
 					<td><strong> Mark obtained </strong></td>
 				</tr>
 			</thead>
@@ -204,8 +204,8 @@
 			{% for per in studentMark %}
 			<tr>
 				<td> {{per.0}} </td>
-				<td> {{per.1}} </td>
-				<td> {{per.2}} </td>
+				<td class="hidden-xs"> {{per.1}} </td>
+				<td class="hidden-xs"> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
 					<form method="post" action="update_mark" class="form-inline" role="form" data-parsley-validate>
