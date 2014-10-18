@@ -66,6 +66,7 @@ urlpatterns = patterns('',
     url(r'assessmentCenterLeaf$','web_interface.views.assessmentCenterLeaf', name='assessment_center_leaf'),
     
     url(r'update-name','web_interface.views.changeAssessmentName', name='update_assessment_name'),
+    url(r'update_name','web_interface.views.changeLeafAssessmentName', name='update_assessment_name'),
     
     url(r'^admin/', include(admin.site.urls)),
 )

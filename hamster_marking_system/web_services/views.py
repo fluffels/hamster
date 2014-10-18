@@ -1565,6 +1565,29 @@ def Auditlog(request,jsonObj):
 '''
 ###################### Aggregation Views ####################################
 '''
+
+def changeLeafAssessmentName(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data["assess_id"]
+	assessName=json_data['name']
+	
+	info = api.changeAssessmentName(request,assess_id,assessName)
+	if info:
+		data=[{
+			'type':1,
+			'message':'Name successfuly changed'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'Name not successfuly changed'
+		}]
+		return HttpResponse(json.dumps(data)) 
+	
+	
+	
+	
 def assessmentCenterLeaf(request, jsonObj):
 	
 	try:
@@ -1715,7 +1738,22 @@ def aggregateMarkForAssessment(request, jsonObj):
 		}
 		return HttpResponse(json.dumps(data))
 	else:
-		print "ERROR: Trying to aggregate a leaf!"
+		data = {
+			'type':1,
+			'numChildren':numChildren,
+			'children':children,
+			'assessmentName':assess_name,
+			'agg_name':agg_name,
+			'frequency':frequency,
+			'average':average,
+			'stddev':stddev,
+			'median':median,
+			'mode':mode,
+			'pass_fail_percentage':pass_fail_percentage,
+			'students':students
+		}
+		return HttpResponse(json.dumps(data))
+		#print "ERROR: Trying to aggregate a leaf!"
 
 
 '''

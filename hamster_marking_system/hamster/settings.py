@@ -146,11 +146,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-DATE_FORMAT = '%Y-%m-%d'
-
-DATETIME_INPUT_FORMATS = '%Y-%m-%d %H:%M:%S'
-
-TIME_INPUT_FORMATS = '%H:%M:%S'
 
 
 # Static files (CSS, JavaScript, Images)
