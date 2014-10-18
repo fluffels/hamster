@@ -86,6 +86,7 @@
 
 
 {% block jumbotron_header %}
+	<div id="assessment_center_spinner"></div>
 	
 	{% ifequal assessment '' %}
 		
@@ -587,6 +588,10 @@
 		</div>
 	</div>
 </div><!--End of Modal for ContactUs-->
+<!--Spinner script-->
+<script type="text/javascript">
+		$("#assessment_center_spinner").fadeOut("slow");
+</script>
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 
