@@ -219,6 +219,9 @@ def login(request):
 		surname = request.session['user']['sn'][0]
 		try:
 		    print User.objects.all()
+		    print "Username : " + str(username)
+		    print "name : " + str(name)
+		    print "Surname : " + str(surname)
 		    user = User.objects.get(username=username,first_name=name,last_name=surname)
 		    print "User : " + str(user)
 		    if user:
@@ -233,8 +236,9 @@ def login(request):
 		                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
 		except Exception, ex:
 		    print "Could not find user in User's"
-		    user = None
-		    print "User X: " + str(user)
+		    print ex
+		    #user = None
+		    print "User Y: " + str(user)
 
                 return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
@@ -1049,7 +1053,30 @@ def changeAssessmentName(request):
 	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
 	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+	    	    	    	    	    	    	    	    	'module':module, "NameChanged":1,'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+	else:
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module,"NameChanged":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 @isAuthenticated
@@ -1885,6 +1912,92 @@ def assessmentCenterLeaf(request):
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
 
+#@isAuthenticated
+#@isLecture
+def changeLeafAssessmentName(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    name = request.POST['assess_name']
+    
+    data ={
+        "assess_id":assess_id,
+        "name":name
+    }
+    
+    results = views.changeLeafAssessmentName(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type']:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children,"AssessName":1 ,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+    else:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, "AssessName":-1,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+    
+
 @isAuthenticated
 @isLecture
 def assessmentCenter(request):
@@ -1981,8 +2094,30 @@ def aggregateMarkForAssessment(request):
 	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
 	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+	    	    	    	    	    	    	    	    	'module':module,"aggregateChanged":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    else:
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
 
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"aggregateChanged":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 '''
 ###################### End Aggregation Views ###############################
@@ -2011,7 +2146,7 @@ def addStudentToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2022,7 +2157,7 @@ def addStudentToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2049,7 +2184,7 @@ def addLectureToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2060,16 +2195,13 @@ def addLectureToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 @isAuthenticated
 def addTutorToModule(request):
     lists = request.POST.lists()
     tutor =lists[3]
     module = lists[2]
-    print "Super details::::: lalaalalalalalalalalalal"
-    print tutor[1]
-    print module[1][0]
     data ={
         'tutor':tutor[1],
         'module':module[1][0]
@@ -2085,7 +2217,7 @@ def addTutorToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2096,7 +2228,7 @@ def addTutorToModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"User":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2122,7 +2254,7 @@ def removeStudentFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2133,7 +2265,7 @@ def removeStudentFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2159,7 +2291,7 @@ def removeLectureFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2170,7 +2302,7 @@ def removeLectureFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2196,7 +2328,7 @@ def removeTutorFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2207,7 +2339,7 @@ def removeTutorFromModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,
+                                                                       'Modules':Modules,"removeUser":-1,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 def addModule(request):
@@ -2233,7 +2365,7 @@ def addModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':person,
-                                                                       'Modules':module,
+                                                                       'Modules':module,"ModuleStatus":1,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
     else:
         if rslt[0]['type'] == 1:
@@ -2245,6 +2377,6 @@ def addModule(request):
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':person,
-                                                                       'Modules':module,
+                                                                       'Modules':module,"ModuleStatus":-1,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
 

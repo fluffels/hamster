@@ -110,9 +110,50 @@
     <li><a href="#pane4" data-toggle="tab">More Options</a></li>
   </ul>
   <div class="tab-content">
+{% if aggregateChanged == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+{% if aggregateChanged == -1 %}
+		
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Warning!</strong> Aggregator could not be changed, please try again.
+	</div>
+{% elif aggregateChanged == 1 %}
+	
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Success!</strong> Aggregator was successfully changed.
+	</div>
+
+{% endif %}
+		
+{% endif %}
+{% if NameChanged == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+{% if NameChanged == -1 %}
+		
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Warning!</strong> Assessment name could not be changed, please try again.
+	</div>
+{% elif NameChanged == 1 %}
+	
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Success!</strong> Assessment name was successfully changed.
+	</div>
+
+{% endif %}
+		
+{% endif %}
     <div id="pane1" class="tab-pane active">
       <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
-		
 		
 		<!--Aggregation panel-->
 		<div class="panel panel-primary">

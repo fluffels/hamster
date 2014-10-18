@@ -98,6 +98,68 @@
     <li><a href="#pane5" data-toggle="tab">Add Module</a></li>
   </ul>
   <div class="tab-content">
+{% if User == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+{% if User == -1 %}
+		
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Warning!</strong> User's could not be added to module, please try again.
+	</div>
+{% elif User == 1 %}
+	
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Success!</strong> Users were successfully added to module.
+	</div>
+
+{% endif %}
+		
+{% endif %}
+{% if ModuleStatus == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+{% if ModuleStatus == -1 %}
+		
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Warning!</strong> Module could not be added to the system.Please try again
+	</div>
+{% elif ModuleStatus == 1 %}
+	
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Success!</strong> Module successfully added to the system.
+	</div>
+
+{% endif %}
+{% endif %}
+{% if removeUser == None %}
+	<!-- Do nothing no alert is required -->
+{% else %}
+{% if removeUser == -1 %}
+		
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Warning!</strong> User's could not be removed from module.Please try again
+	</div>
+{% elif removeUser == 1 %}
+	
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+		</span><span class="sr-only">Close</span></button>
+		<strong>Success!</strong> User's were successfully removed from module.
+	</div>
+
+{% endif %}
+		
+{% endif %}
     <div id="pane1" class="tab-pane active">
       <h4>Assessments Audit Log</h4>
       
@@ -542,7 +604,7 @@
       
     </div>
      <div id="pane5" class="tab-pane">
-      <h4>Assessments Audit Log</h4>
+      <h4>Manage Modules</h4>
       
       <div class="panel panel-primary">
 		<div class="panel-heading">Add a module by entering the module name and code.</div>
