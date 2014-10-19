@@ -1682,7 +1682,7 @@ def getMarkForStudents(request, studentsArray, leaf_id):
         finalArray.append(studentArray)
     return finalArray
 
-# Name:getMarkForStudents
+# Name:
 # Description: get Marks for student
 # Parameter: student =Person []
 # Parameter: leaf_id_=Integer
@@ -1698,7 +1698,7 @@ def isMarkGiven(student,leaf_id):
         print "Get all together"
     return False
 
-# Name:getMarkForStudents
+# Name:getMark
 # Description: get Marks for student
 # Parameter: student =Person []
 # Parameter: leaf_id=LeafAssessment object
@@ -1730,25 +1730,6 @@ def getMarkAllocationForLeafOfStudent(student_id_, leaf_id_):
 # Parameter: 
 # Return: 
 
-def getAuditLogFromTableName(tableName_):
-    mymodel = get_model('business_logic', tableName_)
-    if (mymodel):
-        table = AuditTable.objects.get(tableName=mymodel._meta.db_table)
-        if (table):
-            return AuditLog.objects.filter(audit_table_id=table)
-        else:
-            raise Exception("Table " + mymodel._meta.db_table + " is not being tracked by the audit log")
-    else:
-        raise Exception("Table " + tableName_ + " does not exist")
-
-def getTableAudit(alteredTable,dateFrom,dateTo):
-	list = getAuditLogFromTableName(alteredTable)
-	return list.filter(time__lte=dateTo,time__gte=dateFrom)
-
-def getUserTableAudit(userID,alteredTable,dateFrom,dateTo):
-	list = getTableAudit(alteredTable,dateFrom,dateTo)
-	return list.filter(person_id=userID)
-
 def logout(request):
     try:
         print "i am logging out now"
@@ -1757,49 +1738,6 @@ def logout(request):
     except Exception as e:
         print 'Error, key used is not already in the session.'
         raise e
-    
-def checkLeafAssessmentExists(leafAssessmentID):
-	a = LeafAssessment.objects.filter(id = leafAssessmentID)
-	if (a):
-		return True
-	else:
-		return False
-		
-def checkSessionExists(sessionId):
-	a = Sessions.objects.filter(id = sessionId)
-	if (a):
-		return True
-	else:
-		return False
-
-def checkSessionBelongsToAssessment(sessionId, assessmentID):
-	a = Sessions.objects.filter(id=sessionId,assessment_id_id=assessmentID)
-	if (a):
-		return True
-	else:
-		return False
-
-def isStudentInSession(sessionId, student):
-	a = AllocatePerson.objects.filter(session_id = sessionId, person_id = student)
-	if (a.isStudent):
-		return True
-	else:
-		return False
-
-def isMarkerInSession(sessionId, pers_id):
-	a = AllocatePerson.objects.filter(session_id_id = sessionId, person_id_id= pers_id)
-	if (a.isMarker):
-		return True
-	else:
-		return False
-
-def checkMarkAllocationExists(uid, ass_id):
-	a = MarkAllocation.objects.filter(student_id= uid, assessment_id=ass_id)
-	if (a):
-		return True
-	else:
-		return False
-
 
 # Name: createSession(mod_code,assess_id, opentime, closetime )
 # Description: Creates a Session object and saves it to the database
@@ -1817,48 +1755,7 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
         return False
 
 ######################### MARKER VIEW FUNCTIONS ################################
-
-def getSessionForMarker(mod,marker_id):
-    module = Module.objects.get(id=mod)
-    assess = Assessment.objects.get(assess_name="Final Mark", mod_id=module)
-    assessSession = checkAssessmentSession(assess)
-    finalarray = []
-    if assessSession == None:
-        return None
-    else:
-        session = Sessions.objects.filter(assessment=assessSession)
-        for n in session:
-            array = []
-            status = n.checkStatus()
-            if status == 1:
-                bool = validateIfMarkerCanViewSession(marker_id,n.id)
-                if bool == True:
-                    Studentarray = getStudentsForASession(n)
-                    array.append(assessSession)
-                    array.append(n)
-                    array.append(Studentarray)
-                finalarray.append(array)
-        return finalarray
-
-def getLeaf(assessment):
-    pass
-    
-def getModuleLeafAssessment(mod,marker_id):
-    final = getSessionForMarker(mod,marker_id)
-    for n in final:
-        leaf=getLeaf(n[0])
-
-#checks if passed assessment has a session	
-def checkAssessmentSession(assess):
-    if assess.hasSession ==0:
-        return None
-    elif assess.hasSession ==1:
-        return assess
-    else:
-        children = Assessment.objects.filter(parent=assess_id)	
-        for child in children:
-            return checkAssessmentSession(child)
-    
+  
 # Name: getStudentsForASession
 # Description:
 # Parameter: sess_id_:session Object
@@ -1872,60 +1769,9 @@ def getStudentsForASession(sess_id_):
 	        list.append(uid)
 	return list
 
-def validateIfMarkerCanViewSession(marker_id, sess_id):
-    marker = Person.objects.get(upId=marker_id)
-    session = Session.objects.get(id=sess_id)
-    
-    personAllocated = AllocatePerson.objects.get(person_id=marker, isMarker = 1)
-    if personAllocated:
-        return True
-    return False
-
-def retrieveAllLeafAssessmentOfAggregate(assess_id,array):
-    leaf = Assessment.objects.filter(parent=assess_id)
-    for n in leaf:
-        if n.assessment_type == "Leaf":
-            array.append(n)
-        else:
-            retrieveAllLeafAssessmentOfAggregate(n.id,array)
-    return array
-
-def makeOnlySessionInLineage(assess_id):
-    assess = Assessment.objects.get(id=assess_id)
-    children = Assessment.objects.filter(parent=assess_id)
-    parent = Assessment.objects.get(id=assess.parent)
-    
-    for child in children:
-        child.hasSession = 2
-        if child.assessment_type == 'Aggregate':
-            makeOnlySessionInLineageChildren(child.id)
-    
-    makeOnlySessionInLineageAncestors(parent)
-    return True   
-        
-def makeOnlySessionInLineageChildren(assess_id):
-    children = Assessment.objects.filter(parent = assess_id)
-    
-    for n in child:
-        n.hasSession = 2
-        if child.assessment_type == 'Aggregate':
-            makeOnlySessionInLineageChildren(n.id)
-    return True
-
-def makeOnlySessionInLineageAncestors(parent):
-    parent.hasSession = 2
-    if parent.parent == None:
-        return True
-    else:
-        parents = Assessment.objects.get(id=parent.parent)
-        makeOnlySessionInLineageAncestors(parents)
-
-    
 ########################## END MARKER VIEW FUNCTIONS ###############################
 '''
-
 ##################### STUDENT VIEW FUNCTIONS #######################################
-
 '''
 # Name: getAllPublishedAssessmentsForStudent(mod_code)
 # Description: Returns all the published assessments for the module
@@ -1966,20 +1812,9 @@ def getMarkForStudent(student_id, assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
         agg = Aggregator.objects.get(assessment=assess_obj)
-        print "######### the agg: " + str(agg.aggregator_name) + "  #########################"
-   
         list = agg.aggregateMarksStudent(assess_id, student_id)
     
-        print "=====================================================\n"
-        print "the agg obj:" + str(assess_obj)
-        print "the mark list: "
-        print str(list)
-        print "\n====================================================="
     elif assess_obj.assessment_type == 'Leaf':
-        print "=====================================================\n"
-        print "the agg obj:" + str(assess_obj)
-        print "ITS A LEAF"
-        print "\n====================================================="
         list = aggregateChild(assess_obj.id, student_id)
 
     #formating the mark and percentage to 2 decimals
@@ -2056,7 +1891,6 @@ def getAggregationInfo(assess_id):
             else:
                 sublist.append(0)
             list.append(sublist)
-
         return list
     else:
         return None
@@ -2065,10 +1899,6 @@ def getAggregatorName(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
     if assess_obj.assessment_type == 'Aggregate':
         agg = Aggregator.objects.get(assessment=assess_obj)
-        print "#########################################"
-        print "Aggregator:    "+ str(agg)
-        print "Agg's name:    "+ str(agg.aggregator_name)
-        print "#########################################"
         name = agg.aggregator_name
         return name
     else:
@@ -2081,7 +1911,6 @@ def getAggregatorName(assess_id):
 # Return: Boolean
 def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, children_weight):
     assess_obj = Assessment.objects.get(id=assess_id)
-    
     assess_aggregator = Aggregator.objects.get(assessment=assess_obj)
     
     if agg_name == 'SimpleSum':
@@ -2100,7 +1929,6 @@ def setAggregationInfo(assess_id,agg_name, numContributors_, children_id, childr
             child.save()
         assess_aggregator.delete()
         agg = insertWeightedSumAggregator(assess_obj)
-  
 '''
 #################### END AGGREGATION FUNCTIONS ###################################
 '''
@@ -2114,17 +1942,11 @@ def changeSessionTime(request,session,opn,close):
     person = Person.objects.get(upId=request.session['user']['uid'][0])
     assess = sess.assessment_id
     if str(start) == str(opn) and str(end) != str(close):
-        print "first one"
         insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session close time",end,close,assess.mod_id)
     elif str(start) != str(opn) and str(end) != str(close):
-        print "start :"+ str(start)
-        print "send :"+ str(opn)
-        print "end "+ str(end)
-        print "send "+ str(close)
         insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session open time",start,opn,assess.mod_id)
         insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session close time",end,close,assess.mod_id)
     elif str(start) != str(opn) and str(end) == str(close):
-        print "third one"
         insertAuditLogSession(person,assess.assess_name,sess.session_name,"Changed Session open time",start,opn,assess.mod_id)
     else :
         return False
@@ -2224,7 +2046,6 @@ def StudentMarks(assess, student):
             if child.published:
                 childy = []
                 mark = AggregateAssessmentForStudent(child,student)
-                print "mark :"+ str(mark)
                 childy.append(child.assess_name)
                 childy.append(mark[4])
                 childy.append(mark[5])
@@ -2307,9 +2128,7 @@ def getStatisticsForAssessment(assess_id):
 
 def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
     assess_obj = Assessment.objects.get(id=assess_id)
-    print "HELLO i AM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     all_markAllocs = MarkAllocation.objects.filter(assessment=assess_obj)
-    print "NOW I HAVE PASSED THERE YIPPEE"
     passed_students = 0.0
     perc_passed = 0.0
     perc_failed = 0.0
@@ -2323,19 +2142,15 @@ def getPercentageOfPassedAndFailedStudentsForAssessment(assess_id):
                 passed_students += 1
             
     else:
-        print "OF COURSE IM HERE IM A LEAF"
         for markAlloc in all_markAllocs:
             stu = markAlloc.student
             mark_array = getMarkForStudentForLecturer(stu.upId, assess_id)
             perc = float(mark_array[6])
             if (perc >= 50.0) :
                 passed_students += 1
-        
-        print "DID I MAKE IT?????"    
+           
     perc_passed = passed_students/len(studentlist) * 100
-    print "DID I MAKE IT?????"
     perc_failed = 100.0 - (perc_passed)
-    print "DID I MAKE IT?????"
     result.append(perc_passed)
     result.append(perc_failed)
     return result
@@ -2492,26 +2307,6 @@ def removeLectureFromModule(student,module):
         return True
     except:
         return False
-
-#def addTeachingAssistantToModule(ta,module):
-#    try:
-#        for std in ta:
-#            stud = Person.objects.get(upId=std) 
-#            mod = Module.objects.get(id=module)
-#            stud.teachingAssistantOfInsert(mod)
-#        return True
-#    except:
-#        return False
-#    
-#def removeTeachingAssistantFromModule(ta,module):
-#    try:
-#        for std in ta:
-#            stud = Person.objects.get(upId=std) 
-#            mod = Module.objects.get(id=module)
-#            stud.teachingAssistantOfDelete(mod)
-#        return True
-#    except:
-#        return False
     
 def addTutorToModule(tt,module):
     try:
@@ -2553,7 +2348,6 @@ def removeTutorFromModule(tt,module):
 def getAllPersonInDatabase():
     person = Person.objects.all()
     list = []
-    print "Users in database"
     for per in person:
         data = []
         data.append(per.upId)
@@ -2564,7 +2358,6 @@ def getAllPersonInDatabase():
     return list
 
 def addModule(name,code):
-    print datetime.datetime.now().year
     mod  = insertModule(code,name,datetime.datetime.now().year)
     if mod:
         return True

@@ -1086,10 +1086,10 @@ class ApiTestCase(unittest.TestCase):
         api.getMarkAllocationForLeafOfStudent.assert_called_once_with(person,assess)
         api.getMarkAllocationForLeafOfStudent.assert_return_value(True)
     
-'''
+
 
 class ApiTestCase(unittest.TestCase):
-	
+	'''
 	def test_getAllModules(self):
 		module = Module()
 		api.getAllModules = MagicMock(return_value = module)
@@ -1252,14 +1252,14 @@ class ApiTestCase(unittest.TestCase):
 		api.getAllSessionsForAssessment(ass)
 		api.getAllSessionsForAssessment.assert_called_once_with(ass)
 		api.getAllSessionsForAssessment.assert_return_value(list)
-		
+	'''	
 	def test_createSession(self):
 		ass = Assessment()
 		api.createSession = MagicMock(return_value = True)
 		api.createSession("https://","task1",ass,"2014-06-06 12:00:00","2014-06-10 12:00:00")
 		api.createSession.assert_called_once_with("https://","task1",ass,"2014-06-06 12:00:00","2014-06-10 12:00:00")
 		api.createSession.assert_return_value(True)
-	
+	'''
 	def test_closeSession(self):
 		sess = Sessions()
 		api.closeSession = MagicMock(return_value = True)
@@ -1488,7 +1488,7 @@ class ApiTestCase(unittest.TestCase):
 		api.getAuditLogFromTimeRangeAndUser("12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
 		api.getAuditLogFromTimeRangeAndUser.assert_called_once_with("12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
 		api.getAuditLogFromTimeRangeAndUser.assert_return_value(log)
-		
+	'''	
 	def test_getStudentsForASession(self):
 		list = ["12345678","13245678"]
 		sess=Sessions()
@@ -1496,7 +1496,7 @@ class ApiTestCase(unittest.TestCase):
 		api.getStudentsForASession(sess)
 		api.getStudentsForASession.assert_called_once_with(sess)
 		api.getStudentsForASession.assert_return_value(list)
-		
+	'''	
 	def test_addStudentToSession(self):
 		sess = Sessions()
 		api.addStudentToSession = MagicMock(return_value = True)
@@ -1527,84 +1527,268 @@ class ApiTestCase(unittest.TestCase):
 		api.getSessionForStudentForAssessmentOfModule(per,leaf)
 		api.getSessionForStudentForAssessmentOfModule.assert_called_once_with(per,leaf)
 		api.getSessionForStudentForAssessmentOfModule.assert_return_value(sess)
-		
-	def test_getAuditLogFromTableName(self):
-		log = AuditLog()
-		api.getAuditLogFromTableName = MagicMock(return_value = log)
-		api.getAuditLogFromTableName("MarkAllocation")
-		api.getAuditLogFromTableName.assert_called_once_with("MarkAllocation")
-		api.getAuditLogFromTableName.assert_return_value(log)
+	'''	
 		
 	def test_logout(self):
 		api.logout = MagicMock()
 		api.logout("https://")
 		api.logout.assert_called_once_with("https://")
+	
 		
-	def test_getTableAudit(self):
-		log1 = AuditLog()
-		log2 = AuditLog()
-		list = [log1,log2]
-		api.getTableAudit = MagicMock(return_value = list)
-		api.getTableAudit("MarkAllocation","12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
-		api.getTableAudit.assert_called_once_with("MarkAllocation","12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
-		api.getTableAudit.assert_return_value(list)
-		
-	def test_getUserTableAudit(self):
-		log1 = AuditLog()
-		log2 = AuditLog()
-		list = [log1,log2]
-		per = Person()
-		api.getUserTableAudit = MagicMock(return_value = list)
-		api.getUserTableAudit(per,"MarkAllocation","12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
-		api.getUserTableAudit.assert_called_once_with(per,"MarkAllocation","12345678","2014-01-06 12:00:00","2014-04-04 12:00:00")
-		api.getUserTableAudit.assert_return_value(list)
-		
-	def test_checkLeafAssessmentExists(self):
-		leaf = LeafAssessment()
-		api.checkLeafAssessmentExists = MagicMock(return_value = True)
-		api.checkLeafAssessmentExists(leaf)
-		api.checkLeafAssessmentExists.assert_called_once_with(leaf)
-		api.checkLeafAssessmentExists(True)
-		
-	def test_checkSessionExists(self):
-		ses = Sessions()
-		api.checkSessionExists =MagicMock(return_value = True)
-		api.checkSessionExists(ses)
-		api.checkSessionExists.assert_called_once_with(ses)
-		api.checkSessionExists.assert_return_value(True)
-		
-	def test_checkSessionBelongsToAssessment(self):
-		ses = Sessions()
-		ass = Assessment()
-		api.checkSessionBelongsToAssessment = MagicMock(return_value = True)
-		api.checkSessionBelongsToAssessment(ses,ass)
-		api.checkSessionBelongsToAssessment.assert_called_once_with(ses,ass)
-		api.checkSessionBelongsToAssessment.assert_return_value(True)
-		
-	def test_isStudentInSession(self):
-		per = Person()
-		ses = Sessions()
-		api.isStudentInSession = MagicMock(return_value = True)
-		api.isStudentInSession(ses,per)
-		api.isStudentInSession.assert_called_once_with(ses,per)
-		api.isStudentInSession.assert_return_value(True)
-		
-	def test_isMarkerInSession(self):
-		per = Person()
-		ses = Sessions()
-		api.isMarkerInSession= MagicMock(return_value = True)
-		api.isMarkerInSession(ses,per)
-		api.isMarkerInSession.assert_called_once_with(ses,per)
-		api.isMarkerInSession.assert_return_value(True)
-		
-	def test_checkMarkAllocationExists(self):
-		per = Person()
-		ass = Assessment()
-		api.checkMarkAllocationExists = MagicMock(return_value = True)
-		api.checkMarkAllocationExists(per,ass)
-		api.checkMarkAllocationExists.assert_called_once_with(per,ass)
-		api.checkMarkAllocationExists.assert_return_value(True)
+	def test_getAllPublishedAssessmentsForStudent(self, ):
+	    mod = Module()
+	    assessment1 = Assessment()
+	    assessment1.published = False
+	    assessment1.mod_id = mod
+	    
+	    assessment2 = Assessment()
+	    assessment2.mod_id = mod
+	    assessment2.published = True
+	    
+	    api.getAllPublishedAssessmentsForStudent = MagicMock()
+	    f = api.getAllPublishedAssessmentsForStudent(mod)
+	    api.getAllPublishedAssessmentsForStudent(mod)
+	    api.getAllPublishedAssessmentsForStudent.assertEqual(f, assessment2)
+	    
+	def test_getMarkForStudentForLecturer(self, ):
+	    assess = LeafAssessment()
+	    stu = Person()
+	    markAlloc = MarkAllocation()
+	    markAlloc.mark = 5
+	    markAlloc.assessment = assess
+	    markAlloc.student = stu
+	    api.getMarkForStudentForLecturer = MagicMock()
+	    f= api.getMarkForStudentForLecturer(stu,assess)
+	    api.getMarkForStudentForLecturer.assertEqual(f, 5)
+	    
+	def test_getMarkForStudent(self, ):
+	    assess = LeafAssessment()
+	    assess.published = False
+	    stu = Person()
+	    markAlloc = MarkAllocation()
+	    markAlloc.mark = 5
+	    markAlloc.assessment = assess
+	    markAlloc.student = stu
+	    api.getMarkForStudentForLecturer = MagicMock()
+	    f= api.getMarkForStudentForLecturer(stu,assess)
+	    api.getMarkForStudentForLecturer.assertNotEqual(f, 5)	
+	
+	def test_getMarksOfChildrenAssessments(self, ):
+	    assess = AggregateAssessment()
+	    stu = Person()
+	    child1 = LeafAssessment()
+	    child1.parent = assess
+	    child2 = LeafAssessment()
+	    child2.parent = assess
+	    mark1 = MarkAllocation()
+	    mark2 = MarkAllocation()
+	    mark1.assessment = child1
+	    mark2.assessment = child2
+	    mark1.mark = 5
+	    mark2.mark =8
+	    api.getMarksOfChildrenAssessments = MagicMock()
+	    f= api.getMarksOfChildrenAssessments(assess,stu)
+	    api.getMarksOfChildrenAssessments.assert_called_once_with(assess, stu)
+	    
+	def test_getNumChildren(self, ):
+	    parent = AggregateAssessment()
+	    child1 = LeafAssessment()
+	    child2 = LeafAssessment()
+	    child1.parent = parent
+	    child2.parent = parent
+	    
+	    api.getNumChildren = MagicMock()
+	    f= api.getNumChildren(parent)
+	    api.getNumChildren.assertEqual(f, 2)
+	    
+	
+	def test_getAggregationInfo(self, ):
+	    assess = AggregateAssessment()
+	    agg = SimpleSumAggregator()
+	    agg.assessment = assess
+	    
+	    api.getAggregationInfo = MagicMock()
+	    f= api.getAggregationInfo(assess.id)
+	    api.getAggregationInfo.assertEqual(f, 'SimpleSum')
+	
+	def test_getAggregatorName(self, ):
+	    assess = AggregateAssessment()
+	    agg = SimpleSumAggregator()
+	    agg.assessment = assess
+	    api.getAggregatorName = MagicMock()
+	    f = api.getAggregatorName(assess.id)
+	    api.getAggregatorName.assertEqual(f, 'SimpleSum')
+	    api.getAggregatorName.assertNotEqual(f, 'BestOf')
 
+	def test_setAggregationInfo(self, ):
+	    assess = AggregateAssessment()
+	    agg = SimpleSumAggregator()
+	    agg.assessment = assess
+	    api.setAggregationInfo = MagicMock()
+	    api.setAggregationInfo(assess.id,"BestOf", 2, 0, 0)
+	    api.setAggregationInfo.assert_called_once_with(assess.id, "BestOf", 2, 0, 0)
+	    
+	def test_changeSessionTime(self, ):
+	    sess = Sessions()
+	    api.changeSessionTime = MagicMock(return_value = 0)
+	    api.changeSessionTime()
+	    api.changeSessionTime.assert_return_value(0)
+	    
+	def test_assessmentAuditLog(self, ):
+	    ala = AuditLogAssessment()
+	    per = Person()
+	    mod = Module()
+	    ala.mod = mod
+	    ala.person_id = per
+	    
+	    api.assessmentAuditLog = MagicMock()
+	    api.assessmentAuditLog(1,2)
+	    api.assessmentAuditLog.assert_called_once_with(1,2)
+	    api.assessmentAuditLog.assertEqual(ala.person_id, per)
+	
+	def test_sessionAuditLog(self, ):
+	    ala = AuditLogSession()
+	    per = Person()
+	    mod = Module()
+	    ala.mod = mod
+	    ala.person_id = per
+	    
+	    api.sessionAuditLog = MagicMock()
+	    api.sessionAuditLog(1,2)
+	    api.sessionAuditLog.assert_called_once_with(1,2)
+	    api.sessionAuditLog.assertEqual(ala.person_id, per)
+	
+	def test_markAllocationAuditLog(self, ):
+	    ala = AuditLogMarkAllocation()
+	    per = Person()
+	    mod = Module()
+	    ala.mod = mod
+	    ala.person_id = per
+	    
+	    api.markAllocationAuditLog = MagicMock()
+	    api.markAllocationAuditLog(1,2)
+	    api.markAllocationAuditLog.assert_called_once_with(1,2)
+	    api.markAllocationAuditLog.assertEqual(ala.person_id, per)
+	
+	def test_allocatePersonAuditLog(self, ):
+	    ala = AuditLogAllocatePerson()
+	    per = Person()
+	    mod = Module()
+	    ala.mod = mod
+	    ala.person_id = per
+	    
+	    api.allocatePersonAuditLog = MagicMock()
+	    api.allocatePersonAuditLog(1,2)
+	    api.allocatePersonAuditLog.assert_called_once_with(1,2)
+	    api.allocatePersonAuditLog.assertEqual(ala.person_id, per)
+	
+	def test_StudentMarks(self, ):
+	    assess = LeafAssessment()
+	    stu = Person()
+	    api.StudentMarks = MagicMock()
+	    api.StudentMarks(assess, stu)
+	    api.StudentMarks.assert_called_once_with(assess, stu)
+	    
+	def test_AggregateAssessmentForStudent(self, ):
+	    Assessment = LeafAssessment()
+	    stu = Person()
+	    
+	    markAlloc = MarkAllocation()
+	    markAlloc.mark = 10
+	    markAlloc.assessment = Assessment
+	    markAlloc.person = stu
+	    
+	    api.AggregateAssessmentForStudent = MagicMock()
+	    f = api.AggregateAssessmentForStudent(Assessment, stu)
+	    api.AggregateAssessmentForStudent.assertEqual(f, 10)
+	
+	def test_generateAssessmentReport(self, ):
+	    assess = LeafAssessment()
+	    api.generateAssessmentReport = MagicMock(return_value = True)
+	    f = api.generateAssessmentReport(assess)
+	    api.generateAssessmentReport.assertEqual(f, True)
+	    
+	def test_getStatisticsForAssessment(self, ):
+	    assess = LeafAssessment()
+	    api.getStatisticsForAssessment = MagicMock(return_value = True)
+	    f = api.getStatisticsForAssessment(assess)
+	    api.getStatisticsForAssessment.assertEqual(f, True)
+	
+	def test_getPercentageOfPassedAndFailedStudentsForAssessment(self, ):
+	    assess = LeafAssessment()
+	    api.getPercentageOfPassedAndFailedStudentsForAssessment = MagicMock(return_value = True)
+	    f = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess)
+	    api.getPercentageOfPassedAndFailedStudentsForAssessment.assertEqual(f, True)
+	
+	def test_getFrequencyAnalysisForAssessment(self, ):
+	    assess = LeafAssessment()
+	    api.getFrequencyAnalysisForAssessment = MagicMock(return_value = True)
+	    f = api.getFrequencyAnalysisForAssessment(assess)
+	    api.getFrequencyAnalysisForAssessment.assertEqual(f, True)
+	
+	def test_getStudentListForStats(self, ):
+	    assess = LeafAssessment()
+	    api.getStudentListForStats = MagicMock(return_value = True)
+	    f = api.getStudentListForStats(assess)
+	    api.getStudentListForStats.assertEqual(f, True)
+	
+	def test_addStudentToModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.addStudentToModule = MagicMock()
+	    f = addStudentToModule(stu,mod)
+	    api.addStudentToModule.assertTrue(f)
+	
+	def test_removeStudentFromModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.removeStudentFromModule = MagicMock()
+	    f = api.removeStudentFromModule(stu,mod)
+	    api.removeStudentFromModule.assertTrue(f)
+	
+	def test_addLectureToModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.addLectureToModule = MagicMock()
+	    f = addLectureToModule(stu,mod)
+	    api.addLectureToModule.assertTrue(f)
+	
+	def test_removeLectureFromModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.removeLectureFromModule = MagicMock()
+	    f = api.removeLectureFromModule(stu,mod)
+	    api.removeLectureFromModule.assertTrue(f)
+	
+	def test_addTutorToModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.addTutorToModule = MagicMock()
+	    f = api.addTutorToModule(stu,mod)
+	    api.addTutorToModule.assertTrue(f)
+	
+	def test_removeTutorFromModule(self, ):
+	    stu = Person()
+	    mod = Module()
+	    api.removeTutorFromModule = MagicMock()
+	    f = api.removeTutorFromModule(stu,mod)
+	    api.removeTutorFromModule.assertTrue(f)
+	
+	def test_getAllPersonInDatabase(self, ):
+	    per = Person()
+	    api.getAllPersonInDatabase = MagicMock()
+	    f = api.getAllPersonInDatabase()
+	    api.getAllPersonInDatabase.assertEqual(f, per)
+	
+	def test_addModule(self, ):
+	    mod = Module()
+	    name = "COS33"
+	    mod.module_name = name
+	    api.addModule = MagicMock()
+	    f = api.addModule(name, mod)
+	    api.addModule.assert_called_once_with(name, mod)
+	
+	
 	def test_getLeafAssessmentOfAssessmentForModuleByName(self):
 	    assessment = Assessment()
 	    assessment = MagicMock()
@@ -1693,84 +1877,11 @@ class ApiTestCase(unittest.TestCase):
 	    agg.checkLeafAssessmentExists = MagicMock(return_value = assess)
 	    val =agg.checkLeafAssessmentExists()
 	    agg.checkLeafAssessmentExists.assertEqual(val, assess)
-	    pass
-'''
+	    
+
 '''
 =============End api tests===========
 =====================================
-'''
-
-'''
-
-=============Testing views==========
-====================================
-'''
-'''
-class ViewsTestCase(unittest.TestCase):
-    
-    def test_createAssessments(request):
-        views.createAssessments = MagicMock(return_value = 200)
-        views.createAssessments("https://www.hamster.up.ac.za/createAssessments")
-        views.createAssessments.assert_called_once_with("https://www.hamster.up.ac.za/createAssessments")
-        views.createAssessments.assert_return_value(200)
-        
-    def test_assignMarkerInSession(request):
-        views.assignMarkerInSession = MagicMock(return_value = 200)
-        views.assignMarkerInSession("https://www.hamster.up.ac.za/assignMarkerInSession")
-        views.assignMarkerInSession.assert_called_once_with("https://www.hamster.up.ac.za/assignMarkerInSession")
-        views.assignMarkerInSession.assert_return_value(200)
-        
-    def test_awardMark(request):
-        views.awardMark = MagicMock(return_value = 200)
-        views.awardMark("https://www.hamster.up.ac.za/awardMarck")
-        views.awardMark.assert_called_once_with("https://www.hamster.up.ac.za/awardMarck")
-        views.awardMark.assert_return_value(200)
-
-    def test_viewAllSessions(request):
-        views.viewAllSessions = MagicMock(return_value = 200)
-        views.viewAllSessions("https://www.hamster.up.ac.za/viewSessions")
-        views.viewAllSessions.assert_called_once_with("https://www.hamster.up.ac.za/viewSessions")
-        views.viewAllSessions.assert_return_value(200)
-    
-    def test_closeSession(request):
-        views.closeSession = MagicMock(return_value = 200)
-        views.closeSession("https://www.hamster.up.ac.za/closeSessions")
-        views.closeSession.asset_called_once_with("https://www.hamster.up.ac.za/closeSessions")
-        views.closeSession.assert_return_value(200)
-
-    def test_login(self):
-        views.login = MagicMock(return_value = 200)
-        views.login("https://www.hamster.com/login")
-        views.login.assert_called_once_with("https://www.hamster.com/login")
-        views.login.assert_return_value(200)
-    
-    def test_CreateSession(self):
-        views.createSessions = MagicMock(return_value = 200)
-        views.createSessions("https://www.hamster.com/createSession")
-        views.createSessions.assert_called_once_with("https://www.hamster.com/createSession")
-        views.createSessions.assert_return_value(200)
-    
-    def test_AssignStudent(self):
-        views.assignStudent = MagicMock(return_value = 200)
-        views.assignStudent("https://www.hamster.com/AssignStudent")
-        views.assignStudent.assert_called_once_with("https://www.hamster.com/AssignStudent")
-        views.assignStudent.assert_return_value(200)
-    
-    def test_UpdateMArk(self):
-        views.apdateMArk = MagicMock(return_value = 200)
-        views.apdateMArk("https://www.hamster.com/updateMark")
-        views.apdateMArk.assert_called_once_with("https://www.hamster.com/updateMark")
-        views.apdateMArk.assert_return_value(200)
-    
-    def test_viewStudentForSession(self):
-        views.viewStudentForSession = MagicMock(return_value = 200)
-        views.viewStudentForSession("http://www.hamster.com/viewStudentForSession")
-        views.viewStudentForSession.assert_called_once_with("http://www.hamster.com/viewStudentForSession")
-        views.viewStudentForSession.assert_return_value(200)
-'''
-'''
-=============End views=============
-===================================
 '''
 
 if __name__ == '__main__':
