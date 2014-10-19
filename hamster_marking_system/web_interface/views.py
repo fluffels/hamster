@@ -9,6 +9,7 @@ from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
 from recaptcha.client import captcha
+from reporting import views as repo
 
 
 #default_user = []
@@ -36,7 +37,7 @@ def reCaptchaLogin(request):
     login_count = request.POST['login_count']
     if(login_count == ''):
         login_count = 0
-    current_ip = request.META['HTTP_X_REAL_IP']
+    current_ip = request.META['REMOTE_ADDR']
     if(user_ip == ''):
         user_ip = current_ip
 
@@ -156,7 +157,7 @@ def login(request):
         login_count = request.POST['login_count']
         if(login_count == ''):
             login_count = 0
-        current_ip = request.META['HTTP_X_REAL_IP']
+        current_ip = request.META['REMOTE_ADDR']
         if(user_ip == ''):
             user_ip = current_ip
 
@@ -1627,6 +1628,45 @@ def changeAssessmentFullMark(request):
                                                                                 context_instance = RequestContext(request))
 
 def changeLeafAssessmentName(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     module = request.POST['module']
     name = request.POST['assess_name']
@@ -3983,3 +4023,85 @@ def addModule(request):
                                                                        'Modules':module,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
 
+def import_csv(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    result = repo.import_csv(request)
+    
+    res = json.loads(result.content)
+    
+    if res['type'] == 1:
+        data={
+            'assess_id':assess_id
+        }
+    
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+    
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                            'stddev':stddev,'studentlist':studentlist,
+                                                                            'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                            'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                    'user_lect':user_lect,
+                                                                    'user_stud':user_stud,
+                                                                    'user_tut':user_tut,
+                                                                    'user_ta':user_ta,
+                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
