@@ -9,6 +9,7 @@ from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
 from recaptcha.client import captcha
+from reporting import views as repo
 
 def home(request):
     return render_to_response("web_interface/login.htm",
@@ -355,6 +356,10 @@ def logout(request):
 		return HttpResponseRedirect(reverse('home'))
 	else:
 		return HttpResponseRedirect(reverse('home'))
+	
+	
+
+
 
 @isAuthenticated
 @isPartOfmodule
@@ -773,8 +778,8 @@ def getLeafAssessmentPage(request):
                                                                         'fullmark':fullmark,'type':-1},context_instance = RequestContext(request))
 
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['module']
@@ -2041,8 +2046,8 @@ def changeLeafAssessmentName(request):
                                                                 'children':children, "AssessName":-1,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
     
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def assessmentCenter(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
@@ -2085,6 +2090,53 @@ def assessmentCenter(request):
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
+
+#@isAuthenticated
+#@isLecture
+def assessmentCenter(request, _assess_id, _module):
+    assess_id = _assess_id
+    module = _module
+    data ={
+        'assess_id':assess_id,
+    }
+    result = views.assessmentCenter(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res['type'] ==1:
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
+
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+    else:
+        message = " Error occured, chooseAggregator view"
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+ 
+
+
 @isAuthenticated
 @isLecture
 def aggregateMarkForAssessment(request):
@@ -2423,3 +2475,46 @@ def addModule(request):
                                                                        'Modules':module,"ModuleStatus":-1,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
 
+def import_csv(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    result = repo.import_csv(request)
+    
+    res = json.loads(result.content)
+    
+    if res['type'] == 1:
+        data={
+            'assess_id':assess_id
+        }
+    
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+    
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                            'stddev':stddev,'studentlist':studentlist,
+                                                                            'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                            'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                    'user_lect':user_lect,
+                                                                    'user_stud':user_stud,
+                                                                    'user_tut':user_tut,
+                                                                    'user_ta':user_ta,
+                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))

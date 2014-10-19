@@ -6,7 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'web_interface.views.home', name='home'),
-    url(r'^ldap/$','ldap_interface.views.index', name='ldap_test'),
+    url(r'ldap/$','ldap_interface.views.index', name='ldap_test'),
     url(r'^courses$', 'web_interface.views.login', name='accepted'),
     url(r'^re-courses$', 'web_interface.views.reCaptchaLogin', name='reCaptcha'),
     url(r'^courses/[A-Z]{3}[0-9]{3}$','web_interface.views.viewAssessment', name='view_assessments_COSXXX'),
@@ -60,7 +60,7 @@ urlpatterns = patterns('',
     url(r'lecture-removed','web_interface.views.removeLectureFromModule', name='added-lecture'),
     url(r'tutor-removed','web_interface.views.removeTutorFromModule', name='tutor-removed'),
     
-    url(r'importCSV$','reporting.views.import_csv', name='import_csv'),
+    url(r'importCSV$','web_interface.views.import_csv', name='import_csv'),
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
     url(r'assessmentCenterLeaf$','web_interface.views.assessmentCenterLeaf', name='assessment_center_leaf'),

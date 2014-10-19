@@ -486,9 +486,6 @@
       
       <!--More settings-->
       <div class="btn-group">
-	<!--Import Marks button-->
-	<button type="button" class="btn btn-primary btn-md " data-target="#import_marks" data-toggle="modal"
-		  >Import Marks (CSV)  <span class="glyphicon glyphicon-import"></span></button>
 	<!--Change Assessment Name Button-->
 	<button type="button" class="btn btn-primary btn-md " data-target="#update_ass_name" data-toggle="modal"
 		  >Change Assessment Name  <span class="fa fa-floppy-o"></span></button>
@@ -508,7 +505,7 @@
 <div class="modal fade" id="import_marks" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="importCSV" method="post" role="form" onsubmit="return Validate(this);" data-parsley-validate>
+			<form enctype="multipart/form-data" class="form-horizontal" action="importCSV" method="post" role="form" onsubmit="return Validate(this);" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Import CSV With Marks</strong></h4>

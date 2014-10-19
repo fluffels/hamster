@@ -351,7 +351,7 @@
 <div class="modal fade" id="import_marks" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="importCSV" method="post" role="form" onsubmit="return Validate(this);" data-parsley-validate>
+			<form enctype="multipart/form-data" class="form-horizontal" action="importCSV" method="post" role="form" onsubmit="return Validate(this);" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Import CSV With Marks</strong></h4>
@@ -460,6 +460,10 @@
 		</div>
 	</div>
 </div><!--./Change Assessment Name Modal-->
+<!--Spinner script-->
+<script type="text/javascript">
+		$("#assessment_center_spinner").fadeOut("slow");
+</script>
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 

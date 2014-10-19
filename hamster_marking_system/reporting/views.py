@@ -1,10 +1,12 @@
 from io import BytesIO
 from reportlab.pdfgen import canvas
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, render_to_response
 from web_services import views
 from .reporting_api import *
 from django.views.decorators.csrf import csrf_exempt
+from django.core.urlresolvers import reverse
+
 
 #def hello_view(request):
 #    # Create the HttpResponse object with the appropriate PDF headers.
@@ -85,12 +87,13 @@ def get_student_marks_csv(request):
 def import_csv(request):
     #filepath = "C:/Users/Sipho/Documents/GitHub/hamster/hamster_marking_system/reporting/files/test.csv"
 
-    filepath = request.POST['filename']
+    filedata = request.FILES['filename']
 
     marker = request.session['user']['uid'][0]
     assess_id = request.POST['assess_id']
+    module = request.POST['module']
 
-    marklist = read_from_csv_file(assess_id, filepath)
+    marklist = read_from_csv_file(assess_id, filedata)
     
     data ={
         'assess_id':assess_id,
@@ -98,5 +101,7 @@ def import_csv(request):
         'marker':marker,
     }
     result = views.studentMarksFromCSV(request,json.dumps(data))
-    return HttpResponseRedirect('assessment_center')
+    #return HttpResponseRedirect(reverse('ldap_test'))
+    return result
+    
     

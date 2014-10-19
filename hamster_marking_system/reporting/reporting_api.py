@@ -363,8 +363,8 @@ def generate_student_mark_csv(data,student):
 ########################## READ CSV FILE ####################################
 '''
 #file that has only STUDENT NUMBER AND ONE MARK
-def read_from_csv_file(assess_id, filepath):
-    dataReader = csv.reader(open(filepath), delimiter=',', quotechar='"')
+def read_from_csv_file(assess_id, filedata):
+    dataReader = csv.reader(filedata)
     marklist = []
     for row in dataReader:
         list = []
