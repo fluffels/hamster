@@ -1384,7 +1384,7 @@ def makeAggregateAssessmentALeaf(assess_id): #assumes agg_obj has no children
 # Parameter: assess_id : String
 # Return: Assessment if parent is not none and none otherwise
 def removeAssessment(request,assess_id):
-    
+    print "IN REMOVE ASSESSMENT --------------------------------------------------------================================-------------------------======================="
     root_ = Assessment.objects.get(id=assess_id)
     if root_.parent is None:
         par = None
@@ -1401,6 +1401,8 @@ def removeAssessment(request,assess_id):
     else:
         par = root_.parent
         childrenOfParent = Assessment.objects.filter(parent = par)
+        blah = len(childrenOfParent)
+        print "Cildren of parent: " + str(childrenOfParent)
         if isAggregate(root_.id):        
             children_ = Assessment.objects.filter(parent=assess_id)
             deleteAssessmentSessions(root_)
@@ -1410,8 +1412,10 @@ def removeAssessment(request,assess_id):
         person = Person.objects.get(upId=request.session['user']['uid'][0])
         insertAuditLogAssessment(person,root_.assess_name,'deleted assessment',None,None,root_.mod_id)
         root_.delete()
- 
-        if len(childrenOfParent) == 1: #means the aggregate is the only child
+        print "well am abt to be a leaf hhahahahahaha"
+        print "children of parent"+ str(childrenOfParent)
+        if blah == 1: #means the aggregate is the only child
+           print "BOUT TO MAKE AGG A LEAF"
            part= makeAggregateAssessmentALeaf(par)
            par = part.id
 
