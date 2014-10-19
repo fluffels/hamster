@@ -1683,11 +1683,36 @@ def assessmentCenterLeaf(request, jsonObj):
 			}
 			return HttpResponse(json.dumps(data))
 		else:
-			print "ERROR: Something went wrong "
+			print "ERROR: Something went wrong - assessmentCenter--- Leaf"
+			data = {
+				'type':-1,
+				'assessmentName':assess_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+			return HttpResponse(json.dumps(data))
 	except Exception as e:
 		print "+====================="
 		print "SOOMETHING WENT WRONG-- Leaf"
 		print "+====================="
+		data = {
+				'type':-1,
+				'assessmentName':assess_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+		return HttpResponse(json.dumps(data))
+		
 
 def assessmentCenter(request, jsonObj):
 	
@@ -1735,10 +1760,41 @@ def assessmentCenter(request, jsonObj):
 			return HttpResponse(json.dumps(data))
 		else:
 			print "ERROR: Trying to aggregate a leaf!"
+			data = {
+				'type':-1,
+				'numChildren':0,
+				'children':[],
+				'assessmentName':assess_name,
+				'agg_name':agg_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+			return HttpResponse(json.dumps(data))
+	
 	except Exception as e:
 		print "+====================="
 		print "SOOMETHING WENT WRONG"
 		print "+====================="
+		data = {
+				'type':-1,
+				'numChildren':0,
+				'children':[],
+				'assessmentName':assess_name,
+				'agg_name':agg_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+		return HttpResponse(json.dumps(data))
 	
 def aggregateMarkForAssessment(request, jsonObj):
 	json_data = json.loads(jsonObj)
