@@ -178,7 +178,7 @@
 						</div>
 						
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'view_children_assessment' %} method="post" hidden="hidden"
+							<form action="lecturer" method="post" hidden="hidden"
 							      class="form-group-sm post-ass" data-module={{ module }} data-assessmentId={{ n.0 }} >
 								{% csrf_token %}
 								<input type="hidden" name="mod" value={{ module }}>
@@ -262,7 +262,7 @@
 						</div>
 						
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+							<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
@@ -317,7 +317,7 @@
 								<span class="glyphicon glyphicon-volume-up"></span>
 								</button>
 							{% endif %}
-							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+							<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 								{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ n.0 }}>
@@ -362,7 +362,7 @@
 											</div>
 											
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
-												<form action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+												<form action="lecturer" method="post" hidden="hidden" class="form-group-sm post-ass">
 													{% csrf_token %}
 													<input type="hidden" name="mod" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
@@ -445,7 +445,7 @@
 											</div>
 											
 											<div id={{y.0}} class="btn-group btn-group-xs grid-toggle-opts">
-												<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+												<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 													{% csrf_token %}
 													<input type="hidden" name="module" value={{ module }}>
 													<input type="hidden" name="assessment" value={{ y.0 }}>
@@ -501,7 +501,7 @@
 													<span class="glyphicon glyphicon-volume-up"></span>
 													</button>
 												{% endif %}
-													<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+													<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 														{% csrf_token %}
 														<input type="hidden" name="module" value={{ module }}>
 														<input type="hidden" name="assessment" value={{ y.0 }}>
@@ -546,7 +546,7 @@
 																</div>
 																
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																	<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																	<form id="poster" action="lecturer" method="post" hidden="hidden" class="form-group-sm post-ass">
 																		{% csrf_token %}
 																		<input type="hidden" name="mod" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
@@ -630,7 +630,7 @@
 																</div>
 																
 																<div id={{e.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																	<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																	<form id="poster" action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 																		{% csrf_token %}
 																		<input type="hidden" name="module" value={{ module }}>
 																		<input type="hidden" name="assessment" value={{ e.0 }}>
@@ -685,7 +685,7 @@
 																		<span class="glyphicon glyphicon-volume-up"></span>
 																		</button>
 																	{% endif %}
-																		<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																		<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 																			{% csrf_token %}
 																			<input type="hidden" name="module" value={{ module }}>
 																			<input type="hidden" name="assessment" value={{ e.0 }}>
@@ -730,7 +730,7 @@
 																					</div>
 																					
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																						<form id="poster" action={% url 'view_children_assessment' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																						<form id="poster" action="lecturer" method="post" hidden="hidden" class="form-group-sm post-ass">
 																							{% csrf_token %}
 																							<input type="hidden" name="mod" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
@@ -812,7 +812,7 @@
 																					</div>
 																					
 																					<div id={{h.0}} class="btn-group btn-group-xs grid-toggle-opts">
-																						<form id="poster" action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																						<form id="poster" action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 																							{% csrf_token %}
 																							<input type="hidden" name="module" value={{ module }}>
 																							<input type="hidden" name="assessment" value={{ h.0 }}>
@@ -867,7 +867,7 @@
 																							<span class="glyphicon glyphicon-volume-up"></span>
 																							</button>
 																						{% endif %}
-																							<form action={% url 'view_leaf' %} method="post" hidden="hidden" class="form-group-sm post-ass">
+																							<form action="assessment_marking" method="post" hidden="hidden" class="form-group-sm post-ass">
 																								{% csrf_token %}
 																								<input type="hidden" name="module" value={{ module }}>
 																								<input type="hidden" name="assessment" value={{ h.0 }}>

@@ -9,7 +9,14 @@ from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
 from recaptcha.client import captcha
-from reporting import views as repo
+
+
+default_user = []
+user_roles = []
+user_lect = []
+user_stud = []
+user_tut = []
+user_ta = []
 
 def home(request):
     return render_to_response("web_interface/login.htm",
@@ -67,8 +74,6 @@ def reCaptchaLogin(request):
             user_tut = []
             global user_ta
             user_ta = []
-            global user_ad
-            user_ad = []
             if user[0]['type'] == 1:
                     if len(user[0]['lecturerOf']) != 0:
                             user_type = 'LC'
@@ -89,14 +94,9 @@ def reCaptchaLogin(request):
                             user_type ='TA'
                             user_ta.append({user_type:user[0]['teachingAssistantOf']})
                             user_roles.append('Teaching ass')
-                    if len(user[0]['admin']) != 0:
-                            user_type='AD'
-                            user_ad.append({user_type:user[0]['admin']})
                             
                     #choosing the default user based on the user type ie,lecturer
                     if len(user[0]['lecturerOf']) != 0:
-                        default_user = 'AD'
-                    elif len(user[0]['lecturerOf']) != 0:
                         default_user = 'LC'
                     elif len(user[0]['studentOf']) != 0:
                         default_user = 'ST'
@@ -122,7 +122,6 @@ def reCaptchaLogin(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_ad':user_ad,
                                                                             'Person':Users,
                                                                             'Modules':Modules,
                                                                             'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
@@ -136,7 +135,6 @@ def reCaptchaLogin(request):
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
-                                                                            'user_ad':user_ad,
                                                                             'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
             else:
                     return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
@@ -190,8 +188,6 @@ def login(request):
         user_tut = []
         global user_ta
         user_ta = []
-        global user_ad
-        user_ad = []
         if user[0]['type'] == 1:
                 if len(user[0]['lecturerOf']) != 0:
                         user_type = 'LC'
@@ -212,15 +208,9 @@ def login(request):
                         user_type ='TA'
                         user_ta.append({user_type:user[0]['teachingAssistantOf']})
                         user_roles.append('Teaching ass')
-                if len(user[0]['admin']) != 0:
-                            user_type='AD'
-                            user_ad.append({user_type:user[0]['admin']})
-                            user_roles.append('Admin')
                         
                 #choosing the default user based on the user type ie,lecturer
                 if len(user[0]['lecturerOf']) != 0:
-                    default_user = 'AD'
-                elif len(user[0]['lecturerOf']) != 0:
                     default_user = 'LC'
                 elif len(user[0]['studentOf']) != 0:
                     default_user = 'ST'
@@ -237,9 +227,6 @@ def login(request):
 		surname = request.session['user']['sn'][0]
 		try:
 		    print User.objects.all()
-		    print "Username : " + str(username)
-		    print "name : " + str(name)
-		    print "Surname : " + str(surname)
 		    user = User.objects.get(username=username,first_name=name,last_name=surname)
 		    print "User : " + str(user)
 		    if user:
@@ -249,22 +236,19 @@ def login(request):
 		                                                       'user_stud':user_stud,
 		                                                       'user_tut':user_tut,
 		                                                       'user_ta':user_ta,
-		                                                       'user_ad':user_ad,
 		                                                       'Person':Users,
 		                                                       'Modules':Modules,
 		                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
 		except Exception, ex:
 		    print "Could not find user in User's"
-		    print ex
-		    #user = None
-		    print "User Y: " + str(user)
+		    user = None
+		    print "User X: " + str(user)
 
                 return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_ad':user_ad,
                                                                        'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
         else:
                  return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
@@ -279,7 +263,6 @@ def backHome(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_ad':user_ad,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -289,63 +272,40 @@ def use_as(request):
         lect = 'LT'
         tut = 'TT'
         ta = 'TA'
-        ad='AD'
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                         'user_lect':lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':tut,
-                                                                        'user_ta':ta,'user_ad':ad,
+                                                                        'user_ta':ta,
                                                                         'user_roles':user_roles},context_instance = RequestContext(request))
     elif role == 'Lecturer':
         stud = 'ST'
         tut = 'TT'
         ta = 'TA'
-        ad='AD'
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':stud,
-                                                                       'user_tut':tut,'user_ad':ad,
+                                                                       'user_tut':tut,
                                                                        'user_ta':ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     elif role == 'Tutor':
         lect = 'LT'
         stud = 'ST'
         ta = 'TA'
-        ad='AD'
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':lect,
                                                                        'user_stud':stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':ta,'user_ad':ad,
+                                                                       'user_ta':ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
-    elif role == 'Admin':
-        lect = 'LT'
-        stud = 'ST'
-        ta = 'TA'
-        tut = 'TT'
-        results = views.getAdminDetails(request)
-        res = json.loads(results.content)
-        
-        person = res[0]['Users']
-        module = res[0]['modules']
-        
-        return render_to_response("web_interface/admin.htm",{'default_user':default_user,
-                                                                       'user_lect':user_lect,
-                                                                       'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
-                                                                       'user_ta':user_ta,
-                                                                       'Person':person,
-                                                                       'Modules':module,
-                                                                       'user_roles':user_roles},context_instance = RequestContext(request)) 
     else:
         lect = 'LT'
         stud = 'ST'
         tut = 'TT'
-        ad='AD'
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':lect,
                                                                        'user_stud':stud,
-                                                                       'user_tut':tut,'user_ad':ad,
+                                                                       'user_tut':tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
@@ -356,10 +316,6 @@ def logout(request):
 		return HttpResponseRedirect(reverse('home'))
 	else:
 		return HttpResponseRedirect(reverse('home'))
-	
-	
-
-
 
 @isAuthenticated
 @isPartOfmodule
@@ -388,7 +344,7 @@ def getAllAssessmentOfModule(request,module):
                 return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod,'second':second,'third':third,},context_instance = RequestContext(request))
@@ -399,7 +355,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
         elif request.POST.get('tutB'):
             print "IN TUTB"
@@ -415,7 +371,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
                                                                                 'module':module,'type':1},
                                                                                 context_instance = RequestContext(request))
@@ -424,7 +380,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'type':-1},
                                                                                 context_instance = RequestContext(request))
         elif request.POST.get('taB'):
@@ -441,7 +397,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
                                                                                 'module':module,'type':1},
                                                                                 context_instance = RequestContext(request))
@@ -450,7 +406,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'type':-1}
                                                                                 ,context_instance = RequestContext(request))
         elif request.POST.get('lectB'):
@@ -471,7 +427,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod,'assessment':'',
                                                                                 'second':second,'third':third},
@@ -483,7 +439,7 @@ def getAllAssessmentOfModule(request,module):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,
                                                                                 'root':root},
                                                                                 context_instance = RequestContext(request))
@@ -504,7 +460,7 @@ def personDetails(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'name':name,'surname':surname,
                                                                             'title':title,'initials':initials},
                                                                             context_instance = RequestContext(request))
@@ -512,7 +468,7 @@ def personDetails(request):
             return render_to_response("web_interface/person_details.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'name':'person data not found'},
                                                                             context_instance = RequestContext(request))
@@ -520,8 +476,8 @@ def personDetails(request):
         raise Http404()
 
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def getAllSessionsForAssessment(request):
     #try:
         assess = request.POST['assessment']
@@ -539,7 +495,7 @@ def getAllSessionsForAssessment(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,
                                                                             'sessions':sessions,
@@ -556,7 +512,7 @@ def getAllSessionsForAssessment(request):
             moduleName=sess[0]['moduleName']
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
-                                                                            'user_stud':user_stud,'user_ad':user_ad,
+                                                                            'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
@@ -591,7 +547,7 @@ def createSession(request):
             mod = results[0]['mod']
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
-                                                                            'user_stud':user_stud,'user_ad':user_ad,
+                                                                            'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
@@ -607,7 +563,7 @@ def createSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
                                                                             'assessment_id':assess_id,
                                                                             'moduleName':mod,'SessionCreated':-1},
@@ -615,8 +571,8 @@ def createSession(request):
     except Exception as e:
        raise Http404()
     
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -636,7 +592,7 @@ def getAllStudentOfModule(request):
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,'module':mod,
                                                                         'session_id':session,'tutor':tut,
@@ -650,15 +606,15 @@ def getAllStudentOfModule(request):
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,'module':mod,'session_id':session,
                                                                         'tutor':tut,'teachingA':ta,
                                                                         'sessionName':name},
                                                                         context_instance = RequestContext(request))
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def addStudentToSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -693,7 +649,7 @@ def addStudentToSession(request):
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
@@ -707,7 +663,7 @@ def addStudentToSession(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':name,'marker':marker,'studentAdded':-1},
@@ -735,7 +691,7 @@ def getAllPersonOfSession(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
                                                                         'sessionName':sessionName,'marker':marker},
@@ -744,7 +700,7 @@ def getAllPersonOfSession(request):
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':[],
                                                                         'module':mod,'session_id':session_id,
@@ -772,14 +728,14 @@ def getLeafAssessmentPage(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':assess_id,
                                                                         'fullmark':fullmark,'type':-1},context_instance = RequestContext(request))
 
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def createLeafAssessment(request):
     assessName = request.POST['name']
     mod = request.POST['module']
@@ -804,22 +760,18 @@ def createLeafAssessment(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
                                                                         'module':mod,'second':second,'AssessCreated':1,
                                                                         'third':third},context_instance = RequestContext(request))
     else:
         print "NONE"
-        root = res[0]['root']
-        first = res[0]['first']
-        second = res[0]['second']
-        third = res[0]['third']
+        root = "NONE";
         return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'root':root,'first':first,'second':second,'third':third,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'AssessCreated':-1,
                                                                         'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
 
@@ -851,7 +803,7 @@ def updateMarkForStudent(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,
                                                                         'fullmark':fullmark,'message':1},context_instance = RequestContext(request))
@@ -863,7 +815,7 @@ def updateMarkForStudent(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,'fullmark':fullmark,
                                                                         'message':0},context_instance = RequestContext(request))
@@ -899,7 +851,7 @@ def deleteAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod,'assessment':'',
                                                                                 'second':second,'third':third,"AssessDeleted":1},
@@ -911,7 +863,7 @@ def deleteAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,"AssessDeleted":-1,'root':root},
                                                                                 context_instance = RequestContext(request))
     #except Exception as e:
@@ -946,7 +898,7 @@ def deleteSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
@@ -963,7 +915,7 @@ def deleteSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
                                                                             'assessment_id':assess_id,
                                                                             'assessmentName':assessmentName,
@@ -984,7 +936,7 @@ def deleteSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,'assessment_id':assess_id,
                                                                             'message':0},context_instance = RequestContext(request))
@@ -999,7 +951,7 @@ def deleteSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
                                                                             'assessment_id':assess_id,
                                                                             'assessmentName':assessmentName,
@@ -1034,7 +986,7 @@ def changeAssessmentFullMark(request):
                 return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
@@ -1056,7 +1008,7 @@ def changeAssessmentFullMark(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
                                                                                 'assess_id':assess_id,'fullmark':fullmark,"mark_update_response":-1},
@@ -1100,35 +1052,12 @@ def changeAssessmentName(request):
 	    	    	    	    	    	    	    	    	'user_lect':user_lect,
 	    	    	    	    	    	    	    	    	'user_stud':user_stud,
 	    	    	    	    	    	    	    	    	'user_tut':user_tut,
-	    	    	    	    	    	    	    	    	'user_ta':user_ta,'user_ad':user_ad,
-	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
-	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
-	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-	    	    	    	    	    	    	    	    	'module':module, "NameChanged":1,'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-	else:
-	    numChildren = res['numChildren']
-	    children = res['children']
-	    assessmentName = res['assessmentName']
-	    agg_name = res['agg_name']
-	    average = res['average']
-	    median = res['median']
-	    mode = res['mode']
-	    frequency = res['frequency']
-	    stddev = res['stddev']
-	    studentlist = res['students']
-	    pass_fail_percentage = res['pass_fail_percentage']
-
-	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
-	    	    	    	    	    	    	    	    	'user_lect':user_lect,
-	    	    	    	    	    	    	    	    	'user_stud':user_stud,
-	    	    	    	    	    	    	    	    	'user_tut':user_tut,'user_ad':user_ad,
 	    	    	    	    	    	    	    	    	'user_ta':user_ta,
 	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
 	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
 	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-	    	    	    	    	    	    	    	    	'module':module,"NameChanged":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 @isAuthenticated
@@ -1166,7 +1095,7 @@ def setPublishedStatus(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod_code,'assessment':'','second':second,"published":1,
                                                                                 'third':third},context_instance = RequestContext(request))
@@ -1176,7 +1105,7 @@ def setPublishedStatus(request):
                 return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,"published":1,'root':root},
                                                                                 context_instance = RequestContext(request))
@@ -1197,7 +1126,7 @@ def setPublishedStatus(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod_code,'assessment':'',
                                                                                 'second':second,'third':third,"published":-1},
@@ -1209,7 +1138,7 @@ def setPublishedStatus(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,"published":-1},
                                                                                 context_instance = RequestContext(request))
 
@@ -1246,7 +1175,7 @@ def setPublishedStatusInLeaf(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'child':child,
                                                                         'module':mod_code,'assessmentName':name,
                                                                         'assess_id':assess_id,'type':1},
@@ -1260,7 +1189,7 @@ def setPublishedStatusInLeaf(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod_code,'assessmentName':name,'assess_id':assess_id,
                                                                         'fullmark':fullmark,'type':-1},
@@ -1287,7 +1216,7 @@ def viewAssessment(request):
             return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':module,'second':second,'third':third,},context_instance = RequestContext(request))
@@ -1297,7 +1226,7 @@ def viewAssessment(request):
             return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
     elif request.POST.get('lectB'):
@@ -1320,7 +1249,7 @@ def viewAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':module,'assessment':'',
                                                                                 'second':second,'third':third},
@@ -1332,7 +1261,7 @@ def viewAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,
                                                                                 'root':root},
                                                                                 context_instance = RequestContext(request))
@@ -1349,7 +1278,7 @@ def viewAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
                                                                                 'module':module,'type':1},
                                                                                 context_instance = RequestContext(request))
@@ -1358,7 +1287,7 @@ def viewAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'type':-1},
                                                                                 context_instance = RequestContext(request))
     elif request.POST.get('taB'):
@@ -1373,7 +1302,7 @@ def viewAssessment(request):
             return render_to_response("web_interface/view_sessions_marker.htm",{'default_user':default_user,
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
-                                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                                'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'assessmentName':assessments,
                                                                                 'module':module,'type':1},
@@ -1383,7 +1312,7 @@ def viewAssessment(request):
                                                                                 'user_lect':user_lect,
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
-                                                                                'user_ta':user_ta,'user_ad':user_ad,
+                                                                                'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'type':-1},
                                                                                 context_instance = RequestContext(request))
     else:
@@ -1424,7 +1353,7 @@ def openOrCloseSession(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,
                                                                             'sessions':sessions,
@@ -1442,7 +1371,7 @@ def openOrCloseSession(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,
                                                                             'assessment_id':assess_id,'assessmentName':assessmentName,
@@ -1462,7 +1391,7 @@ def openOrCloseSession(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,
                                                                             'sessions':sessions,
@@ -1481,7 +1410,7 @@ def openOrCloseSession(request):
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
                                                                             'user_tut':user_tut,
-                                                                            'user_ta':user_ta,'user_ad':user_ad,
+                                                                            'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess_id,
                                                                             'assessmentName':assessmentName,'moduleName':moduleName,
                                                                             'type':-1},context_instance = RequestContext(request))
@@ -1507,7 +1436,7 @@ def viewChildrenOfAssessments(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'child':child,
                                                                         'module':mod,'assessmentName':name,
                                                                         'assess_id':assess_id},
@@ -1520,7 +1449,7 @@ def viewChildrenOfAssessments(request):
             return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,
@@ -1541,7 +1470,7 @@ def viewSessionForMarker(request):
         return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':assessments,
                                                                         'module':mod,'type':1},context_instance=RequestContext(request))
@@ -1549,7 +1478,7 @@ def viewSessionForMarker(request):
         return render_to_response("web_interface/view_session.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
+                                                                       'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'user_roles':user_roles,'type':-1},context_instance=RequestContext(request))
 
@@ -1571,7 +1500,7 @@ def viewAssessmentForMarker(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'assessmentName':assessment,
                                                                        'type':1},context_instance=RequestContext(request))
@@ -1581,7 +1510,7 @@ def viewAssessmentForMarker(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'user_roles':user_roles,'module':mod,
                                                                        'session':session,'type':-1},context_instance=RequestContext(request))
 
@@ -1604,7 +1533,7 @@ def viewStudentsForAssessment(request):
         return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':students,
                                                                         'module':mod,'assessmentName':assessment,
@@ -1615,7 +1544,7 @@ def viewStudentsForAssessment(request):
         return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessment':assessment,'students':student,
                                                                         'fullmark':fullmark,'module':mod},
@@ -1649,7 +1578,7 @@ def updateMarkForStudentMarker(request):
         return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,
@@ -1663,7 +1592,7 @@ def updateMarkForStudentMarker(request):
         return render_to_response("web_interface/view_leaf_marker.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'studentMark':studentMark,
                                                                         'module':mod,'assessmentName':name,'assess_id':leaf_id,
@@ -1695,7 +1624,7 @@ def viewAssessmentsForStudent(request):
         return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles, 'assessments':assessments,
                                                                         'module':mod,'type':1, 'assessmentName':person},context_instance=RequestContext(request))
@@ -1706,7 +1635,7 @@ def viewAssessmentsForStudent(request):
         return render_to_response("web_interface/view_student_marks_agg.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assessmentName':'ERROR',
                                                                         'assessmentId':assessmentId,'module':mod,
@@ -1736,7 +1665,7 @@ def getAllChildrenOfAssessmentForStudent(request):
             name = res[0]['assess_name']
             return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
-                                                                            'user_stud':user_stud,'user_ad':user_ad,
+                                                                            'user_stud':user_stud,
                                                                             'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'root':root,'first':first,
@@ -1747,7 +1676,7 @@ def getAllChildrenOfAssessmentForStudent(request):
             return render_to_response("web_interface/view_student_marks.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'root':root})
 
@@ -1774,7 +1703,7 @@ def getAllAssessmentOfAssessment(request):
         return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
                                                                         'module':mod, 'assessment':name,
@@ -1787,7 +1716,7 @@ def getAllAssessmentOfAssessment(request):
         return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root},
                                                                         context_instance=RequestContext(request))
@@ -1824,7 +1753,7 @@ def ChangeSessionTime(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,
                                                                             'sessions':sessions,
@@ -1841,12 +1770,12 @@ def ChangeSessionTime(request):
             return render_to_response("web_interface/create_sessions_lect.htm",{'default_user':default_user,
                                                                             'user_lect':user_lect,
                                                                             'user_stud':user_stud,
-                                                                            'user_tut':user_tut,'user_ad':user_ad,
+                                                                            'user_tut':user_tut,
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
 
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def removeUserfromSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -1879,7 +1808,7 @@ def removeUserfromSession(request):
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
@@ -1891,7 +1820,7 @@ def removeUserfromSession(request):
         return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
@@ -1916,7 +1845,7 @@ def AuditLog(request):
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
-                                                                        'user_ta':user_ta,'user_ad':user_ad,
+                                                                        'user_ta':user_ta,
                                                                         'user_roles':user_roles,'assess':assess,
                                                                         'session':session,'markAlloc':markAlloc,
                                                                         'allocate':allocate},context_instance=RequestContext(request))
@@ -1947,7 +1876,7 @@ def assessmentCenterLeaf(request):
         return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,
                                                                         'average':average,'median':median,'mode':mode,'frequency':frequency,
@@ -1959,99 +1888,13 @@ def assessmentCenterLeaf(request):
         return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
                                                                 'user_stud':user_stud,
-                                                                'user_tut':user_tut,'user_ad':user_ad,
+                                                                'user_tut':user_tut,
                                                                 'user_ta':user_ta,
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
 
-#@isAuthenticated
-#@isLecture
-def changeLeafAssessmentName(request):
-    assess_id = request.POST['assess_id']
-    module = request.POST['module']
-    name = request.POST['assess_name']
-    
-    data ={
-        "assess_id":assess_id,
-        "name":name
-    }
-    
-    results = views.changeLeafAssessmentName(request,json.dumps(data))
-    res = json.loads(results.content)
-    if res[0]['type']:
-        data ={
-        'assess_id':assess_id,
-        }
-        result = views.assessmentCenterLeaf(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res['type'] ==1:
-            assessmentName = res['assessmentName']
-            average = res['average']
-            median = res['median']
-            mode = res['mode']
-            frequency = res['frequency']
-            stddev = res['stddev']
-            studentlist = res['students']
-            pass_fail_percentage = res['pass_fail_percentage']
-
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
-                                                                        'stddev':stddev,'studentlist':studentlist,
-                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
-                                                                        'module':module,"AssessName":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-
-        else:
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                'user_lect':user_lect,
-                                                                'user_stud':user_stud,
-                                                                'user_tut':user_tut,'user_ad':user_ad,
-                                                                'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
-                                                                'children':children,"AssessName":1 ,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
-    else:
-        data ={
-        'assess_id':assess_id,
-        }
-        result = views.assessmentCenterLeaf(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res['type'] ==1:
-            assessmentName = res['assessmentName']
-            average = res['average']
-            median = res['median']
-            mode = res['mode']
-            frequency = res['frequency']
-            stddev = res['stddev']
-            studentlist = res['students']
-            pass_fail_percentage = res['pass_fail_percentage']
-
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,
-                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
-                                                                        'stddev':stddev,'studentlist':studentlist,
-                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
-                                                                        'module':module,"AssessName":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-
-        else:
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                'user_lect':user_lect,
-                                                                'user_stud':user_stud,'user_ad':user_ad,
-                                                                'user_tut':user_tut,
-                                                                'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
-                                                                'children':children, "AssessName":-1,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
-    
-
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def assessmentCenter(request):
     assess_id = request.POST['assess_id']
     module = request.POST['module']
@@ -2076,7 +1919,7 @@ def assessmentCenter(request):
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
+                                                                        'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
                                                                         'average':average,'median':median,'mode':mode,'frequency':frequency,
@@ -2088,7 +1931,7 @@ def assessmentCenter(request):
         message = " Error occured, chooseAggregator view"
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
-                                                                'user_stud':user_stud,'user_ad':user_ad,
+                                                                'user_stud':user_stud,
                                                                 'user_tut':user_tut,
                                                                 'user_ta':user_ta,
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
@@ -2139,36 +1982,14 @@ def aggregateMarkForAssessment(request):
 	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
 	    	    	    	    	    	    	    	    	'user_lect':user_lect,
 	    	    	    	    	    	    	    	    	'user_stud':user_stud,
-	    	    	    	    	    	    	    	    	'user_tut':user_tut,'user_ad':user_ad,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
 	    	    	    	    	    	    	    	    	'user_ta':user_ta,
 	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
 	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
 	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-	    	    	    	    	    	    	    	    	'module':module,"aggregateChanged":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-    else:
-        numChildren = res['numChildren']
-        children = res['children']
-        assessmentName = res['assessmentName']
-        agg_name = res['agg_name']
-        average = res['average']
-        median = res['median']
-        mode = res['mode']
-        frequency = res['frequency']
-        stddev = res['stddev']
-        studentlist = res['students']
-        pass_fail_percentage = res['pass_fail_percentage']
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
-        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,'user_ad':user_ad,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
-                                                                        'stddev':stddev,'studentlist':studentlist,
-                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-                                                                        'module':module,"aggregateChanged":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 '''
 ###################### End Aggregation Views ###############################
@@ -2195,9 +2016,9 @@ def addStudentToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2206,9 +2027,9 @@ def addStudentToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2233,9 +2054,9 @@ def addLectureToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2244,15 +2065,18 @@ def addLectureToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 @isAuthenticated
 def addTutorToModule(request):
     lists = request.POST.lists()
     tutor =lists[3]
     module = lists[2]
+    print "Super details::::: lalaalalalalalalalalalal"
+    print tutor[1]
+    print module[1][0]
     data ={
         'tutor':tutor[1],
         'module':module[1][0]
@@ -2266,9 +2090,9 @@ def addTutorToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2277,9 +2101,9 @@ def addTutorToModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"User":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2302,10 +2126,10 @@ def removeStudentFromModule(request):
         return render_to_response("web_interface/admin.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
+                                                                       'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2314,9 +2138,9 @@ def removeStudentFromModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2340,9 +2164,9 @@ def removeLectureFromModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2350,10 +2174,10 @@ def removeLectureFromModule(request):
         return render_to_response("web_interface/admin.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
+                                                                       'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 @isAuthenticated
@@ -2377,9 +2201,9 @@ def removeTutorFromModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
     else:
         Person = res[0]['Users']
@@ -2387,10 +2211,10 @@ def removeTutorFromModule(request):
         return render_to_response("web_interface/admin.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
+                                                                       'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':Person,
-                                                                       'Modules':Modules,"removeUser":-1,
+                                                                       'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 def addModule(request):
@@ -2414,9 +2238,9 @@ def addModule(request):
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
-                                                                       'user_ta':user_ta,'user_ad':user_ad,
+                                                                       'user_ta':user_ta,
                                                                        'Person':person,
-                                                                       'Modules':module,"ModuleStatus":1,
+                                                                       'Modules':module,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
     else:
         if rslt[0]['type'] == 1:
@@ -2425,52 +2249,9 @@ def addModule(request):
             return render_to_response("web_interface/admin.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
-                                                                       'user_tut':user_tut,'user_ad':user_ad,
+                                                                       'user_tut':user_tut,
                                                                        'user_ta':user_ta,
                                                                        'Person':person,
-                                                                       'Modules':module,"ModuleStatus":-1,
+                                                                       'Modules':module,
                                                                        'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
 
-def import_csv(request):
-    assess_id = request.POST['assess_id']
-    module = request.POST['module']
-    result = repo.import_csv(request)
-    
-    res = json.loads(result.content)
-    
-    if res['type'] == 1:
-        data={
-            'assess_id':assess_id
-        }
-    
-        result = views.assessmentCenterLeaf(request,json.dumps(data))
-        res = json.loads(result.content)
-        if res['type'] ==1:
-            assessmentName = res['assessmentName']
-            average = res['average']
-            median = res['median']
-            mode = res['mode']
-            frequency = res['frequency']
-            stddev = res['stddev']
-            studentlist = res['students']
-            pass_fail_percentage = res['pass_fail_percentage']
-    
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                            'user_lect':user_lect,
-                                                                            'user_stud':user_stud,
-                                                                            'user_tut':user_tut,
-                                                                            'user_ta':user_ta,
-                                                                            'user_roles':user_roles,
-                                                                            'average':average,'median':median,'mode':mode,'frequency':frequency,
-                                                                            'stddev':stddev,'studentlist':studentlist,
-                                                                            'assess_id':assess_id,'assessmentName':assessmentName,
-                                                                            'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-    
-        else:
-            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
-                                                                    'user_lect':user_lect,
-                                                                    'user_stud':user_stud,
-                                                                    'user_tut':user_tut,
-                                                                    'user_ta':user_ta,
-                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
-                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
