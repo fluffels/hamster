@@ -2040,9 +2040,10 @@ def studentMarksFromCSV(request, assess_id, marklist, marker):
                 res = updateMarkAllocation(request, student_id, assess_id, mark, comment)
             else:
                 markAlloc=createMarkAllocation(request, assess_id, marker, student_obj, datetime.datetime.now(),comment)
+                res = updateMarkAllocation(request, student_id, assess_id, mark, comment)
         except e as Exception:
             markAlloc=createMarkAllocation(request, assess_id, marker, student_obj, datetime.datetime.now(),comment)
-            
+            res = updateMarkAllocation(request, student_id, assess_id, mark, comment)
             
             
     return True
