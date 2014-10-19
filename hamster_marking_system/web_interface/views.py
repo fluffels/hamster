@@ -36,7 +36,7 @@ def reCaptchaLogin(request):
     login_count = request.POST['login_count']
     if(login_count == ''):
         login_count = 0
-    current_ip = request.META['REMOTE_ADDR']
+    current_ip = request.META['HTTP_X_REAL_IP']
     if(user_ip == ''):
         user_ip = current_ip
 
@@ -156,7 +156,7 @@ def login(request):
         login_count = request.POST['login_count']
         if(login_count == ''):
             login_count = 0
-        current_ip = request.META['REMOTE_ADDR']
+        current_ip = request.META['HTTP_X_REAL_IP']
         if(user_ip == ''):
             user_ip = current_ip
 
@@ -1626,9 +1626,91 @@ def changeAssessmentFullMark(request):
                                                                                 'assess_id':assess_id,'fullmark':fullmark,"mark_update_response":-1},
                                                                                 context_instance = RequestContext(request))
 
+def changeLeafAssessmentName(request):
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    name = request.POST['assess_name']
+    
+    data ={
+        "assess_id":assess_id,
+        "name":name
+    }
+    
+    results = views.changeLeafAssessmentName(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type']:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
 
-@isAuthenticated
-@isLecture
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children,"AssessName":1 ,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+    else:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, "AssessName":-1,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+
+#@isAuthenticated
+#@isLecture
 def changeAssessmentName(request):
     user_type = ''
     default_user =''
@@ -1709,6 +1791,53 @@ def changeAssessmentName(request):
 	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
 	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+	else:
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    else:
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
+
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                    'user_lect':user_lect,
+                                                                    'user_stud':user_stud,
+                                                                    'user_tut':user_tut,
+                                                                    'user_ta':user_ta,
+                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+                                                                    'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                    'stddev':stddev,'studentlist':studentlist,
+                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                    'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
 
 @isAuthenticated
@@ -3122,13 +3251,14 @@ def assessmentCenterLeaf(request):
                                                                         'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
     else:
+        assessmentName = res['assessmentName']
         return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
                                                                 'user_stud':user_stud,
                                                                 'user_tut':user_tut,
                                                                 'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
-                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+                                                                'user_roles':user_roles,
+                                                                'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
 
 @isAuthenticated
 @isLecture
@@ -3204,13 +3334,23 @@ def assessmentCenter(request):
                                                                         'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
     else:
-        message = " Error occured, chooseAggregator view"
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
                                                                 'user_stud':user_stud,
                                                                 'user_tut':user_tut,
                                                                 'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
 @isAuthenticated

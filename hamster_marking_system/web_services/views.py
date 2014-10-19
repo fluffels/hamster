@@ -1719,11 +1719,11 @@ def assessmentCenter(request, jsonObj):
 	try:
 		json_data = json.loads(jsonObj)
 		assess_id = json_data['assess_id']
+		assess_name = api.getAssessmentName(assess_id)
 		
 		#AGGREGATION
 		children = api.getAggregationInfo(assess_id)
 		numChildren = api.getNumChildren(assess_id)
-		assess_name = api.getAssessmentName(assess_id)
 		agg_name = api.getAggregatorName(assess_id)
 		
 		#STATISTICS
