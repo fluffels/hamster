@@ -866,13 +866,45 @@ def createLeafAssessment(request,jsonObject):
 			return HttpResponse(json.dumps(data))
 		else:
 			data = [{
-				'type':-1,
+				'type':1,
 				'assessment':array,
 			
 			}]
 			return HttpResponse(json.dumps(data))
 	else:
-		print "oh-no mamelo,sipho and cebo"
+		array = api.getAssessment(mod)
+		root = array[0]
+		first = array[1]
+		second = array[2]
+		third = array[3]
+		print "going into the array"
+		print root
+		print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print first
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print second
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print third
+		print "ARRAY : " + str(array)
+		if array :
+			print "\n -------------- : "
+			data = [{
+				'type':-1,
+				'root':root,
+				'first':first,
+				'second':second,
+				'third':third
+			
+			}]
+			print "sending data back"
+			return HttpResponse(json.dumps(data))
+		#else:
+		#	data = [{
+		#		'type':-1,
+		#		'assessment':array,
+		#	
+		#	}]
+		#	return HttpResponse(json.dumps(data))
 	
 
 def deleteAssessment(request,jsonObj):

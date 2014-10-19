@@ -114,14 +114,14 @@
 		<div class="alert alert-danger alert-dismissible" role="alert">
 			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 			</span><span class="sr-only">Close</span></button>
-			<strong>Warning!</strong> User's were not successfuly removed from session, please try again.
+			<strong>Warning!</strong> User's were not successfully removed from session, please try again.
 		</div>
 	{% elif studentRemoved == 1 %}
 	
 		<div class="alert alert-success alert-dismissible" role="alert">
 			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 			</span><span class="sr-only">Close</span></button>
-			<strong>Success!</strong> User's were successfuly removed from session.
+			<strong>Success!</strong> User's were successfully removed from session.
 		</div>
 
 	{% endif %}
@@ -199,8 +199,9 @@
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}><br>
 				<input type="hidden" name="userS" value="None"/><br>
+				<input type="hidden" name="module" value={{ module }}>
 			</div>
-			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
+			<button type="submit" class="btn btn-danger btn-block">
 			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button><br>
 		</form>
 		

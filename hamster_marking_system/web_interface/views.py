@@ -520,8 +520,8 @@ def personDetails(request):
         raise Http404()
 
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def getAllSessionsForAssessment(request):
     #try:
         assess = request.POST['assessment']
@@ -615,8 +615,8 @@ def createSession(request):
     except Exception as e:
        raise Http404()
     
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def getAllStudentOfModule(request):
     mod = request.POST['module']
     session = request.POST['session']
@@ -657,8 +657,8 @@ def getAllStudentOfModule(request):
                                                                         'sessionName':name},
                                                                         context_instance = RequestContext(request))
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def addStudentToSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -810,11 +810,15 @@ def createLeafAssessment(request):
                                                                         'third':third},context_instance = RequestContext(request))
     else:
         print "NONE"
-        root = "NONE";
+        root = res[0]['root']
+        first = res[0]['first']
+        second = res[0]['second']
+        third = res[0]['third']
         return render_to_response("web_interface/testing.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
+                                                                        'root':root,'first':first,'second':second,'third':third,
                                                                         'user_ta':user_ta,'user_ad':user_ad,
                                                                         'AssessCreated':-1,
                                                                         'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
@@ -1841,8 +1845,8 @@ def ChangeSessionTime(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessment_id':assess,'assessmentName':assessmentName,'moduleName':moduleName})
 
-@isAuthenticated
-@isLecture
+#@isAuthenticated
+#@isLecture
 def removeUserfromSession(request):
     mod = request.POST['module']
     session_id = request.POST['session']
@@ -2090,53 +2094,6 @@ def assessmentCenter(request):
                                                                 'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
-
-#@isAuthenticated
-#@isLecture
-def assessmentCenter(request, _assess_id, _module):
-    assess_id = _assess_id
-    module = _module
-    data ={
-        'assess_id':assess_id,
-    }
-    result = views.assessmentCenter(request,json.dumps(data))
-    res = json.loads(result.content)
-    if res['type'] ==1:
-        numChildren = res['numChildren']
-        children = res['children']
-        assessmentName = res['assessmentName']
-        agg_name = res['agg_name']
-        average = res['average']
-        median = res['median']
-        mode = res['mode']
-        frequency = res['frequency']
-        stddev = res['stddev']
-        studentlist = res['students']
-        pass_fail_percentage = res['pass_fail_percentage']
-
-        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
-                                                                        'user_lect':user_lect,
-                                                                        'user_stud':user_stud,
-                                                                        'user_tut':user_tut,
-                                                                        'user_ta':user_ta,
-                                                                        'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
-                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
-                                                                        'stddev':stddev,'studentlist':studentlist,
-                                                                        'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
-                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
-
-    else:
-        message = " Error occured, chooseAggregator view"
-        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
-                                                                'user_lect':user_lect,
-                                                                'user_stud':user_stud,
-                                                                'user_tut':user_tut,
-                                                                'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
-                                                                'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
- 
-
-
 @isAuthenticated
 @isLecture
 def aggregateMarkForAssessment(request):
@@ -2437,7 +2394,6 @@ def removeTutorFromModule(request):
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
 def addModule(request):
-    print request.lists
     code = request.POST['code']
     name = request.POST['name']
     

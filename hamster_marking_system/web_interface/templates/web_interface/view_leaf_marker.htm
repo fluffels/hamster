@@ -122,6 +122,25 @@
 	{% endif %}
 		
 {% endif %}
+{% if mark_update_response == None %}
+	<!--Do nothing. Loading page initially-->
+{% else %}
+	{% if mark_update_response == 1 %}
+		
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> The <strong>Total Mark</strong> was updated successfully.
+			</div>
+	{% else %}
+		<div class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Warning!</strong> The <strong>Total Mark</strong> could not be updated.
+		</div>
+		
+	{% endif %}
+{% endif %}
 <div class="row">
         <div class="col-lg-4 col-lg-offset-4">
             <input type="search" id="search" value="" class="form-control" placeholder="Search for student">

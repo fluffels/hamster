@@ -410,9 +410,10 @@ def isMarked(leaf_id):
     allLeafsMarks = MarkAllocation.objects.filter(assessment = leaf_id)
     
     for leaf in allLeafsMarks:
-        if leaf.mark > -1:
+        if int(leaf.mark) > -1:
             return True
     return False
+
 # Name: makeLeafAssessmentAnAggregate(old_leaf_id, new_leaf_id)
 # Description: Makes the old leaf an aggregate assessment and makes the new leaf its child (assumes that new leaf already exists)
 # Parameter: old_leaf_id: String
@@ -544,7 +545,7 @@ def createLeafAssessment(request, leaf_name_,assessment_type, module_code,publis
 	            print "I am None"
 	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
 	            person = Person.objects.get(upId=request.session['user']['uid'][0])
-	            insertAuditLogAssessment(person,obj.assess_name,'created',None,None,obj.mod_id)
+	            (person,obj.assess_name,'created',None,None,obj.mod_id)
 	    else:
 	            print "I am something"
 	            obj = insertLeafAssessment(leaf_name_, assessment_type, modObj, published_, full_marks, parent_id)
@@ -1755,9 +1756,12 @@ def createSession(request,session_name,assess_id, opentime, closetime ):
     sessionObj = Assessment.objects.get(id=assess_id)
     person = Person.objects.get(upId=request.session['user']['uid'][0])
     if session_name !="" and opentime != "" and closetime != "":
-        obj = insertSessions(session_name,sessionObj,opentime,closetime)
-        insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
-        return True
+        if opentime  < closetime:
+            obj = insertSessions(session_name,sessionObj,opentime,closetime)
+            insertAuditLogSession(person,sessionObj.assess_name,session_name,"Created",None,None,sessionObj.mod_id)
+            return True
+        else:
+            return False
     else:
         return False
 
@@ -2329,7 +2333,7 @@ def addLectureToModule(lect,module):
 
             if done == False:
                 mod = Module.objects.get(id=module)
-                stud.studentOfInsert(mod)
+                stud.lectureOfInsert(mod)
         return True
     except:
         return False
@@ -2366,7 +2370,7 @@ def addTutorToModule(tt,module):
 
             if done == False:
                 mod = Module.objects.get(id=module)
-                stud.studentOfInsert(mod)
+                stud.tutorOfInsert(mod)
         return True
     except:
         return False

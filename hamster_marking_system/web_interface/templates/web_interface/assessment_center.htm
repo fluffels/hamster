@@ -106,14 +106,12 @@
 	<!-- Do nothing no alert is required -->
 {% else %}
 {% if aggregateChanged == -1 %}
-		
 	<div class="alert alert-danger alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
 		<strong>Warning!</strong> Aggregator could not be changed, please try again.
 	</div>
 {% elif aggregateChanged == 1 %}
-	
 	<div class="alert alert-success alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
@@ -127,14 +125,12 @@
 	<!-- Do nothing no alert is required -->
 {% else %}
 {% if NameChanged == -1 %}
-		
 	<div class="alert alert-danger alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
 		<strong>Warning!</strong> Assessment name could not be changed, please try again.
 	</div>
 {% elif NameChanged == 1 %}
-	
 	<div class="alert alert-success alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
@@ -201,10 +197,17 @@
 		  </div>
 		  <div id="weighted_sum" class="tab-pane">
 		    <h4>Assign weights to each assessment</h4>
-		    <div class="alert alert-warning col-md-6 col-sm-6" role="alert">
+		    <div class="col-md-4"></div>
+		    <div class="alert alert-warning col-md-4" role="alert">
 			Weights are in percentages. Example: 60
 		    </div>
+		    <div class="col-md-4"></div>
+		    
+		    <div class="clearfix"></div>
+		    
 			<!-- weightedsum form -->
+			<div class="col-md-2"></div>
+			<div class="col-md-8">
 			<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"
 			      id="weights_form" data-parsley-validate onsubmit="return checkSumOfForm(this);"> {% csrf_token %}
 				<input type="hidden" value="WeightedSum" name="agg_name">
@@ -213,15 +216,16 @@
 				<input type="hidden" value={{assess_id}} name="assess_id">
 			{% for child in children %}
 			  <div class="form-group weights_div">
-				<label class="col-sm-3 control-label" for="weightedSumAssessment">{{ child.1 }}</label>
-				<div class="col-sm-5">
+				<label class="col-md-4 control-label" for="weightedSumAssessment">{{ child.1 }}[{{child.3}}]</label>
+				<div class="col-md-4">
 					<input id="child_weights_id" class="form-control" type="number" name="child_weight"
-					       placeholder="Weight of {{ child.1 }} is {{child.3}} "
+					       placeholder="Weight of {{ child.1 }}"
 					       required data-parsley-min="0" data-parsley-max="100">
 					<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
 				</div>
 			  </div>
 			{% endfor %}
+			</div>
 			<div class="clearfix">
 				<button id="submit_weights" class="btn btn-success pull-right" type="submit">Submit</button>
 			</div>
@@ -389,8 +393,8 @@
 		
 		<div class="clearfix"></div>
 		
-		<!--Bottom Left chart-->
-		<div class="col-sm-6 col-xs-12">
+		<!--Bottom chart-->
+		<div class="col-sm-12 col-xs-12">
 		  <div class="panel panel-info">
 		      <div class="panel-heading">Normal Distribution</div>
 		      <div class="panel-body">
@@ -399,19 +403,7 @@
 		      </canvas>
 		      </div>
 		    </div>
-		</div><!--./Bottom Left chart-->
-	  
-		<!--Bottom Right chart-->
-		<div class="col-sm-6 col-xs-12">
-		  <div class="panel panel-info">
-			<div class="panel-heading">Some Other Chart</div>
-			<div class="panel-body">
-			<canvas id="frequency_doughnut_chart">
-			      <!--Bar graph placed here-->
-			</canvas>
-			</div>
-		      </div>
-		</div><!--./Bottom Right chart-->
+		</div><!--./Bottom chart-->
 	</div> <!-- end panel body -->
       </div> <!-- end panel -->
 	
