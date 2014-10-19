@@ -130,7 +130,7 @@
             
 	    <!-- Export PDF and CSV btns -->
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-              <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+              <form action="print_pdf" method="post" hidden="hidden"
                     class="form-group-sm post-ass"> {% csrf_token %}
                 <input type="hidden" name="module" value={{ module }}>
                 <input type="hidden" name="assessment" value={{ n.0 }}>
@@ -140,7 +140,7 @@
                 <span class="fa fa-file-pdf-o"></span> 
               </button>
               
-              <form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+              <form action="print_csv" method="post" hidden="hidden"
 			class="form-group-sm post-sess">{% csrf_token %}
 		<input type="hidden" name="module" value={{ module }}>
 		<input type="hidden" name="assessment" value={{n.0}}>
@@ -184,7 +184,7 @@
             
 	    <!--Export PDF and CSV btn-->
             <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-              <form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+              <form action="print_pdf" method="post" hidden="hidden"
 		class="form-group-sm post-ass">{% csrf_token %}
 			<input type="hidden" name="module" value={{ module }}>
 			<input type="hidden" name="assessment" value={{ n.0 }}>
@@ -194,7 +194,7 @@
 		    <span class="fa fa-file-pdf-o"></span> 
 		</button>
               
-               <form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+               <form action="print_csv" method="post" hidden="hidden"
 			class="form-group-sm post-sess">{% csrf_token %}
 		<input type="hidden" name="module" value={{ module }}>
 		<input type="hidden" name="assessment" value={{n.0}}>
@@ -246,7 +246,7 @@
 		      
 		      <!--Export PDF and CSV btns-->
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+			<form action="print_pdf" method="post" hidden="hidden"
 			class="form-group-sm post-ass">{% csrf_token %}
 				<input type="hidden" name="module" value={{ module }}>
 				<input type="hidden" name="assessment" value={{ y.0 }}>
@@ -256,7 +256,7 @@
 			    <span class="fa fa-file-pdf-o"></span> 
 			</button>
 			
-			<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			<form action="print_csv" method="post" hidden="hidden"
 			class="form-group-sm post-sess">{% csrf_token %}
 				<input type="hidden" name="module" value={{ module }}>
 				<input type="hidden" name="assessment" value={{y.0}}>
@@ -299,7 +299,7 @@
 		      
 		      <!--Marks btn-group-->
 		      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-			<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+			<form action="print_pdf" method="post" hidden="hidden"
 			class="form-group-sm post-ass">{% csrf_token %}
 				<input type="hidden" name="module" value={{ module }}>
 				<input type="hidden" name="assessment" value={{ y.0 }}>
@@ -309,7 +309,7 @@
 			    <span class="fa fa-file-pdf-o"></span> 
 			</button>
 			
-			<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+			<form action="print_csv" method="post" hidden="hidden"
 			class="form-group-sm post-sess">{% csrf_token %}
 				<input type="hidden" name="module" value={{ module }}>
 				<input type="hidden" name="assessment" value={{y.0}}>
@@ -360,7 +360,7 @@
 				      
 				<!--Export PDF and CSV btn-->
 				<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+					<form action="print_pdf" method="post" hidden="hidden"
 					class="form-group-sm post-ass">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
 						<input type="hidden" name="assessment" value={{ e.0 }}>
@@ -370,7 +370,7 @@
 					    <span class="fa fa-file-pdf-o"></span> 
 					</button>
 					
-					<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+					<form action="print_csv" method="post" hidden="hidden"
 					class="form-group-sm post-sess">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
 						<input type="hidden" name="assessment" value={{e.0}}>
@@ -413,7 +413,7 @@
 				      
 				<!--Marks btn-group-->
 				<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-					<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+					<form action="print_pdf" method="post" hidden="hidden"
 					class="form-group-sm post-ass">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
 						<input type="hidden" name="assessment" value={{ e.0 }}>
@@ -423,7 +423,7 @@
 					    <span class="fa fa-file-pdf-o"></span> 
 					</button>
 					
-					<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+					<form action="print_csv" method="post" hidden="hidden"
 					class="form-group-sm post-sess">{% csrf_token %}
 						<input type="hidden" name="module" value={{ module }}>
 						<input type="hidden" name="assessment" value={{e.0}}>
@@ -480,7 +480,7 @@
 						      
 						<!--Export PDF and CSV btns-->
 						<div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+							<form action="print_pdf" method="post" hidden="hidden"
 							class="form-group-sm post-ass">{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ h.0 }}>
@@ -490,7 +490,7 @@
 							    <span class="fa fa-file-pdf-o"></span> 
 							</button>
 							
-							<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+							<form action="print_csv" method="post" hidden="hidden"
 							class="form-group-sm post-sess">{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{h.0}}>
@@ -533,7 +533,7 @@
 					      
 					      <!--Export PDF and CSV btn-->
 					      <div id={{n.0}} class="btn-group btn-group-xs grid-toggle-opts">
-							<form action={% url 'generate_pdf_for_student' %} method="post" hidden="hidden"
+							<form action="print_pdf" method="post" hidden="hidden"
 							class="form-group-sm post-ass">{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{ h.0 }}>
@@ -543,7 +543,7 @@
 							    <span class="fa fa-file-pdf-o"></span> 
 							</button>
 							
-							<form action={% url 'generate_csv_for_student' %} method="post" hidden="hidden"
+							<form action="print_csv" method="post" hidden="hidden"
 							class="form-group-sm post-sess">{% csrf_token %}
 								<input type="hidden" name="module" value={{ module }}>
 								<input type="hidden" name="assessment" value={{h.0}}>
