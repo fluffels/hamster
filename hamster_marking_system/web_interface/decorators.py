@@ -24,14 +24,14 @@ def isLecture(function):
 
 def isAuthenticated(function):
     def wrapper(request,*args,**kwargs):
-        #print "is authenticated"
-        #try:
-        #    if request.session['user']:
+        print "is authenticated"
+        try:
+            if request.session['user']:
                 return function(request,*args,**kwargs)
-        #    else:
-        #        return HttpResponseRedirect(reverse('home'))
-        #except:
-        #    return HttpResponseRedirect(reverse('home'))
+            else:
+                return HttpResponseRedirect(reverse('home'))
+        except:
+            return HttpResponseRedirect(reverse('home'))
     return wrapper
 
 def isMarker(function):

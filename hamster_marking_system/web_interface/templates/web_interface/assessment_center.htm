@@ -77,7 +77,6 @@
 
 
 {% block jumbotron_header %}
-	<div id="assessment_center_spinner"></div>
 	
 	{% ifequal assessment '' %}
 		
@@ -390,20 +389,6 @@
 			</div>
 		      </div>
 		</div><!--./Top Right chart-->
-		
-		<div class="clearfix"></div>
-		
-		<!--Bottom chart-->
-		<div class="col-sm-12 col-xs-12">
-		  <div class="panel panel-info">
-		      <div class="panel-heading">Normal Distribution</div>
-		      <div class="panel-body">
-		      <canvas id="norm_dist_chart ">
-			  <!--Norm graph placed here-->
-		      </canvas>
-		      </div>
-		    </div>
-		</div><!--./Bottom chart-->
 	</div> <!-- end panel body -->
       </div> <!-- end panel -->
 	
@@ -440,33 +425,12 @@
 
 		];
 	
-	var lineChartData = {
-			labels : ["0 - 39", "40 - 49", "50 - 59", "60 - 74", "75 - 100"],
-			datasets : [
-				{
-					label: "Class Distribution",
-					fillColor : "rgba(220,220,220,0.2)",
-					strokeColor : "rgba(220,220,220,1)",
-					pointColor : "rgba(220,220,220,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(220,220,220,1)",
-					data : [{{ frequency.0 }}, {{ frequency.1 }},{{ frequency.2 }},
-						{{ frequency.3 }}, {{ frequency.4 }}]
-				}
-			]
-
-		}
-	
 	window.onload = function(){
 		var ctx = document.getElementById("frequency_bar_chart").getContext("2d");
 		window.myBar = new Chart(ctx).Bar(barChartData, {responsive : false});
 		
 		var ctx = document.getElementById("frequency_doughnut_chart").getContext("2d");
 		window.myDoughnut = new Chart(ctx).Doughnut(doughnutData, {responsive : false});
-		
-		var ctx = document.getElementById("norm_dist_chart").getContext("2d");
-		window.myLine = new Chart(ctx).Line(lineChartData, {responsive: false});
 	}
 
 	
@@ -609,10 +573,6 @@
 		</div>
 	</div>
 </div><!--End of Modal for ContactUs-->
-<!--Spinner script-->
-<script type="text/javascript">
-		$("#assessment_center_spinner").fadeOut("slow");
-</script>
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 
