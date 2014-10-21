@@ -57,6 +57,7 @@
 					
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Use as <b class="caret"></b></a>
 		<ul class="dropdown-menu">
+		
 			{% for role in user_roles %}
 			<li>
 				<form action="/user-mode" method="post" hidden="hidden" class="use-as">
@@ -68,18 +69,10 @@
 			{% endfor %}
 		</ul>
 	</li>
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>	
 {%endblock%}
 
 <!--###########################  End Courses dropdown ############################-->
 
-{% block breadcrumbs %}
-	<ol class="breadcrumb">
-		<li><a href="/logout">Login</a></li>
-		<li class="active"><a href="#">Home</a></li>
-	</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %} Hamster Marking System {% endblock %}
@@ -103,6 +96,12 @@
 				{% for mod in user_stud.0.ST %}
 					<form method="post"  action="courses/{{mod}}/assessments/view">{% csrf_token %}
 						<button type="submit" class="btn btn-default btn-lg btn-block" name='studB' value={{mod}}>{{mod}}</button>
+						<input type="hidden" name="default_user" value={{default_user}} />
+						<input type="hidden" name="user_lect" value={{user_lect}} />
+						<input type="hidden" name="user_stud" value={{user_stud}} />
+						<input type="hidden" name="user_tut" value={{user_tut}} />
+						<input type="hidden" name="user_ta" value={{user_ta}} />
+						<input type="hidden" name="user_roles" value={{user_roles}} />
 					</form>
 						<!--<a href="/view_assessment">{{mod}}</a> -->
 				{% endfor %}</button><br>

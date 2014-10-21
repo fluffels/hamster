@@ -37,6 +37,7 @@ AUTH_LDAP_MIRROR_GROUPS = True
 
 
 AUTH_LDAP_BIND_DN = "ou=Computer Science,o=University of Pretoria,c=ZA"
+AUTH_LDAP_TECHTEAM_BIND_DN = "ou=TechTeam," + AUTH_LDAP_BIND_DN
 AUTH_LDAP_BIND_PASSWORD = ""
 AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Computer Science,o=University of Pretoria,c=ZA",ldap.SCOPE_SUBTREE, "(uid=%(user)s")
 
@@ -71,7 +72,7 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
 AUTH_LDAP_CACHE_GROUPS = True
 AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
 
-AUTH_LDAP_SERVER_URI = "ldap://192.168.56.102:389/"
+AUTH_LDAP_SERVER_URI = "ldap://192.168.56.101:389/"
 
 #End LDAP Settings
 
@@ -125,12 +126,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hamster',
         'USER': 'postgres',
-        'PASSWORD': 'GothamCyborgDark009',
+        'PASSWORD': 'mamelo',
         'HOST': 'localhost',
         'PORT': '5432'
     }
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -145,11 +145,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-DATE_FORMAT = '%Y-%m-%d'
-
-DATETIME_INPUT_FORMATS = '%Y-%m-%d %H:%M:%S'
-
-TIME_INPUT_FORMATS = '%H:%M:%S'
 
 
 # Static files (CSS, JavaScript, Images)

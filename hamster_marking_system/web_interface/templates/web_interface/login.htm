@@ -9,24 +9,32 @@
 
 {% block jumbotron_sub_header %} Log in to access your information {% endblock %}
 {% block header %}
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
 	<li><a href="#team_member_details" data-toggle="modal">Team</a></li>
 {%endblock%}
 <!-- jumbotron content -->
 {% block jumbotron_content %}
 {%if type == -1%}
-	<div class="col-md-3"></div>
-	<div class="col-md-6 alert alert-danger alert-dismissible" role="alert">
-		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
-		</span><span class="sr-only">Close</span></button>
-		<strong>Warning!</strong> An incorrect Username or Password was specified.
-	</div>
-	<div class="col-md-3"></div>
+	{% if captcha_response %}
+		<div class="col-md-3"></div>
+		<div class="col-md-6 alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>{{ captcha_response }}</strong>.
+		</div>
+		<div class="col-md-3"></div>
+	{% else %}
+		<div class="col-md-3"></div>
+		<div class="col-md-6 alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> An incorrect Username or Password was specified.
+		</div>
+		<div class="col-md-3"></div>
+	{% endif %}
 {%endif%}
 <div class="clearfix"></div>
 <!--Login form-->
-<form class="form-horizontal" role="form" action="/courses" method="post" data-parsley-validate>{% csrf_token %}
+<form id="login_form" class="form-horizontal" role="form" action="/courses" method="post" data-parsley-validate>{% csrf_token %}
 <div class="form-group">
   <label for="inputUsername3" class="col-sm-2 control-label">Username</label>
   <div class="col-sm-8">
@@ -41,6 +49,61 @@
 	   placeholder="Password" name="password" required>
   </div>
 </div>
+{% if login_count < 3 %}
+<!--<div id="reCaptcha_div" class="form-group hidden">
+	<label for="inputPassword3" class="col-sm-2 control-label">Are you human?</label>
+	<div class="col-sm-8">
+            <span class="validation_error">{{ captcha_response }}</span>
+        
+            <script type="text/javascript"
+            src="http://api.recaptcha.net/challenge?k=6Leu-PsSAAAAAJrGGi9q_eltXUHPHylKo3OOZhHP">
+            </script>
+            
+            <noscript>
+            <iframe src="http://api.recaptcha.net/noscript?k=6Leu-PsSAAAAAJrGGi9q_eltXUHPHylKo3OOZhHP"
+            height="300" width="500" frameborder="0">
+	    </iframe><br>
+            <textarea name="recaptcha_challenge_field" rows="3" cols="40">
+            </textarea>
+            <input type="hidden" name="recaptcha_response_field" 
+            value="manual_challenge">
+            </noscript>
+	    <input type="submit" value="Save"/>
+	</div>
+</div>-->
+<script>
+	//Updating the action once the user has made 3 incorrect login attempts.
+	//This is to check that the reCaptcha is correct and authenticate the user.
+	document.getElementById('login_form').action = '/courses';
+</script>
+{% else %}
+<div id="reCaptcha_div" class="form-group">
+	<label for="inputPassword3" class="col-sm-2 control-label">Are you human?</label>
+	<div class="col-sm-8">
+        
+            <script type="text/javascript"
+            src="http://api.recaptcha.net/challenge?k=6Leu-PsSAAAAAJrGGi9q_eltXUHPHylKo3OOZhHP">
+            </script>
+            
+            <noscript>
+            <iframe src="http://api.recaptcha.net/noscript?k=6Leu-PsSAAAAAJrGGi9q_eltXUHPHylKo3OOZhHP"
+            height="300" width="500" frameborder="0">
+	    </iframe><br>
+            <textarea name="recaptcha_challenge_field" rows="3" cols="40">
+            </textarea>
+            <input type="hidden" name="recaptcha_response_field" 
+            value="manual_challenge">
+            </noscript>
+	    <!--<input type="submit" value="Save"/>-->
+	</div>
+</div>
+
+<script>
+	//Updating the action once the user has made 3 incorrect login attempts.
+	//This is to check that the reCaptcha is correct and authenticate the user.
+	document.getElementById('login_form').action = '/re-courses';
+</script>
+{% endif %}
 <div class="form-group">
   <div class="col-sm-offset-2 col-sm-8">
     <div class="checkbox">
@@ -52,7 +115,9 @@
 </div>
 <div class="form-group">
   <div class="col-sm-offset-2 col-sm-8">
-    <button type="submit" class="btn btn-default">Sign in</button>
+	<input type="hidden" name="user_ip" value={{ user_ip }}>
+	<input type="hidden" name="login_count" value={{ login_count }}>
+    <button id="login_form_sbmt_btn" type="submit" class="btn btn-default">Sign in</button>
   </div>
 </div>
 </form><!--End of Login form-->
@@ -66,33 +131,99 @@
         <h4 class="modal-title" id="myModalLabel">The Team</h4>
       </div>
       <div class="modal-body">
-			<!--Person details-->
-			<div class="[ col-sm-6 col-md-offset-2 col-md-4 ]">
-				<div class="[ info-card ]">
-					<img style="width: 100%" src="https://fbcdn-sphotos-f-a.akamaihd.net/hphotos-ak-xfa1/t1.0-9/417157_4897339837183_626079670_n.jpg" />
-					<div class="[ info-card-details ] animate">
-						<div class="[ info-card-header ]">
-							<h1> Robert McIntosh </h1>
-							<h3> aka Mouse0270 </h3>
-						</div>
-						<div class="[ info-card-detail ]">
-							<!-- Description -->
-							<p>The idea of creating something out of nothing has always generated a passion in my heart. This is what lead me to website development. I can literally create little worlds that hopefully thousands of people can see and even experience.</p>
-							<div class="social">
-								<a href="https://www.facebook.com/rem.mcintosh" class="[ social-icon facebook ] animate"><span class="fa fa-facebook"></span></a>
-
-								<a href="https://twitter.com/Mouse0270" class="[ social-icon twitter ] animate"><span class="fa fa-twitter"></span></a>
-
-								<a href="https://github.com/mouse0270" class="[ social-icon github ] animate"><span class="fa fa-github-alt"></span></a>
-
-								<a href="https://plus.google.com/u/0/115077481218689845626/posts" class="[ social-icon google-plus ] animate"><span class="fa fa-google-plus"></span></a>
-
-								<a href="www.linkedin.com/in/remcintosh/" class="[ social-icon linkedin ] animate"><span class="fa fa-linkedin"></span></a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div><!--./Person details-->
+	<!--Media block 1-->
+	<div class="well">
+	    <div class="media">
+	      <a class="pull-left" href="#">
+		      <img class="media-object" src="/static/web_interface/images/cebo_face.png" alt="Cebo Makeleni's image" height="150" width="150">
+		      </a>
+		      <div class="media-body">
+		      <h4 class="media-heading">Cebolenkosi Makeleni&nbsp;<small>BSc CS</small></h4>
+		<h5>Final Year Computer Science Student. I was responsible mainly for the front end, I was also responsible for the security and server setup.
+		I enjoyed working on the project, the best part of it was getting to learn so many different technologies and how to integrate them in order to
+		have a working product. Bootstrap is Awesome! I enjoyed learning, I still have tons to learn as you can clearly see from the site but it was a
+		blast getting exposed to it. I had awesome team mates and a large number of sleepless nights...what more could a CS student want?</h5>
+		<ul class="list-inline list-unstyled">
+			      <li><span><i class="fa fa-google"></i> Cebomakeleni@gmail.com </span></li>
+		  <li>|</li>
+		  <span><i class="fa fa-phone"></i> +27 788 287 200</span>
+		  <li>|</li>
+		  <li>
+		     <span><i class="fa fa-slack"></i> cebo</span>
+		  </li>
+		  <li>|</li>
+		  <li>
+		  <!-- Use Font Awesome http://fortawesome.github.io/Font-Awesome/ -->
+		    <a href="http://facebook.com/cebomakeleni"><span><i class="fa fa-facebook-square"></i></span></a>
+		    <a href="http://twitter.com/cebomakeleni"><span><i class="fa fa-twitter-square"></i></span></a>
+		    <a href="https://plus.google.com/+Cebomakeleni"><span><i class="fa fa-google-plus-square"></i></span></a>
+		  </li>
+		</ul>
+	     </div>
+	  </div>
+	</div><!-- ./Media block 1-->
+	<!--Media block 2-->
+	<div class="well">
+	    <div class="media">
+	      <a class="pull-left" href="#">
+		      <img class="media-object" src="/static/web_interface/images/mamelo_face.jpg" alt="Mamelo Seopela's image" height="150" width="150">
+		      </a>
+		      <div class="media-body">
+		      <h4 class="media-heading">Mamelo Seopela&nbsp;<small>BSc IT</small></h4>
+		<h5>Am really greatfull for working on this project, or should i say am greatfull for being given this opportunity to grow as a software developer.
+		I had alot of fun and many technologies to learn in a minimal amount of time but hey it was super. I worked mostly on
+		the back-end of the system and have discovered my strength and weaknesses in the process.I think i will miss working
+		on this project and spending so much time with my group member's but there's one thing i wont miss, all the sleepless nyt.</h5>
+		<ul class="list-inline list-unstyled">
+			      <li><span><i class="fa fa-google"></i> mamelo93@gmail.com</span></li>
+		  <li>|</li>
+		  <span><i class="fa fa-phone"></i> +27 780 359 575</span>
+		  <li>|</li>
+		  <li>
+		     <span><i class="fa fa-slack"></i> meme</span>
+		  </li>
+		  <li>|</li>
+		  <li>
+		  <!-- Use Font Awesome http://fortawesome.github.io/Font-Awesome/ -->
+		    <a href="https://www.facebook.com/mamelo.seopela"><span><i class="fa fa-facebook-square"></i></span></a>
+		    <a href="https://twitter.com/mameloseopela"><span><i class="fa fa-twitter-square"></i></span></a>
+		    <a href="https://plus.google.com/u/0/114634544260042968628"><span><i class="fa fa-google-plus-square"></i></span></a>
+		  </li>
+		</ul>
+	     </div>
+	  </div>
+	</div><!-- ./Media block 2-->
+	<!--Media block 3-->
+	<div class="well">
+	    <div class="media">
+	      <a class="pull-left" href="#">
+		      <img class="media-object" src="/static/web_interface/images/sipho_face.png" alt="Siphokazi Manana's image" height="150" width="150">
+		      </a>
+		      <div class="media-body">
+		      <h4 class="media-heading">Siphokazi Manana&nbsp;<small>BSc IT</small></h4>
+		<h6>This project was a real eye-opener in terms of what we can expect in the industry. Plenty of sleepless nights, litres of coffee and recurring headaches
+		have shown me that this field is not for the feint-hearted. The countless sleepless nights where my group and I spent the whole night coding brought about some good as well.
+		I developed strong friendships with both my group members which would otherwise probably not have happened. COS 301 waas an utter pain, but at the end of the day, I wouldn't see myself doing
+		anything else... </h6>
+		<ul class="list-inline list-unstyled">
+			      <li><span><i class="fa fa-google"></i> siphokazi.manana@gmail.com </span></li>
+		  <li>|</li>
+		  <span><i class="fa fa-phone"></i> +27 734 550 473</span>
+		  <li>|</li>
+		  <li>
+		     <span><i class="fa fa-slack"></i> psyfo</span>
+		  </li>
+		  <li>|</li>
+		  <li>
+		  <!-- Use Font Awesome http://fortawesome.github.io/Font-Awesome/ -->
+		    <a href="http://facebook.com/SiphokaziManana"><span><i class="fa fa-facebook-square"></i></span></a>
+		    <a href="http://twitter.com/PsyfoKrazzi"><span><i class="fa fa-twitter-square"></i></span></a>
+		    <a href="https://plus.google.com/+SiphokaziManana"><span><i class="fa fa-google-plus-square"></i></span></a>
+		  </li>
+		</ul>
+	     </div>
+	  </div>
+	</div><!-- ./Media block 3-->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

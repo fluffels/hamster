@@ -5,6 +5,7 @@
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
 	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a onclick="goBack();">Back</a></li>
 	<li><a href="/logout">Logout</a></li>
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
@@ -68,8 +69,6 @@
 			{% endfor %}
 		</ul>
 	</li>
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
 {%endblock%}
 <!-- End of Courses button -->
 
@@ -91,13 +90,6 @@
 
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li class="active"><a href="#">Assessments</a></li>
-</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %}
@@ -130,33 +122,60 @@
 	{% endif %}
 		
 {% endif %}
-
+{% if mark_update_response == None %}
+	<!--Do nothing. Loading page initially-->
+{% else %}
+	{% if mark_update_response == 1 %}
+		
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> The <strong>Total Mark</strong> was updated successfully.
+			</div>
+	{% else %}
+		<div class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+				</span><span class="sr-only">Close</span></button>
+				<strong>Warning!</strong> The <strong>Total Mark</strong> could not be updated.
+		</div>
+		
+	{% endif %}
+{% endif %}
 <div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
-		<table class="table table-hover table-bordered">
-			<tr>
-				<td><strong> UserID </strong></td>
-				<td><strong> Name </strong></td>
-				<td><strong> Surname </strong></td>
-				<td><strong> Mark obtained </strong></td>
-			</tr>
+        <div class="col-lg-4 col-lg-offset-4">
+            <input type="search" id="search" value="" class="form-control" placeholder="Search for student">
+        </div>
+    </div>
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="table-responsive">
+		<table id="table" class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<td><strong> UserID </strong></td>
+					<td class="hidden-xs"><strong> Name </strong></td>
+					<td class="hidden-xs"><strong> Surname </strong></td>
+					<td><strong> Mark obtained </strong></td>
+				</tr>
+			</thead>
+			<tbody>
 			{% for per in studentMark %}
 			<tr>
 				<td> {{per.0}} </td>
-				<td> {{per.1}} </td>
-				<td> {{per.2}} </td>
+				<td class="hidden-xs"> {{per.1}} </td>
+				<td class="hidden-xs"> {{per.2}} </td>
 				{% if per.3 < 0 %}
 				<td class="col-md-3">
 					<form method="post" action="update-marks" class="form-inline" role="form"  data-parsley-validate>
 						{% csrf_token %}
 						<input type="number" class="form-control" placeholder="Mark awarded"  name="mark"
-						required data-parsley-min="0" data-parsley-max={{ fullmark }}>
+						required data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button type="submit" class="btn btn-success" >Submit  <span class="glyphicon glyphicon-ok"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
 						<input hidden="hidden" name="module" value={{ module }}>
 						<input hidden="hidden" name="session" value={{ session }}>
+						<input hidden="hidden" name="reason" value="no comment">
 
 					</form>
 				</td>
@@ -166,7 +185,7 @@
 						{% csrf_token %}
 						<input id={{ per.0 }} disabled="disabled" type="number" class="form-control visibleInput"
 						       name="mark" placeholder="Mark awarded" value={{ per.3 }}
-						       required data-parsley-min="0" data-parsley-max={{ fullmark }}>
+						       required data-parsley-min="0" data-parsley-max={{ fullmark }} required>
 						<button onclick="makeEditable(this);" type="button" class="btn btn-warning" id={{ per.0 }} >Edit  <span class="glyphicon glyphicon-edit"></span></button>
 						<input hidden="hidden" name="assess_id" value={{ assess_id }}>
 						<input hidden="hidden" name="uid" value={{ per.0 }}>
@@ -198,7 +217,8 @@
 					function makeEditable(curr) {
 						
 						//Make input editable
-						$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						//$(curr).parent().children('input.visibleInput').attr('disabled', false);
+						//$(curr).parent().children('input').get(0).prop('disabled', false);
 						
 						//Change button color
 						$(curr).parent().children('button').attr('class', 'btn btn-success');
@@ -215,9 +235,22 @@
 							//Add method and action to form
 							$(curr).parent().attr('method', 'post');
 							$(curr).parent().attr('action', 'update-marks');
+							$(curr).parent().children('input').prop('disabled', false);
+							//$(curr).parent().children('input').get(0).prop('disabled', false);
 						}
 						else {
 							//Finaly submit
+							//$(curr).parent().children('button').attr('type', 'submit');
+							//$(this).parent().submit();
+							$('#re-submit-mark-modal').modal('show');
+							//Add input to html for reason and pass it in post request
+							//$(curr).parent().innerHTML += '<input type="text" name="reason" data-parsley-length="[20, 150]" required >';
+							$('<input type="text" name="reason" class="form-control" placeholder="Your reason" data-parsley-length="[20, 150]" required >').appendTo($(curr).parent());
+							
+							//Remove the call to this function to prevent recursive calls
+							$(curr).parent().children('button').removeAttr('onclick');
+							
+							//Make button type submit
 							$(curr).parent().children('button').attr('type', 'submit');
 						}
 						
@@ -227,7 +260,48 @@
 						
 					}
 					
+					
+					//Searchable table
+					$(function () {
+						$( '#table' ).searchable({
+						    striped: true,
+						    oddRow: { 'background-color': '#f5f5f5' },
+						    evenRow: { 'background-color': '#fff' },
+						    searchType: 'fuzzy'
+						});
+						
+						$( '#searchable-container' ).searchable({
+						    searchField: '#container-search',
+						    selector: '.row',
+						    childSelector: '.col-xs-4',
+						    show: function( elem ) {
+							elem.slideDown(100);
+						    },
+						    hide: function( elem ) {
+							elem.slideUp( 100 );
+						    }
+						})
+					    });
+					
 			       </script>
+				
+				<!--Modal for error control-->
+				<div id="re-submit-mark-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-sm">
+				  <div class="modal-content">
+					 <div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">Re-submiting marks</h4>
+					      </div>
+					 <div class="modal-body">
+						You are about to over-write a student mark. Give a reason for re-submitting the mark.
+					</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				  </div>
+				</div>
+			      </div><!-- End Modal for error control-->
 				
 				<!-- Confirm modify mark modal -->
 
@@ -259,9 +333,10 @@
 				{% endif %}
 			</tr>
 			{% endfor %}
+			</tbody>
 		</table>
+		</div>
 	</div>
-	<div class="col-md-2"></div>
 </div>
 
 {% endblock %}

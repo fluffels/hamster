@@ -28,6 +28,7 @@ def login(request,jsonObj):
 			"sn": usr.get('sn'), 
 			"tutorFor": usr.get('tutorFor'), 
 			"studentOf": usr.get('studentOf'),
+			"admin":usr.get('admin'),
 			"initials": usr.get('initials'),
 			"Users": result,
 			"Modules":modules
@@ -91,40 +92,40 @@ def getStudentModules(request):
 	else:
 		raise Http404()
 		
-def updateMarks(request):
-	data = [
-	{
-		'type':-1,
-		'message':'Request failed',
-		'success':'false'
-	}]
-	if request.method == 'POST':
-		try:
-			json_data =json.loads(request.body)
-			student = json_data['uid']
-			course = json_data['courseCode']
-			leafAssessmentID = json_data['leafAssessmentID']
-			mark = json_data['mark']
-			markAlloc = api.getMarkAllocationFromID(leafAssessmentID)
-			api.updateMarkAllocation(request, markAlloc, mark)
-			
-			data = [
-			{
-				'type':1,
-				'message':'Mark saved',
-				'success':'true'
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			data = [
-			{
-				'type':-1,
-				'message':'Failed to save mark',
-				'success':'false'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return HttpResponse(json.dumps(data))
+#def updateMarks(request):
+#	data = [
+#	{
+#		'type':-1,
+#		'message':'Request failed',
+#		'success':'false'
+#	}]
+#	if request.method == 'POST':
+#		try:
+#			json_data =json.loads(request.body)
+#			student = json_data['uid']
+#			course = json_data['courseCode']
+#			leafAssessmentID = json_data['leafAssessmentID']
+#			mark = json_data['mark']
+#			markAlloc = api.getMarkAllocationFromID(leafAssessmentID)
+#			api.updateMarkAllocation(request, markAlloc, mark)
+#			
+#			data = [
+#			{
+#				'type':1,
+#				'message':'Mark saved',
+#				'success':'true'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			data = [
+#			{
+#				'type':-1,
+#				'message':'Failed to save mark',
+#				'success':'false'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return HttpResponse(json.dumps(data))
 		
 def saveMarks(request):
 	data = [
@@ -184,63 +185,63 @@ def getLeafAssessmentMarkOfAssessment(request):
 		}]
 		return HttpResponse(json.dumps(data))
 		
-def getStudentsForSession(request):
-	if request.method == 'POST':
-		try:
-			json_data = json.loads(request.body)
-			sessionID = json_data['sessionID']
-			session = api.getSessionsFromID(sessionID)
-			st = api.getStudentsForASession(session)
-			person = api.getPersonObjectListFromArrayList(st)
-			name = api.getAllNamesOf(person)
-			surname = api.getAllSurnameOf(person)
-			
-			data = [{
-				'type':1,
-				'message': 'Retrieved student details',
-				'uid':st,
-				'name':name,
-				'surname':surname,
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			data = [{
-				'type':-1,
-				'message': 'Failed to get student'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
+#def getStudentsForSession(request):
+#	if request.method == 'POST':
+#		try:
+#			json_data = json.loads(request.body)
+#			sessionID = json_data['sessionID']
+#			session = api.getSessionsFromID(sessionID)
+#			st = api.getStudentsForASession(session)
+#			person = api.getPersonObjectListFromArrayList(st)
+#			name = api.getAllNamesOf(person)
+#			surname = api.getAllSurnameOf(person)
+#			
+#			data = [{
+#				'type':1,
+#				'message': 'Retrieved student details',
+#				'uid':st,
+#				'name':name,
+#				'surname':surname,
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			data = [{
+#				'type':-1,
+#				'message': 'Failed to get student'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
 
-def getOpenSessionsForMarker(request):
-	if request.method == 'POST':
-		try:
-			json_data = json.loads(request.body)
-			assessmentID = json_data['assessmentID']
-			marker = request.session['user']
-			openSessions = api.getOpenSessionsForMarker(assessmentID,marker['uid'])
-			
-			final = []
-			
-			for x in openSessions:
-				list = [] #contains the sessionID and the session name
-				list.append(getSessionIdFromObject(x))
-				list.append(getSessionNameFromObject(x))
-				final.append(list) #an array of all the session id's n manes
-			data = [{
-				'type':1,
-				'message' : 'sessions retrieved',
-				'sessions' :final,
-			}]
-			return HttpResponse(json.dumps(data))
-		except Exception, e:
-			return Http404()
-	else:
-		data = [{
-				'type':-1,
-				'message':'request failed'
-			}]
-		return HttpResponse(json.dumps(data))
+#def getOpenSessionsForMarker(request):
+#	if request.method == 'POST':
+#		try:
+#			json_data = json.loads(request.body)
+#			assessmentID = json_data['assessmentID']
+#			marker = request.session['user']
+#			openSessions = api.getOpenSessionsForMarker(assessmentID,marker['uid'])
+#			
+#			final = []
+#			
+#			for x in openSessions:
+#				list = [] #contains the sessionID and the session name
+#				list.append(getSessionIdFromObject(x))
+#				list.append(getSessionNameFromObject(x))
+#				final.append(list) #an array of all the session id's n manes
+#			data = [{
+#				'type':1,
+#				'message' : 'sessions retrieved',
+#				'sessions' :final,
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		except Exception, e:
+#			return Http404()
+#	else:
+#		data = [{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#		return HttpResponse(json.dumps(data))
 
 def getAllMarkerOfModule(request):
 	if request.method == 'POST':
@@ -372,68 +373,68 @@ def closeSession(request):
 	else:
 		return Htpp404()
 		
-def removeMarkerFromModule(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		marker = json_data['uid']
-		mod_code = json_data['mod_code']
-		bool = api.removeMarkerFromModule(request,mod_code,marker)
-		if bool:
-			data =[{
-				'type':1,
-				'message': 'marker removed'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data =[{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
-
-def setTAforModule(request):
-	if request.method =='POST':
-		json_data = json.loads(request.body)
-		mod_code= json_data['mod_code']
-		uid = json_data['uid']
-		ta = api.setTeachingAssistantForModule(request,uid,mod_code)
-		if ta:
-			data =[{
-				'type':1,
-				'message':'ta inserted'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data =[{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
-		
-def setTutorForModule(request):
-	if request.method == 'POST':
-		json_data = json.loads(request.body)
-		mod = json_data['mode_code']
-		uid = json_data['uid']
-		ta = api.setTutorForModule(request,uid,mod)
-		if ta:
-			data = [{
-				'type':1,
-				'message':'tutor inserted'
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':-1,
-				'message':'request failed'
-			}]
-			return HttpResponse(json.dumps(data))
-	else:
-		return Http404()
+#def removeMarkerFromModule(request):
+#	if request.method == 'POST':
+#		json_data = json.loads(request.body)
+#		marker = json_data['uid']
+#		mod_code = json_data['mod_code']
+#		bool = api.removeMarkerFromModule(request,mod_code,marker)
+#		if bool:
+#			data =[{
+#				'type':1,
+#				'message': 'marker removed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data =[{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
+#
+#def setTAforModule(request):
+#	if request.method =='POST':
+#		json_data = json.loads(request.body)
+#		mod_code= json_data['mod_code']
+#		uid = json_data['uid']
+#		ta = api.setTeachingAssistantForModule(request,uid,mod_code)
+#		if ta:
+#			data =[{
+#				'type':1,
+#				'message':'ta inserted'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data =[{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
+#		
+#def setTutorForModule(request):
+#	if request.method == 'POST':
+#		json_data = json.loads(request.body)
+#		mod = json_data['mode_code']
+#		uid = json_data['uid']
+#		ta = api.setTutorForModule(request,uid,mod)
+#		if ta:
+#			data = [{
+#				'type':1,
+#				'message':'tutor inserted'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data = [{
+#				'type':-1,
+#				'message':'request failed'
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	else:
+#		return Http404()
 
 def personDetails(request):
 #	json_data = json.loads(jsonObject)
@@ -613,7 +614,7 @@ def getAllStudentForModule(request,jsonObj):
 	tut = api.getAllTutorsOfModule(mod)
 	ta = api.getAllTAsOfModule(mod)
 	name = api.getSessionName(session)
-	if student != []:
+	if student != [] or tut != [] or ta != []:
 		data = [{
 			'type':1,
 			'message':'students retrieved',
@@ -628,6 +629,7 @@ def getAllStudentForModule(request,jsonObj):
 		data = [{
 			'type':-1,
 			'message':'students not retrieved',
+			'name':name
 		}]
 		return HttpResponse(json.dumps(data))
 
@@ -639,7 +641,9 @@ def addUserToSession(request,jsonObj):
 	name = api.getSessionName(session)
 	data = []
 	print "lol sipho is shouting at her parents via anele";
-	if students:
+	print students
+	if students != []:
+		print "what is happeningo bathong student"
 		for n in students:
 			api.addStudentToSession(request,n,session)
 		
@@ -656,8 +660,12 @@ def addUserToSession(request,jsonObj):
 			'students': stud,
 			'marker':marker
 		}]
-	elif Markers:
+	elif Markers  != []:
+		print "what is happeningo bathong marker"
+		print Markers
 		for n in Markers:
+			print "fghdshgdsfhgsfdshgfgshfgdfjfdghffd"
+			print n
 			api.setMarkerForSession(request,n,session)
 		
 		student = api.getStudentsForASession(session)
@@ -672,6 +680,7 @@ def addUserToSession(request,jsonObj):
 			'marker':marker,
 		}]
 	else:
+		print "what is happeningo bathong no one"
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
 		marker = api.getMarkerForSession(session)
@@ -777,8 +786,9 @@ def updateMarkForStudent(request,jsonObj):
 	student = json_data['student']
 	mark = json_data['mark']
 	mod = json_data['mod']
+	comment = json_data['reason']
 	
-	markID = api.updateMarkAllocation(request, student, leaf_id, mark)
+	markID = api.updateMarkAllocation(request, student, leaf_id, mark,comment)
 	students = api.getAllStudentsOfModule(mod)
 	studentMark = api.getMarkForStudents(request,students,leaf_id)
 	fullmark = api.getFullMark(leaf_id)
@@ -856,13 +866,45 @@ def createLeafAssessment(request,jsonObject):
 			return HttpResponse(json.dumps(data))
 		else:
 			data = [{
-				'type':-1,
+				'type':1,
 				'assessment':array,
 			
 			}]
 			return HttpResponse(json.dumps(data))
 	else:
-		print "oh-no mamelo,sipho and cebo"
+		array = api.getAssessment(mod)
+		root = array[0]
+		first = array[1]
+		second = array[2]
+		third = array[3]
+		print "going into the array"
+		print root
+		print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print first
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print second
+		print "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		print third
+		print "ARRAY : " + str(array)
+		if array :
+			print "\n -------------- : "
+			data = [{
+				'type':-1,
+				'root':root,
+				'first':first,
+				'second':second,
+				'third':third
+			
+			}]
+			print "sending data back"
+			return HttpResponse(json.dumps(data))
+		#else:
+		#	data = [{
+		#		'type':-1,
+		#		'assessment':array,
+		#	
+		#	}]
+		#	return HttpResponse(json.dumps(data))
 	
 
 def deleteAssessment(request,jsonObj):
@@ -1005,33 +1047,33 @@ def setPublishedStatus(request, jsonObj):
 	        return HttpResponse(json.dumps(data))
 	
 #marker views
-def getAllChildrenOfAssessmentForMarker(request,jsonObj):
-	json_data = json.loads(jsonObj)
-	assess = json_data['assess_id']
-	mod = json_data['mod']
-	name = api.getAssessmentName(assess)
-	child = api.getChildrenAssessmentsForAssessmemnt(assess)
-	if child:
-		data = [{
-			'type':1,
-			'message':'Aggregate',
-			'child':child,
-			'name':name
-		}]
-		return HttpResponse(json.dumps(data))
-	else:
-		student = api.getAllStudentsOfModule(mod)
-		studentMark = api.getMarkForStudents(request,student,assess)
-		fullmark = api.getFullMark(assess)
-		print studentMark
-		data = [{
-			'type':1,
-			'message':'leaf',
-			'studentMark':studentMark,
-			'name':name,
-			'fullmark':fullmark
-		}]
-		return HttpResponse(json.dumps(data))
+#def getAllChildrenOfAssessmentForMarker(request,jsonObj):
+#	json_data = json.loads(jsonObj)
+#	assess = json_data['assess_id']
+#	mod = json_data['mod']
+#	name = api.getAssessmentName(assess)
+#	child = api.getChildrenAssessmentsForAssessmemnt(assess)
+#	if child:
+#		data = [{
+#			'type':1,
+#			'message':'Aggregate',
+#			'child':child,
+#			'name':name
+#		}]
+#		return HttpResponse(json.dumps(data))
+#	else:
+#		student = api.getAllStudentsOfModule(mod)
+#		studentMark = api.getMarkForStudents(request,student,assess)
+#		fullmark = api.getFullMark(assess)
+#		print studentMark
+#		data = [{
+#			'type':1,
+#			'message':'leaf',
+#			'studentMark':studentMark,
+#			'name':name,
+#			'fullmark':fullmark
+#		}]
+#		return HttpResponse(json.dumps(data))
 #marker views
 def viewSessionForMarker(request,jsonObj):
         json_data = json.loads(jsonObj)
@@ -1082,6 +1124,7 @@ def viewAssessmentForMarker(request,jsonObj):
 def viewStudentsForAssessment(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	sess_id = json_data['session']
+	print "this is the session"+str(sess_id)
 	assess_id = json_data['assess_id']
 	students = api.getStudentsForASession(sess_id)
 	fullmark = api.getFullMark(assess_id)
@@ -1107,13 +1150,17 @@ def viewStudentsForAssessment(request,jsonObj):
 def updateMarkForStudentMarker(request,jsonObj):
 	json_data = json.loads(jsonObj)
 	sess = json_data['session']
+	print "this is the session"+str(sess)
 	leaf_id = json_data['leaf_id']
 	student = json_data['student']
 	mark = json_data['mark']
 	mod = json_data['mod']
+	comment = json_data['reason']
 	
-	markID = api.updateMarkAllocation(request, student, leaf_id, mark)
+	markID = api.updateMarkAllocation(request, student, leaf_id, mark,comment)
 	students = api.getStudentsForASession(sess)
+	print "students ao................................."
+	print students
 	studentMark = api.getStudentMarks(request,students,leaf_id)
 	fullmark = api.getFullMark(leaf_id)
 	name = api.getAssessmentName(leaf_id)
@@ -1137,36 +1184,36 @@ def updateMarkForStudentMarker(request,jsonObj):
 		}]
 		return HttpResponse(json.dumps(data))
 #Made with publishing assessments in mind
-def getChildrenAssessmentsForAssessment(request,jsonObj):
-	try:
-		json_data = json.loads(jsonData)
-		mod_code = json_data[0]['mod_code']
-		ass=api.getAllAssessmentsForModule(mod_code)
-		assessment = []
-		if ass:
-			for x in ass:
-				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
-				assessment.append(list)
-			
-			data = [{
-				'type':1,
-				'message': 'assessment retrieved',
-				'assessments':assessment
-			}]
-			return HttpResponse(json.dumps(data))
-		else:
-			data = [{
-				'type':-1,
-				'message': 'No assessments',
-			}]
-			return HttpResponse(json.dumps(data))
-	except Exception, e:
-		data = [{
-			'type':-1,
-			'message': 'assessment could not be retrieved'
-		}]
-		print json.dumps(data)
-		return HttpResponse(json.dumps(data))
+#def getChildrenAssessmentsForAssessment(request,jsonObj):
+#	try:
+#		json_data = json.loads(jsonData)
+#		mod_code = json_data[0]['mod_code']
+#		ass=api.getAllAssessmentsForModule(mod_code)
+#		assessment = []
+#		if ass:
+#			for x in ass:
+#				list = api.getAssessmentDetails(x) #list consist of the assessment id and name
+#				assessment.append(list)
+#			
+#			data = [{
+#				'type':1,
+#				'message': 'assessment retrieved',
+#				'assessments':assessment
+#			}]
+#			return HttpResponse(json.dumps(data))
+#		else:
+#			data = [{
+#				'type':-1,
+#				'message': 'No assessments',
+#			}]
+#			return HttpResponse(json.dumps(data))
+#	except Exception, e:
+#		data = [{
+#			'type':-1,
+#			'message': 'assessment could not be retrieved'
+#		}]
+#		print json.dumps(data)
+#		return HttpResponse(json.dumps(data))
 
 '''
 
@@ -1237,39 +1284,57 @@ def viewStudentAssessment(request,jsonObj):
 			
 			return HttpResponse(json.dumps(data))
 
-def getAllChildrenOfAssessmentForStudent(request,jsonObj):
+def studentMarksFromCSV(request, jsonObj):
 	json_data = json.loads(jsonObj)
-	parent = json_data['assess_id']
-	mod = json_data['mod']
-	student = json_data['student']
-	person = api.getPersonDetails(student[0])
-	parent_name = api.getAssessmentName(parent)
-	#children = Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark, percentage}
-	children = api.getPublishedChildrenAssessmentsForAssessmentForStudent(parent, student[0])
+	assess_id = json_data['assess_id']
+	marklist = json_data['marklist']
+	marker = json_data['marker']
 	
-	if children:
-			
-		data = [{
-			'type':1,
-			'message':'Aggregate',
-			'children':children,
-			'parent_name':parent_name,
-			'person':person
-		}]
-		return HttpResponse(json.dumps(data))
+	info = api.studentMarksFromCSV(request, assess_id, marklist, marker)
+	
+	if info:
+		data = {
+			"type":1
+		}
 	else:
-		studentMark = api.getMarkForStudent(student[0],parent)
-		fullmark = api.getFullMark(parent)
-		person = api.getPersonDetails(student[0])
-		data = [{
-			'type':1,
-			'message':'Leaf',
-			'studentMark':studentMark,
-			'name':parent_name,
-			'fullmark':fullmark,
-			'person':person
-		}]
-		return HttpResponse(json.dumps(data))
+		data = {
+			"type":-1
+		}
+	return HttpResponse(json.dumps(data))
+
+#def getAllChildrenOfAssessmentForStudent(request,jsonObj):
+#	json_data = json.loads(jsonObj)
+#	parent = json_data['assess_id']
+#	mod = json_data['mod']
+#	student = json_data['student']
+#	person = api.getPersonDetails(student[0])
+#	parent_name = api.getAssessmentName(parent)
+#	#children = Array of arrays containing {Assess_id, Assess_name,published, mark_obtained, full_mark, percentage}
+#	children = api.getPublishedChildrenAssessmentsForAssessmentForStudent(parent, student[0])
+#	
+#	if children:
+#			
+#		data = [{
+#			'type':1,
+#			'message':'Aggregate',
+#			'children':children,
+#			'parent_name':parent_name,
+#			'person':person
+#		}]
+#		return HttpResponse(json.dumps(data))
+#	else:
+#		studentMark = api.getMarkForStudent(student[0],parent)
+#		fullmark = api.getFullMark(parent)
+#		person = api.getPersonDetails(student[0])
+#		data = [{
+#			'type':1,
+#			'message':'Leaf',
+#			'studentMark':studentMark,
+#			'name':parent_name,
+#			'fullmark':fullmark,
+#			'person':person
+#		}]
+#		return HttpResponse(json.dumps(data))
 
 '''
 def viewAssessmentOfAssessmentForStudent(request,jsonObj):
@@ -1501,7 +1566,7 @@ def removeUserfromSession(request,jsonObj):
 		}]
 	elif Markers:
 		for n in Markers:
-			api.removeMarkerFromSession(request,n,session)
+			api.removeMarkerFromSession(request,session,n)
 		
 		student = api.getStudentsForASession(session)
 		stud = api.getUserInformation(student)
@@ -1528,12 +1593,15 @@ def removeUserfromSession(request,jsonObj):
 		}]
 	return HttpResponse(json.dumps(data))
 
-def Auditlog(request):
-	assess = api.assessmentAuditLog();
-	sess = api.sessionAuditLog();
-	mark = api.markAllocationAuditLog();
+def Auditlog(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	start=json_data['start']
+	end=json_data['end']
+	assess = api.assessmentAuditLog(start,end);
+	sess = api.sessionAuditLog(start,end);
+	mark = api.markAllocationAuditLog(start,end);
 	print "Mark alloc : " + str(mark)
-	alloc = api.allocatePersonAuditLog();
+	alloc = api.allocatePersonAuditLog(start,end);
 	
 	data =[{
 		'type':1,
@@ -1548,16 +1616,114 @@ def Auditlog(request):
 '''
 ###################### Aggregation Views ####################################
 '''
-def assessmentCenter(request, jsonObj):
+
+def changeLeafAssessmentName(request,jsonObj):
+	json_data = json.loads(jsonObj)
+	assess_id = json_data["assess_id"]
+	assessName=json_data['name']
+	
+	info = api.changeAssessmentName(request,assess_id,assessName)
+	if info:
+		data=[{
+			'type':1,
+			'message':'Name successfuly changed'
+		}]
+		return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+			'type':-1,
+			'message':'Name not successfuly changed'
+		}]
+		return HttpResponse(json.dumps(data)) 
+	
+	
+	
+	
+def assessmentCenterLeaf(request, jsonObj):
 	
 	try:
 		json_data = json.loads(jsonObj)
 		assess_id = json_data['assess_id']
 		
+		assess_name = api.getAssessmentName(assess_id)
+		print "****************************************************************"
+		print "Assess_name: " + str(assess_name)
+		print "****************************************************************"
+		#STATISTICS
+		pass_fail_percentage = api.getPercentageOfPassedAndFailedStudentsForAssessment(assess_id)
+		print "*********************************************************"
+		print "pass_fail_percentage: " + str(pass_fail_percentage)
+		print "*********************************************************\n"
+		
+		students = api.getStudentListForStats(assess_id)
+		print "*********************************************************"
+		print "Student List obtained: " 
+		print "*********************************************************\n"
+		stats = api.getStatisticsForAssessment(assess_id)
+		print "*********************************************************"
+		print "Stats obtained: " 
+		print "*********************************************************\n"
+		average = stats[0]
+		median = stats[1]
+		mode = stats[2]
+		stddev = stats[3]
+		frequency = stats[4]
+	
+		if stats is not None:
+			data = {
+				'type':1,
+				'assessmentName':assess_name,
+				'frequency':frequency,
+				'average':average,
+				'stddev':stddev,
+				'median':median,
+				'mode':mode,
+				'pass_fail_percentage':pass_fail_percentage,
+				'students':students
+			}
+			return HttpResponse(json.dumps(data))
+		else:
+			print "ERROR: Something went wrong - assessmentCenter--- Leaf"
+			data = {
+				'type':-1,
+				'assessmentName':assess_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+			return HttpResponse(json.dumps(data))
+	except Exception as e:
+		print "+====================="
+		print "SOOMETHING WENT WRONG-- Leaf"
+		print "+====================="
+		data = {
+				'type':-1,
+				'assessmentName':assess_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+		return HttpResponse(json.dumps(data))
+		
+
+def assessmentCenter(request, jsonObj):
+	
+	try:
+		json_data = json.loads(jsonObj)
+		assess_id = json_data['assess_id']
+		assess_name = api.getAssessmentName(assess_id)
+		
 		#AGGREGATION
 		children = api.getAggregationInfo(assess_id)
 		numChildren = api.getNumChildren(assess_id)
-		assess_name = api.getAssessmentName(assess_id)
 		agg_name = api.getAggregatorName(assess_id)
 		
 		#STATISTICS
@@ -1594,10 +1760,41 @@ def assessmentCenter(request, jsonObj):
 			return HttpResponse(json.dumps(data))
 		else:
 			print "ERROR: Trying to aggregate a leaf!"
+			data = {
+				'type':-1,
+				'numChildren':0,
+				'children':[],
+				'assessmentName':assess_name,
+				'agg_name':agg_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+			return HttpResponse(json.dumps(data))
+	
 	except Exception as e:
 		print "+====================="
 		print "SOOMETHING WENT WRONG"
 		print "+====================="
+		data = {
+				'type':-1,
+				'numChildren':0,
+				'children':[],
+				'assessmentName':assess_name,
+				'agg_name':agg_name,
+				'frequency':0,
+				'average':0,
+				'stddev':0,
+				'median':0,
+				'mode':0,
+				'pass_fail_percentage':0,
+				'students':[]
+			}
+		return HttpResponse(json.dumps(data))
 	
 def aggregateMarkForAssessment(request, jsonObj):
 	json_data = json.loads(jsonObj)
@@ -1608,7 +1805,7 @@ def aggregateMarkForAssessment(request, jsonObj):
 	numContributors = json_data['numContributors']
 	
 	infoset = api.setAggregationInfo(assess_id,agg_name, numContributors, child_id, child_weight )
-	
+	print "Success - SetAGG Info"
 	#AGGREGATION
 	children = api.getAggregationInfo(assess_id)
 	numChildren = api.getNumChildren(assess_id)
@@ -1648,7 +1845,22 @@ def aggregateMarkForAssessment(request, jsonObj):
 		}
 		return HttpResponse(json.dumps(data))
 	else:
-		print "ERROR: Trying to aggregate a leaf!"
+		data = {
+			'type':1,
+			'numChildren':numChildren,
+			'children':children,
+			'assessmentName':assess_name,
+			'agg_name':agg_name,
+			'frequency':frequency,
+			'average':average,
+			'stddev':stddev,
+			'median':median,
+			'mode':mode,
+			'pass_fail_percentage':pass_fail_percentage,
+			'students':students
+		}
+		return HttpResponse(json.dumps(data))
+		#print "ERROR: Trying to aggregate a leaf!"
 
 
 '''
@@ -1887,3 +2099,31 @@ def removeTutorFromModule(request,jsonObj):
 			'Modules':modules
 		}]
 		return HttpResponse(json.dumps(data))
+
+def addModule(request,jsonObj):
+	json_data=json.loads(jsonObj)
+	name = json_data['name']
+	code = json_data['code']
+	
+	info = api.addModule(name,code)
+	if info:
+	        data=[{
+	              'type': 1,
+	              'message':'module added'
+	        }]
+	        return HttpResponse(json.dumps(data))
+	else:
+		data=[{
+		       'type': 1,
+		       'message':'module added'
+		}]
+		return HttpResponse(json.dumps(data))
+
+def getAdminDetails(request):
+	result = api.getAllPersonInDatabase()
+	modules = api.getAllModules()
+	data = [{
+		'Users':result,
+		'modules':modules
+	}]
+	HttpResponse(json.dumps(data))

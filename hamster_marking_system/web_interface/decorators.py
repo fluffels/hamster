@@ -6,21 +6,19 @@ import json
     
 def isLecture(function):
     def wrapper(request,*args,**kwargs):
-        return function(request,*args,**kwargs)
-        mod = request.POST['module']
-        print "++++++++++++++++++++++========================"
-        mod =  request.POST['module']
-        print "++++++++++++++++++++++========================"
-        userModules = request.session['user']['lecturerOf']
-        done = False
-        for module in userModules:
-            if module == mod:
-                done = True
-        if done == True:
+        #mod = request.POST['module']
+        #print "++++++++++++++++++++++========================"
+        #print "++++++++++++++++++++++========================"
+        #userModules = request.session['user']['lecturerOf']
+        #done = False
+        #for module in userModules:
+        #    if module == mod:
+        #        done = True
+        #if done == True:
             return function(request,*args,**kwargs)
-        else:
-            del request.session['user']
-            return HttpResponseRedirect(reverse('home'))
+        #else:
+        #    del request.session['user']
+        #    return HttpResponseRedirect(reverse('home'))
     return wrapper
     
 
@@ -30,6 +28,8 @@ def isAuthenticated(function):
         try:
             if request.session['user']:
                 return function(request,*args,**kwargs)
+            else:
+                return HttpResponseRedirect(reverse('home'))
         except:
             return HttpResponseRedirect(reverse('home'))
     return wrapper

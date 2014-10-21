@@ -6,8 +6,9 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'web_interface.views.home', name='home'),
-    url(r'^ldap/$','ldap_interface.views.index', name='ldap_test'),
+    url(r'ldap/$','ldap_interface.views.index', name='ldap_test'),
     url(r'^courses$', 'web_interface.views.login', name='accepted'),
+    url(r'^re-courses$', 'web_interface.views.reCaptchaLogin', name='reCaptcha'),
     url(r'^courses/[A-Z]{3}[0-9]{3}$','web_interface.views.viewAssessment', name='view_assessments_COSXXX'),
     url(r'^logout$', 'web_interface.views.logout', name='logout'),
    # url(r'courses/([A-Z]{3}[0-9]{3})/assessments/view$','web_interface.views.getAllAssessmentOfModule', name='view_assessment'),
@@ -51,6 +52,7 @@ urlpatterns = patterns('',
     url(r'change-time$','web_interface.views.ChangeSessionTime', name='change-time'),
     url(r'remove-stud$','web_interface.views.removeUserfromSession', name='remove-stud'),
     url(r'audit_log$','web_interface.views.AuditLog', name='audit_log'),
+    url(r'audit_add_module$','web_interface.views.addModule', name='audit_add_module'),
     url(r'added-student','web_interface.views.addStudentToModule', name='added-student'),
     url(r'added-lecture','web_interface.views.addLectureToModule', name='added-lecture'),
     url(r'added-tutor','web_interface.views.addTutorToModule', name='added-tutor'),
@@ -58,11 +60,13 @@ urlpatterns = patterns('',
     url(r'lecture-removed','web_interface.views.removeLectureFromModule', name='added-lecture'),
     url(r'tutor-removed','web_interface.views.removeTutorFromModule', name='tutor-removed'),
     
-    url(r'importCSV$','reporting.views.import_csv', name='import_csv'),
+    url(r'importCSV$','web_interface.views.import_csv', name='import_csv'),
     # Assessment Centre
     url(r'aggregate$','web_interface.views.assessmentCenter', name='assessment_center'),
+    url(r'assessmentCenterLeaf$','web_interface.views.assessmentCenterLeaf', name='assessment_center_leaf'),
     
     url(r'update-name','web_interface.views.changeAssessmentName', name='update_assessment_name'),
+    url(r'update_name','web_interface.views.changeLeafAssessmentName', name='update_assessment_name'),
     
     url(r'^admin/', include(admin.site.urls)),
 )

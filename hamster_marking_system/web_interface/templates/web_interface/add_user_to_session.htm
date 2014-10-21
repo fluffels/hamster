@@ -5,6 +5,7 @@
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
 	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a onclick="goBack();">Back</a></li>
 	<li><a href="/logout">Logout</a></li>
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
@@ -68,20 +69,10 @@
 			{% endfor %}
 		</ul>
 	</li>
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>
 {%endblock%}
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
-	<ol class="breadcrumb">
-		<li><a href="#">Login</a></li>
-		<li ><a href="#">Home</a></li>
-		<li><a href="#">Assessments</a></li>
-		<li class="active"><a href="#">Sessions</a></li>
-	</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %} Add user to Session {% endblock %}
@@ -95,20 +86,27 @@
 	<div class="col-md-6"><!--Left of jumbotron showing students in module -->
 		
 		<h3><span class="label label-default">Select students to add</span></h3>
+		{% if students %}
 		<form id="add_student_to_session_form" role="form" method="post" action="update-info" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userS" id="multiselectStudentsForSession">
+				<select multiple class="form-control" name="userS" id="multiselectStudentsForSession" required>
 					{% for per in students %}
 						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
 					{% endfor %}
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}>
-				<input type="hidden" name="userM" value=""/>
-				<input type="hidden" name="module" value={{ module }}/>
+				<input type="hidden" name="userM" value="">
+				<input type="hidden" name="module" value={{ module }}>
 			</div>
 			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>
 				<span class="glyphicon glyphicon-plus"></span> Add Student(s)</button>
-		</form>			
+		</form>
+		{%else%}
+			<div class="alert alert-info" role="alert">
+				<strong>There are currently no students for this module<strong>
+			</div>
+			
+		{%endif%}
 	</div>
 	
 	<div class="col-md-6"><!-- Right of jumbotron showing markers for module -->
@@ -117,19 +115,19 @@
 		{%if tutor%}
 		<form id="add_marker_to_session_form" role="form" method="post" action="update-info" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession">
+				<select multiple class="form-control" name="userM" id="multiselectMarkerForSession" required>
 					{%for per in tutor%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 					{%for per in teachingA%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}>
-				<input type="hidden" name="userS" value=""/>
-				<input type="hidden" name="module" value={{ module }}/>
+				<input type="hidden" name="userS" value="None">
+				<input type="hidden" name="module" value={{ module }}>
 			</div>
 			<button type="submit" name="module" class="btn btn-success btn-block" value={{ module }}>
 			<span class="glyphicon glyphicon-plus"></span> Add Marker(s)</button>

@@ -76,6 +76,9 @@
 <!--###########################  End Courses dropdown ############################-->
 
 
+<!--###########################  jumbotron part ############################-->
+
+
 {% block jumbotron_header %}
 	
 	{% ifequal assessment '' %}
@@ -95,41 +98,23 @@
 <!-- Audit table -->
 <div class="tabbable">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#pane1" data-toggle="tab">Aggregation</a></li>
-    <li><a href="#pane2" data-toggle="tab">Statistics</a></li>
+    <li class="active"><a href="#pane2" data-toggle="tab">Statistics</a></li>
     <li><a href="#pane3" data-toggle="tab">Graph stats</a></li>
     <li><a href="#pane4" data-toggle="tab">More Options</a></li>
   </ul>
   <div class="tab-content">
-{% if aggregateChanged == None %}
+{% if AssessName == None %}
 	<!-- Do nothing no alert is required -->
 {% else %}
-{% if aggregateChanged == -1 %}
-	<div class="alert alert-danger alert-dismissible" role="alert">
-		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
-		</span><span class="sr-only">Close</span></button>
-		<strong>Warning!</strong> Aggregator could not be changed, please try again.
-	</div>
-{% elif aggregateChanged == 1 %}
-	<div class="alert alert-success alert-dismissible" role="alert">
-		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
-		</span><span class="sr-only">Close</span></button>
-		<strong>Success!</strong> Aggregator was successfully changed.
-	</div>
-
-{% endif %}
+{% if AssessName == -1 %}
 		
-{% endif %}
-{% if NameChanged == None %}
-	<!-- Do nothing no alert is required -->
-{% else %}
-{% if NameChanged == -1 %}
 	<div class="alert alert-danger alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
 		<strong>Warning!</strong> Assessment name could not be changed, please try again.
 	</div>
-{% elif NameChanged == 1 %}
+{% elif AssessName == 1 %}
+	
 	<div class="alert alert-success alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
 		</span><span class="sr-only">Close</span></button>
@@ -139,154 +124,7 @@
 {% endif %}
 		
 {% endif %}
-    <div id="pane1" class="tab-pane active">
-      <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
-		
-		<!--Aggregation panel-->
-		<div class="panel panel-primary">
-		  <div class="panel-heading">
-			<h3 class="panel-title">Change Aggregator [{{ agg_name }}]</h3>
-		  </div>
-		  <div class="panel-body">
-		<!--Aggregator selection tabs-->
-		<div class="tabbable">
-		<ul class="nav nav-tabs">
-		  <li class="active"><a href="#simple_sum" data-toggle="tab">Simple Sum</a></li>
-		  <li><a href="#best_of" data-toggle="tab">Best Of</a></li>
-		  <li><a href="#weighted_sum" data-toggle="tab">Weighted Sum</a></li>
-		</ul>
-		<div class="tab-content">
-		  <div id="simple_sum" class="tab-pane active">
-		    <h4>No information required. Click Submit button to select.</h4>
-		    <!-- simplesum form -->
-			<form action="aggregateMarkForAssessment" method="post" role="form"> {% csrf_token %}
-				<input type="hidden" value="SimpleSum" name="agg_name">
-				<input type="hidden" value="0" name="numC">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value="0" name="child_weight" >
-				<input type="hidden" value="0" name="child_id"  >
-				<div class="clearfix">
-					<button type="submit" name="submit" class="btn btn-success pull-right">Submit</button>
-				</div>
-			</form><!-- ./simplesum form -->
-		  </div>
-		  <div id="best_of" class="tab-pane">
-		  <h4>Give number of assessments to be used as the best of.</h4>
-		    <h5>Max Contributors: <span class="label label-default">{{ numChildren }}</span></h5>
-			<!-- bestof form -->
-			<form action="aggregateMarkForAssessment" method="post" class="form-inline" role="form" data-parsley-validate> {% csrf_token %}
-			  <div class="form-group">
-				<label class="col-sm-6 control-label" for="bestOfSelectedNumber"># of Contributors</label>
-				<div class="col-sm-4">
-					<input type="number" class="form-control" id="numC"
-					       name="numC" placeholder="Number of contributors"
-					       required data-parsley-min="1" data-parsley-max={{ numChildren }}>
-				</div>
-				<input type="hidden" value="BestOf" name="agg_name">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value="0" name="child_weight" >
-				<input type="hidden" value="0" name="child_id"  >
-			  </div>
-			  <div class="clearfix">
-				<button class="btn btn-success pull-right" type="submit">Submit</button>
-			  </div>
-			</form><!-- ./bestof form -->
-		  </div>
-		  <div id="weighted_sum" class="tab-pane">
-		    <h4>Assign weights to each assessment</h4>
-		    <div class="col-md-4"></div>
-		    <div class="alert alert-warning col-md-4" role="alert">
-			Weights are in percentages. Example: 60
-		    </div>
-		    <div class="col-md-4"></div>
-		    
-		    <div class="clearfix"></div>
-		    
-			<!-- weightedsum form -->
-			<div class="col-md-2"></div>
-			<div class="col-md-8">
-			<form class="form-horizontal" action="aggregateMarkForAssessment" method="post" role="form"
-			      id="weights_form" data-parsley-validate onsubmit="return checkSumOfForm(this);"> {% csrf_token %}
-				<input type="hidden" value="WeightedSum" name="agg_name">
-				<input type="hidden" value="0" name="numC">
-				<input type="hidden" value={{module}} name="module">
-				<input type="hidden" value={{assess_id}} name="assess_id">
-			{% for child in children %}
-			  <div class="form-group weights_div">
-				<label class="col-md-4 control-label" for="weightedSumAssessment">{{ child.1 }}[{{child.3}}]</label>
-				<div class="col-md-4">
-					<input id="child_weights_id" class="form-control" type="number" name="child_weight"
-					       placeholder="Weight of {{ child.1 }}"
-					       required data-parsley-min="0" data-parsley-max="100">
-					<input type="text" name="child_id" hidden="hidden" value={{child.0}}>
-				</div>
-			  </div>
-			{% endfor %}
-			</div>
-			<div class="clearfix">
-				<button id="submit_weights" class="btn btn-success pull-right" type="submit">Submit</button>
-			</div>
-			
-			<!--Writing parsley validator to check if sum of distributed weights sums to 100-->
-			<script type="text/javascript">
-				
-				function checkSumOfForm(this_attr) {
-					//alert($(this_attr).parent().parent().children('div.weights_div').get(0).$('child_weight').val());
-					
-					var str = '';
-					var add_str = '';
-					var tot = 0;
-					var elem = document.getElementById('weights_form').elements;
-					for(var i = 0; i < elem.length; i++)
-					{
-					    var name = elem[i].name;
-					    
-					    if (name == "child_weight") {
-						tot += parseInt(elem[i].value);
-					    }
-					}
-					
-					//Check if sum is less or equal to 100
-					if (parseInt(tot,10) === parseInt(100,10)) {
-						//Right sum, continue posting
-						return true;
-					}
-					else {
-						$('#bs-sum_error-modal-sm').modal('show');
-						return false;
-					}
-				}
-
-			</script>
-			<!--Modal for error control-->
-			<div id="bs-sum_error-modal-sm" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-sm">
-			  <div class="modal-content">
-				 <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title" id="myModalLabel">Error in weights</h4>
-				      </div>
-				 <div class="modal-body">
-					Sum of inputs must equal 100.
-				</div>
-				<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			  </div>
-			</div>
-		      </div>
-			
-			</form><!-- ./weightedsum form -->
-			
-		  </div>
-		</div><!-- /.tab-content -->
-	      </div><!-- /.tabbable -->
-		  </div><!-- ./panel-body-->
-		</div><!-- ./panel-->
-    </div>
-    <div id="pane2" class="tab-pane">
+    <div id="pane2" class="tab-pane active">
     <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
     
      <!--Add statistics-->
@@ -367,7 +205,7 @@
 		<div class="panel-heading">Statistic Charts</div>
 		<div class="panel-body">
 		<!--Top Left chart-->
-		<div class="col-sm-6 col-xs-12">
+		<div class="col-sm-6">
 		  <div class="panel panel-info">
 		      <div class="panel-heading">Frequency of Student Marks</div>
 		      <div class="panel-body">
@@ -379,7 +217,7 @@
 		</div><!--./Top Left chart-->
 	  
 		<!--Top Right chart-->
-		<div class="col-sm-6 col-xs-12">
+		<div class="col-sm-6">
 		  <div class="panel panel-info">
 			<div class="panel-heading">Passed/Failed Students</div>
 			<div class="panel-body">
@@ -389,8 +227,9 @@
 			</div>
 		      </div>
 		</div><!--./Top Right chart-->
-	</div> <!-- end panel body -->
-      </div> <!-- end panel -->
+	</div>
+      </div>
+	  
 	
       
       <script>
@@ -408,6 +247,7 @@
 			       {{ frequency.3 }}, {{ frequency.4 }}]
 		    }
 		]
+
 	}
 	var doughnutData = [
 			{
@@ -436,12 +276,15 @@
 	
       </script>
       
-    </div> <!-- end tab-pane -->
+    </div>
     <div id="pane4" class="tab-pane">
       <h4> <span class="label label-info">{{ assessmentName }}</span></h4><br>
       
       <!--More settings-->
       <div class="btn-group">
+	<!--Import Marks button-->
+	<button type="button" class="btn btn-primary btn-md " data-target="#import_marks" data-toggle="modal"
+		  >Import Marks (CSV)  <span class="glyphicon glyphicon-import"></span></button>
 	<!--Change Assessment Name Button-->
 	<button type="button" class="btn btn-primary btn-md " data-target="#update_ass_name" data-toggle="modal"
 		  >Change Assessment Name  <span class="fa fa-floppy-o"></span></button>
@@ -467,13 +310,10 @@
 					<h4><strong>Import CSV With Marks</strong></h4>
 				</div>
 				<div class="modal-body">
-					<h3><span class="label label-default">Select Assessment</span></h3>
+					<h3><span class="label label-default">Selected Assessment</span></h3>
 					<div class="form-group">
-						<select class="form-control" name="ass_import_marks" id="multiselectSelectAssessmentForMarksImport">
-							{% for child in children %}
-								<option value={{ child.0 }}>{{ child.1 }}</option>
-							{%endfor%}
-						</select>
+						<input type="text" disabled="disabled" value={{ assessmentName }}>
+						<input type="hidden" value={{ assess_id }} name="assess_id">
 					</div>
 					<div class="form-group">
 						<input id="CSVuploadFile" placeholder="Choose File" disabled="disabled">
@@ -505,7 +345,7 @@
 									}
 							
 									if (!blnValid) {
-									    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+									    alert("Sorry, " + sFileName + " is has invalid file type, allowed extensions are: " + _validFileExtensions.join(", "));
 									    return false;
 									}
 								    }
@@ -538,7 +378,7 @@
 <div class="modal fade" id="update_ass_name" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form class="form-horizontal" action="update-name" method="post" role="form" data-parsley-validate>
+			<form class="form-horizontal" action="update_name" method="post" role="form" data-parsley-validate>
 				{% csrf_token %}
 				<div class="modal-header">
 					<h4><strong>Update Assessment Name for</strong></h4>
@@ -572,7 +412,7 @@
 			</form>
 		</div>
 	</div>
-</div><!--End of Modal for ContactUs-->
+</div><!--./Change Assessment Name Modal-->
 {% endblock %}
 <!--###########################  End of jumbotron part ############################-->
 

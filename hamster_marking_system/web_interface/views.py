@@ -8,16 +8,166 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import loader, RequestContext
 from .decorators import isAuthenticated, isLecture, isMarker, isStudent, isPartOfmodule
 from django.contrib.auth.models import User
+from recaptcha.client import captcha
+from reporting import views as repo
+
+
+#default_user = []
+#user_roles = []
+#user_lect = []
+#user_stud = []
+#user_tut = []
+#user_ta = []
 
 def home(request):
     return render_to_response("web_interface/login.htm",
                               locals(),
                               context_instance = RequestContext(request))
 
+def reCaptchaLogin(request):      
+    # talk to the reCAPTCHA service  
+    response = captcha.submit(  
+        request.POST.get('recaptcha_challenge_field'),  
+        request.POST.get('recaptcha_response_field'),  
+        '6Leu-PsSAAAAAFcLbrwJocmUAJDl4Vt62-CA1rnN',  
+        request.META['REMOTE_ADDR'],)
+    
+        
+    user_ip = request.POST['user_ip']
+    login_count = request.POST['login_count']
+    if(login_count == ''):
+        login_count = 0
+    current_ip = request.META['REMOTE_ADDR']
+    if(user_ip == ''):
+        user_ip = current_ip
+
+    if (user_ip == current_ip):
+        login_count = int(login_count) + 1
+    
+    print "LOGIN_COUNT : " + str(login_count)
+    print "IP ADDRESS : " + str(user_ip)
+    print "CURR IP ADDRES : " + str(current_ip)
+    # see if the user correctly entered CAPTCHA information  
+    # and handle it accordingly.  
+    if response.is_valid:
+        #User is human, so reset login count
+        try:
+            user = request.POST['username']
+            passw = request.POST['password']
+            data = {
+                    'username':user,
+                    'password':passw
+            }
+            user_info = views.login(request,json.dumps(data))
+            #user_info = urllib2.urlopen('/login',json.dumps(data))
+            user = json.loads(user_info.content)
+            user_type = ''
+           # global default_user
+            default_user =''
+            #global user_roles
+            user_roles = []
+
+            #global user_lect
+            user_lect = []
+           # global user_stud
+            user_stud = []
+            #global user_tut
+            user_tut = []
+            #global user_ta
+            user_ta = []
+            if user[0]['type'] == 1:
+                    if len(user[0]['lecturerOf']) != 0:
+                            user_type = 'LC'
+                            user_lect.append({user_type:user[0]['lecturerOf']})
+                            user_roles.append('Lecturer')
+                            
+                    if len(user[0]['studentOf']) != 0:
+                            user_type ='ST'
+                            user_stud.append({user_type:user[0]['studentOf']})
+                            user_roles.append('Student')
+                            
+                    if len(user[0]['tutorFor']) != 0:
+                            user_type = 'TT'
+                            user_tut.append({user_type:user[0]['tutorFor']})
+                            user_roles.append('Tutor')
+                            
+                    if len(user[0]['teachingAssistantOf']) != 0:
+                            user_type ='TA'
+                            user_ta.append({user_type:user[0]['teachingAssistantOf']})
+                            user_roles.append('Teaching ass')
+                            
+                    #choosing the default user based on the user type ie,lecturer
+                    if len(user[0]['lecturerOf']) != 0:
+                        default_user = 'LC'
+                    elif len(user[0]['studentOf']) != 0:
+                        default_user = 'ST'
+                    elif len(user[0]['tutorFor']) != 0:
+                        default_user = 'TT'
+                    else:
+                        default_user = 'TA'
+    
+                    Users = user[0]['Users']
+                    Modules = user[0]['Modules']
+                    
+                    username = request.session['user']['uid'][0]
+                    name = request.session['user']['cn'][0]
+                    surname = request.session['user']['sn'][0]
+                    try:
+                        print User.objects.all()
+                        user = User.objects.get(username=username,first_name=name,last_name=surname)
+                        print "User : " + str(user)
+                        if user:
+                            if user.is_superuser:
+                                return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'Person':Users,
+                                                                            'Modules':Modules,
+                                                                            'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
+                    except Exception, ex:
+                        print "Could not find user in User's"
+                        user = None
+                        print "User X: " + str(user)
+    
+                    return render_to_response("web_interface/success.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
+            else:
+                    return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
+        except Exception  as e:
+            raise Http404()  
+    else:  
+        captcha_response = 'YOU MUST BE A ROBOT'  
+        return render_to_response('web_interface/login.htm', {  
+                'type':-1,  
+                'captcha_response': captcha_response, 'user_ip':user_ip, 'login_count':login_count}
+                                ,context_instance = RequestContext(request))
+      
+
 def login(request):
-    try:
+    #try:
         user = request.POST['username']
         passw = request.POST['password']
+        user_ip = request.POST['user_ip']
+        login_count = request.POST['login_count']
+        if(login_count == ''):
+            login_count = 0
+        current_ip = request.META['REMOTE_ADDR']
+        if(user_ip == ''):
+            user_ip = current_ip
+
+        if (user_ip == current_ip):
+            login_count = int(login_count) + 1
+
+        print "LOGIN_COUNT : " + str(login_count)
+        print "IP ADDRESS : " + str(user_ip)
+        print "CURR IP ADDRES : " + str(current_ip)
+
         data = {
                 'username':user,
                 'password':passw
@@ -26,18 +176,18 @@ def login(request):
         #user_info = urllib2.urlopen('/login',json.dumps(data))
         user = json.loads(user_info.content)
         user_type = ''
-        global default_user
+        #global default_user
         default_user =''
-        global user_roles
+        #global user_roles
         user_roles = []
         
-        global user_lect
+       # global user_lect
         user_lect = []
-        global user_stud
+        #global user_stud
         user_stud = []
-        global user_tut
+        #global user_tut
         user_tut = []
-        global user_ta
+        #global user_ta
         user_ta = []
         if user[0]['type'] == 1:
                 if len(user[0]['lecturerOf']) != 0:
@@ -89,7 +239,7 @@ def login(request):
 		                                                       'user_ta':user_ta,
 		                                                       'Person':Users,
 		                                                       'Modules':Modules,
-		                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+		                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
 		except Exception, ex:
 		    print "Could not find user in User's"
 		    user = None
@@ -100,15 +250,54 @@ def login(request):
                                                                        'user_stud':user_stud,
                                                                        'user_tut':user_tut,
                                                                        'user_ta':user_ta,
-                                                                       'user_roles':user_roles},context_instance = RequestContext(request))
+                                                                       'user_roles':user_roles, 'user_ip':'0.0.0.0', 'login_count':0},context_instance = RequestContext(request))
         else:
-                 return render_to_response("web_interface/login.htm",{'type':-1},context_instance = RequestContext(request))
-    except Exception  as e:
-        raise Http404()
+                 return render_to_response("web_interface/login.htm",{'type':-1, 'user_ip':user_ip, 'login_count':login_count},context_instance = RequestContext(request))
+    #except Exception  as e:
+        #raise Http404()
 
 
 @isAuthenticated
 def backHome(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     return render_to_response("web_interface/success.htm",{'default_user':default_user,
                                                                        'user_lect':user_lect,
                                                                        'user_stud':user_stud,
@@ -118,6 +307,45 @@ def backHome(request):
 
 @isAuthenticated
 def use_as(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     role = request.POST['role']
     if role == 'Student':
         lect = 'LT'
@@ -171,6 +399,52 @@ def logout(request):
 @isAuthenticated
 @isPartOfmodule
 def getAllAssessmentOfModule(request,module):
+    
+        user_type = ''
+        # global default_user
+        default_user =''
+        #global user_roles
+        user_roles = []
+        #global user_lect
+        user_lect = []
+        # global user_stud
+        user_stud = []
+        #global user_tut
+        user_tut = []
+        #global user_ta
+        user_ta = []
+        user = request.session['user']
+    
+        if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+        if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+        if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+        if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+        if len(user['lecturerOf']) != 0:
+            default_user = 'LC'
+        elif len(user['studentOf']) != 0:
+            default_user = 'ST'
+        elif len(user['tutorFor']) != 0:
+            default_user = 'TT'
+        else:
+            default_user = 'TA'
+
         if request.POST.get('studB'):
             mod = request.POST['studB'];
             data ={
@@ -299,6 +573,45 @@ def getAllAssessmentOfModule(request,module):
 
 @isAuthenticated
 def personDetails(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     if request.method == 'POST':
         web = views.personDetails(request)
         results = json.loads(web.content)
@@ -331,6 +644,51 @@ def personDetails(request):
 @isLecture
 def getAllSessionsForAssessment(request):
     #try:
+        user_type = ''
+        # global default_user
+        default_user =''
+        #global user_roles
+        user_roles = []
+        #global user_lect
+        user_lect = []
+        # global user_stud
+        user_stud = []
+        #global user_tut
+        user_tut = []
+        #global user_ta
+        user_ta = []
+        user = request.session['user']
+    
+        if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+        if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+        if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+        if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+        if len(user['lecturerOf']) != 0:
+            default_user = 'LC'
+        elif len(user['studentOf']) != 0:
+            default_user = 'ST'
+        elif len(user['tutorFor']) != 0:
+            default_user = 'TT'
+        else:
+            default_user = 'TA'
+    
         assess = request.POST['assessment']
         data = {
             'assessmentID':assess
@@ -377,6 +735,51 @@ def getAllSessionsForAssessment(request):
 @isLecture
 def createSession(request):
     try:
+        user_type = ''
+        # global default_user
+        default_user =''
+        #global user_roles
+        user_roles = []
+        #global user_lect
+        user_lect = []
+        # global user_stud
+        user_stud = []
+        #global user_tut
+        user_tut = []
+        #global user_ta
+        user_ta = []
+        user = request.session['user']
+    
+        if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+        if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+        if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+        if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+        if len(user['lecturerOf']) != 0:
+            default_user = 'LC'
+        elif len(user['studentOf']) != 0:
+            default_user = 'ST'
+        elif len(user['tutorFor']) != 0:
+            default_user = 'TT'
+        else:
+            default_user = 'TA'
+    
         print "huh gane y"
         assess_id = request.POST['assess_id']
         open_time = request.POST['open_time']
@@ -403,7 +806,7 @@ def createSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
                                                                             'assessment_id':assess_id,
-                                                                            'moduleName':mod},
+                                                                            'moduleName':mod,'SessionCreated':1},
                                                                             context_instance = RequestContext(request))
     
         else:
@@ -417,7 +820,7 @@ def createSession(request):
                                                                             'user_ta':user_ta,
                                                                             'user_roles':user_roles,'sessions':sessions,'assessmentName':assess_name,
                                                                             'assessment_id':assess_id,
-                                                                            'moduleName':mod},
+                                                                            'moduleName':mod,'SessionCreated':-1},
                                                                             context_instance = RequestContext(request))
     except Exception as e:
        raise Http404()
@@ -425,6 +828,45 @@ def createSession(request):
 @isAuthenticated
 @isLecture
 def getAllStudentOfModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+
     mod = request.POST['module']
     session = request.POST['session']
 
@@ -453,6 +895,7 @@ def getAllStudentOfModule(request):
         students = []
         ta = []
         tut = []
+        name = res[0]['name']
         return render_to_response("web_interface/add_user_to_session.htm",{'default_user':default_user,
                                                                         'user_lect':user_lect,
                                                                         'user_stud':user_stud,
@@ -466,6 +909,46 @@ def getAllStudentOfModule(request):
 @isAuthenticated
 @isLecture
 def addStudentToSession(request):
+    
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['module']
     session_id = request.POST['session']
     users = request.POST.lists()
@@ -476,7 +959,7 @@ def addStudentToSession(request):
     print "users[5][1] = " + str(users[5][1])
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1 and str(users[0][1][0]) != "None")): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)
@@ -503,12 +986,64 @@ def addStudentToSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':name,'marker':marker},
+                                                                        'sessionName':name,'marker':marker,'studentAdded':1},
+                                                                        context_instance = RequestContext(request))
+    else:
+        name = res[0]['name']
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker,'studentAdded':-1},
                                                                         context_instance = RequestContext(request))
 
 @isAuthenticated
 @isLecture
 def getAllPersonOfSession(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['module']
     session_id = request.POST['session']
     Studentarray = []
@@ -547,6 +1082,46 @@ def getAllPersonOfSession(request):
 @isAuthenticated
 @isLecture
 def getLeafAssessmentPage(request):
+    
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assessment']
     mod = request.POST['module']
     
@@ -574,6 +1149,45 @@ def getLeafAssessmentPage(request):
 @isAuthenticated
 @isLecture
 def createLeafAssessment(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assessName = request.POST['name']
     mod = request.POST['module']
     fullmark = request.POST['fullmark']
@@ -599,7 +1213,7 @@ def createLeafAssessment(request):
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'root':root,'first':first,
-                                                                        'module':mod,'second':second,
+                                                                        'module':mod,'second':second,'AssessCreated':1,
                                                                         'third':third},context_instance = RequestContext(request))
     else:
         print "NONE"
@@ -609,22 +1223,64 @@ def createLeafAssessment(request):
                                                                         'user_stud':user_stud,
                                                                         'user_tut':user_tut,
                                                                         'user_ta':user_ta,
+                                                                        'AssessCreated':-1,
                                                                         'user_roles':user_roles,'root':root},context_instance = RequestContext(request))
 
 
 @isAuthenticated
 @isLecture
 def updateMarkForStudent(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
     student = request.POST['uid']
     mod = request.POST['module']
-    
+    comment = request.POST['reason']
+    print "i ma a lecture"
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
         'student':student,
-        'mod':mod
+        'mod':mod,
+        'reason':comment
     }
     
     result = views.updateMarkForStudent(request,json.dumps(data))
@@ -659,6 +1315,51 @@ def updateMarkForStudent(request):
 @isLecture
 def deleteAssessment(request):
     #try:
+        user_type = ''
+        # global default_user
+        default_user =''
+        #global user_roles
+        user_roles = []
+        #global user_lect
+        user_lect = []
+        # global user_stud
+        user_stud = []
+        #global user_tut
+        user_tut = []
+        #global user_ta
+        user_ta = []
+        user = request.session['user']
+    
+        if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+        if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+        if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+        if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+        if len(user['lecturerOf']) != 0:
+            default_user = 'LC'
+        elif len(user['studentOf']) != 0:
+            default_user = 'ST'
+        elif len(user['tutorFor']) != 0:
+            default_user = 'TT'
+        else:
+            default_user = 'TA'
+    
         assess_id = request.POST['assess_id']
         mod = request.POST['module']
         
@@ -688,7 +1389,7 @@ def deleteAssessment(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod,'assessment':'',
-                                                                                'second':second,'third':third},
+                                                                                'second':second,'third':third,"AssessDeleted":1},
                                                                                 context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -698,7 +1399,7 @@ def deleteAssessment(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,"AssessDeleted":-1,'root':root},
                                                                                 context_instance = RequestContext(request))
     #except Exception as e:
     #    raise Http404()
@@ -706,6 +1407,45 @@ def deleteAssessment(request):
 @isAuthenticated
 @isLecture
 def deleteSession(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     sess_id = request.POST['session']
     assess_id = request.POST['assessment']
     mod = request.POST['module']
@@ -795,6 +1535,45 @@ def deleteSession(request):
 @isAuthenticated
 @isLecture
 def changeAssessmentFullMark(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     mod = request.POST['module']
     mark = request.POST['fullmark']
@@ -824,13 +1603,194 @@ def changeAssessmentFullMark(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'studentMark':studentMark,
                                                                                 'module':mod,'assessmentName':name,
-                                                                                'assess_id':assess_id,'fullmark':fullmark},
+                                                                                'assess_id':assess_id,'fullmark':fullmark,'mark_update_response':1},
+                                                                                context_instance = RequestContext(request))
+    else:
+        data={
+                'assess_id':assess_id,
+                'mod':mod
+        }
+        children = views.getAllChildrenOfAssessment(request,json.dumps(data))
+        child = json.loads(children.content)
+        if child[0]['type'] == 1:
+            if child[0]['message'] == 'leaf':
+                studentMark = child[0]['studentMark']
+                name = child[0]['name']
+                fullmark = child[0]['fullmark']
+                return render_to_response("web_interface/view_leaf_assessments.htm",{'default_user':default_user,
+                                                                                'user_lect':user_lect,
+                                                                                'user_stud':user_stud,
+                                                                                'user_tut':user_tut,
+                                                                                'user_ta':user_ta,
+                                                                                'user_roles':user_roles,'studentMark':studentMark,
+                                                                                'module':mod,'assessmentName':name,
+                                                                                'assess_id':assess_id,'fullmark':fullmark,"mark_update_response":-1},
                                                                                 context_instance = RequestContext(request))
 
+def changeLeafAssessmentName(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    name = request.POST['assess_name']
+    
+    data ={
+        "assess_id":assess_id,
+        "name":name
+    }
+    
+    results = views.changeLeafAssessmentName(request,json.dumps(data))
+    res = json.loads(results.content)
+    if res[0]['type']:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
 
-@isAuthenticated
-@isLecture
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children,"AssessName":1 ,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+    else:
+        data ={
+        'assess_id':assess_id,
+        }
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module,"AssessName":-1, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'children':children, "AssessName":-1,'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+
+#@isAuthenticated
+#@isLecture
 def changeAssessmentName(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     module = request.POST['module']
     name = request.POST['assess_name']
@@ -872,10 +1832,96 @@ def changeAssessmentName(request):
 	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
 	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
+	else:
+	    numChildren = res['numChildren']
+	    children = res['children']
+	    assessmentName = res['assessmentName']
+	    agg_name = res['agg_name']
+	    average = res['average']
+	    median = res['median']
+	    mode = res['mode']
+	    frequency = res['frequency']
+	    stddev = res['stddev']
+	    studentlist = res['students']
+	    pass_fail_percentage = res['pass_fail_percentage']
+
+	    return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+	    	    	    	    	    	    	    	    	'user_lect':user_lect,
+	    	    	    	    	    	    	    	    	'user_stud':user_stud,
+	    	    	    	    	    	    	    	    	'user_tut':user_tut,
+	    	    	    	    	    	    	    	    	'user_ta':user_ta,
+	    	    	    	    	    	    	    	    	'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+	    	    	    	    	    	    	    	    	'average':average,'median':median,'mode':mode,'frequency':frequency,
+	    	    	    	    	    	    	    	    	'stddev':stddev,'studentlist':studentlist,
+	    	    	    	    	    	    	    	    	'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+	    	    	    	    	    	    	    	    	'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    else:
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
+
+        return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
+                                                                    'user_lect':user_lect,
+                                                                    'user_stud':user_stud,
+                                                                    'user_tut':user_tut,
+                                                                    'user_ta':user_ta,
+                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
+                                                                    'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                    'stddev':stddev,'studentlist':studentlist,
+                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                    'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
 
 @isAuthenticated
 @isLecture
 def setPublishedStatus(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
     mod_code = request.POST['module']
@@ -910,7 +1956,7 @@ def setPublishedStatus(request):
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
-                                                                                'module':mod_code,'assessment':'','second':second,
+                                                                                'module':mod_code,'assessment':'','second':second,"published":1,
                                                                                 'third':third},context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -920,7 +1966,7 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,"published":1,'root':root},
                                                                                 context_instance = RequestContext(request))
     else:
             data ={
@@ -942,7 +1988,7 @@ def setPublishedStatus(request):
                                                                                 'user_ta':user_ta,
                                                                                 'user_roles':user_roles,'root':root,'first':first,
                                                                                 'module':mod_code,'assessment':'',
-                                                                                'second':second,'third':third},
+                                                                                'second':second,'third':third,"published":-1},
                                                                                 context_instance = RequestContext(request))
             else:
                 print "NONE"
@@ -952,13 +1998,52 @@ def setPublishedStatus(request):
                                                                                 'user_stud':user_stud,
                                                                                 'user_tut':user_tut,
                                                                                 'user_ta':user_ta,
-                                                                                'user_roles':user_roles,'root':root},
+                                                                                'user_roles':user_roles,'root':root,"published":-1},
                                                                                 context_instance = RequestContext(request))
 
 
 @isAuthenticated
 @isLecture
 def setPublishedStatusInLeaf(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     status = request.POST['publish_state'] #whether assessment is published(1) or not(0)
     mod_code = request.POST['mod']
@@ -1008,9 +2093,48 @@ def setPublishedStatusInLeaf(request):
                                                                         'fullmark':fullmark,'type':-1},
                                                                         context_instance = RequestContext(request))
 
-#@isAuthenticated
-#@isPartOfmodule
+@isAuthenticated
+@isPartOfmodule
 def viewAssessment(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     module = ""
     if request.POST.get('studB'):
         module = request.POST['studB']
@@ -1137,6 +2261,45 @@ def viewAssessment(request):
 @isAuthenticated
 @isLecture
 def openOrCloseSession(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     sess_id = request.POST['sess_id']
     status = request.POST['status'] #whether to open or close it 0: closeSession 1:openSession
@@ -1210,7 +2373,7 @@ def openOrCloseSession(request):
                                                                             'sessions':sessions,
                                                                             'assessmentName':assessmentName,
                                                                             'moduleName':moduleName,
-                                                                            'assessment_id':assess_id,'type':0},
+                                                                            'assessment_id':assess_id,'type':-1},
                                                                             context_instance = RequestContext(request))
         else:
             list = []
@@ -1232,6 +2395,45 @@ def openOrCloseSession(request):
 #marker view
 @isAuthenticated
 def viewChildrenOfAssessments(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assessment']
     mod = request.POST['mod']
     
@@ -1298,6 +2500,45 @@ def viewSessionForMarker(request):
 
 @isAuthenticated
 def viewAssessmentForMarker(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['mod']
     assessment = request.POST['session']
     
@@ -1329,10 +2570,49 @@ def viewAssessmentForMarker(request):
 
 @isAuthenticated
 def viewStudentsForAssessment(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     sess= request.POST['session']
     assess = request.POST['assessment']
     mod = request.POST['mod']
-    
+    print "am fine"
     data = {
         'session':sess,
         'assess_id':assess
@@ -1366,18 +2646,60 @@ def viewStudentsForAssessment(request):
 @isAuthenticated
 @isMarker
 def updateMarkForStudentMarker(request):
+    
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     session = request.POST['session']
     leaf_id = request.POST['assess_id']
     mark = request.POST['mark']
     student = request.POST['uid']
     mod = request.POST['module']
-    
+    comment = request.POST['reason']
+    print "am a marker"
     data = {
         'leaf_id':leaf_id,
         'mark':mark,
         'student':student,
         'mod':mod,
-        'session':session
+        'session':session,
+        'reason':comment
     }
     
     result = views.updateMarkForStudentMarker(request,json.dumps(data))
@@ -1417,6 +2739,45 @@ def updateMarkForStudentMarker(request):
 @isAuthenticated
 @isStudent
 def viewAssessmentsForStudent(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['studB']
     uid = request.session['user']['uid'][0]
     
@@ -1455,6 +2816,45 @@ def viewAssessmentsForStudent(request):
 @isAuthenticated
 @isStudent
 def getAllChildrenOfAssessmentForStudent(request):
+        user_type = ''
+        default_user =''
+        user_roles = []
+        user_lect = []
+        user_stud = []
+        user_tut = []
+        user_ta = []
+        user = request.session['user']
+    
+        if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+        if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+        if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+        if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+        #choosing the default user based on the user type ie,lecturer
+        if len(user['lecturerOf']) != 0:
+            default_user = 'LC'
+        elif len(user['studentOf']) != 0:
+            default_user = 'ST'
+        elif len(user['tutorFor']) != 0:
+             default_user = 'TT'
+        else:
+            default_user = 'TA'
+    
         mod = request.POST['module']
         assessment = request.POST['assess_id']
         data ={
@@ -1496,6 +2896,45 @@ def getAllChildrenOfAssessmentForStudent(request):
 @isAuthenticated
 @isLecture
 def getAllAssessmentOfAssessment(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['mod']
     assessment = request.POST['assessment']
     data ={
@@ -1535,6 +2974,45 @@ def getAllAssessmentOfAssessment(request):
 @isAuthenticated
 @isLecture
 def ChangeSessionTime(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['module']
     session = request.POST['session']
     assess=request.POST['assess']
@@ -1588,6 +3066,45 @@ def ChangeSessionTime(request):
 @isAuthenticated
 @isLecture
 def removeUserfromSession(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     mod = request.POST['module']
     session_id = request.POST['session']
     users = request.POST.lists()
@@ -1596,7 +3113,7 @@ def removeUserfromSession(request):
     # users[1][1][0]
     Studentarray = []
     MarkerArray = []
-    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1)): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
+    if (users[0][0] == 'userS' and (len(users[0][1]) >= 1) and str(users[0][1][0]) != "None" ): #Apparently, if something has an empty string, it is counted, thus 1 and not 0 (zero)
         print "Students : " + str(users[0][1])
         for n in users[0][1]:
             Studentarray.append(n)
@@ -1623,11 +3140,68 @@ def removeUserfromSession(request):
                                                                         'user_ta':user_ta,
                                                                         'user_roles':user_roles,'students':students,
                                                                         'module':mod,'session_id':session_id,
-                                                                        'sessionName':name,'marker':marker},context_instance=RequestContext(request))
+                                                                        'sessionName':name,'marker':marker,"studentRemoved":1},context_instance=RequestContext(request))
+    else:
+        name = res[0]['name']
+        students = res[0]['students']
+        marker = res[0]['marker']
+        return render_to_response("web_interface/added_user_to_session.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,'students':students,
+                                                                        'module':mod,'session_id':session_id,
+                                                                        'sessionName':name,'marker':marker,"studentRemoved":-1},context_instance=RequestContext(request))
 
 @isAuthenticated
 def AuditLog(request):
-    result = views.Auditlog(request)
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    start = request.POST['search_from']
+    finish=request.POST['search_till']
+    data = {
+        'start':start,
+        'end':finish
+    }
+    result = views.Auditlog(request,json.dumps(data))
     res = json.loads(result.content)
     assess = res[0]['Assessment']
     session=res[0]['Session']
@@ -1648,7 +3222,126 @@ def AuditLog(request):
 '''
 @isAuthenticated
 @isLecture
+def assessmentCenterLeaf(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    data ={
+        'assess_id':assess_id,
+    }
+    result = views.assessmentCenterLeaf(request,json.dumps(data))
+    res = json.loads(result.content)
+    if res['type'] ==1:
+        assessmentName = res['assessmentName']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
+
+        return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                        'user_lect':user_lect,
+                                                                        'user_stud':user_stud,
+                                                                        'user_tut':user_tut,
+                                                                        'user_ta':user_ta,
+                                                                        'user_roles':user_roles,
+                                                                        'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                        'stddev':stddev,'studentlist':studentlist,
+                                                                        'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                        'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+
+    else:
+        assessmentName = res['assessmentName']
+        return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                'user_lect':user_lect,
+                                                                'user_stud':user_stud,
+                                                                'user_tut':user_tut,
+                                                                'user_ta':user_ta,
+                                                                'user_roles':user_roles,
+                                                                'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
+
+@isAuthenticated
+@isLecture
 def assessmentCenter(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     assess_id = request.POST['assess_id']
     module = request.POST['module']
     data ={
@@ -1681,21 +3374,69 @@ def assessmentCenter(request):
                                                                         'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
 
     else:
-        message = " Error occured, chooseAggregator view"
+        numChildren = res['numChildren']
+        children = res['children']
+        assessmentName = res['assessmentName']
+        agg_name = res['agg_name']
+        average = res['average']
+        median = res['median']
+        mode = res['mode']
+        frequency = res['frequency']
+        stddev = res['stddev']
+        studentlist = res['students']
+        pass_fail_percentage = res['pass_fail_percentage']
         return render_to_response("web_interface/assessment_center.htm",{'default_user':default_user,
                                                                 'user_lect':user_lect,
                                                                 'user_stud':user_stud,
                                                                 'user_tut':user_tut,
                                                                 'user_ta':user_ta,
-                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,
                                                                 'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))
  
-#@isAuthenticated
-#@isLecture
+@isAuthenticated
+@isLecture
 def aggregateMarkForAssessment(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     agg_name = request.POST['agg_name']
     numContributors = request.POST['numC']
-    
     
     #Converting QueryDict to python dict
     myDict = dict(request.POST.iterlists())
@@ -1714,10 +3455,10 @@ def aggregateMarkForAssessment(request):
         'child_weight':child_weight,
         'child_id':child_id
     }
-    
+
     result = views.aggregateMarkForAssessment(request,json.dumps(data))
     res = json.loads(result.content)
-    print "////////////\\\\\\\\\\\\"
+
 
     if res['type'] ==1:
 
@@ -1751,6 +3492,45 @@ def aggregateMarkForAssessment(request):
 
 @isAuthenticated
 def addStudentToModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     students =lists[2]
     module = lists[3]
@@ -1788,6 +3568,45 @@ def addStudentToModule(request):
 
 @isAuthenticated
 def addLectureToModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     lecture =lists[0]
     module = lists[2]
@@ -1825,6 +3644,45 @@ def addLectureToModule(request):
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 @isAuthenticated
 def addTutorToModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     tutor =lists[3]
     module = lists[2]
@@ -1862,6 +3720,45 @@ def addTutorToModule(request):
 
 @isAuthenticated
 def removeStudentFromModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     students =lists[2]
     module = lists[3]
@@ -1899,6 +3796,45 @@ def removeStudentFromModule(request):
 
 @isAuthenticated
 def removeLectureFromModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     lecture =lists[0]
     module = lists[3]
@@ -1936,6 +3872,45 @@ def removeLectureFromModule(request):
 
 @isAuthenticated
 def removeTutorFromModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
     lists = request.POST.lists()
     tutor =lists[0]
     module = lists[2]
@@ -1971,3 +3946,162 @@ def removeTutorFromModule(request):
                                                                        'Modules':Modules,
                                                                        'user_roles':user_roles},context_instance = RequestContext(request))
 
+def addModule(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    code = request.POST['code']
+    name = request.POST['name']
+    
+    data = {
+        'code':code,
+        'name':name
+    }
+    results = views.addModule(request,json.dumps(data))
+    res = json.loads(results.content)
+    
+    reslt = views.getUserInDataBase(request)
+    rslt = json.loads(reslt.content)
+    if res[0]['type'] == 1:
+        if rslt[0]['type'] == 1:
+            person = rslt[0]['User']
+            module = rslt[0]['Modules']
+            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':person,
+                                                                       'Modules':module,
+                                                                       'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
+    else:
+        if rslt[0]['type'] == 1:
+            person = rslt[0]['User']
+            module = rslt[0]['Module']
+            return render_to_response("web_interface/admin.htm",{'default_user':default_user,
+                                                                       'user_lect':user_lect,
+                                                                       'user_stud':user_stud,
+                                                                       'user_tut':user_tut,
+                                                                       'user_ta':user_ta,
+                                                                       'Person':person,
+                                                                       'Modules':module,
+                                                                       'user_roles':user_roles,'moduleAdded':1},context_instance = RequestContext(request))
+
+def import_csv(request):
+    user_type = ''
+    default_user =''
+    user_roles = []
+    user_lect = []
+    user_stud = []
+    user_tut = []
+    user_ta = []
+    user = request.session['user']
+    
+    if len(user['lecturerOf']) != 0:
+            user_type = 'LC'
+            user_lect.append({user_type:user['lecturerOf']})
+            user_roles.append('Lecturer')
+                        
+    if len(user['studentOf']) != 0:
+            user_type ='ST'
+            user_stud.append({user_type:user['studentOf']})
+            user_roles.append('Student')
+                        
+    if len(user['tutorFor']) != 0:
+            user_type = 'TT'
+            user_tut.append({user_type:user['tutorFor']})
+            user_roles.append('Tutor')
+                        
+    if len(user['teachingAssistantOf']) != 0:
+            user_type ='TA'
+            user_ta.append({user_type:user['teachingAssistantOf']})
+            user_roles.append('Teaching ass')
+                        
+    #choosing the default user based on the user type ie,lecturer
+    if len(user['lecturerOf']) != 0:
+        default_user = 'LC'
+    elif len(user['studentOf']) != 0:
+        default_user = 'ST'
+    elif len(user['tutorFor']) != 0:
+        default_user = 'TT'
+    else:
+        default_user = 'TA'
+    
+    assess_id = request.POST['assess_id']
+    module = request.POST['module']
+    result = repo.import_csv(request)
+    
+    res = json.loads(result.content)
+    
+    if res['type'] == 1:
+        data={
+            'assess_id':assess_id
+        }
+    
+        result = views.assessmentCenterLeaf(request,json.dumps(data))
+        res = json.loads(result.content)
+        if res['type'] ==1:
+            assessmentName = res['assessmentName']
+            average = res['average']
+            median = res['median']
+            mode = res['mode']
+            frequency = res['frequency']
+            stddev = res['stddev']
+            studentlist = res['students']
+            pass_fail_percentage = res['pass_fail_percentage']
+    
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                            'user_lect':user_lect,
+                                                                            'user_stud':user_stud,
+                                                                            'user_tut':user_tut,
+                                                                            'user_ta':user_ta,
+                                                                            'user_roles':user_roles,
+                                                                            'average':average,'median':median,'mode':mode,'frequency':frequency,
+                                                                            'stddev':stddev,'studentlist':studentlist,
+                                                                            'assess_id':assess_id,'assessmentName':assessmentName,
+                                                                            'module':module, 'pass_fail_percentage':pass_fail_percentage}, context_instance=RequestContext(request))
+    
+        else:
+            return render_to_response("web_interface/leaf_assessment_center.htm",{'default_user':default_user,
+                                                                    'user_lect':user_lect,
+                                                                    'user_stud':user_stud,
+                                                                    'user_tut':user_tut,
+                                                                    'user_ta':user_ta,
+                                                                    'user_roles':user_roles,'agg_name':agg_name, 'numChildren':numChildren,'message':message,
+                                                                    'children':children, 'assess_id':assess_id,'assessmentName':assessmentName, 'module':module}, context_instance=RequestContext(request))

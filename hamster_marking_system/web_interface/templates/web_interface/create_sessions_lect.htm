@@ -5,6 +5,7 @@
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
 	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a onclick="goBack();">Back</a></li>
 	<li><a href="/logout">Logout</a></li>
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
@@ -67,33 +68,13 @@
 			</li>
 			{% endfor %}
 		</ul>
-	</li>
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>	
+	</li>	
 {%endblock%}
 <!-- End of Use as button -->
 
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
-	<ol class="breadcrumb">
-	<li><a href="/logout">Login</a></li>
-	<li >
-	  <form action="/courses" method="post" hidden="hidden" class="go-home">
-		{% csrf_token %}
-	  </form>
-	  <a onclick="$(this).parent().children('form.go-home').submit();">Home</a>
-	</li>
-	<li >
-	  <form action="courses/{{ moduleName }}/assessments/view" method="post" hidden="hidden" class="see-assessments">
-		{% csrf_token %}
-	  </form>
-	  <a onclick="$(this).parent().children('form.see-assessments').submit();">Assessments</a>
-	</li>
-	<li class="active"><a href="#">Sessions</a></li>
-	</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %} Sessions {% endblock %}
@@ -127,6 +108,48 @@
 			<!--Do nothing-->
 		{% endif %}
 	{% endif %}
+	{% if SessionCreated == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if SessionCreated == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Session was not successfully created, please try again.
+		</div>
+	{% elif SessionCreated == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Session was successfully created.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
+	{% if type == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if type == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> Session status was not successfully updated, please try again.
+		</div>
+	{% elif type == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> Session status was successfully updated.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
 	<button class="btn btn-info btn-lg btn-block"  data-target="#create_sess" data-toggle="modal">Create Session</button><br>
 	
 	</div>
@@ -146,6 +169,18 @@
 				  <div class="[ col-xs-12 col-sm-offset-2 col-sm-8 ]">
 				    <ul class="event-list">
 					<li>
+					<time datetime={{ x.3 }}>
+					  <span class="day">{{ x.3|slice:"8:10" }}</span>
+					  <span class="month">{{ x.3|slice:"5:7" }}</span>
+					  <span class="year">{{ x.3|slice:":4" }}</span>
+					  <span class="time">{{ x.3|slice:"11:19" }}</span>
+					</time>
+					<time datetime={{ x.4 }}>
+					  <span class="day">{{ x.4|slice:"8:10" }}</span>
+					  <span class="month">{{ x.4|slice:"5:7" }}</span>
+					  <span class="year">{{ x.4|slice:":4" }}</span>
+					  <span class="time">{{ x.4|slice:"11:19" }}</span>
+				        </time>
 					<div class="info">
 					  <h2 class="title">{{x.1}}</h2>
 					  <p class="desc"> Marking session for the above assessment</p>
@@ -187,7 +222,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=0>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -195,7 +230,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=1>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -265,7 +300,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-close-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=0>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>
@@ -273,7 +308,7 @@
 					    <form action="change-status" method="post" class="form-group-sm post-open-session-form" hidden="hidden">
 						{% csrf_token %}
 						<input name="sess_id" value={{ x.0 }}>
-						<input type="hidden" name="mod" value={{ moduleName }}>
+						<input type="hidden" name="module" value={{ moduleName }}>
 						<input type="hidden" name="status" value=1>
 						<input type="hidden" name="assess_id" value={{ assessment_id }}>
 					    </form>

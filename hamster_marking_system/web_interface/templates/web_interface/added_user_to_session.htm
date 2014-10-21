@@ -5,6 +5,7 @@
 <!--###########################  Nav bar settings ############################-->
 {% block header%}
 	<li class="active"><a href="/hamster_home">Home</a></li>
+	<li><a onclick="goBack();">Back</a></li>
 	<li><a href="/logout">Logout</a></li>
 	<li><a href="#" onclick="document.getElementById('details').submit(); return false" > <span class="glyphicon glyphicon-user"></span> </a></li>
 	<form action="/User" id="details" method="post" hidden='hidden'>{% csrf_token %}
@@ -67,23 +68,13 @@
 			</li>
 			{% endfor %}
 		</ul>
-	</li>
-	<li><a href="#query" data-toggle="modal">Query</a></li>
-	<li><a href="#contact" data-toggle="modal">Contact Us</a></li>	
+	</li>	
 {%endblock%}
 <!-- End of Use as button -->
 
 <!--###########################  End Courses dropdown ############################-->
 
 <!--###########################  jumbotron part ############################-->
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-	<li><a href="#">Login</a></li>
-	<li ><a href="#">Home</a></li>
-	<li><a href="#">Assessments</a></li>
-	<li class="active"><a href="#">Sessions</a></li>
-</ol>
-{% endblock %}
 
 
 {% block jumbotron_header %} Users in session {% endblock %}
@@ -94,6 +85,48 @@
 {% block jumbotron_content %}
 
 <div class="row">
+	{% if studentAdded == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if studentAdded == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> User's were not successfuly added to session, please try again.
+		</div>
+	{% elif studentAdded == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> User's were successfuly added to session.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
+	{% if studentRemoved == None %}
+	<!-- Do nothing no alert is required -->
+	{% else %}
+	{% if studentRemoved == -1 %}
+		
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Warning!</strong> User's were not successfully removed from session, please try again.
+		</div>
+	{% elif studentRemoved == 1 %}
+	
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;
+			</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> User's were successfully removed from session.
+		</div>
+
+	{% endif %}
+		
+	{% endif %}
 	<div class="col-md-6">
 		
 		<!--<div class="list-group">
@@ -110,11 +143,11 @@
 			<input type="hidden" name="session" value={{session_id}}>
 			<input type="hidden" name="module" value={{ module }}>
 		</form>-->
-		
+
 		<h3><span class="label label-default">Select students to remove</span></h3>
 		<form id="remove_student_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession">
+				<select multiple class="form-control" name="userS" id="multiselectRemoveStudentsForSession" required>
 					{% for per in students %}
 						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}</option>
 					{% endfor %}
@@ -123,10 +156,10 @@
 				<input type="hidden" name="userM" value=""/><br>
 			</div>
 			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
-				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button>
+				<span class="glyphicon glyphicon-trash"></span> Remove Student(s)</button><br>
 		</form>
 		
-		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
+		<form method="post" action="view-students">{% csrf_token %}
 			<div class="clearfix">
 				<button  type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add student to session
@@ -158,24 +191,21 @@
 		<h3><span class="label label-default">Select markers to remove</span></h3>
 		<form id="remove_marker_from_session_form" role="form" method="post" action="remove-stud" data-parsley-validate>{% csrf_token %}
 			<div class="form-group">
-				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession">
-					{%for per in tutor%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
-						</option>
-					{%endfor%}
-					{%for per in teachingA%}
-						<option value={{ per.0.0 }}>{{ per.0.0 }}, {{ per.1.0 }} {{per.2.0 }}
+				<select multiple class="form-control" name="userM" id="multiselectRemoveMarkerForSession" required>
+					{%for per in marker %}
+						<option value={{ per.0 }}>{{ per.0 }}, {{ per.1 }} {{per.2 }}
 						</option>
 					{%endfor%}
 				</select>
 				<input type="hidden" name="session" value={{ session_id }}><br>
-				<input type="hidden" name="userS" value=""/><br>
+				<input type="hidden" name="userS" value="None"/><br>
+				<input type="hidden" name="module" value={{ module }}>
 			</div>
-			<button type="submit" name="module" class="btn btn-danger btn-block" value={{ module }}>
-			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button>
+			<button type="submit" class="btn btn-danger btn-block">
+			<span class="glyphicon glyphicon-trash"></span> Remove Marker(s)</button><br>
 		</form>
 		
-		<form method="post" action="view-students" data-parsley-validate>{% csrf_token %}
+		<form method="post" action="view-students">{% csrf_token %}
 			<div class="clearfix">
 				<button type="submit" name="submit" class="btn btn-primary btn-block">
 					<span class="glyphicon glyphicon-plus"></span> Add marker to session
